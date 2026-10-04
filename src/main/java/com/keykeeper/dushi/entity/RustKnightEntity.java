@@ -63,13 +63,13 @@ public class RustKnightEntity extends SoulsMob {
 
     public static AttributeSupplier.Builder createGildedAttributes() {
         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 130.0).add(Attributes.ATTACK_DAMAGE, 11.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.27).add(Attributes.ARMOR, 14.0).add(Attributes.KNOCKBACK_RESISTANCE, 0.8)
+                .add(Attributes.MOVEMENT_SPEED, 0.27).add(Attributes.ARMOR, 12.0).add(Attributes.KNOCKBACK_RESISTANCE, 0.8)
                 .add(Attributes.FOLLOW_RANGE, 28.0);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 90.0).add(Attributes.ATTACK_DAMAGE, 9.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.24).add(Attributes.ARMOR, 12.0).add(Attributes.KNOCKBACK_RESISTANCE, 0.7)
+                .add(Attributes.MOVEMENT_SPEED, 0.24).add(Attributes.ARMOR, 10.0).add(Attributes.KNOCKBACK_RESISTANCE, 0.7)
                 .add(Attributes.FOLLOW_RANGE, 28.0);
     }
 

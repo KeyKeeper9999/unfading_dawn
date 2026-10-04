@@ -135,6 +135,8 @@ MAP_CHESTS = {
     'belfry': [(M + 'flask_shard', 1), (GREAT, 1)],
     'west_gallery': [(M + 'guard_shield', 1), (GREAT, 1), (SCRAP, 4)],
     'sacristy': [(M + 'mend', 1), (M + 'return_ember', 2), (SOUL, 2)],
+    'crypt': [(M + 'flask_shard', 1), (GREAT, 1), (M + 'rust_cuirass', 1)],
+    'crypt_side': [(SCRAP, 6), (M + 'heavy_soul_shard', 1), (SOUL, 2)],
     'treasury': [(GREAT, 3), (M + 'flask_shard', 1)],
     'treasury_arms': [(M + 'chaplain_skirt', 1), (M + 'chaplain_shoes', 1), (M + 'tower_shield', 1)],
 }

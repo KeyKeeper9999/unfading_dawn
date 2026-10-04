@@ -11,10 +11,14 @@ import os
 import sys
 from collections import deque
 
-from gen_structures import AIR, COLOURS, MOD, THIN, Build
+import gen_structures
+from gen_structures import AIR, COLOURS, MOD, Build
+
+# things a wall or a fence does not join, on top of the list the buildings use
+gen_structures.THIN += ('banner', 'campfire', 'leaves', 'decorated_pot', 'slab', 'trapdoor', 'carpet')
 
 OUT = 'map/high_stockade.plan.txt'
-W, H, D = 129, 126, 272
+W, H, D = 129, 152, 272
 CX = 64
 L0 = 42                         # the floor block of the lower ward (everything below it is rock)
 L1, L2 = L0 + 8, L0 + 14        # of the walls and the bridge; of the upper city
@@ -47,15 +51,26 @@ def grey(x, y, z):
 
 
 def pale(x, y, z):
-    """The upper city: warm pale stone that takes the colour of the evening."""
+    """The upper city: warm pale ashlar that takes the colour of the evening - smooth courses, every fourth one of
+    framed blocks, weathered here and there."""
     n = hsh(x, y, z, 1)
-    if n < 0.72:
-        return 'minecraft:end_stone_bricks'
-    if n < 0.84:
-        return 'minecraft:smooth_sandstone'
-    if n < 0.94:
+    if y % 4 == 0:
+        return 'minecraft:cut_sandstone' if n < 0.9 else 'minecraft:sandstone'
+    if n < 0.1:
         return 'minecraft:sandstone'
-    return 'minecraft:cut_sandstone'
+    return 'minecraft:smooth_sandstone'
+
+
+def dark(x, y, z):
+    """Under the cathedral: the old masonry of the crypt."""
+    n = hsh(x, y, z, 11)
+    if n < 0.16:
+        return 'minecraft:cracked_deepslate_bricks'
+    if n < 0.26:
+        return 'minecraft:deepslate_tiles'
+    if n > 0.95:
+        return 'minecraft:cobbled_deepslate'
+    return 'minecraft:deepslate_bricks'
 
 
 def white(x, y, z):
@@ -126,10 +141,11 @@ def stairs(kind, facing, half='bottom'):
 
 def stair_of(mat):
     """The stairs that go with a wall material."""
-    return {'grey': 'stone_brick', 'pale': 'end_stone_brick', 'white': 'quartz', 'dark': 'polished_deepslate'}[mat]
+    return {'grey': 'stone_brick', 'pale': 'smooth_sandstone', 'white': 'quartz', 'dark': 'deepslate_brick'}[mat]
 
 
-MATS = {'grey': grey, 'pale': pale, 'white': white}
+MATS = {'grey': grey, 'pale': pale, 'white': white, 'dark': dark}
+INWARD = {'n': 'south', 's': 'north', 'w': 'east', 'e': 'west'}
 
 
 class Map(Build):
@@ -310,6 +326,79 @@ class Map(Build):
         for x, y, z in cells:
             self.set(x, y, z, 'minecraft:barrel[facing=up]')
 
+    # ------------------------------------------------------------------ dressing
+
+    def free(self, x, y, z):
+        return self.inside(x, y, z) and self.cells.get((x, y, z)) in (None, AIR)
+
+    def cornice(self, x0, z0, x1, z1, y, kind, sides='nsew'):
+        """A course of corbels - upside-down stairs - sticking out one block from the faces of the rectangle, at y.
+        Only where nothing stands yet."""
+        ring = []
+        if 'n' in sides:
+            ring += [(x, z0 - 1, 'n') for x in range(x0, x1 + 1)]
+        if 's' in sides:
+            ring += [(x, z1 + 1, 's') for x in range(x0, x1 + 1)]
+        if 'w' in sides:
+            ring += [(x0 - 1, z, 'w') for z in range(z0, z1 + 1)]
+        if 'e' in sides:
+            ring += [(x1 + 1, z, 'e') for z in range(z0, z1 + 1)]
+        for x, z, side in ring:
+            if self.free(x, y, z):
+                self.set(x, y, z, stairs(kind, INWARD[side], 'top'))
+
+    def buttress(self, x, z, y0, y1, out, mat, depth=2, drop=4):
+        """A buttress against a wall: columns stepping down as they go out (direction `out`) from the wall cell (x, z),
+        each with a sloping cap."""
+        dx, dz = STEP[out]
+        for d in range(1, depth + 1):
+            top = y1 - (d - 1) * drop
+            bx, bz = x + dx * d, z + dz * d
+            for y in range(y0, top + 1):
+                if self.free(bx, y, bz):
+                    self.set(bx, y, bz, MATS[mat](bx, y, bz))
+            if self.free(bx, top + 1, bz):
+                self.set(bx, top + 1, bz, stairs(stair_of(mat), OPPOSITE[out]))
+
+    def banner(self, x, y, z, facing, colour='red'):
+        """A cloth hanging on the wall behind it, two blocks long."""
+        self.set(x, y, z, f'minecraft:{colour}_wall_banner[facing={facing}]')
+
+    def brazier(self, x, y, z, post='minecraft:polished_deepslate_wall', height=1):
+        """A fire in a bowl on a post: light, and smoke that is seen from afar."""
+        self.fill(x, y, z, x, y + height - 1, z, post)
+        self.set(x, y + height, z, 'minecraft:campfire[lit=true,signal_fire=false]')
+
+    def beacon_fire(self, x, y, z):
+        """A watch fire whose smoke rises high (the game makes it so when hay lies under the fire)."""
+        self.set(x, y, z, 'minecraft:hay_block[axis=y]')
+        self.set(x, y + 1, z, 'minecraft:campfire[lit=true,signal_fire=true]')
+
+    def cypress(self, x, y, z, height=7):
+        """A dark narrow tree, of the kind that is planted in rows; stands on the block at y - 1."""
+        self.set(x, y - 1, z, 'minecraft:coarse_dirt')
+        leaf = 'minecraft:spruce_leaves[persistent=true,distance=1]'
+        self.fill(x, y, z, x, y + height - 2, z, 'minecraft:spruce_log[axis=y]')
+        for h in range(2, height):
+            if h < height - 2:
+                for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    if self.free(x + dx, y + h, z + dz):
+                        self.set(x + dx, y + h, z + dz, leaf)
+        self.fill(x, y + height - 1, z, x, y + height, z, leaf)
+
+    def urn(self, x, y, z, base='minecraft:quartz_pillar[axis=y]', height=1):
+        self.fill(x, y, z, x, y + height - 1, z, base)
+        self.set(x, y + height, z, 'minecraft:decorated_pot[facing=north]')
+
+    def glow_window(self, axis, fixed, a0, a1, y0, y1, behind, salt=0):
+        """A window that is never seen from inside: warm glass with a light behind it (`behind` is the step inwards)."""
+        for a in range(a0, a1 + 1):
+            for y in range(y0, y1 + 1):
+                x, z = (a, fixed) if axis == 'x' else (fixed, a)
+                self.set(x, y, z, GLASS[1] if hsh(a, y, fixed, 70 + salt) < 0.6 else GLASS[0])
+                bx, bz = (a, fixed + behind) if axis == 'x' else (fixed + behind, a)
+                self.set(bx, y, bz, 'minecraft:ochre_froglight[axis=y]')
+
 
 # ---------------------------------------------------------------------------------------------------- the lower fortress
 
@@ -379,6 +468,7 @@ def south_gate(b):
     b.hearth(77, L0 + 1, 240, 'keeper')
     b.mob('keykeeper', 81, L0 + 1, 242, 'west')
     b.loot(74, L0 + 1, 243, 'start', 'north')
+    b.set(77, L0 + 1, 236, f'{MOD}:forge')                   # an anvil by the first fire: scrap is of use from the first hour
     b.set(82, L0 + 1, 236, 'minecraft:hay_block[axis=y]')
     b.set(81, L0 + 1, 236, 'minecraft:hay_block[axis=x]')
     b.set(82, L0 + 2, 236, 'minecraft:hay_block[axis=z]')
@@ -566,7 +656,7 @@ def gate_hall(b):
     b.merlons(44, 116, 84, 150, L1 + 16, pale)
     # a base course of darker stone and a band under the roof
     b.shell(44, 116, 84, 150, L1 - 3, L1 + 1, grey, 1)
-    b.shell(44, 116, 84, 150, L1 + 13, L1 + 13, lambda x, y, z: 'minecraft:chiseled_sandstone', 1)
+    b.shell(44, 116, 84, 150, L1 + 13, L1 + 13, lambda x, y, z: 'minecraft:smooth_quartz', 1)
     for x in (54, 74):
         for z in (123, 130, 137, 144):
             b.pillar(x, z, x + 1, z + 1, L1 + 1, L1 + 14, 'minecraft:polished_deepslate', 'minecraft:chiseled_deepslate')
@@ -643,8 +733,8 @@ def hall_stair(b):
     b.clear(60, L1 + 1, 110, 68, L2 + 6, 115)
     b.steps(60, 68, 110, 115, L1, 'north', 'pale', fill=L1 - 2, head=6)
     for z in (110, 112):
-        b.set(60, L2 + 6, z, stairs('end_stone_brick', 'west', 'top'))
-        b.set(68, L2 + 6, z, stairs('end_stone_brick', 'east', 'top'))
+        b.set(60, L2 + 6, z, stairs('smooth_sandstone', 'west', 'top'))
+        b.set(68, L2 + 6, z, stairs('smooth_sandstone', 'east', 'top'))
     b.set(64, L2 + 6, 114, LANTERN)
 
 
@@ -758,7 +848,7 @@ def bell_tower(b):
         b.window('x', 96, 101, 102, y - 4, y - 2, bars=True)
     for (x, y, z) in ((105, L2 + 5, 89), (96, L2 + 11, 89), (105, L2 + 17, 89), (96, L2 + 23, 89), (97, L2 + 5, 85)):
         b.set(x, y, z, LANTERN)
-        b.set(x, y + 1, z, 'minecraft:end_stone_bricks') if b.get(x, y + 1, z) in (None, AIR) else None
+        b.set(x, y + 1, z, 'minecraft:smooth_sandstone') if b.get(x, y + 1, z) in (None, AIR) else None
     b.loot(101, L2 + 1, 85, 'tower_nook', 'south')
     b.mob('guard', 105, L2 + 7, 89, 'west')
     b.mob('archer', 96, L2 + 13, 92, 'east')
@@ -797,6 +887,9 @@ def cathedral(b):
     b.fill(63, LC, 35, 65, LC, 76, 'minecraft:red_terracotta')
     # a dark base course outside
     b.shell(X0, Z0, X1, Z1, LC - 2, LC + 1, lambda x, y, z: 'minecraft:polished_andesite', 1)
+    # the two ends of the nave rise to the vault
+    b.fill(52, CLR + 1, 77, 76, VAULT, 78, white)
+    b.fill(52, CLR + 1, 8, 76, VAULT, 9, white)
     # ---- the nave: two rows of pillars, an aisle and a gallery behind each, clerestory walls above
     rows = (72, 66, 60, 54, 48, 42, 36)
     for xa, xb in ((50, 51), (77, 78)):
@@ -1031,13 +1124,301 @@ def backdrop(b):
         b.fill(x0, L2 + 1, z0, x1, L2 + height, z1, pale)
         b.gable(x0 - 1, x1 + 1, z0, z1, L2 + height + 1, 'x', end=pale)
     # buttresses along the cathedral's sides
-    for z in range(13, 76, 6):
+    for z in range(12, 68, 6):
         for (xa, xb) in ((38, 39), (89, 90)):
             if b.get(xa, LC + 4, z) is None and b.get(xb, LC + 4, z) is None and b.get(xa, GAL + 2, z) is None:
+                west = xa == 38
+                outer, inner = (xa, xb) if west else (xb, xa)
                 b.fill(xa, L2 - 3, z, xb, GAL + 2, z, white)
-                b.set(xa if xa == 38 else xb, GAL + 3, z, 'minecraft:quartz_slab[type=bottom]')
-                b.fill(xb if xa == 38 else xa, GAL + 3, z, xb if xa == 38 else xa, CLR - 2, z, white)
-    b.fill(36, L2 - 3, 8, 104, L2, 60, pale) if False else None
+                b.set(outer, GAL + 3, z, stairs('quartz', 'east' if west else 'west'))
+                b.fill(inner, GAL + 3, z, inner, CLR + 4, z, white)
+                b.fill(inner, CLR + 5, z, inner, CLR + 6, z, 'minecraft:quartz_pillar[axis=y]')
+                b.set(inner, CLR + 7, z, 'minecraft:deepslate_tile_slab[type=bottom]')
+                # the flyer: over the aisle's roof to the wall of the nave
+                for i, x in enumerate(range(40, 50) if west else range(88, 78, -1)):
+                    y = CLR + 3 + i // 2
+                    if b.free(x, y, z):
+                        b.set(x, y, z, stairs('quartz', 'east' if west else 'west') if i % 2 == 0 else white(x, y, z))
+
+
+
+# ---------------------------------------------------------------------------------------------------- dressing
+
+def dress_lower(b):
+    """What makes the lower fortress a fortress from outside, and a place where people were kept from inside."""
+    b.zone = 'ward'
+    top = L1
+    # corbels under the parapets, buttresses down the outer faces
+    b.cornice(19, 189, 109, 247, top, 'stone_brick')
+    for z in (199, 209, 219, 229, 239):
+        b.buttress(19, z, L0 - 3, top - 2, 'west', 'grey')
+        b.buttress(109, z, L0 - 3, top - 2, 'east', 'grey')
+    for x in (30, 40, 50, 80, 90, 100):
+        b.buttress(x, 189, L0 - 3, top - 2, 'north', 'grey')
+    for x in (30, 40, 48, 82, 90, 100):
+        b.buttress(x, 247, L0 - 3, top - 2, 'south', 'grey')
+    # the corner towers: corbels under their heads, a watch fire on each roof
+    for (tx, tz) in ((16, 186), (106, 186), (16, 244), (106, 244)):
+        b.cornice(tx, tz, tx + 6, tz + 6, top + 5, 'stone_brick')
+        b.beacon_fire(tx + 3, top + 6, tz + 3)
+    # the south gate: two towers flanking it, cloth over the arch
+    for (xa, xb) in ((52, 56), (72, 76)):
+        b.fill(xa, L0 - 3, 246, xb, L1 + 7, 252, grey)
+        b.merlons(xa, 246, xb, 252, L1 + 8, grey)
+        b.cornice(xa, 246, xb, 252, L1 + 7, 'stone_brick')
+        b.window('x', 252, xa + 2, xa + 2, L0 + 5, L0 + 7, bars=True)
+        b.window('x', 252, xa + 2, xa + 2, L1 + 3, L1 + 5, bars=True)
+    b.cornice(57, 240, 71, 249, L1 + 4, 'stone_brick', 'ns')
+    for x in (61, 67):
+        b.banner(x, L0 + 9, 250, 'south')
+    # the bridge tower: corbels, fires on the roof, cloth on both faces
+    b.cornice(55, 184, 73, 195, L1 + 6, 'stone_brick')
+    for x, z in ((57, 186), (71, 186), (57, 193), (71, 193)):
+        b.brazier(x, L1 + 7, z)
+    for x in (61, 67):
+        b.banner(x, L0 + 7, 196, 'south')
+        b.banner(x - 1 if x == 61 else x + 1, L1 + 6, 183, 'north')
+    # the yard: fires by the road, a dead tree, a cage on a gibbet, a lean-to against the south wall
+    for x in (59, 69):
+        b.set(x, L0 + 2, 222, 'minecraft:campfire[lit=true,signal_fire=false]')
+    for y in range(1, 8):
+        b.set(41, L0 + y, 226, 'minecraft:spruce_log[axis=y]')
+    for x, y, z, axis in ((40, 5, 226, 'x'), (39, 6, 226, 'x'), (38, 7, 226, 'x'), (42, 6, 226, 'x'), (43, 7, 226, 'x'), (44, 8, 226, 'x'),
+                          (41, 6, 225, 'z'), (41, 7, 224, 'z'), (41, 8, 223, 'z'), (41, 5, 227, 'z'), (41, 6, 228, 'z'), (41, 8, 226, 'y'), (41, 9, 226, 'y'),
+                          (42, 9, 227, 'x'), (40, 9, 225, 'z')):
+        b.set(x, L0 + y, z, f'minecraft:spruce_log[axis={axis}]')
+    b.fill(88, L0 + 1, 232, 88, L0 + 6, 232, 'minecraft:spruce_fence')
+    b.fill(85, L0 + 7, 232, 88, L0 + 7, 232, 'minecraft:spruce_log[axis=x]')
+    b.set(86, L0 + 6, 232, CHAIN)
+    for x in range(85, 88):
+        for y in range(L0 + 3, L0 + 6):
+            for z in range(231, 234):
+                if (x, y, z) != (86, L0 + 4, 232):
+                    b.set(x, y, z, BARS)
+    b.set(86, L0 + 4, 232, 'minecraft:skeleton_skull[rotation=3]')
+    for x in (28, 34, 40):
+        b.fill(x, L0 + 1, 241, x, L0 + 3, 241, 'minecraft:spruce_fence')
+    b.fill(27, L0 + 4, 241, 41, L0 + 4, 244, 'minecraft:spruce_slab[type=bottom]')
+    for x, y, z, axis in ((29, 1, 244, 'x'), (30, 1, 244, 'x'), (29, 2, 244, 'x'), (36, 1, 244, 'z'), (37, 1, 243, 'y'), (37, 1, 244, 'y'), (37, 2, 244, 'z')):
+        b.set(x, L0 + y, z, f'minecraft:hay_block[axis={axis}]')
+    b.set(32, L0 + 1, 244, 'minecraft:cauldron')
+    for z in (210, 222):
+        b.banner(35, L0 + 6, z, 'east')
+    for z in (212, 219):
+        b.banner(93, L0 + 5, z, 'west')
+    # the great bridge: two fires on its parapets
+    for x in (59, 69):
+        b.set(x, L1 + 1, 166, grey(x, L1 + 1, 166))
+        b.set(x, L1 + 2, 166, 'minecraft:campfire[lit=true,signal_fire=false]')
+
+
+def dress_gate_hall(b):
+    """The face the upper city shows to the bridge."""
+    b.zone = 'gate hall'
+    for (xa, xb) in ((52, 58), (70, 76)):
+        b.fill(xa, L1 - 3, 151, xb, L1 + 21, 154, pale)
+        b.shell(xa, 151, xb, 154, L1 - 3, L1 + 1, grey, 1)
+        b.merlons(xa, 151, xb, 154, L1 + 22, pale)
+        b.cornice(xa, 151, xb, 154, L1 + 21, 'smooth_sandstone')
+        for y in (L1 + 7, L1 + 14):
+            b.glow_window('x', 154, xa + 3, xa + 3, y, y + 3, -1, xa)
+    for x in (62, 64, 66):                                    # three lancets over the gate
+        b.window('x', 150, x, x, L1 + 9, L1 + 13, x)
+        b.window('x', 149, x, x, L1 + 9, L1 + 13, x)
+    for x in (60, 68):
+        b.banner(x, L1 + 9, 151, 'south', 'yellow')
+    b.cornice(44, 116, 84, 150, L1 + 15, 'smooth_sandstone')
+    for z in (119, 123, 130, 137, 144, 148):
+        b.buttress(44, z, L1 - 3, L1 + 12, 'west', 'pale', drop=5)
+        b.buttress(84, z, L1 - 3, L1 + 12, 'east', 'pale', drop=5)
+    for x, z in ((46, 118), (82, 118), (46, 148), (82, 148)):
+        b.brazier(x, L1 + 16, z, 'minecraft:sandstone_wall')
+    # inside: cloth on the pillars, fires in the corners
+    for z in (123, 137):
+        b.banner(56, L1 + 9, z, 'east')
+        b.banner(73, L1 + 9, z, 'west')
+    for x, z in ((47, 119), (81, 119), (47, 147), (81, 147)):
+        b.brazier(x, L1 + 1, z)
+
+
+def dress_plaza(b):
+    b.zone = 'plaza'
+    for x in (55, 73):                                        # the way from the stair to the steps, between two rows of trees
+        for z in (87, 94, 101, 107):
+            b.cypress(x, L2 + 1, z)
+    for x in (37, 43, 49, 55, 73, 79, 85, 91):                # half-columns along the south wall, urns between them
+        b.pillar(x, 109, x, 109, L2 + 1, L2 + 8)
+    for x in (40, 46, 52, 76, 82, 88):
+        b.urn(x, L2 + 1, 109)
+    for z in (82, 87, 98, 103, 108):
+        b.pillar(36, z, 36, z, L2 + 1, L2 + 8)
+    for z in (82, 86, 94):
+        b.pillar(92, z, 92, z, L2 + 1, L2 + 8)
+    for z in (84, 100, 105):
+        b.urn(37, L2 + 1, z)
+    # benches, and what the guards piled up at the head of the stair
+    for x in (46, 47, 81, 82):
+        b.set(x, L2 + 1, 95, 'minecraft:smooth_quartz_slab[type=bottom]')
+    for x in (59, 60, 68, 69):
+        b.set(x, L2 + 1, 107, 'minecraft:spruce_fence')
+    b.barrels([(58, L2 + 1, 107), (58, L2 + 1, 108), (70, L2 + 1, 107)])
+    # cloth on the cathedral's towers
+    for x in (43, 47, 81, 85):
+        b.banner(x, LC + 9, 79, 'south', 'yellow')
+
+
+def dress_cathedral(b):
+    b.zone = 'cathedral'
+    # the porch of the great doors, and courses that carry its line across the front
+    for x in (60, 68):
+        b.fill(x, LC + 1, 79, x, LC + 9, 79, 'minecraft:quartz_pillar[axis=y]')
+    b.fill(59, LC + 10, 79, 69, LC + 10, 79, 'minecraft:chiseled_quartz_block')
+    b.set(61, LC + 9, 79, stairs('quartz', 'west', 'top'))
+    b.set(67, LC + 9, 79, stairs('quartz', 'east', 'top'))
+    b.cornice(40, 78, 88, 78, LC + 10, 'quartz', 's')
+    b.cornice(40, 78, 57, 78, CLR + 1, 'quartz', 's')
+    b.cornice(71, 78, 88, 78, CLR + 1, 'quartz', 's')
+    for x in (40, 50, 78, 88):                                # strips up the corners of the towers
+        for y in range(L2 + 1, CLR + 26):
+            if b.free(x, y, 79):
+                b.set(x, y, 79, white(x, y, 79))
+    # pinnacles on the towers, finials on the gables, a spirelet over the choir screen
+    for (xa, xb) in ((40, 50), (78, 88)):
+        for x in (xa, xb):
+            for z in (68, 78):
+                b.fill(x, CLR + 29, z, x, CLR + 31, z, 'minecraft:quartz_pillar[axis=y]')
+                b.set(x, CLR + 32, z, 'minecraft:end_rod[facing=up]')
+    for z in (8, 78):
+        b.set(64, VAULT + 16, z, TILES)
+        b.set(64, VAULT + 17, z, 'minecraft:gold_block')
+        b.set(64, VAULT + 18, z, 'minecraft:end_rod[facing=up]')
+    for x in range(62, 67):
+        for z in range(32, 37):
+            for y in range(VAULT + 12, VAULT + 20):
+                if b.free(x, y, z):
+                    b.set(x, y, z, white(x, y, z))
+    b.glow_window('x', 32, 64, 64, VAULT + 17, VAULT + 18, 1)
+    b.glow_window('x', 36, 64, 64, VAULT + 17, VAULT + 18, -1)
+    b.glow_window('z', 62, 34, 34, VAULT + 17, VAULT + 18, 1)
+    b.glow_window('z', 66, 34, 34, VAULT + 17, VAULT + 18, -1)
+    b.spire(62, 32, 66, 36, VAULT + 20, 12)
+    # the sacristy is a room somebody lived in
+    b.fill(36, LC + 1, 41, 38, LC + 1, 41, 'minecraft:dark_oak_planks')
+    b.set(37, LC + 2, 41, 'minecraft:candle[candles=2,lit=true]')
+    b.set(38, LC + 1, 42, stairs('spruce', 'north'))
+    b.fill(32, LC + 1, 43, 36, LC + 1, 45, 'minecraft:red_carpet')
+    b.set(34, LC + 1, 44, f'{MOD}:hearth[lit=false]')
+
+
+def far_tower(b, x0, z0, size, top, spire, mat, base=18, salt=0):
+    """A tower of the city that nobody will ever reach: it rises out of the cloud beside the fortress."""
+    x1, z1 = x0 + size - 1, z0 + size - 1
+    b.shell(x0, z0, x1, z1, base, top, mat, 2)
+    b.fill(x0, top, z0, x1, top, z1, TILES)
+    stair = 'quartz' if mat is white else 'smooth_sandstone'
+    for y in range(L2 + 14, top - 2, 13):                     # courses, and lit windows between them
+        b.cornice(x0, z0, x1, z1, y, stair)
+        mid = size // 2
+        for k, off in enumerate((mid - 2, mid + 2) if size >= 11 else (mid,)):
+            if y + 8 < top:
+                b.glow_window('x', z0, x0 + off, x0 + off, y + 4, y + 7, 1, salt + k)
+                b.glow_window('x', z1, x0 + off, x0 + off, y + 4, y + 7, -1, salt + k + 2)
+                b.glow_window('z', x0, z0 + off, z0 + off, y + 4, y + 7, 1, salt + k + 4)
+                b.glow_window('z', x1, z0 + off, z0 + off, y + 4, y + 7, -1, salt + k + 6)
+    b.cornice(x0, z0, x1, z1, top, stair)
+    b.merlons(x0, z0, x1, z1, top + 1, mat)
+    b.fill(x0 + 2, top + 1, z0 + 2, x1 - 2, top + 4, z1 - 2, mat)
+    b.spire(x0 + 1, z0 + 1, x1 - 1, z1 - 1, top + 5, spire)
+
+
+def skyline(b):
+    """The rest of the city, seen and never walked: towers standing in the cloud round the two rocks."""
+    b.zone = 'backdrop'
+    far_tower(b, 114, 18, 11, L2 + 62, 22, white, salt=1)
+    far_tower(b, 10, 10, 11, L2 + 50, 18, pale, salt=2)
+    far_tower(b, 116, 62, 9, L2 + 40, 16, pale, salt=3)
+    far_tower(b, 0, 84, 7, L2 + 33, 14, white, salt=4)
+    far_tower(b, 2, 150, 9, L2 + 24, 16, pale, salt=5)
+    far_tower(b, 118, 140, 9, L2 + 30, 16, white, salt=6)
+
+
+CY = L2 - 9                     # the floor block of the crypt
+
+
+def crypt(b):
+    """Under the nave: the stair down from the east aisle, the hall of tombs, and the way out into the alley behind the
+    chapter room, whose door is barred on the alley's side."""
+    b.zone = 'crypt'
+    b.fill(21, CY - 1, 33, 87, L2 - 4, 66, dark)
+    # the stair from the east aisle, along its outer wall, with a rail towards the aisle
+    b.steps(85, 86, 37, 48, CY, 'south', 'dark', fill=CY, head=4)
+    for z in range(37, 48):
+        b.set(84, LC + 1, z, 'minecraft:quartz_slab[type=bottom]' if z % 2 else 'minecraft:chiseled_quartz_block')
+    for y in range(CY + 1, LC + 1):                           # the sides of the stairwell, where it cuts through the cathedral's ground
+        for z in range(37, 49):
+            for x in (84, 87):
+                if y > L2 - 4 and b.get(x, y, z) not in (None, AIR):
+                    b.set(x, y, z, dark(x, y, z))
+    b.set(85, LC - 4, 42, SOUL_LANTERN) if b.free(85, LC - 4, 42) else None
+    # the landing and the passage west into the hall
+    b.clear(76, CY + 1, 34, 86, CY + 3, 36)
+    b.fill(76, CY, 34, 86, CY, 36, hall_floor)
+    b.set(81, CY + 3, 35, SOUL_LANTERN)
+    # the hall of tombs
+    b.clear(54, CY + 1, 37, 75, CY + 4, 64)
+    b.fill(54, CY, 37, 75, CY, 64, hall_floor)
+    b.clear(75, CY + 1, 34, 75, CY + 3, 36)
+    b.fill(75, CY, 34, 75, CY, 36, hall_floor)
+    for x in (60, 69):
+        for z in (40, 46, 52, 58):
+            b.pillar(x, z, x, z, CY + 1, CY + 4, 'minecraft:polished_deepslate', 'minecraft:chiseled_deepslate')
+    for (x0, x1) in ((54, 55), (74, 75)):
+        for z in (40, 45, 57, 61):
+            b.fill(x0, CY + 1, z, x1, CY + 1, z + 1, 'minecraft:polished_blackstone')
+            b.fill(x0, CY + 2, z, x1, CY + 2, z + 1, 'minecraft:polished_blackstone_slab[type=bottom]')
+            if hsh(x0, 0, z, 80) < 0.6:
+                b.set(x0 if x0 == 54 else x1, CY + 3, z, 'minecraft:candle[candles=2,lit=true]')
+    for x, z in ((57, 43), (72, 49), (64, 55), (58, 60), (71, 39)):
+        b.set(x, CY + 4, z, SOUL_LANTERN)
+    for x, z, r in ((56, 38, 2), (73, 53, 9), (62, 63, 14)):
+        b.set(x, CY + 1, z, f'minecraft:skeleton_skull[rotation={r}]')
+    for x, z in ((54, 37), (75, 64), (54, 64), (75, 37)):
+        b.set(x, CY + 4, z, 'minecraft:cobweb')
+    # the founder's tomb at the south end, and what was buried with him
+    b.fill(62, CY + 1, 60, 66, CY + 1, 63, 'minecraft:polished_blackstone_bricks')
+    b.fill(63, CY + 2, 61, 65, CY + 2, 62, 'minecraft:chiseled_polished_blackstone')
+    b.set(64, CY + 3, 61, 'minecraft:gold_block')
+    for x in (62, 66):
+        b.set(x, CY + 2, 60, 'minecraft:candle[candles=3,lit=true]')
+    b.loot(61, CY + 1, 64, 'crypt', 'north')
+    b.loot(67, CY + 1, 64, 'crypt_side', 'north')
+    b.mob('gilded', 64, CY + 1, 56, 'north')
+    b.mob('acolyte', 57, CY + 1, 50, 'east')
+    b.mob('acolyte', 72, CY + 1, 44, 'west')
+    b.mob('prisoner', 63, CY + 1, 41, 'north')
+    b.mob('prisoner', 66, CY + 1, 47, 'north')
+    b.mob('prisoner', 58, CY + 1, 56, 'east')
+    b.mob('guard', 80, CY + 1, 35, 'east')
+    # the passage west, under the cathedral's wall and the houses, and the stair up into the alley
+    b.clear(31, CY + 1, 53, 53, CY + 3, 54)
+    b.fill(31, CY, 53, 53, CY, 54, hall_floor)
+    for x in (36, 44, 50):
+        b.set(x, CY + 3, 53, SOUL_LANTERN)
+    b.mob('guard', 40, CY + 1, 53, 'east')
+    b.steps(22, 30, 53, 54, CY, 'west', 'dark', fill=CY, head=4)
+    # the alley: shut in by the house, the sacristy and the chapter room; a barred door into the chapter room
+    b.fill(26, L2, 38, 30, L2, 55, flagstones)
+    b.fill(11, L2, 53, 30, L2, 55, flagstones)
+    for z in (53, 54):
+        for x in range(22, 31):
+            if b.get(x, L2, z) not in (None, AIR) and 'stairs' not in str(b.get(x, L2, z)):
+                b.set(x, L2, z, AIR)
+    b.clear(20, L2 + 1, 56, 20, L2 + 2, 56)
+    b.door(20, L2 + 1, 56, 'north', (21, L2 + 2, 55), 'north')
+    b.barrels([(12, L2 + 1, 55), (13, L2 + 1, 55), (12, L2 + 2, 55), (29, L2 + 1, 52)])
+    b.set(27, L2 + 1, 40, 'minecraft:dead_bush')
+    b.set(16, L2 + 3, 54, LANTERN) if False else None
+    b.brazier(28, L2 + 1, 44)
 
 
 # ---------------------------------------------------------------------------------------------------- the rock
@@ -1087,7 +1468,7 @@ def route(target):
     return path[::-1]
 
 
-PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'skull', 'chain')
+PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'skull', 'chain', 'banner')
 
 
 def analyse(b, blocked=frozenset(), quiet=False):
@@ -1117,11 +1498,13 @@ def analyse(b, blocked=frozenset(), quiet=False):
         if below is None or below == AIR:
             return False
         name = below[2] if isinstance(below, tuple) else below
-        if any(k in name for k in ('mob_mark', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'chain', 'fog_gate', 'iron_bars', 'ladder')):
+        if any(k in name for k in ('mob_mark', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'chain', 'fog_gate', 'iron_bars', 'ladder', 'campfire', 'banner', 'carpet')):
             return False
         if (x, y - 1, z) in doors:
             return False
         return not solid(c, od, os_) and not solid((x, y + 1, z), od, os_)
+
+    falls = set()          # places from which a step leads into the void
 
     def neighbours(c, od, os_):
         x, y, z = c
@@ -1148,6 +1531,8 @@ def analyse(b, blocked=frozenset(), quiet=False):
                         if stands((nx, ny, nz), od, os_):
                             yield (nx, ny, nz)
                             break
+                    else:
+                        falls.add(c)
                 elif reach > 1 and stands((nx, y - 1, nz), od, os_):
                     yield (nx, y - 1, nz)
 
@@ -1216,7 +1601,20 @@ def analyse(b, blocked=frozenset(), quiet=False):
             if p not in home:
                 home.add(p)
                 queue.append(p)
-    traps = seen - home
+    # a ledge from which the only way on is the fall is the player's own choice, not a trap: the fall kills, and death
+    # brings them back to a hearth
+    out = set(c for c in falls if c in seen)
+    queue = deque(out)
+    while queue:
+        c = queue.popleft()
+        for p in edges.get(c, ()):
+            if p not in out:
+                out.add(p)
+                queue.append(p)
+    ledges = seen - home - (seen - out)
+    traps = seen - home - out
+    if ledges:
+        report.append(f'{len(ledges)} places are ledges with no way back but the fall, e.g. {sorted(ledges)[:: max(1, len(ledges) // 6)][:6]}')
     if traps:
         sample = sorted(traps)[:: max(1, len(traps) // 12)][:12]
         problems.append(f'{len(traps)} places are traps (no way back to a hearth), e.g. {sample}')
@@ -1248,6 +1646,12 @@ def build():
     bell_tower(b)
     cathedral(b)
     backdrop(b)
+    crypt(b)
+    dress_lower(b)
+    dress_gate_hall(b)
+    dress_plaza(b)
+    dress_cathedral(b)
+    skyline(b)
     return b
 
 
@@ -1274,33 +1678,56 @@ VIEWS = (
     ('first_steps', (64, L0 + 2.6, 264), (64, L0 + 4, 240)),
     ('arrival_from_outside', (36, L0 + 22, 284), (64, L0, 232)),
     ('ward_from_the_gate', (64, L1 + 7, 243), (64, L0, 200)),
+    ('ward_from_the_cells_roof', (30, L1 + 3, 204), (72, L0, 228)),
     ('keeper_room', (74, L0 + 2.6, 237.5), (80, L0 + 1.5, 242)),
     ('cells', (31, L0 + 2.6, 229), (29, L0 + 2, 204)),
     ('west_wall_walk', (20, L1 + 2.6, 236), (24, L1 + 1, 196)),
     ('north_walk', (28, L1 + 2.6, 190), (56, L1 + 2, 190)),
     ('great_bridge', (64, L1 + 3, 183), (64, L1 + 5, 150)),
+    ('gate_hall_front', (64, L1 + 2.6, 170), (64, L1 + 13, 150)),
     ('bridge_from_the_side', (104, L1 + 16, 186), (64, L1 - 4, 162)),
     ('gate_hall', (64, L1 + 3, 146.5), (64, L1 + 4, 120)),
     ('into_the_city', (64, L2 + 2.6, 107), (64, L2 + 16, 78)),
     ('smithy', (84, L2 + 2.6, 96), (97, L2 + 1.5, 103)),
     ('square_looking_south', (64, LC + 6, 81), (64, L2, 112)),
+    ('skyline_from_the_square', (42, L2 + 2.6, 104), (112, L2 + 40, 30)),
     ('cloister', (30, L2 + 2.6, 106), (17, L2 + 2, 76)),
     ('chapter_room', (21, L2 + 2.6, 65.5), (21, L2 + 2.5, 57)),
+    ('alley', (29, L2 + 2.6, 54.5), (14, L2 + 2, 54.5)),
     ('bell_tower_stairs', (96.5, L2 + 2.6, 93), (104, L2 + 6, 88)),
     ('covered_walk', (96.5, GAL + 2.6, 80.5), (96.5, GAL + 2.2, 70)),
     ('east_gallery', (82, GAL + 2.6, 73), (80, GAL + 1.5, 40)),
     ('nave', (64, LC + 3, 75), (64, LC + 10, 34)),
     ('nave_from_the_gallery', (79.5, GAL + 2.6, 64), (52, LC + 3, 48)),
+    ('crypt_stair', (85.5, LC + 2.6, 50.5), (85.5, CY + 2, 37)),
+    ('crypt_hall', (65, CY + 2.6, 38.5), (64, CY + 2, 62)),
+    ('crypt_passage', (52, CY + 2.6, 53.5), (32, CY + 2, 53.5)),
     ('choir', (64, LC + 3, 31), (64, LC + 10, 9)),
     ('sacristy', (38, LC + 2.6, 47), (32, LC + 1.5, 43)),
     ('terrace', (92, LC + 2.6, 6.5), (99, LC + 2.4, -40)),
     ('belfry', (97.5, BELL + 2.6, 93), (104, BELL + 2.4, 87)),
-    ('from_the_belfry', (101, BELL + 3, 84.5), (70, L2, 40)),
+    ('from_the_belfry', (102, BELL + 2.6, 84.2), (70, L2 + 10, 40)),
     ('whole_from_south_east', (170, L2 + 70, 330), (64, L2, 130)),
     ('upper_city_from_south_west', (-30, L2 + 50, 150), (60, L2 + 10, 60)),
-    ('cathedral_from_north_east', (140, VAULT + 12, -30), (64, LC + 12, 44)),
+    ('cathedral_from_north_east', (150, VAULT + 12, -34), (64, LC + 12, 44)),
+    ('cathedral_side', (112, L2 + 34, 62), (80, L2 + 16, 40)),
     ('great_window_outside', (64, LC + 16, -34), (64, LC + 14, 8)),
     ('lower_fortress_from_the_bridge', (64, L1 + 3, 153), (64, L1 + 3, 190)),
+    ('lower_fortress_from_the_west', (-34, L1 + 14, 250), (40, L0, 215)),
+    # the same places as the evening goes on: which hour suits the map is chosen by looking
+    ('time', 12300),
+    ('t12300_gate_hall_front', (64, L1 + 2.6, 170), (64, L1 + 13, 150)),
+    ('t12300_into_the_city', (64, L2 + 2.6, 107), (64, L2 + 16, 78)),
+    ('t12300_nave', (64, LC + 3, 75), (64, LC + 10, 34)),
+    ('time', 12700),
+    ('t12700_gate_hall_front', (64, L1 + 2.6, 170), (64, L1 + 13, 150)),
+    ('t12700_into_the_city', (64, L2 + 2.6, 107), (64, L2 + 16, 78)),
+    ('t12700_nave', (64, LC + 3, 75), (64, LC + 10, 34)),
+    ('t12700_ward', (64, L1 + 7, 243), (64, L0, 200)),
+    ('time', 13100),
+    ('t13100_gate_hall_front', (64, L1 + 2.6, 170), (64, L1 + 13, 150)),
+    ('t13100_into_the_city', (64, L2 + 2.6, 107), (64, L2 + 16, 78)),
+    ('t13100_ward', (64, L1 + 7, 243), (64, L0, 200)),
 )
 
 EXTRA_COLOURS = [
@@ -1324,8 +1751,12 @@ if __name__ == '__main__':
     report, problems, seen = analyse(b)
     states = b.save(SPAWN, OUT, skip_air=True)
     with open('map/views.txt', 'w') as f:
-        for name, eye, look in VIEWS:
-            f.write(name + ' ' + ' '.join(f'{v:.2f}' for v in world(*eye) + world(*look)) + '\n')
+        for view in VIEWS:
+            if view[0] == 'time':
+                f.write(f'time {view[1]}\n')
+            else:
+                name, eye, look = view
+                f.write(name + ' ' + ' '.join(f'{v:.2f}' for v in world(*eye) + world(*look)) + '\n')
     print(f'{b.name}: {b.w}x{b.h}x{b.d}, {built} blocks built, {rocks} of rock, {states} block states')
     total = {}
     for zone, kinds in b.census.items():

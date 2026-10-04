@@ -76,7 +76,9 @@ public final class MapSelfTest {
                 if (screen != null && minecraft.isGameLoadFinished() && minecraft.gui.overlay() == null && waited > 40) {
                     for (String line : Files.readAllLines(Path.of(VIEWS))) {
                         String[] p = line.trim().split("\\s+");
-                        if (p.length == 7) {
+                        if (p.length == 2 && p[0].equals("time")) {
+                            LIST.add(new View("time", Double.parseDouble(p[1]), 0, 0, 0, 0, 0));
+                        } else if (p.length == 7) {
                             LIST.add(new View(p[0], Double.parseDouble(p[1]), Double.parseDouble(p[2]), Double.parseDouble(p[3]),
                                     Double.parseDouble(p[4]), Double.parseDouble(p[5]), Double.parseDouble(p[6])));
                         }
@@ -86,7 +88,7 @@ public final class MapSelfTest {
                     minecraft.options.guiScale().set(2);
                     minecraft.options.tutorialStep = TutorialSteps.NONE;
                     minecraft.getTutorial().setStep(TutorialSteps.NONE);
-                    minecraft.options.renderDistance().set(12);
+                    minecraft.options.renderDistance().set(20);
                     minecraft.options.simulationDistance().set(8);
                     minecraft.getWindow().setWindowed(1280, 720);
                     minecraft.createWorldOpenFlows().openWorld(WORLD, () -> say("opening was cancelled"));
@@ -151,6 +153,15 @@ public final class MapSelfTest {
                 }
                 View view = LIST.get(next);
                 MinecraftServer server = minecraft.getSingleplayerServer();
+                if (view.name.equals("time")) {
+                    long time = (long) view.x;
+                    server.execute(() -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(),
+                            "time set " + time));
+                    say("time set to " + time);
+                    next++;
+                    wait = 60;
+                    return;
+                }
                 server.execute(() -> {
                     ServerPlayer player = server.getPlayerList().getPlayers().get(0);
                     double dx = view.toX - view.x;
