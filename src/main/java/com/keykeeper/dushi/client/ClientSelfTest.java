@@ -467,7 +467,9 @@ public final class ClientSelfTest {
         shot("37_soul_stain", 30);
         client(() -> {
             PlayerSoul soul = PlayerSoul.of(Minecraft.getInstance().player);
-            say("after death: souls=" + soul.souls + " lost=" + soul.lostSouls);
+            LocalPlayer player = Minecraft.getInstance().player;
+            say("after death: souls=" + soul.souls + " lost=" + soul.lostSouls + " main hand=" + player.getMainHandItem().getItem()
+                    + " off hand=" + player.getOffhandItem().getItem() + " flask=" + player.getInventory().getItem(1).getItem());
         });
         command(look(0.5, 0.5, 0, 15));
         pause(30);

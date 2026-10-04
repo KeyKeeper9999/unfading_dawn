@@ -126,8 +126,9 @@ public class ChaplainModel extends EntityModel<BossRenderState> {
                 this.rightArm.xRot = Anim.lerp(rise, this.rightArm.xRot, -2.8F);
                 this.leftArm.xRot = Anim.lerp(rise, this.leftArm.xRot, -2.8F);
                 this.leftArm.yRot = Anim.lerp(Math.max(rise, fall), this.leftArm.yRot, 0.0F);
-                this.rightArm.zRot += 0.45F * rise + 0.9F * fall;
-                this.leftArm.zRot -= 0.75F * rise + 1.2F * fall;
+                // (raised arms part the other way round than hanging ones)
+                this.rightArm.zRot += -0.75F * rise + 0.9F * fall;
+                this.leftArm.zRot -= -0.45F * rise + 1.2F * fall;
                 this.rightArm.xRot = Anim.lerp(fall, this.rightArm.xRot, -0.2F);
                 this.leftArm.xRot = Anim.lerp(fall, this.leftArm.xRot, -0.2F);
                 this.torso.xRot += -0.12F * rise + 0.3F * fall;

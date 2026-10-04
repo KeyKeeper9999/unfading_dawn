@@ -81,6 +81,10 @@ public class RustKnightModel extends HumanoidModel<SoulsRenderState> {
         float speed = Math.min(1.0F, state.walkAnimationSpeed);
         // The torn cape trails behind when he walks and stirs when he stands.
         this.cape.xRot += 0.08F + 0.35F * speed + Mth.sin(state.ageInTicks * 0.05F) * 0.03F;
+        // At rest the greatsword is carried with its point up, ready, rather than dragged.
+        if (state.armed) {
+            this.rightArm.xRot -= 0.42F;
+        }
         float t = state.attackTime;
         switch (state.attackId) {
             case RustKnightEntity.CHOP -> {
@@ -105,13 +109,16 @@ public class RustKnightModel extends HumanoidModel<SoulsRenderState> {
                 this.leftArm.xRot += -0.3F * sweep;
             }
             case RustKnightEntity.LUNGE -> {
-                // Crouches behind the point, then throws his whole weight forward.
+                // The sword comes up level beside the helmet, point at the target; then his whole weight goes in behind it.
                 float aim = Anim.pulse(t, 0.0F, 8.0F, 24.0F, 31.0F);
                 float thrust = Anim.pulse(t, 10.0F, 13.0F, 20.0F, 28.0F);
-                this.rightArm.xRot = Anim.lerp(aim, this.rightArm.xRot, -1.2F - 0.45F * thrust);
-                this.rightArm.yRot += -0.25F * aim * (1.0F - thrust);
-                this.body.xRot += 0.2F * aim + 0.3F * thrust;
-                this.head.xRot -= 0.3F * thrust;
+                this.rightArm.xRot = Anim.lerp(aim, this.rightArm.xRot, -0.08F);
+                this.rightArm.zRot += 1.25F * aim;
+                this.rightArm.z += 3.5F * aim - 9.5F * thrust;
+                this.leftArm.z -= 4.0F * thrust;
+                this.body.xRot += 0.15F * aim + 0.3F * thrust;
+                this.body.yRot += -0.3F * aim * (1.0F - thrust);
+                this.head.xRot -= 0.2F * thrust;
                 this.rightLeg.z += (2.4F * aim + 3.6F * thrust);
                 this.leftLeg.z += (2.4F * aim + 3.6F * thrust);
                 this.leftLeg.xRot += 0.5F * thrust;

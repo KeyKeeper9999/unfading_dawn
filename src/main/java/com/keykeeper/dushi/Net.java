@@ -55,7 +55,7 @@ public final class Net {
             player.stopUsingItem();
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), Dushi.sound("player.roll"), SoundSource.PLAYERS, 0.7F,
                     0.9F + player.getRandom().nextFloat() * 0.2F);
-            player.level().sendParticles(ParticleTypes.POOF, player.getX(), player.getY() + 0.1, player.getZ(), 4, 0.2, 0.05, 0.2, 0.01);
+            player.level().sendParticles(ParticleTypes.POOF, player.getX(), player.getY() + 0.1, player.getZ(), 2, 0.2, 0.05, 0.2, 0.01);
             player.syncData(Dushi.PLAYER_SOUL);
         }
     }
