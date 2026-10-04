@@ -11,12 +11,14 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.HumanoidArm;
 
 public class RustKnightRenderer extends HumanoidMobRenderer<RustKnightEntity, SoulsRenderState, RustKnightModel> {
-    private static final Identifier TEXTURE = Dushi.id("textures/entity/rust_knight.png");
+    private final Identifier texture;
     /** A normal humanoid is 1.95 blocks tall; the knight's hitbox is 2.6. */
     private static final float SIZE = 1.3F;
 
-    public RustKnightRenderer(EntityRendererProvider.Context context) {
+    /** @param name "rust_knight" or "gilded_knight": the same body in other armour */
+    public RustKnightRenderer(EntityRendererProvider.Context context, String name) {
         super(context, new RustKnightModel(context.bakeLayer(RustKnightModel.LAYER)), 0.6F);
+        this.texture = Dushi.id("textures/entity/" + name + ".png");
     }
 
     @Override
@@ -44,6 +46,6 @@ public class RustKnightRenderer extends HumanoidMobRenderer<RustKnightEntity, So
 
     @Override
     public Identifier getTextureLocation(SoulsRenderState state) {
-        return TEXTURE;
+        return this.texture;
     }
 }

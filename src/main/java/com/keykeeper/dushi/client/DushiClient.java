@@ -50,7 +50,8 @@ public final class DushiClient {
         event.registerEntityRenderer(Dushi.SPELL_BOLT.get(), context -> new ThrownItemRenderer<>(context, 1.6F, true));
         event.registerEntityRenderer(Dushi.TAR_POT_ENTITY.get(), ThrownItemRenderer::new);
         Dushi.WITHERED.forEach((kind, type) -> event.registerEntityRenderer(type.get(), context -> new WitheredRenderer(context, kind)));
-        event.registerEntityRenderer(Dushi.RUST_KNIGHT.get(), RustKnightRenderer::new);
+        event.registerEntityRenderer(Dushi.RUST_KNIGHT.get(), context -> new RustKnightRenderer(context, "rust_knight"));
+        event.registerEntityRenderer(Dushi.GILDED_KNIGHT.get(), context -> new RustKnightRenderer(context, "gilded_knight"));
         event.registerEntityRenderer(Dushi.KEYKEEPER.get(), KeykeeperRenderer::new);
         event.registerEntityRenderer(Dushi.OVERSEER.get(), OverseerRenderer::new);
         event.registerEntityRenderer(Dushi.CHAPLAIN.get(), ChaplainRenderer::new);
@@ -69,6 +70,7 @@ public final class DushiClient {
     static void registerPayloadHandlers(RegisterClientPayloadHandlersEvent event) {
         event.register(Net.OpenHearth.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new HearthScreen()));
         event.register(Net.OpenShop.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new ShopScreen()));
+        event.register(Net.OpenForge.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new ForgeScreen()));
         event.register(Net.Banner.TYPE, (payload, context) -> {
             if (!payload.key().isEmpty()) {
                 SoulsHud.showBanner(payload.key(), payload.style());

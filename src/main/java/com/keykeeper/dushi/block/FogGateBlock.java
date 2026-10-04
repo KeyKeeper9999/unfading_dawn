@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
@@ -34,22 +35,28 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /**
  * A wall of white fog across a doorway. Players push through it; monsters, arrows and everything else are stopped.
  * It cannot be broken in survival: it lifts by itself when the boss behind it dies (see {@link #lift}).
+ * A sealed one (see {@link #SEALED}) stops players too.
  */
 public class FogGateBlock extends Block {
     /** The axis the wall runs along. */
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
+    /**
+     * A seal: amber instead of white, and nobody passes, players included. It closes the way on from a boss's room
+     * and lifts when the boss dies.
+     */
+    public static final BooleanProperty SEALED = BooleanProperty.create("sealed");
     private static final VoxelShape ALONG_X = Block.box(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
     private static final VoxelShape ALONG_Z = Block.box(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
     private static final Map<Entity, Long> LAST_PASS = new WeakHashMap<>();
 
     public FogGateBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
+        this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X).setValue(SEALED, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(AXIS);
+        builder.add(AXIS, SEALED);
     }
 
     /** The wall stands across the way the player is looking. */
@@ -66,7 +73,7 @@ public class FogGateBlock extends Block {
 
     @Override
     protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        if (context instanceof EntityCollisionContext entityContext && entityContext.getEntity() instanceof Player) {
+        if (!state.getValue(SEALED) && context instanceof EntityCollisionContext entityContext && entityContext.getEntity() instanceof Player) {
             return Shapes.empty();
         }
         return this.getShape(state, level, pos, context);
@@ -74,7 +81,7 @@ public class FogGateBlock extends Block {
 
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effects, boolean isPrecise) {
-        if (level instanceof ServerLevel serverLevel && entity instanceof Player) {
+        if (level instanceof ServerLevel serverLevel && entity instanceof Player && !state.getValue(SEALED)) {
             long now = serverLevel.getGameTime();
             Long last = LAST_PASS.get(entity);
             if (last == null || now - last > 30 || now < last) {
@@ -94,13 +101,20 @@ public class FogGateBlock extends Block {
     }
 
     /**
-     * Lifts one fog gate: the one nearest to {@code centre} within {@code radius} blocks, with every block of fog joined to it.
-     * Another gate in the same building, across another doorway, stays.
+     * Lifts the fog of one boss: the plain gate nearest to {@code centre} within {@code radius} blocks, with every block
+     * of fog joined to it, and every seal within the radius. Another boss's plain gate in the same building stays.
      */
     public static void lift(ServerLevel level, BlockPos centre, int radius) {
         BlockPos nearest = null;
         for (BlockPos pos : BlockPos.betweenClosed(centre.offset(-radius, -8, -radius), centre.offset(radius, 12, radius))) {
-            if (level.getBlockState(pos).is(Dushi.FOG_GATE.get()) && (nearest == null || pos.distSqr(centre) < nearest.distSqr(centre))) {
+            BlockState state = level.getBlockState(pos);
+            if (!state.is(Dushi.FOG_GATE.get())) {
+                continue;
+            }
+            if (state.getValue(SEALED)) {
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+                level.sendParticles(ParticleTypes.END_ROD, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 3, 0.3, 0.3, 0.3, 0.02);
+            } else if (nearest == null || pos.distSqr(centre) < nearest.distSqr(centre)) {
                 nearest = pos.immutable();
             }
         }

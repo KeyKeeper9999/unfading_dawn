@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ItemSupplier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -40,14 +41,15 @@ public class SoulStainEntity extends Entity implements ItemSupplier {
         this.setNoGravity(true);
     }
 
-    public static void drop(ServerLevel level, ServerPlayer player, int souls, int generation) {
+    /** @param at where the stain is left: the place of death, or the last ground under a player who fell */
+    public static void drop(ServerLevel level, ServerPlayer player, Vec3 at, int souls, int generation) {
         SoulStainEntity stain = new SoulStainEntity(Dushi.SOUL_STAIN.get(), level);
         stain.owner = player.getUUID();
         stain.souls = souls;
         stain.generation = generation;
         // Never below the world: a fall into the void leaves the stain at the bottom edge.
-        double y = Math.max(player.getY(), level.getMinY() + 1.0);
-        stain.setPos(player.getX(), y + 0.6, player.getZ());
+        double y = Math.max(at.y, level.getMinY() + 1.0);
+        stain.setPos(at.x, y + 0.6, at.z);
         level.addFreshEntity(stain);
     }
 

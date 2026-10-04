@@ -65,7 +65,7 @@ public class OverseerEntity extends SoulsMob {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 320.0).add(Attributes.ATTACK_DAMAGE, 12.0)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 260.0).add(Attributes.ATTACK_DAMAGE, 12.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.25).add(Attributes.ARMOR, 6.0).add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(Attributes.FOLLOW_RANGE, 40.0).add(Attributes.STEP_HEIGHT, 1.25);
     }
@@ -334,7 +334,6 @@ public class OverseerEntity extends SoulsMob {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean killedByPlayer) {
         super.dropCustomDeathLoot(level, source, killedByPlayer);
         this.spawnAtLocation(level, new ItemStack(Dushi.OVERSEER_SOUL.get()));
-        this.spawnAtLocation(level, new ItemStack(Dushi.GREAT_KEY.get()));
         this.spawnAtLocation(level, new ItemStack(Dushi.FLASK_SHARD.get()));
         this.leave(level, Dushi.RUST_SCRAP.get(), 4, 7);
     }

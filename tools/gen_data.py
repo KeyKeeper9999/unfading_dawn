@@ -40,6 +40,7 @@ GOLD = MC + 'gold_nugget'
 
 # the hearth: a campfire in an iron brazier on stone, lit with a soul
 shaped('hearth', [' N ', 'ICI', 'BBB'], {'N': SOUL, 'I': I, 'C': MC + 'campfire', 'B': MC + 'stone_bricks'}, category='building')
+shaped('forge', ['N', 'A', 'L'], {'N': SOUL, 'A': MC + 'anvil', 'L': LOG}, category='building')
 # weapons
 shaped('club', ['W', 'W', 'S'], {'W': LOG, 'S': S})
 shaped('shiv', ['N', 'S'], {'N': N, 'S': S})

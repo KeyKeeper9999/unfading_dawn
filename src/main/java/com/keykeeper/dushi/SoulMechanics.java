@@ -12,6 +12,7 @@ import com.keykeeper.dushi.entity.SoulsMob;
 import com.keykeeper.dushi.item.FlaskItem;
 import com.keykeeper.dushi.item.SpellItem;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -31,6 +32,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BlocksAttacks;
+import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
@@ -120,7 +123,7 @@ public final class SoulMechanics {
         soul.stainGeneration++;
         soul.lostSouls = soul.souls;
         if (soul.souls > 0) {
-            SoulStainEntity.drop(level, player, soul.souls, soul.stainGeneration);
+            SoulStainEntity.drop(level, player, deathPlace(player), soul.souls, soul.stainGeneration);
             soul.souls = 0;
         }
         soul.rollTicks = 0;
@@ -129,7 +132,7 @@ public final class SoulMechanics {
         PacketDistributor.sendToPlayer(player, new Net.Banner("", Net.Banner.RED, "ui.death"));
         // The enemies around are whole again at once, and the dead among them rise: the next attempt starts from the beginning,
         // wherever the player comes back to.
-        MobMarkBlockEntity.resetAround(level, player.blockPosition(), MobMarkBlockEntity.RESET_RADIUS);
+        MobMarkBlockEntity.resetAround(level, BlockPos.containing(deathPlace(player)), MobMarkBlockEntity.RESET_RADIUS);
         // Remember what was carried and where: death takes the souls, not the belongings.
         Inventory inventory = player.getInventory();
         List<ItemStack> kept = new ArrayList<>(inventory.getContainerSize());
@@ -247,11 +250,45 @@ public final class SoulMechanics {
             if (player.tickCount % 10 == 0) {
                 weighDown(serverPlayer);
             }
+            ground(serverPlayer, soul);
             // The client counts by itself between these corrections.
             if (player.tickCount % 40 == 0) {
                 serverPlayer.syncData(Dushi.PLAYER_SOUL);
             }
         }
+    }
+
+    /** A fall this long over nothing at all is not waited out to the bottom of the world. */
+    private static final double HOPELESS_FALL = 24.0;
+
+    /**
+     * Remembers where the player last stood; ends a fall into the void early; and, in a world where health does not come
+     * back by itself (an adventure map of this kind), keeps hunger out of the game.
+     */
+    private static void ground(ServerPlayer player, PlayerSoul soul) {
+        ServerLevel level = player.level();
+        if (player.onGround() && !player.isSpectator()) {
+            soul.groundX = player.getX();
+            soul.groundY = player.getY();
+            soul.groundZ = player.getZ();
+            soul.hasGround = true;
+        } else if (plays(player) && player.isAlive() && player.fallDistance > HOPELESS_FALL
+                && level.getHeight(Heightmap.Types.MOTION_BLOCKING, player.getBlockX(), player.getBlockZ()) <= level.getMinY()) {
+            player.hurtServer(level, level.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+        }
+        if (player.tickCount % 20 == 0 && !level.getGameRules().get(GameRules.NATURAL_HEALTH_REGENERATION)) {
+            player.getFoodData().setFoodLevel(20);
+            player.getFoodData().setSaturation(5.0F);
+        }
+    }
+
+    /** Where a stain or a reset should be centred for a player who has just died: where they last stood, if they fell. */
+    public static Vec3 deathPlace(ServerPlayer player) {
+        PlayerSoul soul = PlayerSoul.of(player);
+        if (soul.hasGround && (player.getY() < soul.groundY - 4.0 || player.getY() < player.level().getMinY() + 2)) {
+            return new Vec3(soul.groundX, soul.groundY, soul.groundZ);
+        }
+        return player.position();
     }
 
     /** Someone carrying more than they can bear walks slowly. */

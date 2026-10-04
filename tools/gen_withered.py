@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The withered (prisoner, guard, archer): mesh extras for WitheredModel.java and the three textures.
+"""The withered (prisoner, guard, archer, acolyte): mesh extras for WitheredModel.java and their textures.
 Run from the repo root; pass a file name to also get a preview sheet."""
 import random
 import sys
@@ -49,6 +49,11 @@ HOOD = (62, 72, 52)
 HOOD_D = (44, 52, 38)
 HOOD_L = (82, 94, 68)
 BOOT = (52, 40, 32)
+ROBE = (66, 46, 62)
+ROBE_D = (44, 30, 42)
+ROBE_L = (88, 62, 80)
+GOLD = (214, 184, 106)
+GOLD_D = (158, 128, 62)
 
 HEAD = {
     'front': ["hhshhhsh",
@@ -270,23 +275,42 @@ def make(kind, seed):
                 for z in range(b.td):
                     p.put(b, 'top', x, z, HOOD)
 
+    elif kind == 'acolyte':
+        # what is left of a habit: dark cloth to the ankles, a gold stripe down the front, a rope for a belt
+        for b, rows in ((body, range(0, 12)), (rl, range(0, 10)), (ll, range(0, 9)), (ra, range(0, 9)), (la, range(0, 8))):
+            cloth_rows(p, b, rows, ROBE, ROBE_D, rnd, ragged=b is not body)
+        for y in range(0, 12):
+            p.put(body, 'front', 3, y, shade(GOLD_D, 1.0 - 0.03 * y))
+            p.put(body, 'front', 4, y, shade(GOLD if y % 3 == 1 else GOLD_D, 1.0 - 0.03 * y))
+        p.band(body, 8, ROPE)
+        p.put(body, 'front', 5, 9, ROPE)
+        p.put(body, 'front', 5, 10, shade(ROPE, 0.8))
+        for x in range(8):
+            for z in range(4):
+                p.put(body, 'top', x, z, ROBE)
+        for b in (ra, la):
+            for x in range(b.tw):
+                for z in range(b.td):
+                    p.put(b, 'top', x, z, ROBE)
+
+    hood_c, hood_d, hood_l = (ROBE, ROBE_D, ROBE_L) if kind == 'acolyte' else (HOOD, HOOD_D, HOOD_L)
     # ---- the second layer of the head: scraps of hair for the prisoner, nothing for the guard, a hood for the archer
     hat = box_of(M, 'hat')
-    if kind == 'archer':
+    if kind in ('archer', 'acolyte'):
         def hood(face, px, py, fw, fh, r):
             if face == 'bottom':
                 return None
             if face == 'front':
                 # the face stays open: a frame of cloth around it and a shadow under the peak
                 if 1 <= px <= 6 and py >= 2:
-                    return shade(HOOD_D, 0.55) if py == 2 else None
-                return HOOD_D if py == 1 or px in (0, 7) and py > 4 else HOOD
+                    return shade(hood_d, 0.55) if py == 2 else None
+                return hood_d if py == 1 or px in (0, 7) and py > 4 else hood_c
             if py == fh - 1 and face != 'top' and px % 3 == 1:
                 return None
             if face == 'top':
-                return HOOD_L if 2 <= px <= 5 and 2 <= py <= 5 else HOOD
+                return hood_l if 2 <= px <= 5 and 2 <= py <= 5 else hood_c
             # soft folds running down from the crown
-            c = HOOD_D if px in (2, 5) and py > 1 else HOOD
+            c = hood_d if px in (2, 5) and py > 1 else hood_c
             return shade(c, 1.05 - 0.2 * py / max(1, fh - 1))
         p.fill_box(hat, hood)
     elif kind == 'prisoner':
@@ -321,7 +345,7 @@ def make(kind, seed):
     p.put(collar, 'front', 4, 1, IRON_D)
 
     def hood_cloth(face, px, py, fw, fh, r):
-        return shade(HOOD if (px + py) % 3 else HOOD_D, {'top': 1.1, 'bottom': 0.75}.get(face, 1.0))
+        return shade(hood_c if (px + py) % 3 else hood_d, {'top': 1.1, 'bottom': 0.75}.get(face, 1.0))
     for b in M.parts['hood_tail']['boxes']:
         p.fill_box(b, hood_cloth)
     quiver, fletch = M.parts['quiver']['boxes']
@@ -340,6 +364,7 @@ KIND_HIDE = {
     'prisoner': ('kettle_hat', 'pauldron', 'hood_tail', 'quiver'),
     'guard': ('collar', 'shackle', 'hood_tail', 'quiver'),
     'archer': ('collar', 'shackle', 'kettle_hat', 'pauldron'),
+    'acolyte': ('collar', 'shackle', 'kettle_hat', 'pauldron', 'quiver'),
 }
 STOOP = {'body': (0.24, 0, 0), 'right_leg': {'off': (0, -0.4, 2.9)}, 'left_leg': {'off': (0, -0.4, 2.9)}, 'head': (0.18, 0, 0),
          'right_arm': (-0.22, 0, 0.06), 'left_arm': (-0.22, 0, -0.06)}
@@ -349,7 +374,7 @@ SWING = dict(STOOP, right_arm=(-2.75, 0, 0.4), body=(0.12, 0.35, 0), head=(-0.07
 if __name__ == '__main__':
     M.write_java(JAVA)
     shots = []
-    for i, kind in enumerate(('prisoner', 'guard', 'archer')):
+    for i, kind in enumerate(('prisoner', 'guard', 'archer', 'acolyte')):
         tex = make(kind, 100 + i)
         tex.save(f'{A}/textures/entity/withered_{kind}.png')
         hidden = KIND_HIDE[kind]

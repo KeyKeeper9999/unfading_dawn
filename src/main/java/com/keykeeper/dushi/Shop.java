@@ -19,42 +19,27 @@ public final class Shop {
     public static List<Ware> wares() {
         if (wares == null) {
             List<Ware> list = new ArrayList<>();
+            // Only what a newcomer needs to start with. Better arms are taken from the dead, found, or made at an anvil.
             add(list, Dushi.CLUB, 1, 150);
-            add(list, Dushi.DAGGER, 1, 400);
             add(list, Dushi.SHORTSWORD, 1, 300);
-            add(list, Dushi.HATCHET, 1, 500);
-            add(list, Dushi.LONGSWORD, 1, 800);
-            add(list, Dushi.SABRE, 1, 900);
-            add(list, Dushi.BROADSWORD, 1, 900);
-            add(list, Dushi.FLANGED_MACE, 1, 900);
-            add(list, Dushi.BATTLE_AXE, 1, 1000);
             add(list, Dushi.SHORT_BOW, 1, 500);
             add(list, () -> Items.ARROW, 16, 100);
             add(list, Dushi.PLANK_SHIELD, 1, 200);
             add(list, Dushi.ROUND_SHIELD, 1, 500);
-            add(list, Dushi.GUARD_SHIELD, 1, 900);
-            add(list, Dushi.TOWER_SHIELD, 1, 1600);
             int[] rags = {100, 150, 120, 80};
-            int[] mail = {500, 900, 700, 400};
             for (int piece = 0; piece < 4; piece++) {
                 add(list, ArmorSet.PRISONER.pieces().get(piece), 1, rags[piece]);
             }
-            for (int piece = 0; piece < 4; piece++) {
-                add(list, ArmorSet.GUARD.pieces().get(piece), 1, mail[piece]);
-            }
             add(list, Dushi.SCHOLAR_STAFF, 1, 500);
             add(list, Dushi.SPELLS.get(Spell.SOUL_SHARD), 1, 600);
-            add(list, Dushi.SPELLS.get(Spell.HEAVY_SOUL_SHARD), 1, 1500);
             add(list, Dushi.PRAYER_BEADS, 1, 500);
             add(list, Dushi.SPELLS.get(Spell.MEND), 1, 1000);
-            add(list, Dushi.SPELLS.get(Spell.REBUKE), 1, 800);
             add(list, Dushi.EMBER_GLOVE, 1, 500);
             add(list, Dushi.SPELLS.get(Spell.FLARE), 1, 700);
-            add(list, Dushi.SPELLS.get(Spell.FIRE_ORB), 1, 1200);
             add(list, Dushi.TAR_POT, 3, 150);
             add(list, Dushi.RETURN_EMBER, 1, 200);
-            add(list, Dushi.HEARTH_ITEM, 1, 1000);
-            add(list, Dushi.FLASK_SHARD, 1, 4000);
+            add(list, Dushi.TATTERED_CLOTH, 2, 120);
+            add(list, Dushi.RUST_SCRAP, 2, 200);
             wares = List.copyOf(list);
         }
         return wares;

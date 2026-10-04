@@ -18,6 +18,7 @@ t(f'key.{M}.roll', 'Перекат', 'Roll')
 
 t(f'block.{M}.hearth', 'Очаг', 'Hearth')
 t(f'block.{M}.fog_gate', 'Туманная завеса', 'Fog Gate')
+t(f'block.{M}.forge', 'Старая наковальня', 'Old Anvil')
 t(f'block.{M}.mob_mark', 'Метка восставшего', 'Mark of the Risen')
 
 for key, ru, en in (
@@ -51,7 +52,8 @@ for key, ru, en in (
     t(f'item.{M}.{key}', ru, en)
 
 MOBS = (('withered_prisoner', 'Истлевший узник', 'Withered Prisoner'), ('withered_guard', 'Истлевший стражник', 'Withered Guard'),
-        ('withered_archer', 'Истлевший лучник', 'Withered Archer'), ('rust_knight', 'Ржавый рыцарь', 'Rust Knight'),
+        ('withered_archer', 'Истлевший лучник', 'Withered Archer'), ('withered_acolyte', 'Истлевший послушник', 'Withered Acolyte'),
+        ('gilded_knight', 'Золочёный рыцарь', 'Gilded Knight'), ('rust_knight', 'Ржавый рыцарь', 'Rust Knight'),
         ('keykeeper', 'Слепой ключник', 'Blind Keykeeper'), ('overseer', 'Надзиратель Острога', 'Overseer of the Stockade'),
         ('chaplain', 'Капеллан Острога', 'Chaplain of the Stockade'))
 for key, ru, en in MOBS:
@@ -79,6 +81,8 @@ t(f'tooltip.{M}.soul_item', 'Раздави в руке: +%s душ', 'Crush it 
 t(f'tooltip.{M}.return_ember', 'Подержи в руке — вернёшься к последнему очагу', 'Hold it to return to the last hearth')
 t(f'tooltip.{M}.flask_shard', 'Правая кнопка, когда фляга в инвентаре: +1 глоток', 'Right click with the flask in your inventory: +1 gulp')
 t(f'tooltip.{M}.flask_shard.hearth', 'Или отдохни у очага — вплавится сам', 'Or rest at a hearth: it melts in by itself')
+t(f'tooltip.{M}.damage', 'Урон: %s, в твоих руках %s (в спину %s)', 'Damage: %s, in your hands %s (backstab %s)')
+t(f'tooltip.{M}.bow.mine', 'Твои стрелы бьют сильнее на %s%%', 'Your arrows hit %s%% harder')
 t(f'tooltip.{M}.weight', 'Вес: %s', 'Weight: %s')
 t(f'tooltip.{M}.bow', 'Ловкость: %s (урон стрел)', 'Dexterity: %s (arrow damage)')
 t(f'tooltip.{M}.set.prisoner', 'Силы восстанавливаются быстрее: +%s%% за вещь', 'Stamina recovers faster: +%s%% per piece')
@@ -110,6 +114,8 @@ t(f'hud.{M}.lost', 'потеряно: %s', 'lost: %s')
 
 t(f'screen.{M}.shop', 'Товары ключника', "The Keykeeper's Wares")
 t(f'screen.{M}.shop.leave', 'Уйти', 'Leave')
+t(f'screen.{M}.forge', 'Старая наковальня', 'The Old Anvil')
+t(f'screen.{M}.forge.make', 'Ковать', 'Make')
 t(f'screen.{M}.hearth', 'Очаг', 'Hearth')
 t(f'screen.{M}.hearth.leave', 'Встать', 'Get up')
 t(f'screen.{M}.hearth.level', 'Уровень: %s', 'Level: %s')

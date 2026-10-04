@@ -1,10 +1,17 @@
 {
   "variants": {
-    "axis=x": {
+    "axis=x,sealed=false": {
       "model": "vsratie_dushi:block/fog_gate"
     },
-    "axis=z": {
+    "axis=z,sealed=false": {
       "model": "vsratie_dushi:block/fog_gate",
+      "y": 90
+    },
+    "axis=x,sealed=true": {
+      "model": "vsratie_dushi:block/fog_seal"
+    },
+    "axis=z,sealed=true": {
+      "model": "vsratie_dushi:block/fog_seal",
       "y": 90
     }
   }

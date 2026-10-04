@@ -1,0 +1,7 @@
+{
+  "parent": "vsratie_dushi:block/fog_gate",
+  "textures": {
+    "t": "vsratie_dushi:block/fog_seal",
+    "particle": "vsratie_dushi:block/fog_seal"
+  }
+}

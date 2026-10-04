@@ -2,6 +2,7 @@ package com.keykeeper.dushi.entity;
 
 import com.keykeeper.dushi.ArmorSet;
 import com.keykeeper.dushi.Dushi;
+import com.keykeeper.dushi.Spell;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -29,6 +30,8 @@ import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.ServerLevelAccessor;
 
 /**
@@ -40,7 +43,9 @@ public class WitheredEntity extends SoulsMob {
     public enum Kind {
         PRISONER("withered_prisoner", 14.0, 3.0, 0.27, 0.0, 20),
         GUARD("withered_guard", 24.0, 5.0, 0.25, 4.0, 60),
-        ARCHER("withered_archer", 16.0, 2.0, 0.26, 0.0, 50);
+        ARCHER("withered_archer", 16.0, 2.0, 0.26, 0.0, 50),
+        /** A novice of the chapel in what is left of his habit: keeps away and throws slow spears of light. */
+        ACOLYTE("withered_acolyte", 20.0, 2.0, 0.25, 0.0, 90);
 
         public final String id;
         final double health;
@@ -67,6 +72,10 @@ public class WitheredEntity extends SoulsMob {
     public static final int SHOOT = 2;
     public static final int SHOOT_DURATION = 34;
     private static final int SHOOT_RELEASE = 24;
+    /** The acolyte's spear of light: the hand goes up, glows, and throws. */
+    public static final int CAST = 3;
+    public static final int CAST_DURATION = 44;
+    private static final int CAST_RELEASE = 26;
     /** Blows the guard's shield takes before his arm drops. */
     private static final int GUARD_BREAK_HITS = 3;
 
@@ -104,14 +113,15 @@ public class WitheredEntity extends SoulsMob {
         switch (this.kind) {
             case PRISONER -> {
                 if (this.random.nextBoolean()) {
-                    this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.BROKEN_SWORD.get()), 0.08F);
+                    this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.BROKEN_SWORD.get()), 0.15F);
                 }
             }
             case GUARD -> {
-                this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.SHORTSWORD.get()), 0.06F);
-                this.equip(EquipmentSlot.OFFHAND, new ItemStack(this.random.nextInt(3) == 0 ? Dushi.GUARD_SHIELD.get() : Dushi.PLANK_SHIELD.get()), 0.06F);
+                this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.SHORTSWORD.get()), 0.12F);
+                this.equip(EquipmentSlot.OFFHAND, new ItemStack(this.random.nextInt(3) == 0 ? Dushi.GUARD_SHIELD.get() : Dushi.PLANK_SHIELD.get()), 0.12F);
             }
-            case ARCHER -> this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.SHORT_BOW.get()), 0.06F);
+            case ARCHER -> this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.SHORT_BOW.get()), 0.1F);
+            case ACOLYTE -> this.equip(EquipmentSlot.OFFHAND, new ItemStack(Dushi.PRAYER_BEADS.get()), 0.08F);
         }
         return data;
     }
@@ -128,28 +138,31 @@ public class WitheredEntity extends SoulsMob {
 
     @Override
     protected int attackDuration(int id) {
-        return id == SHOOT ? SHOOT_DURATION : SWING_DURATION;
+        return id == SHOOT ? SHOOT_DURATION : id == CAST ? CAST_DURATION : SWING_DURATION;
     }
 
     @Override
     protected int trackUntil(int id) {
-        return id == SHOOT ? SHOOT_RELEASE : SWING_IMPACT - 3;
+        return id == SHOOT ? SHOOT_RELEASE : id == CAST ? CAST_RELEASE : SWING_IMPACT - 3;
     }
 
     @Override
     protected int attackPause(int finishedId) {
-        return finishedId == SHOOT ? 25 + this.random.nextInt(20) : 14 + this.random.nextInt(10);
+        return finishedId == SHOOT || finishedId == CAST ? 25 + this.random.nextInt(20) : 14 + this.random.nextInt(10);
     }
 
     @Override
     public double stopDistance() {
-        return this.kind == Kind.ARCHER ? 9.0 : 1.4;
+        return this.kind == Kind.ARCHER ? 9.0 : this.kind == Kind.ACOLYTE ? 8.0 : 1.4;
     }
 
     @Override
     public int chooseAttack(LivingEntity target, double distance) {
         if (this.kind == Kind.ARCHER && distance > 3.0) {
             return distance < 20.0 && this.hasLineOfSight(target) ? SHOOT : 0;
+        }
+        if (this.kind == Kind.ACOLYTE && distance > 3.0) {
+            return distance < 18.0 && this.hasLineOfSight(target) ? CAST : 0;
         }
         return distance < 2.1 ? SWING : 0;
     }
@@ -163,6 +176,9 @@ public class WitheredEntity extends SoulsMob {
         }
         if (id == SHOOT) {
             this.startUsingItem(InteractionHand.MAIN_HAND);
+        }
+        if (id == CAST) {
+            this.playSound(Dushi.sound("entity.chaplain.ambient"), 0.9F, 1.5F);
         }
     }
 
@@ -187,6 +203,17 @@ public class WitheredEntity extends SoulsMob {
                 level.addFreshEntity(arrow);
                 this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 0.9F + this.random.nextFloat() * 0.2F);
             }
+        } else if (id == CAST) {
+            if (time < CAST_RELEASE && time % 2 == 0) {
+                // the light gathers in the raised hand: the warning
+                level.sendParticles(ParticleTypes.END_ROD, this.getX(), this.getY() + this.getBbHeight() + 0.5, this.getZ(), 1, 0.15, 0.15, 0.15, 0.0);
+            }
+            LivingEntity target = this.getTarget();
+            if (time == CAST_RELEASE && target != null) {
+                Vec3 from = this.getEyePosition();
+                SpellBoltEntity.shoot(level, this, SpellBoltEntity.Kind.LIGHT_SPEAR, target.getBoundingBox().getCenter().subtract(from), 0.9F, 5.0F);
+                this.playSound(Dushi.sound("entity.chaplain.cast"), 1.0F, 1.3F);
+            }
         }
     }
 
@@ -205,10 +232,20 @@ public class WitheredEntity extends SoulsMob {
             case PRISONER -> {
                 this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 2);
                 this.leavePiece(level, ArmorSet.PRISONER, 0.05F);
+                this.leaveMaybe(level, Dushi.SHIV.get(), 0.05F);
+                this.leaveMaybe(level, Dushi.DAGGER.get(), 0.03F);
+            }
+            case ACOLYTE -> {
+                this.leave(level, Dushi.TATTERED_CLOTH.get(), 1, 2);
+                this.leaveMaybe(level, Dushi.NAMELESS_SOUL.get(), 0.2F);
+                this.leaveMaybe(level, Dushi.SPELLS.get(this.random.nextBoolean() ? Spell.REBUKE : Spell.SOUL_SHARD).get(), 0.05F);
+                this.leavePiece(level, ArmorSet.CHAPLAIN, 0.03F);
             }
             case GUARD -> {
                 this.leave(level, Dushi.RUST_SCRAP.get(), 0, 2);
-                this.leavePiece(level, ArmorSet.GUARD, 0.06F);
+                this.leavePiece(level, ArmorSet.GUARD, 0.08F);
+                this.leaveMaybe(level, Dushi.HATCHET.get(), 0.04F);
+                this.leaveMaybe(level, Dushi.LONGSWORD.get(), 0.03F);
                 if (this.random.nextInt(10) == 0) {
                     this.spawnAtLocation(level, new ItemStack(Dushi.TAR_POT.get()));
                 }

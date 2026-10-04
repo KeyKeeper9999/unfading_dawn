@@ -74,7 +74,7 @@ public class ChaplainEntity extends SoulsMob {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 240.0).add(Attributes.ATTACK_DAMAGE, 9.0)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 300.0).add(Attributes.ATTACK_DAMAGE, 9.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.27).add(Attributes.ARMOR, 2.0).add(Attributes.KNOCKBACK_RESISTANCE, 0.6)
                 .add(Attributes.FOLLOW_RANGE, 40.0);
     }
@@ -356,7 +356,6 @@ public class ChaplainEntity extends SoulsMob {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean killedByPlayer) {
         super.dropCustomDeathLoot(level, source, killedByPlayer);
         this.spawnAtLocation(level, new ItemStack(Dushi.CHAPLAIN_SOUL.get()));
-        this.spawnAtLocation(level, new ItemStack(Dushi.CENSER_FLAIL.get()));
         this.spawnAtLocation(level, new ItemStack(Dushi.PRAYER_BEADS.get()));
         this.spawnAtLocation(level, new ItemStack(Dushi.SPELLS.get(Spell.MEND).get()));
         this.spawnAtLocation(level, new ItemStack(Dushi.FLASK_SHARD.get()));

@@ -354,6 +354,13 @@ public abstract class SoulsMob extends Monster {
         }
     }
 
+    /** With the given chance, drops one of an item. */
+    protected void leaveMaybe(ServerLevel level, ItemLike item, float chance) {
+        if (this.random.nextFloat() < chance) {
+            this.spawnAtLocation(level, new ItemStack(item));
+        }
+    }
+
     /** With the given chance, drops one piece of a suit of armour, picked at random. */
     protected void leavePiece(ServerLevel level, ArmorSet set, float chance) {
         if (this.random.nextFloat() < chance) {

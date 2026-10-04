@@ -29,7 +29,7 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
         this.leftArm.getChild("shackle").visible = kind == WitheredEntity.Kind.PRISONER;
         this.head.getChild("kettle_hat").visible = kind == WitheredEntity.Kind.GUARD;
         this.rightArm.getChild("pauldron").visible = kind == WitheredEntity.Kind.GUARD;
-        this.head.getChild("hood_tail").visible = kind == WitheredEntity.Kind.ARCHER;
+        this.head.getChild("hood_tail").visible = kind == WitheredEntity.Kind.ARCHER || kind == WitheredEntity.Kind.ACOLYTE;
         this.body.getChild("quiver").visible = kind == WitheredEntity.Kind.ARCHER;
     }
 
@@ -97,6 +97,17 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
             this.leftArm.zRot -= 0.06F + sway;
         }
 
+        if (state.attackId == WitheredEntity.CAST) {
+            // The empty hand goes up over the head, hangs there while the light gathers, and comes down pointing at the target.
+            float t = state.attackTime;
+            float raise = Anim.pulse(t, 0.0F, 10.0F, 24.0F, 28.0F);
+            float point = Anim.pulse(t, 24.0F, 28.0F, 34.0F, 43.0F);
+            this.rightArm.xRot = Anim.lerp(raise, this.rightArm.xRot, -2.9F);
+            this.rightArm.xRot = Anim.lerp(point, this.rightArm.xRot, -1.45F);
+            this.rightArm.zRot += 0.25F * raise;
+            this.head.xRot += -0.3F * raise + 0.1F * point;
+            this.body.xRot += -0.1F * raise + 0.15F * point;
+        }
         if (state.attackId == WitheredEntity.SWING) {
             float t = state.attackTime;
             // The arm goes up and back, hangs for a moment, comes down hard and returns.

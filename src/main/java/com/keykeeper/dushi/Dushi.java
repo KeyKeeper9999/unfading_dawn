@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.keykeeper.dushi.block.FogGateBlock;
+import com.keykeeper.dushi.block.ForgeBlock;
 import com.keykeeper.dushi.block.HearthBlock;
 import com.keykeeper.dushi.block.MobMarkBlock;
 import com.keykeeper.dushi.block.MobMarkBlockEntity;
@@ -135,6 +136,11 @@ public class Dushi {
             props -> props.mapColor(MapColor.SNOW).strength(-1.0F, 3600000.0F).noOcclusion().noLootTable().sound(SoundType.WOOL)
                     .lightLevel(state -> 6).isSuffocating((state, level, pos) -> false));
     public static final DeferredItem<BlockItem> FOG_GATE_ITEM = ITEMS.registerSimpleBlockItem(FOG_GATE);
+
+    /** The old anvil: gear is made at it from scrap, cloth and souls. */
+    public static final DeferredBlock<ForgeBlock> FORGE = BLOCKS.registerBlock("forge", ForgeBlock::new,
+            props -> props.mapColor(MapColor.METAL).strength(5.0F, 1200.0F).noOcclusion().sound(SoundType.ANVIL));
+    public static final DeferredItem<BlockItem> FORGE_ITEM = ITEMS.registerSimpleBlockItem(FORGE);
 
     /** Where one of the dead keeps rising: see {@link MobMarkBlock}. */
     public static final DeferredBlock<MobMarkBlock> MOB_MARK = BLOCKS.registerBlock("mob_mark", MobMarkBlock::new,
@@ -306,6 +312,8 @@ public class Dushi {
 
     public static final DeferredHolder<EntityType<?>, EntityType<RustKnightEntity>> RUST_KNIGHT = ENTITIES.registerEntityType(
             "rust_knight", RustKnightEntity::new, MobCategory.MONSTER, b -> b.sized(0.85F, 2.6F).eyeHeight(2.3F).clientTrackingRange(10));
+    public static final DeferredHolder<EntityType<?>, EntityType<RustKnightEntity>> GILDED_KNIGHT = ENTITIES.registerEntityType(
+            "gilded_knight", RustKnightEntity::new, MobCategory.MONSTER, b -> b.sized(0.85F, 2.6F).eyeHeight(2.3F).clientTrackingRange(10));
     public static final DeferredHolder<EntityType<?>, EntityType<KeykeeperEntity>> KEYKEEPER = ENTITIES.registerEntityType(
             "keykeeper", KeykeeperEntity::new, MobCategory.MISC, b -> b.sized(0.7F, 1.3F).eyeHeight(1.0F).clientTrackingRange(8));
     public static final DeferredHolder<EntityType<?>, EntityType<OverseerEntity>> OVERSEER = ENTITIES.registerEntityType(
@@ -322,6 +330,7 @@ public class Dushi {
     static {
         WITHERED.forEach((kind, type) -> egg(kind.id, type));
         egg("rust_knight", RUST_KNIGHT);
+        egg("gilded_knight", GILDED_KNIGHT);
         egg("keykeeper", KEYKEEPER);
         egg("overseer", OVERSEER);
         egg("chaplain", CHAPLAIN);
@@ -334,6 +343,7 @@ public class Dushi {
             .icon(() -> WARMTH_FLASK.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(HEARTH_ITEM.get());
+                output.accept(FORGE_ITEM.get());
                 output.accept(FOG_GATE_ITEM.get());
                 output.accept(MOB_MARK_ITEM.get());
                 output.accept(WARMTH_FLASK.get());
@@ -372,6 +382,7 @@ public class Dushi {
         modEventBus.addListener((EntityAttributeCreationEvent event) -> {
             WITHERED.forEach((kind, type) -> event.put(type.get(), WitheredEntity.createAttributes(kind).build()));
             event.put(RUST_KNIGHT.get(), RustKnightEntity.createAttributes().build());
+            event.put(GILDED_KNIGHT.get(), RustKnightEntity.createGildedAttributes().build());
             event.put(KEYKEEPER.get(), KeykeeperEntity.createAttributes().build());
             event.put(OVERSEER.get(), OverseerEntity.createAttributes().build());
             event.put(CHAPLAIN.get(), ChaplainEntity.createAttributes().build());
@@ -384,6 +395,8 @@ public class Dushi {
             registrar.playToClient(Net.Banner.TYPE, Net.Banner.CODEC);
             registrar.playToClient(Net.OpenShop.TYPE, Net.OpenShop.CODEC);
             registrar.playToServer(Net.Buy.TYPE, Net.Buy.CODEC, Net.Buy::handle);
+            registrar.playToClient(Net.OpenForge.TYPE, Net.OpenForge.CODEC);
+            registrar.playToServer(Net.Make.TYPE, Net.Make.CODEC, Net.Make::handle);
         });
     }
 }

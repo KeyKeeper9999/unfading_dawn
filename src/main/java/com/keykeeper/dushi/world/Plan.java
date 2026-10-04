@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -63,14 +65,32 @@ public final class Plan {
         return LOADED.computeIfAbsent(name, Plan::load);
     }
 
-    @SuppressWarnings("unchecked")
+    /** Reads a plan from a file outside the mod (the map builder's) and makes it known under {@code name}. */
+    public static synchronized Plan fromFile(String name, Path file) {
+        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+            Plan plan = read(name, reader);
+            LOADED.put(name, plan);
+            return plan;
+        } catch (IOException | CommandSyntaxException e) {
+            throw new IllegalStateException("cannot read plan " + file, e);
+        }
+    }
+
     private static Plan load(String name) {
         String path = "/data/" + Dushi.MODID + "/plan/" + name + ".txt";
         try (InputStream stream = Dushi.class.getResourceAsStream(path)) {
             if (stream == null) {
                 throw new IllegalStateException("no plan " + path);
             }
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+            return read(name, new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
+        } catch (IOException | CommandSyntaxException e) {
+            throw new IllegalStateException("cannot read plan " + name, e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Plan read(String name, BufferedReader reader) throws IOException, CommandSyntaxException {
+        {
             String[] size = reader.readLine().split(" ");
             String[] origin = reader.readLine().split(" ");
             int width = Integer.parseInt(size[1]);
@@ -109,8 +129,6 @@ public final class Plan {
                 throw new IllegalStateException("plan " + name + " has " + at + " cells, expected " + cells.length);
             }
             return new Plan(width, height, depth, Integer.parseInt(origin[1]), Integer.parseInt(origin[2]), Integer.parseInt(origin[3]), palette, loot, cells);
-        } catch (IOException | CommandSyntaxException e) {
-            throw new IllegalStateException("cannot read plan " + name, e);
         }
     }
 }

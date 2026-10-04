@@ -176,6 +176,67 @@ public final class Net {
         }
     }
 
+    /** Server to client: the player touched an anvil, show what can be made. */
+    public record OpenForge(BlockPos pos) implements CustomPacketPayload {
+        public static final Type<OpenForge> TYPE = new Type<>(Dushi.id("open_forge"));
+        public static final StreamCodec<ByteBuf, OpenForge> CODEC = StreamCodec.composite(BlockPos.STREAM_CODEC, OpenForge::pos, OpenForge::new);
+
+        @Override
+        public Type<OpenForge> type() {
+            return TYPE;
+        }
+    }
+
+    /** Client to server: make thing number {@code index} of {@link Forge#recipes()} at an anvil standing close by. */
+    public record Make(int index) implements CustomPacketPayload {
+        public static final Type<Make> TYPE = new Type<>(Dushi.id("make"));
+        public static final StreamCodec<ByteBuf, Make> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, Make::index, Make::new);
+
+        @Override
+        public Type<Make> type() {
+            return TYPE;
+        }
+
+        public static void handle(Make payload, IPayloadContext context) {
+            if (context.player() instanceof ServerPlayer player) {
+                apply(player, payload.index());
+            }
+        }
+
+        /** Returns whether the thing was made. */
+        public static boolean apply(ServerPlayer player, int index) {
+            if (index < 0 || index >= Forge.recipes().size() || !player.isAlive()) {
+                return false;
+            }
+            ServerLevel level = player.level();
+            BlockPos centre = player.blockPosition();
+            boolean near = false;
+            for (BlockPos pos : BlockPos.betweenClosed(centre.offset(-6, -3, -6), centre.offset(6, 3, 6))) {
+                if (level.getBlockState(pos).is(Dushi.FORGE.get())) {
+                    near = true;
+                    break;
+                }
+            }
+            Forge.Recipe recipe = Forge.recipes().get(index);
+            if (!near || !Forge.canMake(player, recipe)) {
+                return false;
+            }
+            if (!player.isCreative()) {
+                PlayerSoul.of(player).souls -= recipe.souls();
+                for (Forge.Part part : recipe.parts()) {
+                    Forge.take(player, part.item().get().asItem(), part.count());
+                }
+            }
+            ItemStack stack = recipe.result().get();
+            if (!player.getInventory().add(stack)) {
+                player.spawnAtLocation(level, stack);
+            }
+            player.syncData(Dushi.PLAYER_SOUL);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), net.minecraft.sounds.SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 0.6F, 1.0F);
+            return true;
+        }
+    }
+
     /**
      * Server to client: a big line of text across the screen and/or a sound only this player hears.
      *

@@ -138,6 +138,31 @@ def make():
     return p.tex
 
 
+def gilded(tex):
+    """The same armour, kept bright: the iron becomes pale steel, the rust becomes gilding, the cape is ivory."""
+    out = tex.copy()
+    cape = set()
+    for (u, v, w, h) in M.parts['cape']['boxes'][0].faces().values():
+        cape |= {(x, y) for x in range(u, u + w) for y in range(v, v + h)}
+    for x in range(out.width):
+        for y in range(out.height):
+            r, g, b, a = out.getpixel((x, y))
+            if a == 0 or (r, g, b) == EMBER:
+                continue
+            lum = (r * 0.4 + g * 0.4 + b * 0.2)
+            if (x, y) in cape:
+                c = (min(255, lum * 3.4), min(255, lum * 3.2), min(255, lum * 2.7))
+            elif r > g * 1.25 and r - b > 30:
+                k = min(1.9, 60.0 / max(lum, 1) + 1.1)          # rust -> gilding
+                c = (min(255, lum * k * 1.18), min(255, lum * k * 0.96), min(255, lum * k * 0.5))
+            elif abs(r - g) < 14 and lum < 60:
+                c = (lum * 1.25, lum * 1.25, lum * 1.4)          # the cloth underneath stays dark
+            else:
+                c = (min(255, lum * 1.75), min(255, lum * 1.78), min(255, lum * 1.9))   # iron -> pale steel
+            out.putpixel((x, y), (int(c[0]), int(c[1]), int(c[2]), a))
+    return out
+
+
 REST = {'cape': (0.08, 0, 0)}
 CHOP = {'right_arm': (-3.0, 0, 0.2), 'body': (-0.18, 0, 0), 'head': (-0.15, 0, 0), 'cape': (0.3, 0, 0)}
 SWEEP = {'right_arm': (-1.45, -1.1, 0), 'body': (0, -0.55, 0), 'cape': (0.2, 0, 0)}
@@ -146,7 +171,9 @@ if __name__ == '__main__':
     M.write_java(JAVA)
     tex = make()
     tex.save(f'{A}/textures/entity/rust_knight.png')
+    gold = gilded(tex)
+    gold.save(f'{A}/textures/entity/gilded_knight.png')
     if len(sys.argv) > 1:
-        shots = [M.render(tex, yaw=yaw, pose=pose, size=(260, 380), zoom=9.5, centre=(0, 7))
-                 for yaw, pose in ((-0.45, REST), (0.9, REST), (3.0, REST), (-0.6, CHOP), (-0.3, SWEEP))]
+        shots = [M.render(t, yaw=yaw, pose=pose, size=(260, 380), zoom=9.5, centre=(0, 7))
+                 for t in (tex, gold) for yaw, pose in ((-0.45, REST), (0.9, REST), (3.0, REST), (-0.6, CHOP), (-0.3, SWEEP))]
         sheet(shots, 5).save(sys.argv[1])

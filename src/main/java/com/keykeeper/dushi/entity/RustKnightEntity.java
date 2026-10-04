@@ -32,7 +32,8 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * The rust knight: a head taller than a man, in armour eaten by rust, with a greatsword and a tower shield.
- * Slow and readable, but every blow hurts. Three moves: an overhead chop, a wide sweep and a lunge from a distance.
+ * Slow and readable, but every blow hurts. (The same class is the gilded knight, with other arms and numbers.)
+ * Three moves: an overhead chop, a wide sweep and a lunge from a distance.
  */
 public class RustKnightEntity extends SoulsMob {
     public static final int CHOP = 1;
@@ -47,10 +48,23 @@ public class RustKnightEntity extends SoulsMob {
     private static final int LUNGE_IMPACT = 15;
 
     private int lungeCooldown = 60;
+    /** The gilded knights of the upper stockade share everything with the rust knights but the armour, the arms and the numbers. */
+    private final boolean gilded;
 
     public RustKnightEntity(EntityType<? extends RustKnightEntity> type, Level level) {
         super(type, level);
         this.xpReward = 30;
+        this.gilded = type == Dushi.GILDED_KNIGHT.get();
+    }
+
+    public boolean gilded() {
+        return this.gilded;
+    }
+
+    public static AttributeSupplier.Builder createGildedAttributes() {
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 130.0).add(Attributes.ATTACK_DAMAGE, 11.0)
+                .add(Attributes.MOVEMENT_SPEED, 0.27).add(Attributes.ARMOR, 14.0).add(Attributes.KNOCKBACK_RESISTANCE, 0.8)
+                .add(Attributes.FOLLOW_RANGE, 28.0);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -73,16 +87,16 @@ public class RustKnightEntity extends SoulsMob {
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, SpawnGroupData groupData) {
         SpawnGroupData data = super.finalizeSpawn(level, difficulty, spawnReason, groupData);
-        this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Dushi.RUST_GREATSWORD.get()));
-        this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Dushi.TOWER_SHIELD.get()));
-        this.setDropChance(EquipmentSlot.MAINHAND, 0.25F);
-        this.setDropChance(EquipmentSlot.OFFHAND, 0.15F);
+        this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(this.gilded ? Dushi.BROADSWORD.get() : Dushi.RUST_GREATSWORD.get()));
+        this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(this.gilded ? Dushi.GUARD_SHIELD.get() : Dushi.TOWER_SHIELD.get()));
+        this.setDropChance(EquipmentSlot.MAINHAND, 0.2F);
+        this.setDropChance(EquipmentSlot.OFFHAND, 0.2F);
         return data;
     }
 
     @Override
     public int soulReward() {
-        return 600;
+        return this.gilded ? 900 : 600;
     }
 
     @Override
@@ -183,9 +197,16 @@ public class RustKnightEntity extends SoulsMob {
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean killedByPlayer) {
         super.dropCustomDeathLoot(level, source, killedByPlayer);
-        this.spawnAtLocation(level, new ItemStack(Dushi.GREAT_SOUL.get()));
-        this.leave(level, Dushi.RUST_SCRAP.get(), 2, 4);
-        this.leavePiece(level, ArmorSet.RUST, 0.25F);
+        // its soul is left only now and then, so that hunting knights is not the quickest way to grow
+        this.leaveMaybe(level, Dushi.GREAT_SOUL.get(), 0.35F);
+        this.leave(level, Dushi.RUST_SCRAP.get(), this.gilded ? 3 : 2, this.gilded ? 5 : 4);
+        this.leavePiece(level, ArmorSet.RUST, this.gilded ? 0.35F : 0.25F);
+        if (this.gilded) {
+            this.leaveMaybe(level, Dushi.SABRE.get(), 0.1F);
+            this.leaveMaybe(level, Dushi.FLANGED_MACE.get(), 0.1F);
+        } else {
+            this.leaveMaybe(level, Dushi.BATTLE_AXE.get(), 0.1F);
+        }
         if (this.random.nextInt(3) == 0) {
             this.spawnAtLocation(level, new ItemStack(Dushi.TAR_POT.get(), 2 + this.random.nextInt(3)));
         }

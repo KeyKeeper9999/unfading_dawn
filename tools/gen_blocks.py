@@ -118,8 +118,45 @@ def hearth(lit):
     return m
 
 
-def fog_texture(frames=16):
-    """Slow white fog: thick in the middle, thinner towards the top, drifting sideways. One frame under another."""
+def forge():
+    """The old anvil: a block of oak, an iron anvil on it, a hammer left lying across the face."""
+    m = JsonModel(64, 'forge')
+    m.add(3, 0, 3, 13, 6, 13, 'stump', 'stump')
+    m.add(4, 6, 5, 12, 7, 11, 'iron', 'foot')
+    m.add(6, 7, 6, 10, 10, 10, 'iron', 'waist')
+    m.add(2, 10, 5, 14, 13, 11, 'iron', 'face')
+    m.add(0, 11, 6, 2, 12.5, 10, 'iron', 'horn')
+    m.add(7, 13, 3, 8, 14, 12, 'handle', 'handle')
+    m.add(5.5, 13, 10, 9.5, 15, 12, 'head', 'hammer')
+    m.pack()
+
+    def paint(e, d, px, py, w, h, rnd):
+        if e.mat == 'stump':
+            if d in ('up', 'down'):
+                ring = int(((px - w / 2 + 0.5) ** 2 + (py - h / 2 + 0.5) ** 2) ** 0.5)
+                return LOG if ring % 2 else (112, 84, 54)
+            return LOG_D if px % 3 == 0 else shade(LOG, 1.1 - 0.2 * py / max(1, h - 1))
+        if e.mat == 'handle':
+            return (128, 96, 60) if (px + py) % 2 else (104, 78, 50)
+        if e.mat == 'head':
+            return IRON_L if d == 'up' else (IRON if py == 0 else IRON_D)
+        c = RUST if blotch(f'{e.tag}{d}', px, py, 2.4) > 0.78 else IRON
+        if d == 'up':
+            c = IRON_L if e.tag == 'face' and blotch('face', px, py, 1.6) > 0.35 else c
+        elif d == 'down':
+            c = IRON_D
+        elif py == 0:
+            c = IRON_L
+        elif py == h - 1:
+            c = IRON_D
+        return c
+    m.paint(paint, seed=9)
+    return m
+
+
+def fog_texture(frames=16, tint=(1.0, 1.0, 1.0), thick=0):
+    """Slow white fog: thick in the middle, thinner towards the top, drifting sideways. One frame under another.
+    `tint` colours it (the seal is amber), `thick` makes it more opaque."""
     size = 16
     img = Image.new('RGBA', (size, size * frames), (0, 0, 0, 0))
     for f in range(frames):
@@ -136,7 +173,7 @@ def fog_texture(frames=16):
                 n = 0.6 * wrapped('fog1', phase, 4.0) + 0.4 * wrapped('fog2', 1 - phase, 2.5)
                 alpha = int(150 + 90 * n)
                 light = int(214 + 40 * n)
-                img.putpixel((x, f * size + y), (light, light, min(255, light + 6), min(255, alpha)))
+                img.putpixel((x, f * size + y), (int(light * tint[0]), int(light * tint[1]), int(min(255, light + 6) * tint[2]), min(255, alpha + thick)))
     return img
 
 
@@ -180,8 +217,24 @@ if __name__ == '__main__':
         'textures': {'t': f'{MOD}:block/fog_gate', 'particle': f'{MOD}:block/fog_gate'},
         'elements': [{'from': [0, 0, 7], 'to': [16, 16, 9], 'shade': False, 'light_emission': 8,
                       'faces': {'north': dict(face, cullface='north'), 'south': dict(face, cullface='south')}}]})
-    write_json(f'{A}/blockstates/fog_gate.json', {'variants': {'axis=x': {'model': f'{MOD}:block/fog_gate'},
-                                                              'axis=z': {'model': f'{MOD}:block/fog_gate', 'y': 90}}})
+    seal = fog_texture(tint=(1.0, 0.78, 0.36), thick=60)
+    seal.save(f'{A}/textures/block/fog_seal.png')
+    write_json(f'{A}/textures/block/fog_seal.png.mcmeta', {'animation': {'frametime': 6, 'interpolate': True}})
+    write_json(f'{A}/models/block/fog_seal.json', {'parent': f'{MOD}:block/fog_gate',
+                                                   'textures': {'t': f'{MOD}:block/fog_seal', 'particle': f'{MOD}:block/fog_seal'}})
+    write_json(f'{A}/blockstates/fog_gate.json', {'variants': {
+        'axis=x,sealed=false': {'model': f'{MOD}:block/fog_gate'}, 'axis=z,sealed=false': {'model': f'{MOD}:block/fog_gate', 'y': 90},
+        'axis=x,sealed=true': {'model': f'{MOD}:block/fog_seal'}, 'axis=z,sealed=true': {'model': f'{MOD}:block/fog_seal', 'y': 90}}})
+
+    anvil = forge()
+    anvil.save(A, 'block/forge', 'block/forge')
+    shots.append(anvil.render(size=(300, 300), zoom=13))
+    shots.append(anvil.render(size=(300, 300), zoom=13, yaw=2.4, pitch=0.5))
+    write_json(f'{A}/blockstates/forge.json', {'variants': {'': {'model': f'{MOD}:block/forge'}}})
+    write_json(f'{A}/models/item/forge.json', {'parent': f'{MOD}:block/forge'})
+    write_json(f'{A}/items/forge.json', {'model': {'type': 'minecraft:model', 'model': f'{MOD}:item/forge'}})
+    write_json(f'{DATA}/loot_table/blocks/forge.json', {
+        'type': 'minecraft:block', 'pools': [{'rolls': 1, 'entries': [{'type': 'minecraft:item', 'name': f'{MOD}:forge'}]}]})
     Image.open(f'{A}/textures/block/fog_gate.png').crop((0, 0, 16, 16)).save(f'{A}/textures/item/fog_gate.png')
     write_json(f'{A}/models/item/fog_gate.json', {'parent': 'minecraft:item/generated', 'textures': {'layer0': f'{MOD}:item/fog_gate'}})
     write_json(f'{A}/items/fog_gate.json', {'model': {'type': 'minecraft:model', 'model': f'{MOD}:item/fog_gate'}})
@@ -201,7 +254,7 @@ if __name__ == '__main__':
     # the hearth drops itself; the fog gate and the mark drop nothing
     write_json(f'{DATA}/loot_table/blocks/hearth.json', {
         'type': 'minecraft:block', 'pools': [{'rolls': 1, 'entries': [{'type': 'minecraft:item', 'name': f'{MOD}:hearth'}]}]})
-    write_json('src/main/resources/data/minecraft/tags/block/mineable/pickaxe.json', {'values': [f'{MOD}:hearth']})
+    write_json('src/main/resources/data/minecraft/tags/block/mineable/pickaxe.json', {'values': [f'{MOD}:hearth', f'{MOD}:forge']})
     if len(sys.argv) > 1:
         shots.append(fog.crop((0, 0, 16, 64)).resize((300, 1200), 0).crop((0, 0, 300, 300)))
         shots.append(mark.resize((300, 300), 0).convert('RGB'))

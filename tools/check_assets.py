@@ -16,11 +16,11 @@ items = set(re.findall(r'(?:weapon|shield|registerItem|registerSimpleItem)\("(\w
 spells = re.findall(r'^\s+[A-Z_]+\("(\w+)", SpellSchool', open(f'{J}/Spell.java').read(), re.M)
 bolts = re.findall(r'^\s+[A-Z_]+\("(\w+)", [\d.]+, [\d.]+\)', open(f'{J}/entity/SpellBoltEntity.java').read(), re.M)
 kinds = re.findall(r'^\s+[A-Z_]+\("(withered_\w+)"', open(f'{J}/entity/WitheredEntity.java').read(), re.M)
-mobs = kinds + ['rust_knight', 'keykeeper', 'overseer', 'chaplain']
+mobs = kinds + ['rust_knight', 'gilded_knight', 'keykeeper', 'overseer', 'chaplain']
 armour = re.findall(r'"((?:prisoner|guard|rust|chaplain)_\w+)"', open(f'{J}/ArmorSet.java').read())
 items |= set(armour)
-items |= set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate', 'mob_mark'}
-blocks = {'hearth', 'fog_gate', 'mob_mark'}
+items |= set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate', 'mob_mark', 'forge'}
+blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge'}
 entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot'}
 lang = {l: json.load(open(f'{A}/lang/{l}.json', encoding='utf-8')) for l in ('ru_ru', 'en_us')}
 

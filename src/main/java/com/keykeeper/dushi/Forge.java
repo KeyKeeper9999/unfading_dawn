@@ -1,0 +1,134 @@
+package com.keykeeper.dushi;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
+
+/**
+ * What can be made at the old anvil: a plain list, each thing with what it takes - materials the dead leave behind and souls.
+ * The same list on both sides; a job is named by its index. This is how gear is made where there is no crafting table and
+ * nothing to put on one (an adventure map); in an ordinary world the crafting recipes work as well.
+ */
+public final class Forge {
+    public record Part(Supplier<? extends ItemLike> item, int count) {}
+
+    public record Recipe(Supplier<ItemStack> result, List<Part> parts, int souls) {}
+
+    private static List<Recipe> recipes;
+
+    private Forge() {}
+
+    private static Part cloth(int count) {
+        return new Part(Dushi.TATTERED_CLOTH, count);
+    }
+
+    private static Part scrap(int count) {
+        return new Part(Dushi.RUST_SCRAP, count);
+    }
+
+    private static void add(List<Recipe> list, Supplier<? extends ItemLike> item, int count, int souls, Part... parts) {
+        list.add(new Recipe(() -> new ItemStack(item.get(), count), List.of(parts), souls));
+    }
+
+    private static void add(List<Recipe> list, Supplier<? extends ItemLike> item, int souls, Part... parts) {
+        add(list, item, 1, souls, parts);
+    }
+
+    public static List<Recipe> recipes() {
+        if (recipes == null) {
+            List<Recipe> list = new ArrayList<>();
+            // blades and blunt things, from the cheapest up
+            add(list, Dushi.SHIV, 0, scrap(1));
+            add(list, Dushi.DAGGER, 100, scrap(2));
+            add(list, Dushi.SHORTSWORD, 150, scrap(3));
+            add(list, Dushi.HATCHET, 200, scrap(3), cloth(1));
+            add(list, Dushi.LONGSWORD, 400, scrap(5));
+            add(list, Dushi.SABRE, 500, scrap(5), cloth(1));
+            add(list, Dushi.BROADSWORD, 500, scrap(7));
+            add(list, Dushi.FLANGED_MACE, 500, scrap(7));
+            add(list, Dushi.BATTLE_AXE, 600, scrap(8));
+            add(list, Dushi.RUST_GREATSWORD, 0, scrap(12), new Part(Dushi.GREAT_SOUL, 1));
+            // what the lords of the stockade leave can be beaten into what they carried
+            add(list, Dushi.GREAT_KEY, 0, new Part(Dushi.OVERSEER_SOUL, 1), scrap(6));
+            add(list, Dushi.CENSER_FLAIL, 0, new Part(Dushi.CHAPLAIN_SOUL, 1), scrap(6));
+            add(list, () -> Items.ARROW, 8, 0, scrap(1));
+            // shields
+            add(list, Dushi.ROUND_SHIELD, 100, scrap(2), cloth(2));
+            add(list, Dushi.GUARD_SHIELD, 400, scrap(6));
+            add(list, Dushi.TOWER_SHIELD, 0, scrap(12), new Part(Dushi.GREAT_SOUL, 1));
+            // armour: rags of cloth, mail of scrap, plate hammered over the mail, vestments of cloth and a soul
+            int[] shape = {2, 4, 3, 2};
+            for (int piece = 0; piece < 4; piece++) {
+                add(list, ArmorSet.PRISONER.pieces().get(piece), 0, cloth(shape[piece]));
+            }
+            for (int piece = 0; piece < 4; piece++) {
+                add(list, ArmorSet.GUARD.pieces().get(piece), 100 * shape[piece], scrap(shape[piece] + 1));
+            }
+            for (int piece = 0; piece < 4; piece++) {
+                add(list, ArmorSet.RUST.pieces().get(piece), 150 * shape[piece], new Part(ArmorSet.GUARD.pieces().get(piece), 1), scrap(shape[piece] + 2));
+            }
+            for (int piece = 0; piece < 4; piece++) {
+                add(list, ArmorSet.CHAPLAIN.pieces().get(piece), 150 * shape[piece], cloth(shape[piece] + 2), new Part(Dushi.NAMELESS_SOUL, 1));
+            }
+            // catalysts and spells: written with a soul
+            add(list, Dushi.SCHOLAR_STAFF, 300, cloth(2), scrap(1));
+            add(list, Dushi.PRAYER_BEADS, 300, cloth(2), new Part(Dushi.NAMELESS_SOUL, 1));
+            add(list, Dushi.EMBER_GLOVE, 300, cloth(3));
+            add(list, Dushi.SPELLS.get(Spell.HEAVY_SOUL_SHARD), 500, new Part(Dushi.GREAT_SOUL, 1));
+            add(list, Dushi.SPELLS.get(Spell.REBUKE), 300, new Part(Dushi.NAMELESS_SOUL, 2));
+            add(list, Dushi.SPELLS.get(Spell.FIRE_ORB), 500, new Part(Dushi.GREAT_SOUL, 1));
+            add(list, Dushi.TAR_POT, 2, 50, cloth(1));
+            add(list, Dushi.RETURN_EMBER, 2, 0, new Part(Dushi.NAMELESS_SOUL, 1));
+            recipes = List.copyOf(list);
+        }
+        return recipes;
+    }
+
+    /** How many of {@code item} the player carries. */
+    public static int count(Player player, Item item) {
+        Inventory inventory = player.getInventory();
+        int count = 0;
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (stack.is(item)) {
+                count += stack.getCount();
+            }
+        }
+        return count;
+    }
+
+    public static boolean canMake(Player player, Recipe recipe) {
+        if (player.isCreative()) {
+            return true;
+        }
+        if (PlayerSoul.of(player).souls < recipe.souls()) {
+            return false;
+        }
+        for (Part part : recipe.parts()) {
+            if (count(player, part.item().get().asItem()) < part.count()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Takes {@code count} of {@code item} out of the player's inventory. */
+    static void take(Player player, Item item, int count) {
+        Inventory inventory = player.getInventory();
+        for (int slot = 0; slot < inventory.getContainerSize() && count > 0; slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (stack.is(item)) {
+                int taken = Math.min(count, stack.getCount());
+                stack.shrink(taken);
+                count -= taken;
+            }
+        }
+    }
+}

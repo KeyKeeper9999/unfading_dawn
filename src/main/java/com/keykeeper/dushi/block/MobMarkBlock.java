@@ -42,6 +42,8 @@ public class MobMarkBlock extends Block implements EntityBlock {
         GUARD("guard", () -> Dushi.WITHERED.get(WitheredEntity.Kind.GUARD).get(), false),
         ARCHER("archer", () -> Dushi.WITHERED.get(WitheredEntity.Kind.ARCHER).get(), false),
         KNIGHT("knight", () -> Dushi.RUST_KNIGHT.get(), false),
+        ACOLYTE("acolyte", () -> Dushi.WITHERED.get(WitheredEntity.Kind.ACOLYTE).get(), false),
+        GILDED("gilded", () -> Dushi.GILDED_KNIGHT.get(), false),
         KEYKEEPER("keykeeper", () -> Dushi.KEYKEEPER.get(), false),
         OVERSEER("overseer", () -> Dushi.OVERSEER.get(), true),
         CHAPLAIN("chaplain", () -> Dushi.CHAPLAIN.get(), true);
