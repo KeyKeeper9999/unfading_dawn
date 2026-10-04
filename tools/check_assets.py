@@ -17,8 +17,10 @@ spells = re.findall(r'^\s+[A-Z_]+\("(\w+)", SpellSchool', open(f'{J}/Spell.java'
 bolts = re.findall(r'^\s+[A-Z_]+\("(\w+)", [\d.]+, [\d.]+\)', open(f'{J}/entity/SpellBoltEntity.java').read(), re.M)
 kinds = re.findall(r'^\s+[A-Z_]+\("(withered_\w+)"', open(f'{J}/entity/WitheredEntity.java').read(), re.M)
 mobs = kinds + ['rust_knight', 'keykeeper', 'overseer', 'chaplain']
-items |= set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate'}
-blocks = {'hearth', 'fog_gate'}
+armour = re.findall(r'"((?:prisoner|guard|rust|chaplain)_\w+)"', open(f'{J}/ArmorSet.java').read())
+items |= set(armour)
+items |= set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate', 'mob_mark'}
+blocks = {'hearth', 'fog_gate', 'mob_mark'}
 entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot'}
 lang = {l: json.load(open(f'{A}/lang/{l}.json', encoding='utf-8')) for l in ('ru_ru', 'en_us')}
 
@@ -92,6 +94,21 @@ for name, entry in sounds.items():
             problems.append(f'{l}: no subtitle for {name}')
 for k in set(lang['ru_ru']) ^ set(lang['en_us']):
     problems.append(f'text {k} is not in both languages')
+# recipes, chest loot and plans may only name items and loot tables that exist
+DATA = 'src/main/resources/data/vsratie_dushi'
+names = set()
+for path in glob.glob(f'{DATA}/recipe/*.json') + glob.glob(f'{DATA}/loot_table/chests/*.json'):
+    for ref in re.findall(M + r':(\w+)', open(path).read()):
+        if ref not in items:
+            problems.append(f'{path}: no such item {ref}')
+for path in glob.glob(f'{DATA}/plan/*.txt'):
+    for ref in re.findall(r'^chest ' + M + r':chests/(\w+)', open(path).read(), re.M):
+        need(f'{DATA}/loot_table/chests/{ref}.json', f'loot table of {path}')
+for name in armour:
+    suit = name.split('_')[0]
+    for layer in ('humanoid', 'humanoid_leggings'):
+        need(f'{A}/textures/entity/equipment/{layer}/{suit}.png', f'worn texture of {name}')
+    need(f'{A}/equipment/{suit}.json', f'equipment definition of {name}')
 for p in problems:
     print(p)
 print(f'{len(items)} items, {len(entities)} entities, {len(sounds)} sounds: {len(problems)} problem(s)')

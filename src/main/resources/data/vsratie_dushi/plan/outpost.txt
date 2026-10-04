@@ -1,0 +1,35 @@
+size 13 13 16
+origin 6 1 8
+palette 21
+minecraft:cobblestone
+minecraft:coarse_dirt
+minecraft:grass_block
+minecraft:gravel
+minecraft:stone_bricks
+minecraft:mossy_stone_bricks
+minecraft:cracked_stone_bricks
+minecraft:air
+vsratie_dushi:hearth[lit=false]
+minecraft:spruce_log[axis=x]
+minecraft:hay_block[axis=y]
+minecraft:hay_block[axis=x]
+minecraft:ladder[facing=south]
+vsratie_dushi:mob_mark[mob=guard,facing=south]
+chest vsratie_dushi:chests/outpost minecraft:chest[facing=east]
+vsratie_dushi:mob_mark[mob=prisoner,facing=south]
+minecraft:skeleton_skull[rotation=3]
+minecraft:lantern[hanging=true]
+minecraft:spruce_planks
+vsratie_dushi:mob_mark[mob=archer,facing=south]
+minecraft:barrel[facing=up]
+0 2*1 2 3*1 2*3 5*1 2 3 0 3 2 1 0 1 3 0 2*1 3 2*1 2*3 0 2*3 1 3 2*1 2 2*0 2 2*3 0 3 1 2 4*1 2 2*1 3 0 2 5*1
+3 3*2 3 2*4 5 4*4 1 3 3*2 1 6 2*4 0 2*4 5 6*1 6 6*4 0 3 1 2 1 3 3*4 0 3*4 0 3 0 3*1 5 2*0 4*4 1 0 4*1 6 3*0 4
+0 4 1 2*3 2*1 2 0 5 2*4 5 2*4 0 2*1 2*3 2 1 3 2*1 2*3 2 2*1 2 1 2 0 2*1 3 2 2*3 1 3 0 2*1 2*0 3*1 2*3 1 0 5*2 0
+1 2 0 1 3 1 0 3 1 2 4*7 6 4 2*7 4 7*7 4 5*7 4 6*7 4 2*7 8 2*7 4 6*7 6 4*7 9 20*7 2*4 5 2*0 6 4 6*7 4 10 11 2*7
+12 4 6*7 4 5*7 6 6*7 4 2*7 13 2*7 5 6*7 4 5*7 4 6*7 4 14 4*7 4 6*7 5 2*4 7 5 2*6 25*7 15 7*7 15 5*7 16 19*7 5 11*7 4 12*7 4 5*7
+4 32*7 5 3*4 6 4 6 6*7 4 4*7 12 0 6*7 4 5*7 6 6*7 4 5*7 4 6*7 4 5*7 4 6*7 6 5*7 4 6*7 5 2*0 7 5 2*4 71*7 4 51*7 4*4 5 2*4
+6*7 4 4*7 12 4 6*7 6 5*7 0 6*7 5 5*7 4 6*7 4 5*7 4 6*7 4 5*7 4 6*7 4*4 0 2*4 123*7 4*4 6 2*4 6*7 6 4*7 12 0 6*7 5 5*7 4 6*7 4
+17 4*7 4 6*7 0 5*7 4 6*7 4 5*7 4 6*7 4 3*6 0 5 4 123*7 5*4 6 4 6*7 4 4*18 12 4 6*7 5 5*18 5 6*7 4 5*18 4 6*7 4 5*18 4 6*7 4
+5*18 4 6*7 4*4 6 2*4 123*7 4 6 2*4 5 4 6 6*7 4 5*7 6 6*7 4 5*7 4 6*7 4 7 19 3*7 4 6*7 6 5*7 4 6*7 4 3*7 20 7 4 6*7 2*6 4
+6 4 6 4 123*7 3*4 7 3*4 6*7 4 5*7 0 6*7 4 5*7 4 19*7 4 5*7 4 6*7 4 5*7 4 6*7 3*4 5 3*4 123*7 3*4 0 3*4 12*7 6 6*7 6 12*7 4 18*7 4
+6*7 4 12*7 6 4 5 4 7 2*4 123*7 4 2*7 3*4 6 19*7 4 51*7 5 3*4 2*7 6 201*7 4 477*7

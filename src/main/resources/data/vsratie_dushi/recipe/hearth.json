@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "N": "vsratie_dushi:nameless_soul",
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:campfire",
+    "B": "minecraft:stone_bricks"
+  },
+  "pattern": [
+    " N ",
+    "ICI",
+    "BBB"
+  ],
+  "result": {
+    "id": "vsratie_dushi:hearth"
+  }
+}

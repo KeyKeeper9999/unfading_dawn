@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "vsratie_dushi:rust_scrap",
+    "vsratie_dushi:rust_scrap"
+  ],
+  "result": {
+    "id": "minecraft:iron_nugget",
+    "count": 3
+  }
+}

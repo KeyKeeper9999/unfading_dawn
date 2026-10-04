@@ -1,5 +1,6 @@
 package com.keykeeper.dushi.entity;
 
+import com.keykeeper.dushi.ArmorSet;
 import com.keykeeper.dushi.Dushi;
 
 import net.minecraft.core.BlockPos;
@@ -183,6 +184,8 @@ public class RustKnightEntity extends SoulsMob {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean killedByPlayer) {
         super.dropCustomDeathLoot(level, source, killedByPlayer);
         this.spawnAtLocation(level, new ItemStack(Dushi.GREAT_SOUL.get()));
+        this.leave(level, Dushi.RUST_SCRAP.get(), 2, 4);
+        this.leavePiece(level, ArmorSet.RUST, 0.25F);
         if (this.random.nextInt(3) == 0) {
             this.spawnAtLocation(level, new ItemStack(Dushi.TAR_POT.get(), 2 + this.random.nextInt(3)));
         }

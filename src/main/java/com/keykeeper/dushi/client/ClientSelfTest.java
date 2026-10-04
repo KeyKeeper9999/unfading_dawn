@@ -3,13 +3,18 @@ package com.keykeeper.dushi.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.keykeeper.dushi.ArmorSet;
 import com.keykeeper.dushi.Dushi;
+import com.keykeeper.dushi.Gear;
 import com.keykeeper.dushi.PlayerSoul;
+import com.keykeeper.dushi.block.MobMarkBlockEntity;
 import com.keykeeper.dushi.entity.ChaplainEntity;
 import com.keykeeper.dushi.entity.OverseerEntity;
 import com.keykeeper.dushi.entity.RustKnightEntity;
 import com.keykeeper.dushi.entity.SoulsMob;
 import com.keykeeper.dushi.entity.WitheredEntity;
+import com.keykeeper.dushi.world.Plan;
+import com.keykeeper.dushi.world.PlanPiece;
 
 import net.minecraft.client.CameraType;
 import net.minecraft.client.KeyMapping;
@@ -19,34 +24,46 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.tutorial.TutorialSteps;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.LevelSettings;
 import net.minecraft.world.level.WorldDataConfiguration;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 /**
- * Only runs in the automated build (when the DUSHI_CLIENTTEST environment variable is set): starts a flat world by itself,
+ * Only runs in the automated build (when the DUSHI_CLIENTTEST environment variable is set): starts a world by itself,
  * lines the mobs, blocks and items up in front of the camera, takes screenshots and quits. The pictures are how the look
  * of the mod is checked without anybody at the keyboard.
  */
 @EventBusSubscriber(modid = Dushi.MODID, value = Dist.CLIENT)
 public final class ClientSelfTest {
     private static final boolean ENABLED = System.getenv("DUSHI_CLIENTTEST") != null;
-    /** The flat world's grass is at y = -61; things stand on it at -60. */
-    private static final int GROUND = -60;
+    /** The stage is a stone floor built high in the air of an ordinary world; things stand on it at this height. */
+    private static final int GROUND = 180;
     private static final AABB ARENA = new AABB(-40, GROUND - 5, -40, 40, GROUND + 30, 40);
 
     private static int stage;
@@ -95,7 +112,7 @@ public final class ClientSelfTest {
         Screen screen = minecraft.gui.screen();
         switch (stage) {
             case 0 -> {
-                // Wait for the title screen, then make a flat creative world.
+                // Wait for the title screen, then make an ordinary creative world (the buildings of the mod must be found in it).
                 // (On a first start the game shows its accessibility screen instead of the title; either will do.)
                 if (screen != null && minecraft.isGameLoadFinished() && minecraft.gui.overlay() == null && waited > 40) {
                     say("menu reached (" + screen.getClass().getSimpleName() + "), creating a world");
@@ -103,11 +120,13 @@ public final class ClientSelfTest {
                     minecraft.options.guiScale().set(2);
                     minecraft.options.tutorialStep = TutorialSteps.NONE;
                     minecraft.getTutorial().setStep(TutorialSteps.NONE);
+                    minecraft.options.renderDistance().set(8);
+                    minecraft.options.simulationDistance().set(6);
                     minecraft.getWindow().setWindowed(1280, 720);
                     LevelSettings settings = new LevelSettings("dushi_test", GameType.CREATIVE,
                             new LevelSettings.DifficultySettings(Difficulty.NORMAL, false, false), true, WorldDataConfiguration.DEFAULT);
                     minecraft.createWorldOpenFlows().createFreshLevel("dushi_test", settings, new WorldOptions(20261004L, false, false),
-                            registries -> registries.lookupOrThrow(Registries.WORLD_PRESET).getOrThrow(WorldPresets.FLAT).value().createWorldDimensions(),
+                            registries -> registries.lookupOrThrow(Registries.WORLD_PRESET).getOrThrow(WorldPresets.NORMAL).value().createWorldDimensions(),
                             screen);
                     stage = 1;
                     waited = 0;
@@ -253,6 +272,8 @@ public final class ClientSelfTest {
     private static void buildSteps(Minecraft minecraft) {
         String clear = "kill @e[type=!minecraft:player]";
         String gone = "tp @e[type=!minecraft:player] 0 -200 0";
+        command("gamerule advance_time false", "forceload add -32 -16 32 40");
+        pause(100);
         command("time set 6000", "weather clear", "fill -16 " + (GROUND - 1) + " -8 16 " + (GROUND - 1) + " 26 minecraft:stone_bricks",
                 "fill -16 " + GROUND + " 12 16 " + (GROUND + 9) + " 12 minecraft:deepslate_bricks", look(0.5, 0.5, 0, 5));
         pause(40);
@@ -346,10 +367,10 @@ public final class ClientSelfTest {
         List<String> items = new ArrayList<>();
         Dushi.ITEMS.getEntries().forEach(entry -> items.add(entry.getId().toString()));
         List<String> displays = new ArrayList<>();
-        int columns = 11;
+        int columns = 13;
         for (int i = 0; i < items.size(); i++) {
-            double x = 0.5 + 4.0 - (i % columns) * 0.8;
-            double y = GROUND + 4.0 - (i / columns) * 0.8;
+            double x = 0.5 + 4.8 - (i % columns) * 0.8;
+            double y = GROUND + 5.4 - (i / columns) * 0.8;
             displays.add("summon minecraft:item_display " + x + " " + y + " 5 {item:{id:\"" + items.get(i) + "\"},item_display:\"gui\",billboard:\"center\","
                     + "transformation:{translation:[0f,0f,0f],left_rotation:[0f,0f,0f,1f],scale:[0.7f,0.7f,0.7f],right_rotation:[0f,0f,0f,1f]}}");
         }
@@ -409,6 +430,44 @@ public final class ClientSelfTest {
         camera(CameraType.THIRD_PERSON_FRONT);
         shot("32_tower_shield_blocking_front");
         client(() -> Minecraft.getInstance().options.keyUse.setDown(false));
+
+        // 7b. the four suits of armour on the player, and what the tooltips say about gear the mod did not make
+        client(() -> Minecraft.getInstance().options.keyUse.setDown(false));
+        for (ArmorSet set : ArmorSet.values()) {
+            command("item replace entity @p weapon.mainhand with minecraft:air", "item replace entity @p weapon.offhand with minecraft:air",
+                    "item replace entity @p armor.head with vsratie_dushi:" + set.names[0], "item replace entity @p armor.chest with vsratie_dushi:" + set.names[1],
+                    "item replace entity @p armor.legs with vsratie_dushi:" + set.names[2], "item replace entity @p armor.feet with vsratie_dushi:" + set.names[3],
+                    look(0.5, 4.5, 0, 8));
+            camera(CameraType.THIRD_PERSON_FRONT);
+            shot("31_armour_" + set.id + "_front", 20);
+            camera(CameraType.THIRD_PERSON_BACK);
+            shot("31_armour_" + set.id + "_back", 10);
+        }
+        client(() -> {
+            LocalPlayer player = Minecraft.getInstance().player;
+            for (ItemStack stack : new ItemStack[] {new ItemStack(Items.IRON_SWORD), new ItemStack(Items.DIAMOND_AXE), new ItemStack(Items.BOW),
+                    new ItemStack(Items.SHIELD), new ItemStack(Items.IRON_CHESTPLATE), new ItemStack(ArmorSet.GUARD.piece(1)),
+                    new ItemStack(ArmorSet.CHAPLAIN.piece(0)), new ItemStack(Dushi.FLASK_SHARD.get()), new ItemStack(Dushi.LONGSWORD.get())}) {
+                StringBuilder text = new StringBuilder();
+                for (Component line : stack.getTooltipLines(Item.TooltipContext.EMPTY, player, TooltipFlag.NORMAL)) {
+                    text.append(" | ").append(line.getString());
+                }
+                say("tooltip" + text);
+            }
+            say("burden in " + ArmorSet.CHAPLAIN.id + ": " + Gear.load(player) + "/" + Gear.maxLoad(PlayerSoul.of(player)) + " " + Gear.burden(player).id);
+        });
+        command("item replace entity @p armor.head with minecraft:netherite_helmet", "item replace entity @p armor.chest with minecraft:netherite_chestplate",
+                "item replace entity @p armor.legs with minecraft:netherite_leggings", "item replace entity @p armor.feet with minecraft:netherite_boots",
+                "item replace entity @p weapon.mainhand with vsratie_dushi:great_key", "item replace entity @p weapon.offhand with vsratie_dushi:tower_shield");
+        pause(10);
+        client(() -> {
+            LocalPlayer player = Minecraft.getInstance().player;
+            say("burden in netherite with the great key and the tower shield: " + Gear.load(player) + "/" + Gear.maxLoad(PlayerSoul.of(player)) + " "
+                    + Gear.burden(player).id);
+        });
+        command("item replace entity @p armor.head with vsratie_dushi:guard_hat", "item replace entity @p armor.chest with vsratie_dushi:guard_hauberk",
+                "item replace entity @p armor.legs with vsratie_dushi:guard_leggings", "item replace entity @p armor.feet with vsratie_dushi:guard_boots",
+                "item replace entity @p weapon.mainhand with vsratie_dushi:longsword", "item replace entity @p weapon.offhand with vsratie_dushi:guard_shield");
 
         // 8. the roll, by the real key: how far it carries, and that the player stands up again afterwards
         camera(CameraType.THIRD_PERSON_BACK);
@@ -478,6 +537,91 @@ public final class ClientSelfTest {
             say("after walking into the stain: souls=" + soul.souls + " lost=" + soul.lostSouls);
         });
         shot("38_souls_back", 5);
+
+        // 11. the buildings, found in the world as it was generated
+        command("gamemode creative @p", "time set 6000");
+        building("outpost", 40);
+        view("40_outpost_front", 6, 6, 26, 6, 4, 8);
+        view("41_outpost_hearth", 12, 5, -6, 6, 1, 3);
+        view("42_outpost_inside", 6, 2, 10, 5, 2, 6);
+        building("stockade", 43);
+        view("43_stockade_from_south", 34, 22, 84, 22, 2, 30);
+        view("44_stockade_gate", 22, 3, 66, 22, 3, 50);
+        view("45_stockade_keeper_room", 16.5, 2.6, 51.5, 10, 1.5, 53.5);
+        view("46_stockade_yard", 22.5, 4, 48, 22, 3, 20);
+        view("47_stockade_cells", 10.5, 2.6, 42, 8, 2, 24);
+        view("48_stockade_roof", 12, 8, 43, 6, 6, 22);
+        view("49_stockade_hall", 22.5, 3, 14.5, 22, 4, 4);
+        view("50_stockade_chapel", 36.5, 3, 44, 36.5, 4, 24);
+        view("51_stockade_from_above", 22, 60, 60, 22, 0, 26);
+        player(player -> {
+            int marks = MobMarkBlockEntity.resetAround((ServerLevel) player.level(), player.blockPosition(), 96);
+            say("rest near the stockade: " + marks + " marks reset");
+        });
+    }
+
+    /** The piece of the building the views are taken of, or null if none was found. */
+    private static PlanPiece piece;
+
+    /** Finds the nearest building of the kind in the world and stands the player next to it. */
+    private static void building(String name, int number) {
+        server(level -> {
+            piece = null;
+            ServerPlayer player = level.players().get(0);
+            Holder<Structure> structure = level.registryAccess().lookupOrThrow(Registries.STRUCTURE)
+                    .getOrThrow(ResourceKey.create(Registries.STRUCTURE, Dushi.id(name)));
+            var nearest = level.getChunkSource().getGenerator().findNearestMapStructure(level, HolderSet.direct(structure), BlockPos.ZERO, 100, false);
+            if (nearest == null) {
+                say(name + ": none within 100 chunks");
+                return;
+            }
+            BlockPos at = nearest.getFirst();
+            StructureStart start = level.structureManager().getStartForStructure(structure.value(), level.getChunk(at.getX() >> 4, at.getZ() >> 4));
+            if (start == null || !start.isValid()) {
+                say(name + ": located at " + at.toShortString() + " but there is no start");
+                return;
+            }
+            piece = (PlanPiece) start.getPieces().get(0);
+            say(name + ": found at " + piece.origin().toShortString() + " turned " + piece.rotation().getSerializedName());
+            player.connection.teleport(piece.origin().getX() + 0.5, piece.origin().getY() + 30.0, piece.origin().getZ() + 0.5, 0.0F, 60.0F);
+            player.getAbilities().flying = true;
+            player.onUpdateAbilities();
+        });
+        // the land round it has to be made and drawn before the first picture
+        pause(200);
+    }
+
+    /** A picture taken from one cell of the building's plan, looking at another. */
+    private static void view(String name, double fromX, double fromY, double fromZ, double toX, double toY, double toZ) {
+        server(level -> {
+            if (piece == null) {
+                return;
+            }
+            Plan plan = Plan.get(piece.planName());
+            Vec3 from = turned(plan, fromX, fromY, fromZ);
+            Vec3 to = turned(plan, toX, toY, toZ);
+            double dx = to.x - from.x;
+            double dy = to.y - from.y;
+            double dz = to.z - from.z;
+            float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
+            float pitch = (float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)));
+            ServerPlayer player = level.players().get(0);
+            // the eyes are 1.62 above the feet
+            player.connection.teleport(from.x, from.y - 1.62, from.z, yaw, pitch);
+            player.getAbilities().flying = true;
+            player.onUpdateAbilities();
+        });
+        shot(name, 50);
+    }
+
+    /** A point given in the plan's own coordinates (y = 1 is where feet stand), where it is in the world. */
+    private static Vec3 turned(Plan plan, double x, double y, double z) {
+        BlockPos corner = PlanPiece.toWorld(plan, piece.origin(), piece.rotation(), 0, plan.originY, 0);
+        BlockPos along = PlanPiece.toWorld(plan, piece.origin(), piece.rotation(), 1, plan.originY, 0);
+        BlockPos across = PlanPiece.toWorld(plan, piece.origin(), piece.rotation(), 0, plan.originY, 1);
+        double wx = corner.getX() + 0.5 + (along.getX() - corner.getX()) * x + (across.getX() - corner.getX()) * z;
+        double wz = corner.getZ() + 0.5 + (along.getZ() - corner.getZ()) * x + (across.getZ() - corner.getZ()) * z;
+        return new Vec3(wx, corner.getY() + y - 1.0, wz);
     }
 
     private static void camera(CameraType type) {

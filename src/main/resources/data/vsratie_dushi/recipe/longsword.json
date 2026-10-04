@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "N": "minecraft:iron_nugget",
+    "L": "minecraft:leather"
+  },
+  "pattern": [
+    " I ",
+    " I ",
+    "NLN"
+  ],
+  "result": {
+    "id": "vsratie_dushi:longsword"
+  }
+}

@@ -140,6 +140,25 @@ def fog_texture(frames=16):
     return img
 
 
+def mob_mark_texture():
+    """A broken ring of ash, see-through elsewhere."""
+    size = 16
+    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    rnd = random.Random(31)
+    for y in range(size):
+        for x in range(size):
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            n = blotch('mark', x, y, 2.0)
+            if 4.6 <= d <= 6.9 and n > 0.22:
+                c = ASH_L if n > 0.62 else ASH
+                img.putpixel((x, y), tuple(c) + (235,))
+            elif d < 4.6 and n > 0.72:
+                img.putpixel((x, y), tuple(shade(ASH, 0.8)) + (150,))
+    for (x, y) in ((3, 6), (11, 3), (12, 10), (5, 12), (8, 2)):
+        img.putpixel((x, y), tuple(EMBER if rnd.random() < 0.6 else EMBER_D) + (255,))
+    return img
+
+
 if __name__ == '__main__':
     shots = []
     for lit in (False, True):
@@ -167,11 +186,23 @@ if __name__ == '__main__':
     write_json(f'{A}/models/item/fog_gate.json', {'parent': 'minecraft:item/generated', 'textures': {'layer0': f'{MOD}:item/fog_gate'}})
     write_json(f'{A}/items/fog_gate.json', {'model': {'type': 'minecraft:model', 'model': f'{MOD}:item/fog_gate'}})
 
-    # the hearth drops itself; the fog gate drops nothing
+    # the mark where one of the dead rises: a ring of ash on the floor with a few embers still in it
+    mark = mob_mark_texture()
+    mark.save(f'{A}/textures/block/mob_mark.png')
+    write_json(f'{A}/models/block/mob_mark.json', {
+        'textures': {'t': f'{MOD}:block/mob_mark', 'particle': f'{MOD}:block/mob_mark'},
+        'elements': [{'from': [0, 0.1, 0], 'to': [16, 0.1, 16], 'shade': False,
+                      'faces': {'up': {'uv': [0, 0, 16, 16], 'texture': '#t'}, 'down': {'uv': [0, 16, 16, 0], 'texture': '#t'}}}]})
+    write_json(f'{A}/blockstates/mob_mark.json', {'variants': {'': {'model': f'{MOD}:block/mob_mark'}}})
+    mark.save(f'{A}/textures/item/mob_mark.png')
+    write_json(f'{A}/models/item/mob_mark.json', {'parent': 'minecraft:item/generated', 'textures': {'layer0': f'{MOD}:item/mob_mark'}})
+    write_json(f'{A}/items/mob_mark.json', {'model': {'type': 'minecraft:model', 'model': f'{MOD}:item/mob_mark'}})
+
+    # the hearth drops itself; the fog gate and the mark drop nothing
     write_json(f'{DATA}/loot_table/blocks/hearth.json', {
-        'type': 'minecraft:block', 'pools': [{'rolls': 1, 'entries': [{'type': 'minecraft:item', 'name': f'{MOD}:hearth'}],
-                                              'conditions': [{'condition': 'minecraft:survives_explosion'}]}]})
+        'type': 'minecraft:block', 'pools': [{'rolls': 1, 'entries': [{'type': 'minecraft:item', 'name': f'{MOD}:hearth'}]}]})
     write_json('src/main/resources/data/minecraft/tags/block/mineable/pickaxe.json', {'values': [f'{MOD}:hearth']})
     if len(sys.argv) > 1:
         shots.append(fog.crop((0, 0, 16, 64)).resize((300, 1200), 0).crop((0, 0, 300, 300)))
+        shots.append(mark.resize((300, 300), 0).convert('RGB'))
         sheet(shots, 5).save(sys.argv[1])

@@ -212,7 +212,7 @@ public final class SelfTest {
         boolean enough = soul.spend(30.0F);
         float spent = soul.stamina;
         for (int i = 0; i < PlayerSoul.REGEN_PAUSE + 5; i++) {
-            soul.tickStamina(false, false);
+            soul.tickStamina(false, false, 1.0F);
         }
         say("stamina: spend ok=" + enough + " " + soul.maxStamina() + " -> " + spent + " -> " + soul.stamina + " after the pause; exhausted spend ok="
                 + new PlayerSoul().spend(500.0F));
@@ -254,6 +254,12 @@ public final class SelfTest {
             }
             if (ticks == RUN_TICKS + DRILL_TICKS) {
                 reportDrill();
+                try {
+                    WorldTest.run(level);
+                } catch (RuntimeException e) {
+                    say("world: FAILED: " + e);
+                    e.printStackTrace(System.out);
+                }
                 event.getServer().halt(false);
                 ticks = -1;
             }

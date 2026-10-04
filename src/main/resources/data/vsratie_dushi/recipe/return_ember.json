@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "vsratie_dushi:nameless_soul",
+    "#minecraft:coals"
+  ],
+  "result": {
+    "id": "vsratie_dushi:return_ember",
+    "count": 2
+  }
+}

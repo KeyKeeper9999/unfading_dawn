@@ -1,5 +1,6 @@
 package com.keykeeper.dushi.entity;
 
+import com.keykeeper.dushi.ArmorSet;
 import com.keykeeper.dushi.Dushi;
 
 import net.minecraft.server.level.ServerLevel;
@@ -200,13 +201,23 @@ public class WitheredEntity extends SoulsMob {
         if (this.random.nextInt(14) == 0) {
             this.spawnAtLocation(level, new ItemStack(Dushi.NAMELESS_SOUL.get()));
         }
-        if (this.kind == Kind.ARCHER) {
-            int arrows = this.random.nextInt(3);
-            if (arrows > 0) {
-                this.spawnAtLocation(level, new ItemStack(Items.ARROW, arrows));
+        switch (this.kind) {
+            case PRISONER -> {
+                this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 2);
+                this.leavePiece(level, ArmorSet.PRISONER, 0.05F);
             }
-        } else if (this.kind == Kind.GUARD && this.random.nextInt(10) == 0) {
-            this.spawnAtLocation(level, new ItemStack(Dushi.TAR_POT.get()));
+            case GUARD -> {
+                this.leave(level, Dushi.RUST_SCRAP.get(), 0, 2);
+                this.leavePiece(level, ArmorSet.GUARD, 0.06F);
+                if (this.random.nextInt(10) == 0) {
+                    this.spawnAtLocation(level, new ItemStack(Dushi.TAR_POT.get()));
+                }
+            }
+            case ARCHER -> {
+                this.leave(level, Items.ARROW, 0, 3);
+                this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 1);
+                this.leavePiece(level, ArmorSet.PRISONER, 0.03F);
+            }
         }
     }
 

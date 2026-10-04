@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:leather",
+    "minecraft:leather",
+    "#minecraft:coals",
+    "minecraft:flint"
+  ],
+  "result": {
+    "id": "vsratie_dushi:ember_glove"
+  }
+}

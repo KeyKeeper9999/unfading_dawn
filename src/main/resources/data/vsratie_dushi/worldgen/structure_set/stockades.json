@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 918273645,
+    "spacing": 34,
+    "separation": 14
+  },
+  "structures": [
+    {
+      "structure": "vsratie_dushi:stockade",
+      "weight": 1
+    }
+  ]
+}

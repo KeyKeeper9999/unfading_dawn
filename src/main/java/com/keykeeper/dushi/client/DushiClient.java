@@ -1,6 +1,7 @@
 package com.keykeeper.dushi.client;
 
 import com.keykeeper.dushi.Dushi;
+import com.keykeeper.dushi.Gear;
 import com.keykeeper.dushi.Net;
 import com.keykeeper.dushi.PlayerSoul;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -9,6 +10,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.Vec2;
@@ -87,8 +89,13 @@ public final class DushiClient {
         }
         PlayerSoul soul = PlayerSoul.of(player);
         while (ROLL_KEY.consumeClick()) {
+            Gear.Burden burden = Gear.burden(player);
             if (minecraft.gui.screen() != null || player.isSpectator() || player.isPassenger() || !player.onGround() || player.isInWater()
                     || soul.rollCooldown > 0 || (soul.stamina <= 0.0F && !player.isCreative())) {
+                continue;
+            }
+            if (!burden.canRoll()) {
+                player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.overburdened"));
                 continue;
             }
             Vec2 input = player.input.getMoveVector();
@@ -97,15 +104,15 @@ public final class DushiClient {
             double cos = Math.cos(yaw);
             Vec3 direction = new Vec3(input.x * cos - input.y * sin, 0.0, input.y * cos + input.x * sin);
             if (direction.lengthSqr() < 1.0E-4) {
-                rollVelocity = new Vec3(sin, 0.0, -cos).scale(BACKSTEP_SPEED);
+                rollVelocity = new Vec3(sin, 0.0, -cos).scale(BACKSTEP_SPEED * burden.rollSpeed);
             } else {
-                rollVelocity = direction.normalize().scale(ROLL_SPEED);
+                rollVelocity = direction.normalize().scale(ROLL_SPEED * burden.rollSpeed);
             }
             if (!player.isCreative()) {
-                soul.spend(Net.ROLL_COST);
+                soul.spend(burden.rollCost);
             }
             soul.rollTicks = Net.ROLL_TICKS;
-            soul.rollCooldown = Net.ROLL_COOLDOWN;
+            soul.rollCooldown = burden.rollCooldown;
             player.setForcedPose(Pose.SWIMMING);
             player.setSprinting(false);
             ClientPacketDistributor.sendToServer(new Net.Roll());

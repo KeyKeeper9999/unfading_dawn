@@ -13,5 +13,8 @@ python3 tools/gen_overseer.py ${P:+$P/overseer.png}
 python3 tools/gen_chaplain.py ${P:+$P/chaplain.png}
 python3 tools/gen_items.py ${P:+$P/items.png}
 python3 tools/gen_shields.py ${P:+$P/shields.png}
+python3 tools/gen_armor.py ${P:+$P/armor.png}
 python3 tools/gen_blocks.py ${P:+$P/blocks.png}
+python3 tools/gen_structures.py ${P:+$P/structures}
+python3 tools/gen_data.py
 python3 tools/gen_sounds.py $P

@@ -1,5 +1,6 @@
 package com.keykeeper.dushi.entity;
 
+import com.keykeeper.dushi.ArmorSet;
 import com.keykeeper.dushi.Dushi;
 import com.keykeeper.dushi.Spell;
 import com.keykeeper.dushi.block.FogGateBlock;
@@ -337,6 +338,8 @@ public class ChaplainEntity extends SoulsMob {
         this.spawnAtLocation(level, new ItemStack(Dushi.PRAYER_BEADS.get()));
         this.spawnAtLocation(level, new ItemStack(Dushi.SPELLS.get(Spell.MEND).get()));
         this.spawnAtLocation(level, new ItemStack(Dushi.FLASK_SHARD.get()));
+        this.spawnAtLocation(level, new ItemStack(ArmorSet.CHAPLAIN.piece(0)));
+        this.spawnAtLocation(level, new ItemStack(ArmorSet.CHAPLAIN.piece(1)));
     }
 
     @Override

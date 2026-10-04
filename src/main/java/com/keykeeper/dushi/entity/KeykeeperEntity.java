@@ -1,15 +1,12 @@
 package com.keykeeper.dushi.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 import com.keykeeper.dushi.Dushi;
 import com.keykeeper.dushi.Net;
+import com.keykeeper.dushi.PlayerSoul;
+import com.keykeeper.dushi.SoulMechanics;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -26,18 +23,14 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * The blind keykeeper: an old man hung with keys who sits where he was left and cannot get up any more.
- * He gives every newcomer a flask of warmth and a word of advice, once; after that he only mutters.
+ * He gives every newcomer a flask of warmth and a word of advice, once in that newcomer's life; after that he trades.
  */
 public class KeykeeperEntity extends PathfinderMob {
     private static final int FIRST_LINES = 4;
     private static final int IDLE_LINES = 5;
-
-    private final Set<UUID> given = new HashSet<>();
 
     public KeykeeperEntity(EntityType<? extends KeykeeperEntity> type, Level level) {
         super(type, level);
@@ -60,11 +53,19 @@ public class KeykeeperEntity extends PathfinderMob {
             return InteractionResult.PASS;
         }
         if (this.level() instanceof ServerLevel level && player instanceof ServerPlayer serverPlayer) {
-            if (this.given.add(player.getUUID())) {
+            PlayerSoul soul = PlayerSoul.of(serverPlayer);
+            if (!soul.metKeykeeper) {
+                soul.metKeykeeper = true;
                 for (int line = 0; line < FIRST_LINES; line++) {
                     this.say(serverPlayer, "dialogue.vsratie_dushi.keykeeper.first." + line);
                 }
-                this.give(serverPlayer, new ItemStack(Dushi.WARMTH_FLASK.get()));
+                // Whoever already carries a flask from a hearth gets a soul instead of a second one.
+                if (soul.flaskGiven || SoulMechanics.hasFlask(serverPlayer)) {
+                    this.give(serverPlayer, new ItemStack(Dushi.GREAT_SOUL.get()));
+                } else {
+                    this.give(serverPlayer, new ItemStack(Dushi.WARMTH_FLASK.get()));
+                }
+                soul.flaskGiven = true;
                 this.give(serverPlayer, new ItemStack(Dushi.RETURN_EMBER.get(), 2));
                 this.playSound(Dushi.sound("entity.keykeeper.give"), 1.0F, 1.0F);
                 level.sendParticles(ParticleTypes.FLAME, this.getX(), this.getY() + 1.0, this.getZ(), 8, 0.3, 0.2, 0.3, 0.01);
@@ -118,17 +119,4 @@ public class KeykeeperEntity extends PathfinderMob {
         return Dushi.sound("entity.withered.death");
     }
 
-    @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        ValueOutput.TypedOutputList<UUID> list = output.list("Given", UUIDUtil.CODEC);
-        this.given.forEach(list::add);
-    }
-
-    @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        this.given.clear();
-        input.listOrEmpty("Given", UUIDUtil.CODEC).forEach(this.given::add);
-    }
 }

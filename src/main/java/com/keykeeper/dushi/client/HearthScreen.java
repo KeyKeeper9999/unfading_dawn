@@ -1,5 +1,6 @@
 package com.keykeeper.dushi.client;
 
+import com.keykeeper.dushi.Gear;
 import com.keykeeper.dushi.Net;
 import com.keykeeper.dushi.PlayerSoul;
 
@@ -98,6 +99,11 @@ public class HearthScreen extends Screen {
         graphics.text(this.font, souls, right - 12 - this.font.width(souls), top + 28, SOULS);
         Component price = Component.translatable("screen.vsratie_dushi.hearth.cost", cost);
         graphics.text(this.font, price, left + 12, top + 42, soul.souls >= cost ? PALE : RED);
+        // What is worn and held against what can be carried: it decides how the roll goes.
+        Gear.Burden burden = Gear.burden(this.minecraft.player);
+        Component load = Component.translatable("screen.vsratie_dushi.hearth.load", Math.round(Gear.load(this.minecraft.player)),
+                Math.round(Gear.maxLoad(soul)), Component.translatable("burden.vsratie_dushi." + burden.id));
+        graphics.text(this.font, load, right - 12 - this.font.width(load), top + 42, burden == Gear.Burden.OVER ? RED : burden == Gear.Burden.HEAVY ? GOLD : DIM);
         graphics.fill(left + 10, top + 57, right - 10, top + 58, FRAME_LIGHT);
 
         int hovered = -1;

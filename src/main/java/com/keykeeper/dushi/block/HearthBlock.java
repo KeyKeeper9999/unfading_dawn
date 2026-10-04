@@ -4,9 +4,11 @@ import com.keykeeper.dushi.Dushi;
 import com.keykeeper.dushi.Net;
 import com.keykeeper.dushi.PlayerSoul;
 import com.keykeeper.dushi.SoulMechanics;
+import com.keykeeper.dushi.item.FlaskShardItem;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -14,6 +16,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -73,7 +76,20 @@ public class HearthBlock extends Block {
         player.getFoodData().eat(20, 1.0F);
         soul.stamina = soul.maxStamina();
         soul.regenPause = 0;
+        // The first hearth a traveller rests at gives them their flask; shards carried are melted into it.
+        if (!soul.flaskGiven) {
+            soul.flaskGiven = true;
+            if (!SoulMechanics.hasFlask(player)) {
+                ItemStack flask = new ItemStack(Dushi.WARMTH_FLASK.get());
+                if (!player.getInventory().add(flask)) {
+                    player.spawnAtLocation(level, flask);
+                }
+                player.sendSystemMessage(Component.translatable("message.vsratie_dushi.flask_given"));
+            }
+        }
+        FlaskShardItem.meltAll(level, player);
         SoulMechanics.refill(player);
+        MobMarkBlockEntity.resetAround(level, pos, MobMarkBlockEntity.RESET_RADIUS);
         // The player comes back to where they sat, not into the fire.
         player.setRespawnPosition(new ServerPlayer.RespawnConfig(
                 LevelData.RespawnData.of(level.dimension(), player.blockPosition(), player.getYRot(), 0.0F), true), false);

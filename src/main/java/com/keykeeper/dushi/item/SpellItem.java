@@ -3,6 +3,7 @@ package com.keykeeper.dushi.item;
 import java.util.function.Consumer;
 
 import com.keykeeper.dushi.Dushi;
+import com.keykeeper.dushi.Gear;
 import com.keykeeper.dushi.PlayerSoul;
 import com.keykeeper.dushi.Spell;
 
@@ -76,7 +77,7 @@ public class SpellItem extends Item {
         PlayerSoul soul = PlayerSoul.of(player);
         soul.spend(this.spell.stamina);
         player.syncData(Dushi.PLAYER_SOUL);
-        this.spell.cast(level, player, soul.spellBonus(this.spell.school));
+        this.spell.cast(level, player, soul.spellBonus(this.spell.school) * Gear.spellBonus(player));
         if (!player.getAbilities().instabuild) {
             stack.setDamageValue(stack.getDamageValue() + 1);
         }

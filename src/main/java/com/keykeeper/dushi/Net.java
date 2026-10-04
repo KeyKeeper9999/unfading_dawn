@@ -22,11 +22,8 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public final class Net {
     private Net() {}
 
-    public static final float ROLL_COST = 20.0F;
-    /** Length of a roll in ticks, and how many of its first ticks cannot be hurt. */
+    /** Length of a roll in ticks. What it costs, how far it goes and how long it protects depends on the load, see {@link Gear.Burden}. */
     public static final int ROLL_TICKS = 11;
-    public static final int ROLL_SAFE_TICKS = 8;
-    public static final int ROLL_COOLDOWN = 16;
 
     /** Client to server: the player rolls. The movement itself is done by the client. */
     public record Roll() implements CustomPacketPayload {
@@ -43,14 +40,15 @@ public final class Net {
                 return;
             }
             PlayerSoul soul = PlayerSoul.of(player);
-            if (soul.rollCooldown > 0 || (soul.stamina <= 0.0F && !player.isCreative())) {
+            Gear.Burden burden = Gear.burden(player);
+            if (soul.rollCooldown > 0 || !burden.canRoll() || (soul.stamina <= 0.0F && !player.isCreative())) {
                 return;
             }
             if (!player.isCreative()) {
-                soul.spend(ROLL_COST);
+                soul.spend(burden.rollCost);
             }
             soul.rollTicks = ROLL_TICKS;
-            soul.rollCooldown = ROLL_COOLDOWN;
+            soul.rollCooldown = burden.rollCooldown;
             player.setForcedPose(Pose.SWIMMING);
             player.stopUsingItem();
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), Dushi.sound("player.roll"), SoundSource.PLAYERS, 0.7F,

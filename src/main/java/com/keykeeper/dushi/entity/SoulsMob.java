@@ -3,7 +3,11 @@ package com.keykeeper.dushi.entity;
 import java.util.List;
 import java.util.UUID;
 
+import com.keykeeper.dushi.ArmorSet;
 import com.keykeeper.dushi.Dushi;
+import com.keykeeper.dushi.block.MobMarkBlockEntity;
+
+import net.minecraft.core.BlockPos;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.Holder;
@@ -20,6 +24,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -52,6 +58,8 @@ public abstract class SoulsMob extends Monster {
     private int guardDownTicks;
     /** Length of the boss track in ticks (see tools/gen_sounds.py). */
     private static final int MUSIC_LENGTH = 960;
+    /** How far from its mark a mob of the stockade strays before it turns back. */
+    private static final double HOME_RANGE = 14.0;
     private int musicTicks;
 
     private ServerBossEvent bossBar;
@@ -172,6 +180,9 @@ public abstract class SoulsMob extends Monster {
         if (this.guardBreakHits() > 0) {
             this.guardTick();
         }
+        if (this.tickCount % 60 == 0) {
+            this.homeTick();
+        }
         if (this.isBoss()) {
             this.bossBar().setProgress(this.getHealth() / this.getMaxHealth());
             this.musicTick(level, this.getTarget() != null && this.isAlive());
@@ -186,6 +197,39 @@ public abstract class SoulsMob extends Monster {
             } else {
                 this.idleTicks = 0;
             }
+        }
+    }
+
+    /**
+     * A mob put there by a mark of the stockade stays around it: with nobody to fight it walks back, and one whose mark
+     * has since raised another in its place is a leftover and goes.
+     */
+    private void homeTick() {
+        if (MobMarkBlockEntity.disowned(this)) {
+            this.discard();
+            return;
+        }
+        BlockPos home = MobMarkBlockEntity.homeOf(this);
+        if (home != null && this.getTarget() == null && this.attackId() == 0 && home.distSqr(this.blockPosition()) > HOME_RANGE * HOME_RANGE) {
+            this.getNavigation().moveTo(home.getX() + 0.5, home.getY(), home.getZ() + 0.5, 1.0);
+        }
+    }
+
+    /** A rest at a hearth sends a living boss back to where it waits, whole again. */
+    public void returnHome(double x, double y, double z, float yaw) {
+        if (this.attackId() != 0) {
+            this.endAttack();
+        }
+        this.setTarget(null);
+        this.getNavigation().stop();
+        this.teleportTo(x, y, z);
+        this.setYRot(yaw);
+        this.setYBodyRot(yaw);
+        this.setYHeadRot(yaw);
+        this.setHealth(this.getMaxHealth());
+        this.onReset();
+        if (this.isBoss() && this.level() instanceof ServerLevel level) {
+            this.stopMusic(level);
         }
     }
 
@@ -287,6 +331,23 @@ public abstract class SoulsMob extends Monster {
         this.musicTicks = 0;
         for (ServerPlayer player : level.players()) {
             player.connection.send(new ClientboundStopSoundPacket(Dushi.id("music.boss"), SoundSource.MUSIC));
+        }
+    }
+
+    // ------------------------------------------------------------------ what is left behind
+
+    /** Drops between {@code min} and {@code max} of an item. */
+    protected void leave(ServerLevel level, ItemLike item, int min, int max) {
+        int count = min + this.random.nextInt(max - min + 1);
+        if (count > 0) {
+            this.spawnAtLocation(level, new ItemStack(item, count));
+        }
+    }
+
+    /** With the given chance, drops one piece of a suit of armour, picked at random. */
+    protected void leavePiece(ServerLevel level, ArmorSet set, float chance) {
+        if (this.random.nextFloat() < chance) {
+            this.spawnAtLocation(level, new ItemStack(set.piece(this.random.nextInt(4))));
         }
     }
 

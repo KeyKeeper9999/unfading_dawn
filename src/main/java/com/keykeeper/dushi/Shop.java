@@ -33,6 +33,15 @@ public final class Shop {
             add(list, Dushi.PLANK_SHIELD, 1, 200);
             add(list, Dushi.ROUND_SHIELD, 1, 500);
             add(list, Dushi.GUARD_SHIELD, 1, 900);
+            add(list, Dushi.TOWER_SHIELD, 1, 1600);
+            int[] rags = {100, 150, 120, 80};
+            int[] mail = {500, 900, 700, 400};
+            for (int piece = 0; piece < 4; piece++) {
+                add(list, ArmorSet.PRISONER.pieces().get(piece), 1, rags[piece]);
+            }
+            for (int piece = 0; piece < 4; piece++) {
+                add(list, ArmorSet.GUARD.pieces().get(piece), 1, mail[piece]);
+            }
             add(list, Dushi.SCHOLAR_STAFF, 1, 500);
             add(list, Dushi.SPELLS.get(Spell.SOUL_SHARD), 1, 600);
             add(list, Dushi.SPELLS.get(Spell.HEAVY_SOUL_SHARD), 1, 1500);

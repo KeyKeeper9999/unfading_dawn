@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": "vsratie_dushi:rust_scrap",
+    "A": "vsratie_dushi:guard_hat",
+    "I": "minecraft:iron_ingot"
+  },
+  "pattern": [
+    " R ",
+    "RAR",
+    " I "
+  ],
+  "result": {
+    "id": "vsratie_dushi:rust_helm"
+  }
+}

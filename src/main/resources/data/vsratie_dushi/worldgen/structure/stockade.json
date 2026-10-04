@@ -1,0 +1,13 @@
+{
+  "type": "vsratie_dushi:plan",
+  "plan": "stockade",
+  "biomes": "#vsratie_dushi:has_structure",
+  "step": "surface_structures",
+  "terrain_adaptation": "beard_thin",
+  "spawn_overrides": {
+    "monster": {
+      "bounding_box": "full",
+      "spawns": []
+    }
+  }
+}

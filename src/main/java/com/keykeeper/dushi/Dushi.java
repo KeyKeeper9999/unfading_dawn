@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 
 import com.keykeeper.dushi.block.FogGateBlock;
 import com.keykeeper.dushi.block.HearthBlock;
+import com.keykeeper.dushi.block.MobMarkBlock;
+import com.keykeeper.dushi.block.MobMarkBlockEntity;
 import com.keykeeper.dushi.entity.ChaplainEntity;
 import com.keykeeper.dushi.entity.KeykeeperEntity;
 import com.keykeeper.dushi.entity.OverseerEntity;
@@ -25,6 +27,8 @@ import com.keykeeper.dushi.item.SoulItem;
 import com.keykeeper.dushi.item.SpellItem;
 import com.keykeeper.dushi.item.TarPotItem;
 import com.keykeeper.dushi.item.WeaponItem;
+import com.keykeeper.dushi.world.PlanPiece;
+import com.keykeeper.dushi.world.PlanStructure;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -48,6 +52,10 @@ import net.minecraft.world.item.component.BlocksAttacks;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.Weapon;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -70,6 +78,9 @@ public class Dushi {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, MODID);
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
+    public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES = DeferredRegister.create(Registries.STRUCTURE_TYPE, MODID);
+    public static final DeferredRegister<StructurePieceType> STRUCTURE_PIECES = DeferredRegister.create(Registries.STRUCTURE_PIECE, MODID);
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MODID, path);
@@ -124,6 +135,21 @@ public class Dushi {
             props -> props.mapColor(MapColor.SNOW).strength(-1.0F, 3600000.0F).noOcclusion().noLootTable().sound(SoundType.WOOL)
                     .lightLevel(state -> 6).isSuffocating((state, level, pos) -> false));
     public static final DeferredItem<BlockItem> FOG_GATE_ITEM = ITEMS.registerSimpleBlockItem(FOG_GATE);
+
+    /** Where one of the dead keeps rising: see {@link MobMarkBlock}. */
+    public static final DeferredBlock<MobMarkBlock> MOB_MARK = BLOCKS.registerBlock("mob_mark", MobMarkBlock::new,
+            props -> props.mapColor(MapColor.COLOR_GRAY).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
+                    .pushReaction(PushReaction.BLOCK).sound(SoundType.SAND));
+    public static final DeferredItem<BlockItem> MOB_MARK_ITEM = ITEMS.registerSimpleBlockItem(MOB_MARK);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MobMarkBlockEntity>> MOB_MARK_ENTITY = BLOCK_ENTITIES.register("mob_mark",
+            () -> new BlockEntityType<>(MobMarkBlockEntity::new, MOB_MARK.get()));
+
+    // ------------------------------------------------------------------ structures (built from the plans of tools/gen_structures.py)
+
+    public static final DeferredHolder<StructureType<?>, StructureType<PlanStructure>> PLAN_STRUCTURE = STRUCTURE_TYPES.register("plan",
+            () -> () -> PlanStructure.CODEC);
+    public static final DeferredHolder<StructurePieceType, StructurePieceType> PLAN_PIECE = STRUCTURE_PIECES.register("plan",
+            () -> (StructurePieceType.ContextlessType) PlanPiece::new);
 
     // ------------------------------------------------------------------ weapons
 
@@ -199,6 +225,18 @@ public class Dushi {
     public static final DeferredItem<Item> ROUND_SHIELD = shield("round_shield", 0.75F, 0.45F, 220, Rarity.COMMON);
     public static final DeferredItem<Item> GUARD_SHIELD = shield("guard_shield", 0.9F, 0.6F, 400, Rarity.COMMON);
     public static final DeferredItem<Item> TOWER_SHIELD = shield("tower_shield", 1.0F, 0.8F, 700, Rarity.UNCOMMON);
+
+    // ------------------------------------------------------------------ armour
+
+    static {
+        for (ArmorSet set : ArmorSet.values()) {
+            set.register(ITEMS);
+        }
+    }
+
+    /** What the dead of the stockade leave behind; the mod's armour is made and mended with these. */
+    public static final DeferredItem<Item> TATTERED_CLOTH = ITEMS.registerSimpleItem("tattered_cloth");
+    public static final DeferredItem<Item> RUST_SCRAP = ITEMS.registerSimpleItem("rust_scrap");
 
     // ------------------------------------------------------------------ magic
 
@@ -296,6 +334,7 @@ public class Dushi {
             .displayItems((parameters, output) -> {
                 output.accept(HEARTH_ITEM.get());
                 output.accept(FOG_GATE_ITEM.get());
+                output.accept(MOB_MARK_ITEM.get());
                 output.accept(WARMTH_FLASK.get());
                 output.accept(FLASK_SHARD.get());
                 output.accept(RETURN_EMBER.get());
@@ -307,6 +346,11 @@ public class Dushi {
                 WEAPONS.forEach(item -> output.accept(item.get()));
                 output.accept(SHORT_BOW.get());
                 SHIELDS.forEach(item -> output.accept(item.get()));
+                for (ArmorSet set : ArmorSet.values()) {
+                    set.pieces().forEach(item -> output.accept(item.get()));
+                }
+                output.accept(TATTERED_CLOTH.get());
+                output.accept(RUST_SCRAP.get());
                 output.accept(SCHOLAR_STAFF.get());
                 output.accept(PRAYER_BEADS.get());
                 output.accept(EMBER_GLOVE.get());
@@ -321,6 +365,9 @@ public class Dushi {
         TABS.register(modEventBus);
         SOUNDS.register(modEventBus);
         ATTACHMENTS.register(modEventBus);
+        BLOCK_ENTITIES.register(modEventBus);
+        STRUCTURE_TYPES.register(modEventBus);
+        STRUCTURE_PIECES.register(modEventBus);
         modEventBus.addListener((EntityAttributeCreationEvent event) -> {
             WITHERED.forEach((kind, type) -> event.put(type.get(), WitheredEntity.createAttributes(kind).build()));
             event.put(RUST_KNIGHT.get(), RustKnightEntity.createAttributes().build());

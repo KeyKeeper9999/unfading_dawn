@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:paper",
+    "vsratie_dushi:great_soul",
+    "minecraft:lapis_lazuli"
+  ],
+  "result": {
+    "id": "vsratie_dushi:heavy_soul_shard"
+  }
+}

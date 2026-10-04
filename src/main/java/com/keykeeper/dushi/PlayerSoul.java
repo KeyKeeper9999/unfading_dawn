@@ -48,8 +48,10 @@ public final class PlayerSoul {
             Codec.INT.fieldOf("intellect").forGetter(soul -> soul.stats[INTELLECT]),
             Codec.INT.fieldOf("faith").forGetter(soul -> soul.stats[FAITH]),
             Codec.INT.fieldOf("stain").forGetter(soul -> soul.stainGeneration),
-            Codec.INT.optionalFieldOf("lost", 0).forGetter(soul -> soul.lostSouls))
-            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost) -> {
+            Codec.INT.optionalFieldOf("lost", 0).forGetter(soul -> soul.lostSouls),
+            Codec.BOOL.optionalFieldOf("flask", false).forGetter(soul -> soul.flaskGiven),
+            Codec.BOOL.optionalFieldOf("keykeeper", false).forGetter(soul -> soul.metKeykeeper))
+            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost, flask, keykeeper) -> {
                 PlayerSoul soul = new PlayerSoul();
                 soul.souls = souls;
                 soul.stats[VITALITY] = vit;
@@ -60,6 +62,8 @@ public final class PlayerSoul {
                 soul.stats[FAITH] = faith;
                 soul.stainGeneration = stain;
                 soul.lostSouls = lost;
+                soul.flaskGiven = flask;
+                soul.metKeykeeper = keykeeper;
                 soul.stamina = soul.maxStamina();
                 return soul;
             }));
@@ -105,6 +109,11 @@ public final class PlayerSoul {
     /** Souls lying in the player's current stain (0 if there is none); only for the hint on the screen. */
     public int lostSouls;
 
+    /** Whether a hearth has already given this player their flask. */
+    public boolean flaskGiven;
+    /** Whether the keykeeper has already given this player his gift. */
+    public boolean metKeykeeper;
+
     /** Ticks of the roll still to go; the first part of it cannot be hurt. Not saved. */
     public int rollTicks;
     /** Ticks until the next roll is allowed. Not saved. */
@@ -142,8 +151,12 @@ public final class PlayerSoul {
         return enough;
     }
 
-    /** One tick of recovery; runs the same way on the server and on the player's client. */
-    public void tickStamina(boolean sprinting, boolean blocking) {
+    /**
+     * One tick of recovery; runs the same way on the server and on the player's client.
+     *
+     * @param regen multiplier of the recovery, from what the player wears (see {@link Gear#staminaRegen})
+     */
+    public void tickStamina(boolean sprinting, boolean blocking, float regen) {
         if (this.rollTicks > 0) {
             this.rollTicks--;
         }
@@ -161,7 +174,7 @@ public final class PlayerSoul {
         }
         float max = this.maxStamina();
         if (this.stamina < max) {
-            this.stamina = Math.min(max, this.stamina + (blocking ? STAMINA_REGEN * 0.25F : STAMINA_REGEN));
+            this.stamina = Math.min(max, this.stamina + (blocking ? STAMINA_REGEN * 0.25F : STAMINA_REGEN) * regen);
         }
     }
 

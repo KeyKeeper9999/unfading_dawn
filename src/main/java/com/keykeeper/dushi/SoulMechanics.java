@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.keykeeper.dushi.block.MobMarkBlockEntity;
 import com.keykeeper.dushi.entity.SoulStainEntity;
 import com.keykeeper.dushi.entity.SoulsMob;
 import com.keykeeper.dushi.item.FlaskItem;
-import com.keykeeper.dushi.item.GuardShieldItem;
 import com.keykeeper.dushi.item.SpellItem;
-import com.keykeeper.dushi.item.WeaponItem;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -22,9 +22,13 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BlocksAttacks;
 import net.minecraft.core.component.DataComponents;
@@ -50,6 +54,7 @@ public final class SoulMechanics {
     private static final float EXHAUSTED_DAMAGE = 0.4F;
     /** Bosses reward every player this close. */
     private static final double BOSS_REWARD_RANGE = 48.0;
+    private static final Identifier OVERBURDENED = Dushi.id("overburdened");
 
     private SoulMechanics() {}
 
@@ -91,6 +96,7 @@ public final class SoulMechanics {
             onPlayerDeath(level, player);
             return;
         }
+        MobMarkBlockEntity.mobDied(victim);
         int souls = soulsFor(victim);
         if (souls <= 0) {
             return;
@@ -178,6 +184,10 @@ public final class SoulMechanics {
             soul.regenPause = 0;
             player.syncData(Dushi.PLAYER_SOUL);
             refill(player);
+            // Dying is a rest of a kind: the dead around the place the player comes back to rise again too.
+            if (player.level() instanceof ServerLevel level) {
+                MobMarkBlockEntity.resetAround(level, player.blockPosition(), MobMarkBlockEntity.RESET_RADIUS);
+            }
             if (soul.lostSouls > 0) {
                 player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.souls_left", soul.lostSouls));
             }
@@ -189,6 +199,15 @@ public final class SoulMechanics {
         if (event.getEntity() instanceof ServerPlayer player) {
             player.syncData(Dushi.PLAYER_SOUL);
         }
+    }
+
+    public static boolean hasFlask(Player player) {
+        for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+            if (player.getInventory().getItem(slot).getItem() instanceof FlaskItem) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Fills every flask and restores every spell the player carries. */
@@ -211,9 +230,9 @@ public final class SoulMechanics {
         if (!plays(player)) {
             soul.stamina = soul.maxStamina();
             soul.regenPause = 0;
-            soul.tickStamina(false, false);
+            soul.tickStamina(false, false, 1.0F);
         } else {
-            soul.tickStamina(player.isSprinting() && !player.isPassenger(), player.isBlocking());
+            soul.tickStamina(player.isSprinting() && !player.isPassenger(), player.isBlocking(), Gear.staminaRegen(player));
             if (soul.stamina <= 0.0F && player.isSprinting()) {
                 player.setSprinting(false);
             }
@@ -221,9 +240,30 @@ public final class SoulMechanics {
         if (soul.rollTicks == 0 && (wasRolling || player.getForcedPose() == Pose.SWIMMING)) {
             player.setForcedPose(null);
         }
-        // The client counts by itself between these corrections.
-        if (player instanceof ServerPlayer serverPlayer && player.tickCount % 40 == 0) {
-            serverPlayer.syncData(Dushi.PLAYER_SOUL);
+        if (player instanceof ServerPlayer serverPlayer) {
+            if (player.tickCount % 10 == 0) {
+                weighDown(serverPlayer);
+            }
+            // The client counts by itself between these corrections.
+            if (player.tickCount % 40 == 0) {
+                serverPlayer.syncData(Dushi.PLAYER_SOUL);
+            }
+        }
+    }
+
+    /** Someone carrying more than they can bear walks slowly. */
+    private static void weighDown(ServerPlayer player) {
+        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed == null) {
+            return;
+        }
+        boolean over = plays(player) && Gear.burden(player) == Gear.Burden.OVER;
+        if (over != speed.hasModifier(OVERBURDENED)) {
+            speed.removeModifier(OVERBURDENED);
+            if (over) {
+                speed.addTransientModifier(new AttributeModifier(OVERBURDENED, -0.35, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+                player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.overburdened"));
+            }
         }
     }
 
@@ -235,7 +275,8 @@ public final class SoulMechanics {
             return;
         }
         PlayerSoul soul = PlayerSoul.of(player);
-        float cost = player.getMainHandItem().getItem() instanceof WeaponItem weapon ? weapon.staminaCost : DEFAULT_SWING_COST;
+        Gear.Weapon weapon = Gear.weapon(player.getMainHandItem());
+        float cost = weapon != null ? weapon.stamina() : DEFAULT_SWING_COST;
         // Only a full swing counts: tapping the button does not drain the bar.
         if (player.getAttackStrengthScale(0.5F) < 0.5F) {
             cost *= 0.35F;
@@ -255,7 +296,7 @@ public final class SoulMechanics {
             return;
         }
         // Rolling through a blow.
-        if (victim instanceof Player player && PlayerSoul.of(player).rollTicks > Net.ROLL_TICKS - Net.ROLL_SAFE_TICKS
+        if (victim instanceof Player player && PlayerSoul.of(player).rollTicks > Net.ROLL_TICKS - Gear.burden(player).safeTicks
                 && !event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             event.setCanceled(true);
             return;
@@ -264,10 +305,11 @@ public final class SoulMechanics {
                 && event.getSource().is(DamageTypeTags.IS_PLAYER_ATTACK)) {
             PlayerSoul soul = PlayerSoul.of(attacker);
             float amount = event.getAmount();
-            if (attacker.getMainHandItem().getItem() instanceof WeaponItem weapon) {
-                amount *= soul.weaponBonus(weapon.strengthScaling, weapon.dexterityScaling);
+            Gear.Weapon weapon = Gear.weapon(attacker.getMainHandItem());
+            if (weapon != null) {
+                amount *= soul.weaponBonus(weapon.strength(), weapon.dexterity());
                 if (isBehind(attacker, victim) && victim instanceof Mob) {
-                    amount *= weapon.backstab;
+                    amount *= weapon.backstab();
                     level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), Dushi.sound("player.backstab"), SoundSource.PLAYERS, 1.0F, 1.0F);
                     level.sendParticles(ParticleTypes.CRIT, victim.getX(), victim.getY() + victim.getBbHeight() * 0.6, victim.getZ(), 14, 0.3, 0.3, 0.3, 0.3);
                 }
@@ -276,6 +318,9 @@ public final class SoulMechanics {
                 amount *= EXHAUSTED_DAMAGE;
             }
             event.setAmount(amount);
+        } else if (event.getSource().getEntity() instanceof Player archer && event.getSource().getDirectEntity() instanceof AbstractArrow) {
+            // An arrow flies truer from a deft hand, whatever bow sent it.
+            event.setAmount(event.getAmount() * (1.0F + Gear.ARROW_DEXTERITY * PlayerSoul.of(archer).stats[PlayerSoul.DEXTERITY]));
         }
     }
 
@@ -296,9 +341,9 @@ public final class SoulMechanics {
             return;
         }
         ItemStack shield = player.getItemBlockingWith();
-        float stability = shield != null && shield.getItem() instanceof GuardShieldItem guard ? guard.stability : 0.5F;
+        float stability = shield != null ? Math.max(0.0F, Gear.stability(shield)) : Gear.DEFAULT_STABILITY;
         PlayerSoul soul = PlayerSoul.of(player);
-        float cost = Math.max(4.0F, event.getBlockedDamage() * 5.0F * (1.0F - stability));
+        float cost = Math.max(4.0F, event.getBlockedDamage() * 5.0F * (1.0F - stability) * Gear.blockCost(player));
         boolean held = soul.spend(cost);
         player.syncData(Dushi.PLAYER_SOUL);
         if (!held && shield != null) {

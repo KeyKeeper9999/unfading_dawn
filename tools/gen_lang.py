@@ -18,6 +18,7 @@ t(f'key.{M}.roll', 'Перекат', 'Roll')
 
 t(f'block.{M}.hearth', 'Очаг', 'Hearth')
 t(f'block.{M}.fog_gate', 'Туманная завеса', 'Fog Gate')
+t(f'block.{M}.mob_mark', 'Метка восставшего', 'Mark of the Risen')
 
 for key, ru, en in (
         ('broken_sword', 'Обломок меча', 'Broken Sword'), ('shiv', 'Заточка', 'Shiv'), ('dagger', 'Кинжал', 'Dagger'),
@@ -37,7 +38,16 @@ for key, ru, en in (
         ('return_ember', 'Уголёк возврата', 'Ember of Return'), ('tar_pot', 'Горшок смолы', 'Tar Pot'), ('soul_stain', 'Пятно душ', 'Soul Stain'),
         ('shard_bolt', 'Осколок души', 'Soul Shard'), ('heavy_shard_bolt', 'Тяжёлый осколок души', 'Heavy Soul Shard'),
         ('fire_orb_bolt', 'Огненный ком', 'Fire Orb'), ('light_spear_bolt', 'Копьё света', 'Spear of Light'),
-        ('dark_flame_bolt', 'Чёрное пламя', 'Dark Flame')):
+        ('dark_flame_bolt', 'Чёрное пламя', 'Dark Flame'),
+        ('prisoner_hood', 'Мешок узника', "Prisoner's Sack"), ('prisoner_rags', 'Рубище узника', "Prisoner's Rags"),
+        ('prisoner_breeches', 'Портки узника', "Prisoner's Breeches"), ('prisoner_wraps', 'Обмотки узника', "Prisoner's Wraps"),
+        ('guard_hat', 'Шапель стражника', "Guard's Kettle Hat"), ('guard_hauberk', 'Кольчуга стражника', "Guard's Hauberk"),
+        ('guard_leggings', 'Поножи стражника', "Guard's Leggings"), ('guard_boots', 'Сапоги стражника', "Guard's Boots"),
+        ('rust_helm', 'Ржавый шлем', 'Rust Helm'), ('rust_cuirass', 'Ржавая кираса', 'Rust Cuirass'),
+        ('rust_tassets', 'Ржавые набедренники', 'Rust Tassets'), ('rust_sabatons', 'Ржавые сабатоны', 'Rust Sabatons'),
+        ('chaplain_mitre', 'Митра капеллана', "Chaplain's Mitre"), ('chaplain_cassock', 'Ряса капеллана', "Chaplain's Cassock"),
+        ('chaplain_skirt', 'Подрясник капеллана', "Chaplain's Skirt"), ('chaplain_shoes', 'Туфли капеллана', "Chaplain's Shoes"),
+        ('tattered_cloth', 'Ветошь', 'Tattered Cloth'), ('rust_scrap', 'Ржавый лом', 'Rust Scrap')):
     t(f'item.{M}.{key}', ru, en)
 
 MOBS = (('withered_prisoner', 'Истлевший узник', 'Withered Prisoner'), ('withered_guard', 'Истлевший стражник', 'Withered Guard'),
@@ -67,7 +77,13 @@ t(f'tooltip.{M}.flask', 'Глотков: %s / %s', 'Gulps: %s / %s')
 t(f'tooltip.{M}.flask_hint', 'Наполняется у очага', 'Refills at a hearth')
 t(f'tooltip.{M}.soul_item', 'Раздави в руке: +%s душ', 'Crush it in your hand: +%s souls')
 t(f'tooltip.{M}.return_ember', 'Подержи в руке — вернёшься к последнему очагу', 'Hold it to return to the last hearth')
-t(f'tooltip.{M}.flask_shard', 'Фляга вместит на глоток больше', 'The flask will hold one more gulp')
+t(f'tooltip.{M}.flask_shard', 'Правая кнопка, когда фляга в инвентаре: +1 глоток', 'Right click with the flask in your inventory: +1 gulp')
+t(f'tooltip.{M}.flask_shard.hearth', 'Или отдохни у очага — вплавится сам', 'Or rest at a hearth: it melts in by itself')
+t(f'tooltip.{M}.weight', 'Вес: %s', 'Weight: %s')
+t(f'tooltip.{M}.bow', 'Ловкость: %s (урон стрел)', 'Dexterity: %s (arrow damage)')
+t(f'tooltip.{M}.set.prisoner', 'Силы восстанавливаются быстрее: +%s%% за вещь', 'Stamina recovers faster: +%s%% per piece')
+t(f'tooltip.{M}.set.guard', 'Блок щитом стоит меньше сил: −%s%% за вещь', 'Blocking costs less stamina: −%s%% per piece')
+t(f'tooltip.{M}.set.chaplain', 'Заклинания сильнее: +%s%% за вещь', 'Spells are stronger: +%s%% per piece')
 
 t(f'spell.{M}.soul_shard.desc', 'Быстрый сгусток бледного света', 'A quick bolt of pale light')
 t(f'spell.{M}.heavy_soul_shard.desc', 'Медленный и тяжёлый: бьёт вдвое больнее', 'Slow and heavy: hits twice as hard')
@@ -82,6 +98,9 @@ t(f'message.{M}.need_catalyst.pyromancy', 'Нужна тлеющая рукав�
 t(f'message.{M}.flask_empty', 'Фляга пуста. Отдохни у очага', 'The flask is empty. Rest at a hearth')
 t(f'message.{M}.flask_enlarged', 'Теперь во фляге помещается глотков: %s', 'The flask now holds %s gulps')
 t(f'message.{M}.flask_shard_useless', 'Нет фляги, или она уже больше некуда', 'No flask, or it cannot grow any more')
+t(f'message.{M}.flask_given', 'Очаг оставил тебе Флягу тепла', 'The hearth has left you a Flask of Warmth')
+t(f'message.{M}.overburdened', 'Слишком тяжело: не перекатиться', 'Too heavy to roll')
+t(f'message.{M}.mob_mark', 'Здесь восстаёт: %s', 'Rises here: %s')
 t(f'message.{M}.souls_left', 'На месте гибели осталось душ: %s', 'Souls left where you fell: %s')
 
 t(f'banner.{M}.boss_defeated', 'ГАД ПОВЕРЖЕН', 'FIEND FELLED')
@@ -96,10 +115,15 @@ t(f'screen.{M}.hearth.leave', 'Встать', 'Get up')
 t(f'screen.{M}.hearth.level', 'Уровень: %s', 'Level: %s')
 t(f'screen.{M}.hearth.souls', 'Души: %s', 'Souls: %s')
 t(f'screen.{M}.hearth.cost', 'Следующее очко стоит: %s', 'The next point costs: %s')
+t(f'screen.{M}.hearth.load', 'Ноша: %s / %s — %s', 'Load: %s / %s, %s')
+t(f'burden.{M}.light', 'лёгкая', 'light')
+t(f'burden.{M}.medium', 'средняя', 'medium')
+t(f'burden.{M}.heavy', 'тяжёлая', 'heavy')
+t(f'burden.{M}.over', 'непосильная', 'too much')
 t(f'screen.{M}.hearth.hint', 'Наведи на характеристику, чтобы узнать, что она даёт', 'Point at a stat to see what it does')
 for key, ru, en, ru_d, en_d in (
         ('vitality', 'Живучесть', 'Vitality', 'Одно сердце за каждое очко', 'One heart per point'),
-        ('endurance', 'Выносливость', 'Endurance', 'Больше запас сил: на удары, перекаты, бег и щит', 'More stamina for blows, rolls, running and the shield'),
+        ('endurance', 'Выносливость', 'Endurance', 'Больше запас сил и посильная ноша', 'More stamina, and more that can be carried'),
         ('strength', 'Сила', 'Strength', 'Урон оружия с буквой у Силы', 'Damage of weapons with a Strength grade'),
         ('dexterity', 'Ловкость', 'Dexterity', 'Урон оружия с буквой у Ловкости', 'Damage of weapons with a Dexterity grade'),
         ('intellect', 'Разум', 'Intellect', 'Сила чародейства и, вполовину, пиромантии', 'Power of sorcery and, by half, of pyromancy'),
@@ -110,10 +134,10 @@ for key, ru, en, ru_d, en_d in (
 t(f'dialogue.{M}.line', '%s: %s', '%s: %s')
 for i, (ru, en) in enumerate((
         ('Шаги... Живые шаги. Давно тут никто не ходил на своих двоих.', 'Steps... Living steps. Nobody has walked here on their own two feet for a long time.'),
-        ('Я слеп, но ключи помню на ощупь. Вот этот — от твоей удачи. Шучу. Держи лучше флягу.',
-         'I am blind, but I know my keys by touch. This one opens your luck. A joke. Take the flask instead.'),
-        ('Пей, когда прижмёт. Опустеет — посиди у очага, она наполнится сама.',
-         'Drink when things get bad. When it is empty, sit by a hearth and it will fill itself.'),
+        ('Я слеп, но ключи помню на ощупь. Вот этот — от твоей удачи. Шучу. Держи лучше вот это.',
+         'I am blind, but I know my keys by touch. This one opens your luck. A joke. Take this instead.'),
+        ('Из фляги пей, когда прижмёт. Опустеет — посиди у очага, она наполнится сама.',
+         'Drink from the flask when things get bad. When it is empty, sit by a hearth and it will fill itself.'),
         ('И не геройствуй: души, что носишь с собой, остаются там, где упадёшь. Успеешь вернуться — подберёшь.',
          'And do not play the hero: the souls you carry stay where you fall. Come back in time and they are yours again.'))):
     t(f'dialogue.{M}.keykeeper.first.{i}', ru, en)

@@ -335,6 +335,7 @@ public class OverseerEntity extends SoulsMob {
         this.spawnAtLocation(level, new ItemStack(Dushi.OVERSEER_SOUL.get()));
         this.spawnAtLocation(level, new ItemStack(Dushi.GREAT_KEY.get()));
         this.spawnAtLocation(level, new ItemStack(Dushi.FLASK_SHARD.get()));
+        this.leave(level, Dushi.RUST_SCRAP.get(), 4, 7);
     }
 
     @Override
