@@ -125,7 +125,7 @@ public final class ClientSelfTest {
                     minecraft.getWindow().setWindowed(1280, 720);
                     LevelSettings settings = new LevelSettings("dushi_test", GameType.CREATIVE,
                             new LevelSettings.DifficultySettings(Difficulty.NORMAL, false, false), true, WorldDataConfiguration.DEFAULT);
-                    minecraft.createWorldOpenFlows().createFreshLevel("dushi_test", settings, new WorldOptions(20261004L, false, false),
+                    minecraft.createWorldOpenFlows().createFreshLevel("dushi_test", settings, new WorldOptions(20261004L, true, false),
                             registries -> registries.lookupOrThrow(Registries.WORLD_PRESET).getOrThrow(WorldPresets.NORMAL).value().createWorldDimensions(),
                             screen);
                     stage = 1;

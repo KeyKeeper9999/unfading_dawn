@@ -58,7 +58,37 @@ class Build:
 
     # ------------------------------------------------------------------ writing
 
+    def join(self):
+        """Bars, fences and walls get the shape their neighbours give them (the game would only work it out when a
+        player places them): each joins its own kind and anything solid beside it."""
+        def name(state):
+            return state[2] if isinstance(state, tuple) else state
+
+        def solid(state):
+            if state is None or state == AIR or isinstance(state, tuple):
+                return False
+            return not any(k in state for k in THIN) and 'stairs' not in state and 'carpet' not in state and 'cauldron' not in state
+
+        sides = (('north', 0, -1), ('south', 0, 1), ('west', -1, 0), ('east', 1, 0))
+        changed = {}
+        for (x, y, z), state in self.cells.items():
+            if not isinstance(state, str) or '[' in state:
+                continue
+            kind = 'wall' if state.endswith('_wall') else ('bars' if state.endswith(('iron_bars', '_fence')) else None)
+            if kind is None:
+                continue
+            props = []
+            for side, dx, dz in sides:
+                other = self.cells.get((x + dx, y, z + dz))
+                joined = solid(other) or (other is not None and name(other).split('[')[0] == state)
+                props.append(f'{side}={("low" if joined else "none") if kind == "wall" else str(joined).lower()}')
+            if kind == 'wall':
+                props.append('up=true')
+            changed[(x, y, z)] = state + '[' + ','.join(sorted(props)) + ']'
+        self.cells.update(changed)
+
     def save(self, origin):
+        self.join()
         palette = {}
         order = []
         tokens = []

@@ -14,7 +14,7 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 public class HearthScreen extends Screen {
     private static final int PANEL_WIDTH = 248;
     private static final int ROW_HEIGHT = 22;
-    private static final int PANEL_HEIGHT = 74 + PlayerSoul.STAT_COUNT * ROW_HEIGHT + 34;
+    private static final int PANEL_HEIGHT = 88 + PlayerSoul.STAT_COUNT * ROW_HEIGHT + 34;
     private static final int FRAME = 0xFF16120E;
     private static final int FRAME_LIGHT = 0xFF6B5A40;
     private static final int BACK = 0xE61A1510;
@@ -50,7 +50,7 @@ public class HearthScreen extends Screen {
             int index = stat;
             this.plus[stat] = this.addRenderableWidget(Button.builder(Component.literal("+"),
                     button -> ClientPacketDistributor.sendToServer(new Net.LevelUp(index)))
-                    .bounds(left + PANEL_WIDTH - 32, top + 66 + stat * ROW_HEIGHT, 20, 20).build());
+                    .bounds(left + PANEL_WIDTH - 32, top + 80 + stat * ROW_HEIGHT, 20, 20).build());
         }
         this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.hearth.leave"), button -> this.onClose())
                 .bounds(left + PANEL_WIDTH / 2 - 60, top + PANEL_HEIGHT - 28, 120, 20).build());
@@ -103,12 +103,12 @@ public class HearthScreen extends Screen {
         Gear.Burden burden = Gear.burden(this.minecraft.player);
         Component load = Component.translatable("screen.vsratie_dushi.hearth.load", Math.round(Gear.load(this.minecraft.player)),
                 Math.round(Gear.maxLoad(soul)), Component.translatable("burden.vsratie_dushi." + burden.id));
-        graphics.text(this.font, load, right - 12 - this.font.width(load), top + 42, burden == Gear.Burden.OVER ? RED : burden == Gear.Burden.HEAVY ? GOLD : DIM);
-        graphics.fill(left + 10, top + 57, right - 10, top + 58, FRAME_LIGHT);
+        graphics.text(this.font, load, left + 12, top + 56, burden == Gear.Burden.OVER ? RED : burden == Gear.Burden.HEAVY ? GOLD : DIM);
+        graphics.fill(left + 10, top + 71, right - 10, top + 72, FRAME_LIGHT);
 
         int hovered = -1;
         for (int stat = 0; stat < PlayerSoul.STAT_COUNT; stat++) {
-            int y = top + 66 + stat * ROW_HEIGHT;
+            int y = top + 80 + stat * ROW_HEIGHT;
             if (mouseX >= left + 6 && mouseX < right - 6 && mouseY >= y - 1 && mouseY < y + 21) {
                 hovered = stat;
                 graphics.fill(left + 6, y - 1, right - 6, y + 21, 0x30FFFFFF);
@@ -119,7 +119,7 @@ public class HearthScreen extends Screen {
         }
         // What the stat under the cursor does, in the space above the button.
         String key = hovered >= 0 ? "stat.vsratie_dushi." + PlayerSoul.STAT_KEYS[hovered] + ".desc" : "screen.vsratie_dushi.hearth.hint";
-        graphics.centeredText(this.font, Component.translatable(key), this.width / 2, top + 66 + PlayerSoul.STAT_COUNT * ROW_HEIGHT + 2, DIM);
+        graphics.centeredText(this.font, Component.translatable(key), this.width / 2, top + 80 + PlayerSoul.STAT_COUNT * ROW_HEIGHT + 2, DIM);
     }
 
     @Override

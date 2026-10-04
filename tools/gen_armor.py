@@ -183,8 +183,9 @@ def prisoner():
     for face in SIDES:
         for px in range(4):
             for py in range(7, 12):
-                if (py + px // 2) % 2 == 0 or py == 11:
-                    one.put('leg', face, px, py, shade(SACK if py % 2 else ROPE, 1.0 - 0.06 * (py - 7)))
+                # strips wound one over another, every other one a little off to the side
+                c = SACK if (py + (px // 2 if py % 2 else 0)) % 2 else SACK_D
+                one.put('leg', face, px, py, shade(c, 1.05 - 0.05 * (py - 7)))
     one.fill('leg', lambda face, px, py, w, h: shade(SACK_D, 0.7), faces=('bottom',))
     # the breeches: down to the knee, in tatters
     two.fill('body', weave(SACK_D, shade(SACK_D, 0.75), 'waist'), faces=SIDES, rows=(8, 11))

@@ -19,7 +19,7 @@ public class PlanStructure extends Structure {
     public static final MapCodec<PlanStructure> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             settingsCodec(i), Codec.STRING.fieldOf("plan").forGetter(structure -> structure.plan)).apply(i, PlanStructure::new));
     /** The ground under the building may differ by this much at most; steeper places are passed over. */
-    private static final int MAX_SLOPE = 10;
+    private static final int MAX_SLOPE = 7;
 
     private final String plan;
 
@@ -52,7 +52,8 @@ public class PlanStructure extends Structure {
         if (heights[heights.length - 1] - heights[0] > MAX_SLOPE) {
             return Optional.empty();
         }
-        BlockPos origin = new BlockPos(x, heights[1], z);
+        // the middle one of the five: the floor neither hangs in the air nor is dug deep into a slope
+        BlockPos origin = new BlockPos(x, heights[heights.length / 2], z);
         return Optional.of(new Structure.GenerationStub(origin, builder -> builder.addPiece(new PlanPiece(this.plan, origin, rotation))));
     }
 

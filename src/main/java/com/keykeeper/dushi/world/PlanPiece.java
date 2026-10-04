@@ -4,18 +4,13 @@ import com.keykeeper.dushi.Dushi;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CrossCollisionBlock;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.StairBlock;
-import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -104,18 +99,10 @@ public class PlanPiece extends StructurePiece {
                 Math.max(a.getX(), b.getX()), b.getY(), Math.max(a.getZ(), b.getZ()));
     }
 
-    private static boolean joins(BlockState state) {
-        Block block = state.getBlock();
-        return block instanceof CrossCollisionBlock || block instanceof WallBlock || block instanceof StairBlock;
-    }
-
     @Override
     public void postProcess(WorldGenLevel level, StructureManager structureManager, ChunkGenerator generator, RandomSource chunkRandom,
             BoundingBox chunkBox, ChunkPos chunkPos, BlockPos referencePos) {
         Plan plan = Plan.get(this.name);
-        // Bars, walls and stairs take their shape from their neighbours. In a world being generated the game is asked to
-        // work that out when the chunk is finished; in a finished world (the /place command) it is done here.
-        boolean finished = level instanceof ServerLevel;
         for (int y = 0; y < plan.height; y++) {
             for (int z = 0; z < plan.depth; z++) {
                 for (int x = 0; x < plan.width; x++) {
@@ -127,41 +114,14 @@ public class PlanPiece extends StructurePiece {
                     if (!chunkBox.isInside(pos)) {
                         continue;
                     }
+                    // Bars and walls come from the plan already joined to their neighbours; turning the state turns the joints.
                     BlockState state = plan.palette[index].rotate(this.rotation);
                     level.setBlock(pos, state, 2);
                     if (plan.loot[index] != null) {
                         RandomizableContainer.setBlockEntityLootTable(level, RandomSource.create(pos.asLong() ^ level.getSeed()), pos, plan.loot[index]);
                     }
-                    if (!finished && joins(state)) {
-                        level.getChunk(pos).markPosForPostProcessing(pos);
-                    }
                     if (y == 0 && !state.isAir()) {
                         this.foundation(level, pos);
-                    }
-                }
-            }
-        }
-        if (finished) {
-            for (int y = 0; y < plan.height; y++) {
-                for (int z = 0; z < plan.depth; z++) {
-                    for (int x = 0; x < plan.width; x++) {
-                        short index = plan.cell(x, y, z);
-                        if (index == Plan.SKIP || !joins(plan.palette[index])) {
-                            continue;
-                        }
-                        // One block beyond the chunk too: the row placed with the chunk before this one meets its neighbours now.
-                        BlockPos pos = toWorld(plan, this.origin, this.rotation, x, y, z);
-                        if (pos.getX() < chunkBox.minX() - 1 || pos.getX() > chunkBox.maxX() + 1 || pos.getZ() < chunkBox.minZ() - 1
-                                || pos.getZ() > chunkBox.maxZ() + 1) {
-                            continue;
-                        }
-                        BlockState state = level.getBlockState(pos);
-                        if (joins(state)) {
-                            BlockState shaped = Block.updateFromNeighbourShapes(state, level, pos);
-                            if (shaped != state) {
-                                level.setBlock(pos, shaped, 2);
-                            }
-                        }
                     }
                 }
             }
