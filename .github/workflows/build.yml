@@ -25,7 +25,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f build/libs/vsratie_dushi.jar ] && [ ! -f .ci/skip_server ]; then
-            mkdir -p run && echo eula=true > run/eula.txt
+            mkdir -p run && echo eula=true > run/eula.txt && echo pause-when-empty-seconds=-1 > run/server.properties
             (DUSHI_SELFTEST=1 timeout 300 ./gradlew runServer --no-daemon > server.log 2>&1 || true)
           fi
       - name: client screenshots

@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.tutorial.TutorialSteps;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -86,6 +87,9 @@ public final class ClientSelfTest {
                     say("menu reached (" + screen.getClass().getSimpleName() + "), creating a world");
                     minecraft.options.pauseOnLostFocus = false;
                     minecraft.options.guiScale().set(2);
+                    minecraft.options.tutorialStep = TutorialSteps.NONE;
+                    minecraft.getTutorial().setStep(TutorialSteps.NONE);
+                    minecraft.getWindow().setWindowed(1280, 720);
                     LevelSettings settings = new LevelSettings("dushi_test", GameType.CREATIVE,
                             new LevelSettings.DifficultySettings(Difficulty.NORMAL, false, false), true, WorldDataConfiguration.DEFAULT);
                     minecraft.createWorldOpenFlows().createFreshLevel("dushi_test", settings, new WorldOptions(20261004L, false, false),
@@ -142,7 +146,7 @@ public final class ClientSelfTest {
             server.execute(() -> {
                 for (String command : commands) {
                     try {
-                        server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
+                        server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), command);
                     } catch (RuntimeException e) {
                         say("command failed: " + command + " : " + e);
                     }
@@ -170,13 +174,23 @@ public final class ClientSelfTest {
         STEPS.add(action);
     }
 
-    private static void shot(String name) {
-        pause(12);
+    /** Waits {@code settle} ticks, then saves what is on the screen. */
+    private static void shot(String name, int settle) {
+        pause(settle);
         STEPS.add(() -> {
             Minecraft minecraft = Minecraft.getInstance();
             Screenshot.grab(minecraft.gameDirectory, name + ".png", minecraft.gameRenderer.mainRenderTarget(), 1, message -> say("shot " + name));
         });
-        pause(6);
+        pause(3);
+    }
+
+    private static void shot(String name) {
+        shot(name, 14);
+    }
+
+    /** Puts the player on the test floor, looking at the given angles. */
+    private static String look(double x, double z, float yaw, float pitch) {
+        return "tp @p " + x + " " + GROUND + " " + z + " " + yaw + " " + pitch;
     }
 
     private static <T extends SoulsMob> void attack(Class<T> type, int id) {
@@ -206,109 +220,140 @@ public final class ClientSelfTest {
 
     private static void buildSteps(Minecraft minecraft) {
         String clear = "kill @e[type=!minecraft:player]";
-        command("time set 6000", "weather clear", "fill -14 " + (GROUND - 1) + " -6 14 " + (GROUND - 1) + " 22 minecraft:stone_bricks",
-                "fill -14 " + GROUND + " 16 14 " + (GROUND + 9) + " 16 minecraft:deepslate_bricks",
-                "tp @p 0.5 " + GROUND + " -2.5 0 2");
+        String gone = "tp @e[type=!minecraft:player] 0 -200 0";
+        command("time set 6000", "weather clear", "fill -16 " + (GROUND - 1) + " -8 16 " + (GROUND - 1) + " 26 minecraft:stone_bricks",
+                "fill -16 " + GROUND + " 12 16 " + (GROUND + 9) + " 12 minecraft:deepslate_bricks", look(0.5, 0.5, 0, 5));
         pause(40);
 
-        // 1. the ordinary enemies and the keykeeper
-        command(summon("withered_prisoner", -5.5, 4, held("broken_sword", null)), summon("withered_guard", -3, 4, held("shortsword", "guard_shield")),
-                summon("withered_archer", -0.5, 4, held("short_bow", null)), summon("rust_knight", 2.5, 4.5, held("rust_greatsword", "tower_shield")),
-                summon("keykeeper", 5.5, 4, ""));
-        pause(30);
-        shot("01_mobs");
+        // 1. the three withered, at rest and with the arm raised to strike
+        command(summon("withered_prisoner", -2.0, 4.5, held("broken_sword", null)), summon("withered_guard", 0.5, 4.5, held("shortsword", "guard_shield")),
+                summon("withered_archer", 3.0, 4.5, held("short_bow", null)));
+        shot("01_withered", 30);
         attack(WitheredEntity.class, WitheredEntity.SWING);
-        attack(RustKnightEntity.class, RustKnightEntity.CHOP);
-        pause(8);
-        shot("02_mobs_windup");
-        command("tp @p 3.5 " + GROUND + " -0.5 -150 5");
-        attack(RustKnightEntity.class, RustKnightEntity.SWEEP);
-        pause(13);
-        shot("03_mobs_side");
+        shot("02_withered_swing", 4);
+        command(look(-4.0, 6.5, -110, 5));
+        shot("03_withered_side");
 
-        // 2. the bosses, at rest and in the middle of their moves, in both phases
-        command(clear, "tp @p 0.5 " + GROUND + " -4.5 0 -8", summon("overseer", -3.5, 6, ""), summon("chaplain", 4, 6, ""));
+        // 2. the rust knight and the keykeeper
+        command(gone, look(0.5, 0.5, 0, 0), summon("rust_knight", -1.0, 4.5, held("rust_greatsword", "tower_shield")), summon("keykeeper", 2.5, 4.0, ""));
+        shot("04_knight_keykeeper", 30);
+        attack(RustKnightEntity.class, RustKnightEntity.CHOP);
+        shot("05_knight_chop", 9);
         pause(30);
-        shot("04_bosses");
+        command(look(-5.0, 6.0, -115, 0));
+        attack(RustKnightEntity.class, RustKnightEntity.SWEEP);
+        shot("06_knight_sweep_side", 9);
+        command(look(-1.0, 8.5, 180, 0));
+        shot("07_knight_back");
+
+        // 3. the overseer: at rest, key raised, key down, sweeping, and enraged at night
+        command(gone, look(0.5, 0.5, 0, -12), summon("overseer", 0.5, 7.0, ""));
+        shot("08_overseer", 30);
         attack(OverseerEntity.class, OverseerEntity.SLAM);
-        attack(ChaplainEntity.class, ChaplainEntity.WRATH);
-        pause(14);
-        shot("05_bosses_windup");
-        pause(6);
-        shot("06_bosses_strike");
+        shot("09_overseer_raise", 11);
+        shot("10_overseer_strike", 3);
         pause(40);
         attack(OverseerEntity.class, OverseerEntity.SWEEP);
-        attack(ChaplainEntity.class, ChaplainEntity.SPEARS);
-        pause(15);
-        shot("07_bosses_sweep");
+        shot("11_overseer_sweep", 12);
         pause(40);
-        command("data merge entity @e[type=vsratie_dushi:overseer,limit=1] {Phase:2}", "data merge entity @e[type=vsratie_dushi:chaplain,limit=1] {Phase:2}",
-                "time set 18000");
+        command(look(-6.0, 9.0, -110, -8));
+        shot("12_overseer_side");
+        command(look(0.5, 12.0, 180, -12));
+        shot("13_overseer_back");
+        command(look(0.5, 0.5, 0, -12), "data merge entity @e[type=vsratie_dushi:overseer,limit=1] {Phase:2}", "time set 18000");
         attack(OverseerEntity.class, OverseerEntity.ROAR);
-        attack(ChaplainEntity.class, ChaplainEntity.CALL);
-        pause(22);
-        shot("08_bosses_phase2_night");
+        shot("14_overseer_roar_night", 20);
+        pause(50);
+        attack(OverseerEntity.class, OverseerEntity.CHAIN);
+        shot("15_overseer_chain_night", 14);
         command("time set 6000");
 
-        // 3. blocks, every item of the mod as a picture in the air, the things on the HUD
+        // 4. the chaplain: at rest, spears, wrath, litany, and with the black fire at night
+        command(gone, look(0.5, 0.5, 0, -8), summon("chaplain", 0.5, 5.5, ""));
+        shot("16_chaplain", 30);
+        attack(ChaplainEntity.class, ChaplainEntity.SPEARS);
+        shot("17_chaplain_spears", 12);
+        pause(40);
+        attack(ChaplainEntity.class, ChaplainEntity.WRATH);
+        shot("18_chaplain_wrath", 22);
+        pause(40);
+        attack(ChaplainEntity.class, ChaplainEntity.CENSER);
+        shot("19_chaplain_censer", 12);
+        pause(30);
+        command(look(-4.0, 7.0, -110, -5));
+        attack(ChaplainEntity.class, ChaplainEntity.LITANY);
+        shot("20_chaplain_litany_side", 20);
+        command(look(0.5, 0.5, 0, -8), "data merge entity @e[type=vsratie_dushi:chaplain,limit=1] {Phase:2}", "time set 18000");
+        attack(ChaplainEntity.class, ChaplainEntity.CALL);
+        shot("21_chaplain_call_night", 22);
+        command("time set 6000");
+
+        // 5. every item of the mod as a picture in the air
         List<String> items = new ArrayList<>();
         Dushi.ITEMS.getEntries().forEach(entry -> items.add(entry.getId().toString()));
         List<String> displays = new ArrayList<>();
-        int columns = 12;
+        int columns = 11;
         for (int i = 0; i < items.size(); i++) {
-            double x = -6.6 + (i % columns) * 1.2;
-            double y = GROUND + 6.3 - (i / columns) * 1.2;
-            displays.add("summon minecraft:item_display " + x + " " + y + " 5 {item:{id:\"" + items.get(i) + "\"},item_display:\"gui\",billboard:\"center\"}");
+            double x = 0.5 + 4.0 - (i % columns) * 0.8;
+            double y = GROUND + 4.0 - (i / columns) * 0.8;
+            displays.add("summon minecraft:item_display " + x + " " + y + " 5 {item:{id:\"" + items.get(i) + "\"},item_display:\"gui\",billboard:\"center\","
+                    + "transformation:{translation:[0f,0f,0f],left_rotation:[0f,0f,0f,1f],scale:[0.7f,0.7f,0.7f],right_rotation:[0f,0f,0f,1f]}}");
         }
-        command(clear, "tp @p 0.5 " + GROUND + " -4.5 0 -14", "setblock -3 " + GROUND + " 3 vsratie_dushi:hearth[lit=true]",
-                "setblock -1 " + GROUND + " 3 vsratie_dushi:hearth[lit=false]",
-                "fill 1 " + GROUND + " 3 3 " + (GROUND + 2) + " 3 vsratie_dushi:fog_gate[axis=x]");
+        command(gone, clear, look(0.5, 0.5, 0, -12));
         command(displays.toArray(String[]::new));
-        pause(40);
-        shot("09_items_blocks");
+        shot("22_items", 40);
 
-        // 4. the player from outside with sword and shield, then blocking; the HUD of a survivor
-        command(clear, "gamemode survival @p", "item replace entity @p weapon.mainhand with vsratie_dushi:longsword",
+        // 6. the blocks
+        command(clear, "setblock -1 " + GROUND + " 4 vsratie_dushi:hearth[lit=true]", "setblock 1 " + GROUND + " 4 vsratie_dushi:hearth[lit=false]",
+                "fill 3 " + GROUND + " 4 4 " + (GROUND + 2) + " 4 vsratie_dushi:fog_gate[axis=x]", look(0.5, 1.0, 0, 18));
+        shot("23_blocks", 40);
+        command("time set 18000");
+        shot("24_blocks_night", 20);
+        command("time set 6000", "fill -1 " + GROUND + " 4 4 " + (GROUND + 2) + " 4 minecraft:air");
+
+        // 7. a survivor with sword and shield: the HUD, then from outside, then blocking
+        command("gamemode survival @p", "item replace entity @p weapon.mainhand with vsratie_dushi:longsword",
                 "item replace entity @p weapon.offhand with vsratie_dushi:guard_shield", "item replace entity @p hotbar.1 with vsratie_dushi:warmth_flask",
-                "item replace entity @p hotbar.2 with vsratie_dushi:great_key", "item replace entity @p hotbar.3 with vsratie_dushi:tower_shield",
-                "tp @p -2.5 " + GROUND + " 0.5 0 10");
+                "item replace entity @p hotbar.2 with vsratie_dushi:great_key", "item replace entity @p hotbar.3 with vsratie_dushi:scholar_staff",
+                look(0.5, 4.5, 0, 8));
         client(() -> {
             PlayerSoul soul = PlayerSoul.of(Minecraft.getInstance().player);
             soul.souls = 1234;
             soul.stamina = 55.0F;
             SoulsHud.showBanner("banner.vsratie_dushi.hearth_lit", 1);
         });
-        pause(20);
-        shot("10_first_person_hud");
-        client(() -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_FRONT));
-        pause(10);
-        shot("11_third_person_front");
-        client(() -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK));
-        pause(10);
-        shot("12_third_person_back");
+        shot("25_first_person_hud", 20);
+        pause(90);
+        camera(CameraType.THIRD_PERSON_FRONT);
+        shot("26_player_front");
+        camera(CameraType.THIRD_PERSON_BACK);
+        shot("27_player_back");
         client(() -> Minecraft.getInstance().options.keyUse.setDown(true));
-        pause(12);
-        shot("13_blocking_back");
-        client(() -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_FRONT));
-        pause(8);
-        shot("14_blocking_front");
-        client(() -> Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON));
-        pause(8);
-        shot("15_blocking_first_person");
+        shot("28_blocking_back");
+        camera(CameraType.THIRD_PERSON_FRONT);
+        shot("29_blocking_front");
+        camera(CameraType.FIRST_PERSON);
+        shot("30_blocking_first_person");
         client(() -> Minecraft.getInstance().options.keyUse.setDown(false));
-        command("item replace entity @p weapon.mainhand with vsratie_dushi:great_key", "item replace entity @p weapon.offhand with vsratie_dushi:tower_shield");
-        client(() -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_FRONT));
-        pause(12);
-        shot("16_great_key_tower_shield");
-        client(() -> Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON));
-        pause(8);
-        shot("17_great_key_first_person");
+        for (String[] set : new String[][] {{"great_key", "tower_shield"}, {"rust_greatsword", "round_shield"}, {"scholar_staff", "soul_shard"},
+                {"battle_axe", "plank_shield"}, {"short_bow", "prayer_beads"}}) {
+            command("item replace entity @p weapon.mainhand with vsratie_dushi:" + set[0], "item replace entity @p weapon.offhand with vsratie_dushi:" + set[1]);
+            camera(CameraType.THIRD_PERSON_FRONT);
+            shot("31_held_" + set[0] + "_front");
+            camera(CameraType.FIRST_PERSON);
+            shot("32_held_" + set[0] + "_first_person", 8);
+        }
 
-        // 5. the hearth screen
+        // 8. the screens
         client(() -> Minecraft.getInstance().gui.setScreen(new HearthScreen()));
-        pause(10);
-        shot("18_hearth_screen");
+        shot("33_hearth_screen");
+        client(() -> Minecraft.getInstance().gui.setScreen(new ShopScreen()));
+        shot("34_shop_screen");
         client(() -> Minecraft.getInstance().gui.setScreen(null));
         pause(5);
+    }
+
+    private static void camera(CameraType type) {
+        client(() -> Minecraft.getInstance().options.setCameraType(type));
     }
 }

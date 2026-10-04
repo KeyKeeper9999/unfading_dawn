@@ -43,7 +43,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 public final class SelfTest {
     private static final boolean ENABLED = System.getenv("DUSHI_SELFTEST") != null;
     private static final int FLOOR_Y = 200;
-    private static final int RUN_TICKS = 700;
+    private static final int RUN_TICKS = 500;
 
     private static final Map<String, Mob> MOBS = new LinkedHashMap<>();
     /** For every mob, how many times each of its moves was started. */
