@@ -121,6 +121,26 @@ CHESTS = {
                 pool(item(M + 'flask_shard'), nothing(9)), pool(item(MC + 'arrow', count=(4, 8)), nothing(1))],
 }
 
+# The chests of the map "High Stockade" (tools/gen_map.py): each holds exactly what is listed, the same for everyone.
+MAP_CHESTS = {
+    'start': [(M + 'club', 1), (M + 'plank_shield', 1), (M + 'tar_pot', 2)],
+    'cells': [(CLOTH, 3), (SOUL, 1), (M + 'shiv', 1)],
+    'store': [(SCRAP, 4), (M + 'tar_pot', 3), (MC + 'arrow', 12)],
+    'far_tower': [(M + 'flask_shard', 1), (SOUL, 2)],
+    'bridge_tower': [(M + 'short_bow', 1), (MC + 'arrow', 16), (M + 'return_ember', 1)],
+    'smithy': [(SCRAP, 4), (CLOTH, 4), (SOUL, 1)],
+    'chapter': [(M + 'rebuke', 1), (M + 'prayer_beads', 1), (GREAT, 1)],
+    'chapter_arms': [(M + 'guard_hauberk', 1), (SOUL, 2), (SCRAP, 3)],
+    'tower_nook': [(M + 'tar_pot', 4), (M + 'return_ember', 2)],
+    'belfry': [(M + 'flask_shard', 1), (GREAT, 1)],
+    'west_gallery': [(M + 'guard_shield', 1), (GREAT, 1), (SCRAP, 4)],
+    'sacristy': [(M + 'mend', 1), (M + 'return_ember', 2), (SOUL, 2)],
+    'treasury': [(GREAT, 3), (M + 'flask_shard', 1)],
+    'treasury_arms': [(M + 'chaplain_skirt', 1), (M + 'chaplain_shoes', 1), (M + 'tower_shield', 1)],
+}
+for _name, _items in MAP_CHESTS.items():
+    CHESTS['map/' + _name] = [pool(item(_id, count=(_n, _n)) if _n > 1 else item(_id)) for _id, _n in _items]
+
 # ---------------------------------------------------------------------------------------------------- tags and worldgen
 
 TAGS = {

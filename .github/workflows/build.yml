@@ -35,6 +35,24 @@ jobs:
             (sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1-mesa-dri mesa-vulkan-drivers libopenal1) > apt.log 2>&1 || true
             (DUSHI_CLIENTTEST=1 LIBGL_ALWAYS_SOFTWARE=1 timeout 1700 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --no-daemon > client.log 2>&1 || true)
           fi
+      - name: the map
+        continue-on-error: true
+        run: |
+          if [ -f build/libs/vsratie_dushi.jar ] && [ -f .ci/map ]; then
+            (sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1-mesa-dri mesa-vulkan-drivers libopenal1 zip) >> apt.log 2>&1 || true
+            mkdir -p run && echo eula=true > run/eula.txt
+            printf '%s\n' 'level-name=High_Stockade' 'level-type=minecraft\:flat' \
+              'generator-settings={"layers"\:[{"block"\:"minecraft\:air","height"\:1}],"biome"\:"minecraft\:the_void"}' \
+              'generate-structures=false' 'gamemode=adventure' 'difficulty=normal' 'spawn-protection=0' 'pause-when-empty-seconds=-1' > run/server.properties
+            (DUSHI_BUILDMAP="$PWD/map/high_stockade.plan.txt" timeout 900 ./gradlew runServer --no-daemon > map.log 2>&1 || true)
+            rm -rf run/High_Stockade/playerdata run/High_Stockade/stats run/High_Stockade/advancements run/High_Stockade/session.lock
+            (cd run && zip -qr ../High_Stockade.zip High_Stockade) || true
+            ls -la High_Stockade.zip run/High_Stockade || true
+            if [ -f .ci/mapshots ]; then
+              mkdir -p run/saves && rm -rf run/saves/High_Stockade && cp -r run/High_Stockade run/saves/
+              (DUSHI_MAPTEST="$PWD/map/views.txt" LIBGL_ALWAYS_SOFTWARE=1 timeout 1500 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --no-daemon > mapclient.log 2>&1 || true)
+            fi
+          fi
       - name: api reference
         continue-on-error: true
         run: |
@@ -58,6 +76,9 @@ jobs:
           tail -c 400000 server.log > /tmp/out/server.log 2>/dev/null || true
           tail -c 400000 client.log > /tmp/out/client.log 2>/dev/null || true
           cp build/libs/*.jar /tmp/out/ 2>/dev/null || true
+          tail -c 200000 map.log > /tmp/out/map.log 2>/dev/null || true
+          tail -c 200000 mapclient.log > /tmp/out/mapclient.log 2>/dev/null || true
+          cp High_Stockade.zip /tmp/out/ 2>/dev/null || true
           mkdir -p /tmp/out/shots && cp run/screenshots/*.png /tmp/out/shots/ 2>/dev/null || true
           cp run/logs/latest.log /tmp/out/latest.log 2>/dev/null || true
           ls run/crash-reports/* >/dev/null 2>&1 && mkdir -p /tmp/out/crash && cp run/crash-reports/* /tmp/out/crash/ || true

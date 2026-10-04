@@ -74,7 +74,7 @@ class Build:
         for (x, y, z), state in self.cells.items():
             if not isinstance(state, str) or '[' in state:
                 continue
-            kind = 'wall' if state.endswith('_wall') else ('bars' if state.endswith(('iron_bars', '_fence')) else None)
+            kind = 'wall' if state.endswith('_wall') else ('bars' if state.endswith(('iron_bars', '_fence', '_pane')) else None)
             if kind is None:
                 continue
             props = []
@@ -87,7 +87,9 @@ class Build:
             changed[(x, y, z)] = state + '[' + ','.join(sorted(props)) + ']'
         self.cells.update(changed)
 
-    def save(self, origin):
+    def save(self, origin, path=None, skip_air=False):
+        """`path` writes the plan somewhere else than the mod's data (the map); `skip_air` leaves air out, for a
+        building that is set down in an empty world."""
         self.join()
         palette = {}
         order = []
@@ -101,7 +103,7 @@ class Build:
             for z in range(self.d):
                 for x in range(self.w):
                     state = self.cells.get((x, y, z))
-                    if state is None:
+                    if state is None or (skip_air and state == AIR):
                         value = '_'
                     else:
                         if state not in palette:
@@ -114,8 +116,9 @@ class Build:
                         flush()
                         run_value, run = value, 1
         flush()
-        os.makedirs(f'{DATA}/plan', exist_ok=True)
-        with open(f'{DATA}/plan/{self.name}.txt', 'w') as f:
+        path = path or f'{DATA}/plan/{self.name}.txt'
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w') as f:
             f.write(f'size {self.w} {self.h} {self.d}\n')
             f.write('origin {} {} {}\n'.format(*origin))
             f.write(f'palette {len(order)}\n')

@@ -97,12 +97,12 @@ for k in set(lang['ru_ru']) ^ set(lang['en_us']):
 # recipes, chest loot and plans may only name items and loot tables that exist
 DATA = 'src/main/resources/data/vsratie_dushi'
 names = set()
-for path in glob.glob(f'{DATA}/recipe/*.json') + glob.glob(f'{DATA}/loot_table/chests/*.json'):
+for path in glob.glob(f'{DATA}/recipe/*.json') + glob.glob(f'{DATA}/loot_table/chests/**/*.json', recursive=True):
     for ref in re.findall(M + r':(\w+)', open(path).read()):
         if ref not in items:
             problems.append(f'{path}: no such item {ref}')
-for path in glob.glob(f'{DATA}/plan/*.txt'):
-    for ref in re.findall(r'^chest ' + M + r':chests/(\w+)', open(path).read(), re.M):
+for path in glob.glob(f'{DATA}/plan/*.txt') + glob.glob('map/*.plan.txt'):
+    for ref in re.findall(r'^chest ' + M + r':chests/([\w/]+)', open(path).read(), re.M):
         need(f'{DATA}/loot_table/chests/{ref}.json', f'loot table of {path}')
 for name in armour:
     suit = name.split('_')[0]
