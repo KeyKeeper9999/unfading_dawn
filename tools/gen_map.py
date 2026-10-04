@@ -1944,6 +1944,12 @@ if __name__ == '__main__':
             else:
                 name, eye, look = view
                 f.write(name + ' ' + ' '.join(f'{v:.2f}' for v in world(*eye) + world(*look)) + '\n')
+        # after the pictures the test throws every lever and fells both lords, and says what the doors and the seals did
+        for door, lever in b.doors:
+            f.write('lever ' + ' '.join(f'{v:.2f}' for v in world(*lever) + world(*door[0])) + '\n')
+        for boss, eye, look in (('overseer', (64, L1 + 3, 146.5), (64, L1 + 4, 120)), ('chaplain', (64, LC + 3, 31), (64, LC + 10, 9))):
+            f.write(f'near_the_{boss} ' + ' '.join(f'{v:.2f}' for v in world(*eye) + world(*look)) + '\n')
+            f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v:.2f}' for v in world(*b.seals[boss][0])) + '\n')
     with open('map/light.txt', 'w') as f:
         for name, at in PROBES:
             if b.get(*at) not in (None, AIR) and 'mob_mark' not in str(b.get(*at)):

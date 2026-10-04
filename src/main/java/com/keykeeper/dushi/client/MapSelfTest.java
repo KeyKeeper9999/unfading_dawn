@@ -15,10 +15,16 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.tutorial.TutorialSteps;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -78,6 +84,8 @@ public final class MapSelfTest {
                         String[] p = line.trim().split("\\s+");
                         if (p.length == 2 && p[0].equals("time")) {
                             LIST.add(new View("time", Double.parseDouble(p[1]), 0, 0, 0, 0, 0));
+                        } else if (p.length == 5 && p[0].equals("kill")) {
+                            LIST.add(new View("kill " + p[1], Double.parseDouble(p[2]), Double.parseDouble(p[3]), Double.parseDouble(p[4]), 0, 0, 0));
                         } else if (p.length == 7) {
                             LIST.add(new View(p[0], Double.parseDouble(p[1]), Double.parseDouble(p[2]), Double.parseDouble(p[3]),
                                     Double.parseDouble(p[4]), Double.parseDouble(p[5]), Double.parseDouble(p[6])));
@@ -153,6 +161,36 @@ public final class MapSelfTest {
                 }
                 View view = LIST.get(next);
                 MinecraftServer server = minecraft.getSingleplayerServer();
+                if (view.name.startsWith("kill ")) {
+                    // a lord of the place falls: the seal he kept must lift
+                    String type = view.name.substring(5);
+                    BlockPos seal = BlockPos.containing(view.x, view.y, view.z);
+                    server.execute(() -> {
+                        String before = server.overworld().getBlockState(seal).toString();
+                        server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "kill @e[type=" + type + "]");
+                        say("killed " + type + ": the seal at " + seal.toShortString() + " was " + before + ", is " + server.overworld().getBlockState(seal));
+                    });
+                    next++;
+                    wait = 20;
+                    return;
+                }
+                if (view.name.equals("lever")) {
+                    // a lever is thrown the way a player throws it: the door it bars must open
+                    BlockPos lever = BlockPos.containing(view.x, view.y, view.z);
+                    BlockPos door = BlockPos.containing(view.toX, view.toY, view.toZ);
+                    server.execute(() -> {
+                        ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                        ServerLevel level = server.overworld();
+                        BlockState state = level.getBlockState(lever);
+                        String before = level.getBlockState(door).toString();
+                        Object result = state.useWithoutItem(level, player, new BlockHitResult(Vec3.atCenterOf(lever), Direction.UP, lever, false));
+                        say("lever at " + lever.toShortString() + " is " + state.getBlock() + ", thrown: " + result + "; the door at " + door.toShortString()
+                                + " was " + before + ", is " + level.getBlockState(door));
+                    });
+                    next++;
+                    wait = 5;
+                    return;
+                }
                 if (view.name.equals("time")) {
                     long time = (long) view.x;
                     server.execute(() -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(),

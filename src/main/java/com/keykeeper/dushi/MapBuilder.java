@@ -163,6 +163,13 @@ public final class MapBuilder {
                     }
                 }
             }
+            java.util.Map<String, Integer> census = new java.util.TreeMap<>();
+            for (LevelChunk chunk : CHUNKS) {
+                for (var entity : chunk.getBlockEntities().values()) {
+                    census.merge(entity.getClass().getSimpleName(), 1, Integer::sum);
+                }
+            }
+            say("what stands in the world: " + census);
             for (LevelChunk chunk : CHUNKS) {
                 chunk.markUnsaved();
                 level.setChunkForced(chunk.getPos().x(), chunk.getPos().z(), false);
