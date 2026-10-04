@@ -1,0 +1,66 @@
+name: build
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: build
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+      - name: build
+        continue-on-error: true
+        run: chmod +x gradlew && ./gradlew build --no-daemon 2>&1 | tee build.log
+      - name: smoke test (server start)
+        continue-on-error: true
+        run: |
+          if [ -f build/libs/vsratie_dushi.jar ] && [ ! -f .ci/skip_server ]; then
+            mkdir -p run && echo eula=true > run/eula.txt
+            (DUSHI_SELFTEST=1 timeout 300 ./gradlew runServer --no-daemon > server.log 2>&1 || true)
+          fi
+      - name: client screenshots
+        continue-on-error: true
+        run: |
+          if [ -f build/libs/vsratie_dushi.jar ] && [ -f .ci/client ]; then
+            sudo apt-get install -y -qq xvfb libgl1-mesa-dri mesa-vulkan-drivers libglfw3 > /dev/null 2>&1 || true
+            (DUSHI_CLIENTTEST=1 LIBGL_ALWAYS_SOFTWARE=1 timeout 600 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --no-daemon > client.log 2>&1 || true)
+          fi
+      - name: api reference
+        continue-on-error: true
+        run: |
+          mkdir -p /tmp/out/ref /tmp/out/api
+          JAR=$(ls build/moddev/artifacts/minecraft-patched-*.jar 2>/dev/null | head -1)
+          if [ -f .ci/dump_api ] && [ -n "$JAR" ]; then
+            unzip -Z1 "$JAR" | grep '\.class$' | sed 's/\.class$//' | tr '/' '.' | sort > /tmp/classes.txt
+            wc -l /tmp/classes.txt
+            xargs -n 300 javap -cp "$JAR" -protected < /tmp/classes.txt > /tmp/out/api/minecraft.txt 2> /tmp/out/api/javap.err || true
+            gzip -9 /tmp/out/api/minecraft.txt
+            unzip -Z1 "$JAR" | grep -v '\.class$' | gzip -9 > /tmp/out/api/resources.txt.gz
+            find ~/.gradle -name "neoforge-*-sources.jar" -exec cp {} /tmp/out/api/ \; || true
+          fi
+          if [ -f .ci/ref.txt ] && [ -n "$JAR" ]; then
+            unzip -o -q "$JAR" $(cat .ci/ref.txt) -d /tmp/out/ref 2>/dev/null || true
+          fi
+      - name: publish outputs to ci-out branch
+        run: |
+          mkdir -p /tmp/out
+          cp build.log /tmp/out/ || true
+          tail -c 400000 server.log > /tmp/out/server.log 2>/dev/null || true
+          tail -c 400000 client.log > /tmp/out/client.log 2>/dev/null || true
+          cp build/libs/*.jar /tmp/out/ 2>/dev/null || true
+          mkdir -p /tmp/out/shots && cp run/screenshots/*.png /tmp/out/shots/ 2>/dev/null || true
+          cp run/logs/latest.log /tmp/out/latest.log 2>/dev/null || true
+          ls run/crash-reports/* >/dev/null 2>&1 && mkdir -p /tmp/out/crash && cp run/crash-reports/* /tmp/out/crash/ || true
+          cd /tmp/out && git init -q -b ci-out && git config user.name ci && git config user.email ci@users.noreply.github.com
+          git add -A && git commit -qm "ci output for $GITHUB_SHA"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-out
