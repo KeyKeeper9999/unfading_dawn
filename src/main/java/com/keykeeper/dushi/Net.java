@@ -11,7 +11,10 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.item.ItemStack;
+import com.keykeeper.dushi.entity.KeykeeperEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -118,6 +121,60 @@ public final class Net {
         @Override
         public Type<OpenHearth> type() {
             return TYPE;
+        }
+    }
+
+    /** Server to client: the keykeeper shows his wares. */
+    public record OpenShop(int entityId) implements CustomPacketPayload {
+        public static final Type<OpenShop> TYPE = new Type<>(Dushi.id("open_shop"));
+        public static final StreamCodec<ByteBuf, OpenShop> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, OpenShop::entityId, OpenShop::new);
+
+        @Override
+        public Type<OpenShop> type() {
+            return TYPE;
+        }
+    }
+
+    /** Client to server: buy ware number {@code index} from a keykeeper standing close by. */
+    public record Buy(int index) implements CustomPacketPayload {
+        public static final Type<Buy> TYPE = new Type<>(Dushi.id("buy"));
+        public static final StreamCodec<ByteBuf, Buy> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, Buy::index, Buy::new);
+
+        @Override
+        public Type<Buy> type() {
+            return TYPE;
+        }
+
+        public static void handle(Buy payload, IPayloadContext context) {
+            if (context.player() instanceof ServerPlayer player) {
+                apply(player, payload.index());
+            }
+        }
+
+        /** Returns whether the purchase went through. */
+        public static boolean apply(ServerPlayer player, int index) {
+            if (index < 0 || index >= Shop.wares().size() || !player.isAlive()) {
+                return false;
+            }
+            ServerLevel level = player.level();
+            if (level.getEntitiesOfClass(KeykeeperEntity.class, player.getBoundingBox().inflate(6.0), Entity::isAlive).isEmpty()) {
+                return false;
+            }
+            Shop.Ware ware = Shop.wares().get(index);
+            PlayerSoul soul = PlayerSoul.of(player);
+            if (soul.souls < ware.price() && !player.isCreative()) {
+                return false;
+            }
+            if (!player.isCreative()) {
+                soul.souls -= ware.price();
+            }
+            ItemStack stack = ware.stack().get();
+            if (!player.getInventory().add(stack)) {
+                player.spawnAtLocation(level, stack);
+            }
+            player.syncData(Dushi.PLAYER_SOUL);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), Dushi.sound("entity.keykeeper.give"), SoundSource.NEUTRAL, 0.8F, 1.1F);
+            return true;
         }
     }
 

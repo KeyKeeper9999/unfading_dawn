@@ -89,6 +89,8 @@ t(f'banner.{M}.hearth_lit', 'ОЧАГ РАЗОЖЖЁН', 'HEARTH LIT')
 t(f'banner.{M}.souls_retrieved', 'ДУШИ ВОЗВРАЩЕНЫ', 'SOULS RETRIEVED')
 t(f'hud.{M}.lost', 'потеряно: %s', 'lost: %s')
 
+t(f'screen.{M}.shop', 'Товары ключника', "The Keykeeper's Wares")
+t(f'screen.{M}.shop.leave', 'Уйти', 'Leave')
 t(f'screen.{M}.hearth', 'Очаг', 'Hearth')
 t(f'screen.{M}.hearth.leave', 'Встать', 'Get up')
 t(f'screen.{M}.hearth.level', 'Уровень: %s', 'Level: %s')

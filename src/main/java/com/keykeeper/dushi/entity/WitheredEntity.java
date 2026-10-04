@@ -195,6 +195,22 @@ public class WitheredEntity extends SoulsMob {
     }
 
     @Override
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean killedByPlayer) {
+        super.dropCustomDeathLoot(level, source, killedByPlayer);
+        if (this.random.nextInt(14) == 0) {
+            this.spawnAtLocation(level, new ItemStack(Dushi.NAMELESS_SOUL.get()));
+        }
+        if (this.kind == Kind.ARCHER) {
+            int arrows = this.random.nextInt(3);
+            if (arrows > 0) {
+                this.spawnAtLocation(level, new ItemStack(Items.ARROW, arrows));
+            }
+        } else if (this.kind == Kind.GUARD && this.random.nextInt(10) == 0) {
+            this.spawnAtLocation(level, new ItemStack(Dushi.TAR_POT.get()));
+        }
+    }
+
+    @Override
     protected SoundEvent getAmbientSound() {
         return Dushi.sound("entity.withered.ambient");
     }

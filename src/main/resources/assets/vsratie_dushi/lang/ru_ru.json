@@ -97,6 +97,8 @@
   "banner.vsratie_dushi.hearth_lit": "ОЧАГ РАЗОЖЖЁН",
   "banner.vsratie_dushi.souls_retrieved": "ДУШИ ВОЗВРАЩЕНЫ",
   "hud.vsratie_dushi.lost": "потеряно: %s",
+  "screen.vsratie_dushi.shop": "Товары ключника",
+  "screen.vsratie_dushi.shop.leave": "Уйти",
   "screen.vsratie_dushi.hearth": "Очаг",
   "screen.vsratie_dushi.hearth.leave": "Встать",
   "screen.vsratie_dushi.hearth.level": "Уровень: %s",

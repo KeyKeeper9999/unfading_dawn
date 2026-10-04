@@ -334,6 +334,8 @@ public class Dushi {
             registrar.playToServer(Net.LevelUp.TYPE, Net.LevelUp.CODEC, Net.LevelUp::handle);
             registrar.playToClient(Net.OpenHearth.TYPE, Net.OpenHearth.CODEC);
             registrar.playToClient(Net.Banner.TYPE, Net.Banner.CODEC);
+            registrar.playToClient(Net.OpenShop.TYPE, Net.OpenShop.CODEC);
+            registrar.playToServer(Net.Buy.TYPE, Net.Buy.CODEC, Net.Buy::handle);
         });
     }
 }

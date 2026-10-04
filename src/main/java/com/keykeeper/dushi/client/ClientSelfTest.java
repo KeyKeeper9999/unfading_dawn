@@ -16,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -82,8 +81,9 @@ public final class ClientSelfTest {
         switch (stage) {
             case 0 -> {
                 // Wait for the title screen, then make a flat creative world.
-                if (screen instanceof TitleScreen && minecraft.isGameLoadFinished()) {
-                    say("title screen reached, creating a world");
+                // (On a first start the game shows its accessibility screen instead of the title; either will do.)
+                if (screen != null && minecraft.isGameLoadFinished() && minecraft.gui.overlay() == null && waited > 40) {
+                    say("menu reached (" + screen.getClass().getSimpleName() + "), creating a world");
                     minecraft.options.pauseOnLostFocus = false;
                     minecraft.options.guiScale().set(2);
                     LevelSettings settings = new LevelSettings("dushi_test", GameType.CREATIVE,

@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.keykeeper.dushi.Dushi;
+import com.keykeeper.dushi.Net;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.UUIDUtil;
@@ -67,8 +69,9 @@ public class KeykeeperEntity extends PathfinderMob {
                 this.playSound(Dushi.sound("entity.keykeeper.give"), 1.0F, 1.0F);
                 level.sendParticles(ParticleTypes.FLAME, this.getX(), this.getY() + 1.0, this.getZ(), 8, 0.3, 0.2, 0.3, 0.01);
             } else {
+                // After the first meeting he trades: a word of advice and then his wares.
                 this.say(serverPlayer, "dialogue.vsratie_dushi.keykeeper.idle." + this.random.nextInt(IDLE_LINES));
-                this.playSound(Dushi.sound("entity.keykeeper.ambient"), 1.0F, 1.0F);
+                PacketDistributor.sendToPlayer(serverPlayer, new Net.OpenShop(this.getId()));
             }
         }
         return InteractionResult.SUCCESS;

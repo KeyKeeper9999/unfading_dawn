@@ -196,6 +196,17 @@ public final class SelfTest {
         say("level up:" + levels + " level=" + soul.level() + " souls " + before + " -> " + soul.souls + " maxHealth=" + player.getMaxHealth()
                 + " maxStamina=" + soul.maxStamina());
 
+        // The keykeeper's shop: no keykeeper near, no deal; with one, the price is paid and the thing arrives.
+        boolean refused = !Net.Buy.apply(player, 0);
+        var keeper = Dushi.KEYKEEPER.get().spawn(level, hearth.offset(2, 0, 0), EntitySpawnReason.COMMAND);
+        int purse = soul.souls;
+        boolean bought = Net.Buy.apply(player, 0);
+        say("shop: " + Shop.wares().size() + " wares, refused without a keykeeper=" + refused + " bought=" + bought + " paid=" + (purse - soul.souls)
+                + " has it=" + player.getInventory().contains(stack -> stack.is(Dushi.CLUB.get())));
+        if (keeper != null) {
+            keeper.discard();
+        }
+
         // Stamina: spending, the pause, recovery.
         soul.stamina = soul.maxStamina();
         boolean enough = soul.spend(30.0F);

@@ -97,6 +97,8 @@
   "banner.vsratie_dushi.hearth_lit": "HEARTH LIT",
   "banner.vsratie_dushi.souls_retrieved": "SOULS RETRIEVED",
   "hud.vsratie_dushi.lost": "lost: %s",
+  "screen.vsratie_dushi.shop": "The Keykeeper's Wares",
+  "screen.vsratie_dushi.shop.leave": "Leave",
   "screen.vsratie_dushi.hearth": "Hearth",
   "screen.vsratie_dushi.hearth.leave": "Get up",
   "screen.vsratie_dushi.hearth.level": "Level: %s",
