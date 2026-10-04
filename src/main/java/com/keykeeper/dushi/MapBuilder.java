@@ -1,6 +1,11 @@
 package com.keykeeper.dushi;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.keykeeper.dushi.world.Plan;
 import com.keykeeper.dushi.world.PlanPiece;
@@ -8,6 +13,9 @@ import com.keykeeper.dushi.world.PlanPiece;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ThreadedLevelLightEngine;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
@@ -36,6 +44,10 @@ public final class MapBuilder {
     private static final int SUNSET = 11800;
 
     private static int ticks = -1;
+    /** 0: the blocks are down; 1: the light engine is being told about every chunk; 2: light is being spread; 3: done. */
+    private static int stage;
+    private static final List<LevelChunk> CHUNKS = new ArrayList<>();
+    private static final List<CompletableFuture<?>> WAITING = new ArrayList<>();
 
     private MapBuilder() {}
 
@@ -66,9 +78,10 @@ public final class MapBuilder {
         say("plan " + plan.width + "x" + plan.height + "x" + plan.depth + ", box " + box + ", world is empty at the origin: "
                 + level.getBlockState(ORIGIN.below(40)).isAir());
         long started = System.currentTimeMillis();
-        for (int cx = (box.minX() >> 4) - 1; cx <= (box.maxX() >> 4) + 1; cx++) {
-            for (int cz = (box.minZ() >> 4) - 1; cz <= (box.maxZ() >> 4) + 1; cz++) {
-                level.getChunk(cx, cz);
+        for (int cx = (box.minX() >> 4) - 2; cx <= (box.maxX() >> 4) + 2; cx++) {
+            for (int cz = (box.minZ() >> 4) - 2; cz <= (box.maxZ() >> 4) + 2; cz++) {
+                level.setChunkForced(cx, cz, true);            // kept loaded until the light is done
+                CHUNKS.add(level.getChunk(cx, cz));
             }
         }
         piece.postProcess(level, level.structureManager(), level.getChunkSource().getGenerator(), level.getRandom(),
@@ -103,13 +116,66 @@ public final class MapBuilder {
         if (ticks < 0) {
             return;
         }
-        // Light is worked out over the next ticks; give it time before saving.
-        if (++ticks == 300) {
-            MinecraftServer server = event.getServer();
+        ticks++;
+        MinecraftServer server = event.getServer();
+        ServerLevel level = server.overworld();
+        try {
+            light(server, level);
+        } catch (RuntimeException | IOException e) {
+            say("FAILED: " + e);
+            e.printStackTrace(System.out);
+            ticks = -1;
+            server.halt(false);
+        }
+    }
+
+    /**
+     * Setting several hundred thousand blocks one by one into an empty world leaves its light in pieces (whole storeys came
+     * out black). So the light of every chunk is thrown away and worked out again, the way the game does it for a chunk it
+     * has just generated: first every chunk is announced to the light engine, then light is spread in every chunk.
+     */
+    private static void light(MinecraftServer server, ServerLevel level) throws IOException {
+        ThreadedLevelLightEngine engine = level.getChunkSource().getLightEngine();
+        boolean idle = WAITING.stream().allMatch(CompletableFuture::isDone);
+        if (stage == 0 && ticks >= 40) {
+            for (LevelChunk chunk : CHUNKS) {
+                WAITING.add(engine.initializeLight(chunk, false));
+            }
+            stage = 1;
+        } else if (stage == 1 && idle) {
+            WAITING.clear();
+            for (LevelChunk chunk : CHUNKS) {
+                WAITING.add(engine.lightChunk(chunk, false));
+            }
+            say("light: " + CHUNKS.size() + " chunks announced by tick " + ticks);
+            stage = 2;
+        } else if (stage == 2 && idle) {
+            WAITING.clear();
+            say("light: spread by tick " + ticks);
+            Path probes = Path.of(PLAN_FILE).resolveSibling("light.txt");
+            if (Files.exists(probes)) {
+                for (String line : Files.readAllLines(probes)) {
+                    String[] p = line.trim().split("\\s+");
+                    if (p.length == 4) {
+                        BlockPos pos = new BlockPos(Integer.parseInt(p[1]), Integer.parseInt(p[2]), Integer.parseInt(p[3]));
+                        say("light at " + p[0] + " " + pos.toShortString() + ": sky " + level.getBrightness(LightLayer.SKY, pos) + ", block "
+                                + level.getBrightness(LightLayer.BLOCK, pos) + (level.getBlockState(pos).isAir() ? "" : " (in " + level.getBlockState(pos).getBlock() + ")"));
+                    }
+                }
+            }
+            for (LevelChunk chunk : CHUNKS) {
+                chunk.markUnsaved();
+                level.setChunkForced(chunk.getPos().x(), chunk.getPos().z(), false);
+            }
+            stage = 3;
+            ticks = 100000;
+        } else if (stage == 3 && ticks == 100040) {
             boolean saved = server.saveEverything(true, true, true);
             say("saved=" + saved + ", done");
             ticks = -1;
             server.halt(false);
+        } else if (stage < 3 && ticks > 9000) {
+            throw new IllegalStateException("the light was not ready after " + ticks + " ticks (stage " + stage + ")");
         }
     }
 }

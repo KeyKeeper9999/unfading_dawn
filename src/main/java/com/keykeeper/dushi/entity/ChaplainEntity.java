@@ -61,6 +61,7 @@ public class ChaplainEntity extends SoulsMob {
     public static final int CALL_PEAK = 20;
 
     private static final double WRATH_RADIUS = 6.0;
+    private static final float WRATH_DAMAGE = 14.0F;
 
     private int wrathCooldown = 80;
     private int blinkCooldown;
@@ -74,7 +75,7 @@ public class ChaplainEntity extends SoulsMob {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 320.0).add(Attributes.ATTACK_DAMAGE, 9.0)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 360.0).add(Attributes.ATTACK_DAMAGE, 10.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.27).add(Attributes.ARMOR, 2.0).add(Attributes.KNOCKBACK_RESISTANCE, 0.6)
                 .add(Attributes.FOLLOW_RANGE, 40.0);
     }
@@ -237,7 +238,7 @@ public class ChaplainEntity extends SoulsMob {
                     level.sendParticles(ParticleTypes.ENCHANT, this.getX(), this.getY() + 2.0, this.getZ(), 8, 0.6, 0.8, 0.6, 0.6);
                 }
                 if (time == WRATH_BURST) {
-                    this.hitAround(level, this.position(), WRATH_RADIUS, 12.0F, 2.0, this.damageSources().indirectMagic(this, this));
+                    this.hitAround(level, this.position(), WRATH_RADIUS, WRATH_DAMAGE, 2.0, this.damageSources().indirectMagic(this, this));
                     level.sendParticles(net.minecraft.core.particles.ColorParticleOption.create(ParticleTypes.FLASH, 0xFFFFFFFF), this.getX(), this.getY() + 1.5, this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
                     for (int i = 0; i < 36; i++) {
                         double angle = i * Math.PI * 2.0 / 36.0;

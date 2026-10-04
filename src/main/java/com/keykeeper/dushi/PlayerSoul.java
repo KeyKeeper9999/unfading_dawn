@@ -36,7 +36,9 @@ public final class PlayerSoul {
     /** Ticks without recovery after stamina has been spent. */
     public static final int REGEN_PAUSE = 22;
     /** Hearts (two health points) per point of vitality. */
-    private static final double HEALTH_PER_VITALITY = 2.0;
+    private static final double HEALTH_PER_VITALITY = 3.0;
+    /** Extra damage per point of strength or dexterity, for a weapon that scales fully with it. */
+    public static final float WEAPON_BONUS = 0.05F;
     private static final Identifier VITALITY_MODIFIER = Identifier.fromNamespaceAndPath(Dushi.MODID, "vitality");
 
     public static final MapCodec<PlayerSoul> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -186,7 +188,7 @@ public final class PlayerSoul {
 
     /** Extra damage for a weapon that scales with strength and dexterity (each 0..1). */
     public float weaponBonus(float strengthScaling, float dexterityScaling) {
-        return 1.0F + 0.035F * (strengthScaling * this.stats[STRENGTH] + dexterityScaling * this.stats[DEXTERITY]);
+        return 1.0F + WEAPON_BONUS * (strengthScaling * this.stats[STRENGTH] + dexterityScaling * this.stats[DEXTERITY]);
     }
 
     public float spellBonus(SpellSchool school) {

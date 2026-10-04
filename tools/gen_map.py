@@ -7,6 +7,7 @@ a place to play: what can be reached from where, and that nothing reachable is a
 
 Coordinates as in gen_structures.py: x east, z south, y up. The way through the map leads north (to the top of the
 top-down pictures); the game turns the plan so that north becomes west, into the sunset."""
+import math
 import os
 import sys
 from collections import deque
@@ -1730,6 +1731,19 @@ VIEWS = (
     ('t13100_ward', (64, L1 + 7, 243), (64, L0, 200)),
 )
 
+# places where the finished world's light is read out by MapBuilder: under the sky, indoors, underground
+PROBES = (
+    ('ward', (64, L0 + 1, 220)), ('wall_walk', (20, L1 + 1, 220)), ('cells', (25, L0 + 1, 204)), ('cells_passage', (31, L0 + 1, 214)),
+    ('keeper_room', (78, L0 + 1, 240)), ('storehouse', (100, L0 + 1, 215)), ('bridge_tower_ground', (64, L0 + 1, 190)),
+    ('bridge_tower_upper', (64, L1 + 1, 190)), ('gate_hall', (64, L1 + 1, 134)), ('gate_hall_corner', (50, L1 + 1, 142)),
+    ('hall_stair', (64, L1 + 4, 113)), ('plaza', (50, L2 + 1, 95)), ('cloister_walk', (12, L2 + 1, 90)), ('chapter_room', (21, L2 + 1, 63)),
+    ('alley', (27, L2 + 1, 45)), ('bell_tower_stair', (100, L2 + 4, 93)), ('bell_tower_landing', (105, L2 + 7, 89)),
+    ('covered_walk', (96, GAL + 1, 76)), ('east_gallery', (82, GAL + 1, 55)), ('nave', (64, LC + 1, 55)), ('west_aisle', (46, LC + 1, 55)),
+    ('choir', (64, LC + 1, 22)), ('sacristy', (36, LC + 1, 46)), ('treasury', (95, LC + 1, 15)), ('crypt_stair', (85, CY + 7, 42)),
+    ('crypt_landing', (80, CY + 1, 35)), ('crypt_hall', (64, CY + 1, 50)), ('crypt_hall_corner', (57, CY + 1, 39)), ('crypt_passage', (42, CY + 1, 53)),
+    ('belfry', (101, BELL + 1, 89)),
+)
+
 EXTRA_COLOURS = [
     ('end_stone', (222, 214, 160)), ('sandstone', (216, 202, 152)), ('quartz', (236, 230, 222)), ('calcite', (224, 224, 220)),
     ('packed_mud', (140, 104, 78)), ('polished_diorite', (196, 196, 198)), ('smooth_stone', (160, 160, 160)), ('terracotta', (142, 60, 46)),
@@ -1757,6 +1771,12 @@ if __name__ == '__main__':
             else:
                 name, eye, look = view
                 f.write(name + ' ' + ' '.join(f'{v:.2f}' for v in world(*eye) + world(*look)) + '\n')
+    with open('map/light.txt', 'w') as f:
+        for name, at in PROBES:
+            if b.get(*at) not in (None, AIR) and 'mob_mark' not in str(b.get(*at)):
+                print(f'  PROBLEM: the light probe {name} is inside {b.get(*at)}')
+            wx, wy, wz = world(*at)
+            f.write(f'{name} {math.floor(wx)} {wy} {math.floor(wz)}\n')
     print(f'{b.name}: {b.w}x{b.h}x{b.d}, {built} blocks built, {rocks} of rock, {states} block states')
     total = {}
     for zone, kinds in b.census.items():
