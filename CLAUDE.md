@@ -35,7 +35,8 @@ again, sets the rules of the world, saves and stops; the world folder is zipped.
 
 - `map.log` - `DUSHI MAP ...` lines: the size of the plan, what stands in the world (a count of block entities), and the
   light read out at the places listed in `map/light.txt`;
-- `High_Stockade.zip` - the map as players get it (unpack into `saves`);
+- `High_Stockade.zip` - the map as players get it (unpack into `saves`); the workflow gives the world its shown name
+  (`tools/name_world.py`), `map/icon.png` and `map/readme.txt`;
 - `mapclient.log` and `shots/m*.png` - only if `.ci/mapshots` exists: the client opens the saved world the way a player
   would (`client/MapSelfTest.java`, `DUSHI_MAPTEST=map/views.txt`), says how a newcomer starts (`DUSHI MAPTEST ...`),
   flies to every view of `map/views.txt` and takes a picture, then throws every lever and kills both bosses and says
@@ -55,6 +56,9 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `Forge` (the recipes of the old anvil: parts and souls), `block/ForgeBlock`, `client/ForgeScreen` (a plain list).
 - `block/FogGateBlock` - fog before a boss; `sealed=true` is the amber seal that lets nobody through until the boss of
   that room dies (`lift` clears the nearest fog and every seal within reach of the boss's mark).
+- `block/PlaceNameBlock` - a threshold nobody sees or feels: a player who steps through it is shown the name of the
+  place (`place.vsratie_dushi.<id>` in the texts; the list of places is the enum in the block). No item: a map's builder
+  sets it; with a mob mark in hand it can be seen and removed in creative.
 - `MapBuilder` (build only) and `client/MapSelfTest` (build only) - see "The map".
 - `Gear` - what the rules know about any piece of gear, the game's own included: stamina cost, scaling and backstab of
   a weapon (by item tag for vanilla ones), stability of a shield, weight of everything worn or held, and the burden that
@@ -116,6 +120,9 @@ ground door is opened from inside) -> great bridge -> gate hall (the Overseer; a
 anvil) -> cloister and chapter room / bell tower -> covered walk -> the cathedral's east gallery -> nave (postern and
 west door open shortcuts; sacristy hearth) -> crypt under the nave (optional, comes out in the alley behind the chapter
 room) -> choir (the Chaplain) -> treasury and terrace.
+
+The names of the places are thresholds across the ways in (`thresholds` in `gen_map.py`). Views whose name begins
+with `as_player_` are walked to by the test as the newcomer is, before the camera is set free.
 
 `gen_map.py` ends with a check of the map as a place to play, and every change to the map must leave it clean:
 
