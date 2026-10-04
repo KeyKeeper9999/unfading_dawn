@@ -48,11 +48,16 @@ for key, ru, en in (
         ('rust_tassets', 'Ржавые набедренники', 'Rust Tassets'), ('rust_sabatons', 'Ржавые сабатоны', 'Rust Sabatons'),
         ('chaplain_mitre', 'Митра капеллана', "Chaplain's Mitre"), ('chaplain_cassock', 'Ряса капеллана', "Chaplain's Cassock"),
         ('chaplain_skirt', 'Подрясник капеллана', "Chaplain's Skirt"), ('chaplain_shoes', 'Туфли капеллана', "Chaplain's Shoes"),
+        ('pitchfork', 'Вилы', 'Pitchfork'), ('cleaver', 'Тесак мясника', "Butcher's Cleaver"), ('grave_spade', 'Заступ могильщика', "Gravedigger's Spade"),
+        ('gravedigger_soul', 'Душа Могильщика', 'Soul of the Gravedigger'),
         ('tattered_cloth', 'Ветошь', 'Tattered Cloth'), ('rust_scrap', 'Ржавый лом', 'Rust Scrap')):
     t(f'item.{M}.{key}', ru, en)
 
 MOBS = (('withered_prisoner', 'Истлевший узник', 'Withered Prisoner'), ('withered_guard', 'Истлевший стражник', 'Withered Guard'),
         ('withered_archer', 'Истлевший лучник', 'Withered Archer'), ('withered_acolyte', 'Истлевший послушник', 'Withered Acolyte'),
+        ('withered_townsman', 'Истлевший посадский', 'Withered Townsman'), ('withered_butcher', 'Истлевший мясник', 'Withered Butcher'),
+        ('withered_watchman', 'Истлевший сторож', 'Withered Watchman'), ('carrion_hound', 'Трупный пёс', 'Carrion Hound'),
+        ('gravedigger', 'Могильщик Посада', 'Gravedigger of the Borough'),
         ('gilded_knight', 'Золочёный рыцарь', 'Gilded Knight'), ('rust_knight', 'Ржавый рыцарь', 'Rust Knight'),
         ('keykeeper', 'Слепой ключник', 'Blind Keykeeper'), ('overseer', 'Надзиратель Острога', 'Overseer of the Stockade'),
         ('chaplain', 'Капеллан Острога', 'Chaplain of the Stockade'))
@@ -120,8 +125,20 @@ t(f'place.{M}.garden', 'МЁРТВЫЙ САД', 'THE DEAD GARDEN')
 t(f'place.{M}.belfry', 'ЗВОННИЦА', 'THE BELFRY')
 t(f'place.{M}.cathedral', 'СОБОР ПОСЛЕДНЕГО СВЕТА', 'CATHEDRAL OF THE LAST LIGHT')
 t(f'place.{M}.crypt', 'КРИПТА ОСНОВАТЕЛЯ', "THE FOUNDER'S CRYPT")
-t(f'place.{M}.edge', 'КРАЙ МИРА', 'THE EDGE OF THE WORLD')
+t(f'place.{M}.edge', 'ТЕРРАСА НАД ДОЛИНОЙ', 'THE TERRACE ABOVE THE VALE')
 t(f'block.{M}.place_name', 'Порог с именем места', 'Named Threshold')
+t(f'place.{M}.posad', 'МЁРТВЫЙ ПОСАД', 'THE DEAD BOROUGH')
+t(f'place.{M}.market', 'ТОРГ', 'THE MARKET')
+t(f'place.{M}.shambles', 'МЯСНОЙ РЯД', 'THE SHAMBLES')
+t(f'place.{M}.churchyard', 'ПОГОСТ', 'THE CHURCHYARD')
+t(f'place.{M}.road', 'ОСТРОЖНАЯ ДОРОГА', 'THE STOCKADE ROAD')
+t(f'block.{M}.shard_heap', 'Тлеющий осколок', 'Glowing Shard')
+t(f'message.{M}.shard_found', 'Осколок фляги. У очага он вплавится во флягу сам.', 'A flask shard. At a hearth it will melt into the flask by itself.')
+t(f'screen.{M}.forge.tab.weapons', 'Оружие', 'Weapons')
+t(f'screen.{M}.forge.tab.shields', 'Щиты', 'Shields')
+t(f'screen.{M}.forge.tab.armour', 'Броня', 'Armour')
+t(f'screen.{M}.forge.tab.magic', 'Чары', 'Magic')
+t(f'screen.{M}.forge.tab.supplies', 'Припасы', 'Supplies')
 t(f'hud.{M}.lost', 'потеряно: %s', 'lost: %s')
 
 t(f'screen.{M}.shop', 'Товары ключника', "The Keykeeper's Wares")
@@ -160,12 +177,19 @@ for i, (ru, en) in enumerate((
          'And do not play the hero: the souls you carry stay where you fall. Come back in time and they are yours again.'))):
     t(f'dialogue.{M}.keykeeper.first.{i}', ru, en)
 for i, (ru, en) in enumerate((
-        ('Надзиратель всё ходит наверху. Слышишь, как ключ волочится?', 'The Overseer still walks up there. Hear the key dragging?'),
+        ('Могильщик всё копает на погосте. Весь посад уложил, а остановиться не может.',
+         'The Gravedigger still digs in the churchyard. He has laid the whole borough down and cannot stop.'),
+        ('Услышишь колокольчик сторожа — бей его первым. Иначе сбежится вся улица.',
+         "If you hear a watchman's bell, strike him first. Otherwise the whole street comes running."),
+        ('Псы быстрые, да хлипкие. Закройся щитом, дождись прыжка — и бей.',
+         'The hounds are quick but frail. Raise your shield, wait for the leap, then strike.'),
         ('Стражники прячутся за щитом. Жди, пока ударят сами, или заходи со спины.',
          'The guards hide behind their shields. Wait for them to strike, or get behind them.'),
         ('Перекатывайся. В мои годы уже не выходит, а тебе — в самый раз.', 'Roll. At my age it does not work any more, but you are just right for it.'),
-        ('Капеллан всё ещё служит в часовне. Только паства у него теперь... не та.',
-         'The Chaplain still holds his services in the chapel. Only his flock is... not what it was.'),
+        ('Дорога за погостом ведёт к Острогу. Там солнце никак не сядет, а у нас никак не взойдёт.',
+         'The road past the churchyard leads to the Stockade. Up there the sun will not set, and down here it will not rise.'),
+        ('Видишь, тлеет в золе? Это осколок фляги. Подбери — глотком больше будет.',
+         'See it glowing in the ash? That is a flask shard. Pick it up: one more gulp for you.'),
         ('Потратил бы ты души у очага. Мёртвым они ни к чему.', 'Spend your souls at a hearth. The dead have no use for them.'))):
     t(f'dialogue.{M}.keykeeper.idle.{i}', ru, en)
 
@@ -182,6 +206,12 @@ SUBTITLES = {
     'entity.chaplain.ambient': ('Капеллан бормочет молитву', 'Chaplain mutters a prayer'), 'entity.chaplain.hurt': ('Капеллан шипит', 'Chaplain hisses'),
     'entity.chaplain.death': ('Капеллан рассыпается', 'Chaplain crumbles'), 'entity.chaplain.cast': ('Капеллан мечет копьё', 'Chaplain hurls a spear'),
     'entity.chaplain.bell': ('Звонит колокол', 'A bell tolls'), 'entity.chaplain.blink': ('Капеллан исчезает', 'Chaplain vanishes'),
+    'entity.hound.ambient': ('Пёс рычит', 'Hound growls'), 'entity.hound.hurt': ('Пёс взвизгивает', 'Hound yelps'),
+    'entity.hound.death': ('Пёс скулит и стихает', 'Hound whines and stills'), 'entity.hound.bite': ('Щёлкают зубы', 'Jaws snap'),
+    'entity.watchman.alarm': ('Сторож бьёт тревогу', 'Watchman raises the alarm'),
+    'entity.gravedigger.ambient': ('Могильщик дышит сквозь мешок', 'Gravedigger breathes through his sack'),
+    'entity.gravedigger.hurt': ('Могильщик глухо мычит', 'Gravedigger grunts'), 'entity.gravedigger.death': ('Могильщик ложится в землю', 'Gravedigger goes to ground'),
+    'entity.gravedigger.dig': ('Заступ входит в землю', 'A spade bites the earth'), 'entity.gravedigger.raise': ('Могилы шевелятся', 'The graves stir'),
     'entity.keykeeper.ambient': ('Ключник кашляет', 'Keykeeper coughs'), 'entity.keykeeper.give': ('Звенят ключи', 'Keys jingle'),
     'ui.death': ('Ты помер', 'You croaked'), 'ui.boss_defeated': ('Гад повержен', 'Fiend felled'), 'ui.hearth_lit': ('Очаг разгорается', 'Hearth flares up'),
     'ui.level_up': ('Сила прибывает', 'Strength grows'), 'ui.souls_gain': ('Души стекаются', 'Souls gather'),

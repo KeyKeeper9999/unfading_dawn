@@ -118,6 +118,35 @@ def hearth(lit):
     return m
 
 
+def shard_heap():
+    """A heap of ash with a shard of a flask standing in it, still glowing."""
+    m = JsonModel(32, 'shard_heap')
+    m.add(3, 0, 3, 13, 1, 13, 'ash', 'heap0')
+    m.add(4, 1, 4, 12, 2, 12, 'ash', 'heap1')
+    m.add(6, 2, 5, 11, 3, 10, 'ash', 'heap2')
+    m.add(7, 2, 7, 10, 6, 9, 'shard', 'shard', shade=False, light=15)
+    m.add(8, 6, 7, 10, 8, 9, 'shard', 'tip', shade=False, light=15)
+    m.add(5, 2, 9, 7, 4, 11, 'shard', 'chip', shade=False, light=12)
+    m.pack()
+
+    def paint(e, d, px, py, w, h, rnd):
+        if e.mat == 'ash':
+            amount = blotch(f'{e.tag}{d}', px, py, 1.6)
+            c = ASH_L if amount > 0.62 else (COAL_L if amount < 0.3 else ASH)
+            if d == 'up' and rnd.random() < 0.08:
+                c = EMBER_D
+            return c
+        amount = blotch(f'{e.tag}{d}', px, py, 1.3)
+        c = EMBER_L if amount > 0.6 else EMBER
+        if px in (0, w - 1) and h > 2:
+            c = EMBER_D
+        if d == 'up':
+            c = (255, 240, 190)
+        return c
+    m.paint(paint, seed=9)
+    return m
+
+
 def forge():
     """The old anvil: a block of oak, an iron anvil on it, a hammer left lying across the face."""
     m = JsonModel(64, 'forge')
@@ -229,6 +258,11 @@ if __name__ == '__main__':
     # a threshold that names a place: nothing is drawn, the game only needs to be told so
     write_json(f'{A}/models/block/place_name.json', {'textures': {'particle': 'minecraft:block/stone'}})
     write_json(f'{A}/blockstates/place_name.json', {'variants': {'': {'model': f'{MOD}:block/place_name'}}})
+
+    heap = shard_heap()
+    heap.save(A, 'block/shard_heap', 'block/shard_heap')
+    shots.append(heap.render(size=(300, 300), zoom=13))
+    write_json(f'{A}/blockstates/shard_heap.json', {'variants': {'': {'model': f'{MOD}:block/shard_heap'}}})
 
     anvil = forge()
     anvil.save(A, 'block/forge', 'block/forge')

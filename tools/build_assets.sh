@@ -11,6 +11,8 @@ python3 tools/gen_knight.py ${P:+$P/knight.png}
 python3 tools/gen_keykeeper.py ${P:+$P/keykeeper.png}
 python3 tools/gen_overseer.py ${P:+$P/overseer.png}
 python3 tools/gen_chaplain.py ${P:+$P/chaplain.png}
+python3 tools/gen_hound.py ${P:+$P/hound.png}
+python3 tools/gen_gravedigger.py ${P:+$P/gravedigger.png}
 python3 tools/gen_items.py ${P:+$P/items.png}
 python3 tools/gen_shields.py ${P:+$P/shields.png}
 python3 tools/gen_armor.py ${P:+$P/armor.png}

@@ -126,6 +126,68 @@
       "vsratie_dushi:chaplain/blink"
     ]
   },
+  "entity.hound.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.hound.ambient",
+    "sounds": [
+      "vsratie_dushi:hound/ambient1",
+      "vsratie_dushi:hound/ambient2"
+    ]
+  },
+  "entity.hound.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.hound.hurt",
+    "sounds": [
+      "vsratie_dushi:hound/hurt"
+    ]
+  },
+  "entity.hound.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.hound.death",
+    "sounds": [
+      "vsratie_dushi:hound/death"
+    ]
+  },
+  "entity.hound.bite": {
+    "subtitle": "subtitles.vsratie_dushi.entity.hound.bite",
+    "sounds": [
+      "vsratie_dushi:hound/bite"
+    ]
+  },
+  "entity.watchman.alarm": {
+    "subtitle": "subtitles.vsratie_dushi.entity.watchman.alarm",
+    "sounds": [
+      "vsratie_dushi:watchman/alarm"
+    ]
+  },
+  "entity.gravedigger.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.gravedigger.ambient",
+    "sounds": [
+      "vsratie_dushi:gravedigger/ambient1",
+      "vsratie_dushi:gravedigger/ambient2"
+    ]
+  },
+  "entity.gravedigger.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.gravedigger.hurt",
+    "sounds": [
+      "vsratie_dushi:gravedigger/hurt"
+    ]
+  },
+  "entity.gravedigger.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.gravedigger.death",
+    "sounds": [
+      "vsratie_dushi:gravedigger/death"
+    ]
+  },
+  "entity.gravedigger.dig": {
+    "subtitle": "subtitles.vsratie_dushi.entity.gravedigger.dig",
+    "sounds": [
+      "vsratie_dushi:gravedigger/dig"
+    ]
+  },
+  "entity.gravedigger.raise": {
+    "subtitle": "subtitles.vsratie_dushi.entity.gravedigger.raise",
+    "sounds": [
+      "vsratie_dushi:gravedigger/raise"
+    ]
+  },
   "entity.keykeeper.ambient": {
     "subtitle": "subtitles.vsratie_dushi.entity.keykeeper.ambient",
     "sounds": [

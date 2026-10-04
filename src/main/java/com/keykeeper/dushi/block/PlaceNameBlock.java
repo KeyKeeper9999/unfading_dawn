@@ -21,22 +21,41 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * a mob mark in hand, which is how a builder in creative finds and removes it.
  */
 public class PlaceNameBlock extends Block {
+    /** The sun half under the edge of the land: the hour of the stockade. */
+    public static final int DUSK = 12350;
+    /** Midnight under a full moon: the hour of the town below. */
+    public static final int NIGHT = 18000;
+
     public enum Place implements StringRepresentable {
-        STOCKADE("stockade"),
-        WARD("ward"),
-        BRIDGE("bridge"),
-        HALL("hall"),
-        CITY("city"),
-        GARDEN("garden"),
-        BELFRY("belfry"),
-        CATHEDRAL("cathedral"),
-        CRYPT("crypt"),
-        EDGE("edge");
+        STOCKADE("stockade", DUSK, true),
+        WARD("ward", DUSK, true),
+        BRIDGE("bridge", DUSK, true),
+        HALL("hall", DUSK, true),
+        CITY("city", DUSK, true),
+        GARDEN("garden", DUSK, true),
+        BELFRY("belfry", DUSK, true),
+        CATHEDRAL("cathedral", DUSK, true),
+        CRYPT("crypt", DUSK, true),
+        EDGE("edge", DUSK, true),
+        POSAD("posad", NIGHT, true),
+        MARKET("market", NIGHT, true),
+        SHAMBLES("shambles", NIGHT, true),
+        CHURCHYARD("churchyard", NIGHT, true),
+        ROAD("road", NIGHT, true),
+        /** Says nothing: only turns the hour, in a bend of a passage from which no sky is seen. */
+        TO_NIGHT("to_night", NIGHT, false),
+        TO_DUSK("to_dusk", DUSK, false);
 
         public final String id;
+        /** The hour of the day at this place; the world's clock is set to it when a player comes. */
+        public final int hour;
+        /** Whether the name of the place is shown. */
+        public final boolean named;
 
-        Place(String id) {
+        Place(String id, int hour, boolean named) {
             this.id = id;
+            this.hour = hour;
+            this.named = named;
         }
 
         @Override

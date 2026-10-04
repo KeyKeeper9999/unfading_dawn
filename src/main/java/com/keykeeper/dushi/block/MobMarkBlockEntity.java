@@ -77,6 +77,9 @@ public class MobMarkBlockEntity extends BlockEntity {
         spawned.setYBodyRot(yaw);
         spawned.setYHeadRot(yaw);
         spawned.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), EntitySpawnReason.STRUCTURE, null);
+        if (spawned instanceof SoulsMob souls) {
+            souls.setTier(state.getValue(MobMarkBlock.TIER));
+        }
         spawned.setPersistenceRequired();
         spawned.getPersistentData().putLong(HOME, pos.asLong());
         level.addFreshEntityWithPassengers(spawned);

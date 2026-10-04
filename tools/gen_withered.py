@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The withered (prisoner, guard, archer, acolyte): mesh extras for WitheredModel.java and their textures.
+"""The withered (prisoner, guard, archer, acolyte; townsman, butcher, watchman of the village): mesh extras for WitheredModel.java and their textures.
 Run from the repo root; pass a file name to also get a preview sheet."""
 import random
 import sys
@@ -21,6 +21,12 @@ M.part('pauldron', 'right_arm', (0, 0, 0), boxes=[Box(-3, -3, -3, 4, 3, 6, 'iron
 # archer: the tail of the hood and a quiver
 M.part('hood_tail', 'head', (0, -6.5, 4), (0.45, 0, 0), boxes=[Box(-2, -1, -1, 4, 4, 3, 'hood', 'tail'), Box(-1, 3, 0.5, 2, 4, 1, 'hood', 'tip')])
 M.part('quiver', 'body', (2.2, 1, 2), (0, 0, 0.32), boxes=[Box(-1.5, 0, 0, 3, 9, 2, 'leather', 'quiver'), Box(-1, -2, 0.5, 2, 2, 1, 'fletch', 'fletch')])
+# townsman: a flat felt cap pulled down on one side
+M.part('cap', 'head', (0, 0, 0), (0, 0, -0.07), boxes=[Box(-4.5, -9.4, -4.5, 9, 2, 9, 'felt', 'crown'), Box(-3.5, -8.0, -6.5, 7, 1, 2, 'felt', 'peak')])
+# butcher: the belly that the apron hangs over
+M.part('belly', 'body', (0, 0, 0), boxes=[Box(-3.5, 4, -3.6, 7, 7, 2, 'apron', 'belly')])
+# watchman: the skirts of a long coat
+M.part('coat_tail', 'body', (0, 0, 0), boxes=[Box(-4, 12, -2, 8, 6, 4, 'coat', 'skirts', inflate=0.45)])
 M.pack(start_y=0)
 
 # ---------------------------------------------------------------- colours
@@ -54,6 +60,20 @@ ROBE_D = (44, 30, 42)
 ROBE_L = (88, 62, 80)
 GOLD = (214, 184, 106)
 GOLD_D = (158, 128, 62)
+LINEN = (120, 112, 96)
+LINEN_D = (92, 86, 74)
+WOOL = (84, 70, 58)
+WOOL_D = (62, 52, 44)
+FELT = (70, 56, 48)
+FELT_D = (50, 40, 36)
+APRON = (118, 92, 66)
+APRON_D = (88, 66, 48)
+GORE = (104, 26, 22)
+GORE_D = (70, 16, 16)
+COAT = (50, 56, 70)
+COAT_D = (36, 40, 52)
+COAT_L = (68, 76, 92)
+BRASS = (176, 146, 78)
 
 HEAD = {
     'front': ["hhshhhsh",
@@ -293,6 +313,93 @@ def make(kind, seed):
                 for z in range(b.td):
                     p.put(b, 'top', x, z, ROBE)
 
+    elif kind == 'townsman':
+        # what a poor man was buried in: a linen shirt gone grey, wool breeches, bare feet
+        cloth_rows(p, body, range(0, 12), LINEN, LINEN_D, rnd, ragged=False)
+        for b, rows in ((ra, range(0, 7)), (la, range(0, 5))):
+            cloth_rows(p, b, rows, LINEN, LINEN_D, rnd)
+        for b, rows in ((rl, range(0, 8)), (ll, range(0, 9))):
+            cloth_rows(p, b, rows, WOOL, WOOL_D, rnd)
+        # the neck of the shirt lies open on the ribs, one lace still in it
+        for x, y in ((3, 0), (4, 0), (3, 1), (4, 1), (4, 2), (3, 2), (4, 3)):
+            p.put(body, 'front', x, y, SKIN_D if (x + y) % 2 else SKIN)
+        p.put(body, 'front', 2, 1, LINEN_D)
+        p.put(body, 'front', 5, 2, LINEN_D)
+        p.band(body, 9, ROPE)
+        p.put(body, 'front', 2, 10, ROPE)
+        for x, y in ((6, 5), (6, 6), (1, 7), (5, 3)):
+            p.put(body, 'front', x, y, WOOL_D)          # a patch and a few holes
+        for x in range(8):
+            for z in range(4):
+                p.put(body, 'top', x, z, LINEN)
+    elif kind == 'butcher':
+        # bare to the waist, a hide apron from the chest to the knees, black with old blood at the hem
+        cloth_rows(p, body, range(9, 12), WOOL, WOOL_D, rnd, ragged=False)
+        for b in (rl, ll):
+            cloth_rows(p, b, range(0, 9), WOOL, WOOL_D, rnd)
+            cloth_rows(p, b, range(8, 12), BOOT, shade(BOOT, 0.8), rnd, ragged=False)
+        for x in range(1, 7):
+            for y in range(2, 12):
+                c = APRON if (x * 2 + y) % 5 else APRON_D
+                if x in (1, 6):
+                    c = APRON_D
+                p.put(body, 'front', x, y, shade(c, 1.05 - 0.15 * y / 11))
+        for x, y in ((1, 1), (6, 1), (1, 0), (6, 0)):
+            p.put(body, 'front', x, y, LEATHER_D)       # the straps over the shoulders
+        for x in (1, 6):
+            for y in range(0, 9):
+                p.put(body, 'back', x if y < 5 else (2 if x == 1 else 5), y, LEATHER_D)
+        p.band(body, 9, LEATHER_D)
+        for b in (rl, ll):
+            for x in range(4):
+                for y in range(0, 6):
+                    if y == 5 and x % 2:
+                        continue
+                    p.put(b, 'front', x, y, shade(APRON if (x + y) % 3 else APRON_D, 0.9 - 0.04 * y))
+            for x in range(4):
+                for y in (3, 4, 5):
+                    if rnd.random() < 0.7:
+                        p.put(b, 'front', x, y, GORE_D if y == 5 else GORE)
+        for x, y in ((2, 8), (3, 9), (3, 10), (4, 10), (5, 11), (2, 11), (4, 6), (5, 7), (3, 4)):
+            p.put(body, 'front', x, y, GORE if (x + y) % 2 else GORE_D)
+        # the working arm is red to the elbow
+        for face in ('right', 'front', 'left', 'back'):
+            for x in range(3):
+                for y in range(6, 12):
+                    if rnd.random() < 0.3 + 0.1 * (y - 6):
+                        p.put(ra, face, x, y, GORE if y < 10 else GORE_D)
+        cloth_rows(p, la, range(7, 10), LEATHER, LEATHER_D, rnd, ragged=False)
+    elif kind == 'watchman':
+        # the night watch: a long dark coat with brass buttons, a wide belt, tall boots, gloves
+        for b, rows in ((body, range(0, 12)), (ra, range(0, 9)), (la, range(0, 9)), (rl, range(0, 6)), (ll, range(0, 6))):
+            cloth_rows(p, b, rows, COAT, COAT_D, rnd, ragged=False)
+        for y in range(0, 12):
+            p.put(body, 'front', 4, y, COAT_D)
+            if y % 3 == 1 and y < 9:
+                p.put(body, 'front', 3, y, BRASS)
+                p.put(body, 'front', 5, y, shade(BRASS, 0.8))
+        for x in (0, 1, 6, 7):
+            p.put(body, 'front', x, 0, COAT_L)          # the collar turned up
+            p.put(body, 'back', x, 0, COAT_L)
+        for x in range(2, 6):
+            p.put(body, 'back', x, 0, COAT_L)
+        p.band(body, 8, LEATHER_D)
+        p.band(body, 9, LEATHER)
+        p.put(body, 'front', 3, 8, BRASS)
+        p.put(body, 'front', 3, 9, BRASS)
+        for b in (rl, ll):
+            cloth_rows(p, b, range(6, 12), BOOT, shade(BOOT, 0.8), rnd, ragged=False)
+            p.band(b, 6, LEATHER)
+        for b in (ra, la):
+            cloth_rows(p, b, range(9, 12), LEATHER_D, shade(LEATHER_D, 0.8), rnd, ragged=False)
+            p.band(b, 8, COAT_L)
+            for x in range(b.tw):
+                for z in range(b.td):
+                    p.put(b, 'top', x, z, COAT_L)
+        for x in range(8):
+            for z in range(4):
+                p.put(body, 'top', x, z, COAT)
+
     hood_c, hood_d, hood_l = (ROBE, ROBE_D, ROBE_L) if kind == 'acolyte' else (HOOD, HOOD_D, HOOD_L)
     # ---- the second layer of the head: scraps of hair for the prisoner, nothing for the guard, a hood for the archer
     hat = box_of(M, 'hat')
@@ -319,19 +426,77 @@ def make(kind, seed):
             for y in range(top, top + length):
                 p.put(hat, 'back', x, y, (58, 50, 46) if y % 2 else (46, 40, 37))
 
+    elif kind == 'butcher':
+        # a rag tied over the skull, stiff with the same blood
+        def wrap(face, px, py, fw, fh, r):
+            if face == 'bottom':
+                return None
+            if face == 'top':
+                return shade(LINEN if (px + py) % 3 else LINEN_D, 1.08)
+            if py > 2 or py == 2 and (px + (face == 'left')) % 3 == 0:
+                return None
+            c = LINEN if (px * 2 + py) % 5 else LINEN_D
+            if face in ('front', 'right') and r.random() < 0.3:
+                c = GORE
+            return c
+        p.fill_box(hat, wrap)
+        for y in range(3, 7):
+            p.put(hat, 'back', 5, y, LINEN_D if y % 2 else LINEN)   # the end of the knot
+
     # ---- the extra parts
     for name in ('collar', 'shackle', 'kettle_hat', 'pauldron'):
         for b in M.parts[name]['boxes']:
             p.fill_box(b, iron)
     brim, dome = M.parts['kettle_hat']['boxes']
-    p.band(dome, 2, IRON_D)
-    for x in range(0, 9, 2):
-        p.put(dome, 'front', x, 1, IRON_L)
-        p.put(dome, 'back', x, 1, IRON_L)
-    for x in range(12):
-        for z in range(12):
-            if 2 <= x <= 9 and 2 <= z <= 9:
-                p.put(brim, 'top', x, z, IRON_D)
+    if kind == 'watchman':
+        # the same shape in felt: the wide hat of the watch, with a band and a brass badge
+        def felt(face, px, py, fw, fh, r):
+            c = COAT_D if (px + py) % 4 else shade(COAT_D, 0.85)
+            return shade(c, {'top': 1.2, 'bottom': 0.7}.get(face, 1.0))
+        p.fill_box(brim, felt)
+        p.fill_box(dome, felt)
+        p.band(dome, 2, LEATHER_D)
+        p.put(dome, 'front', 4, 2, BRASS)
+        p.put(dome, 'front', 4, 1, shade(BRASS, 0.8))
+    else:
+        p.band(dome, 2, IRON_D)
+        for x in range(0, 9, 2):
+            p.put(dome, 'front', x, 1, IRON_L)
+            p.put(dome, 'back', x, 1, IRON_L)
+        for x in range(12):
+            for z in range(12):
+                if 2 <= x <= 9 and 2 <= z <= 9:
+                    p.put(brim, 'top', x, z, IRON_D)
+    crown, peak = M.parts['cap']['boxes']
+
+    def felt_cap(face, px, py, fw, fh, r):
+        c = FELT if (px * 3 + py) % 5 else FELT_D
+        if face not in ('top', 'bottom') and py == fh - 1:
+            c = FELT_D
+        return shade(c, {'top': 1.15, 'bottom': 0.7}.get(face, 1.0))
+    p.fill_box(crown, felt_cap)
+    p.fill_box(peak, lambda face, px, py, fw, fh, r: shade(FELT_D, 1.1 if face == 'top' else 0.85))
+    belly = M.parts['belly']['boxes'][0]
+
+    def hide(face, px, py, fw, fh, r):
+        c = APRON if (px * 2 + py) % 5 else APRON_D
+        if face == 'front':
+            if py >= fh - 2 and r.random() < 0.8 or r.random() < 0.18:
+                c = GORE if r.random() < 0.6 else GORE_D
+            if px in (0, fw - 1):
+                c = APRON_D
+        return shade(c, {'top': 1.1, 'bottom': 0.6}.get(face, 1.0 - 0.02 * py))
+    p.fill_box(belly, hide)
+    skirts = M.parts['coat_tail']['boxes'][0]
+
+    def skirt(face, px, py, fw, fh, r):
+        if face in ('top', 'bottom'):
+            return COAT_D
+        if py == fh - 1 and px % 3 == 1:
+            return None
+        c = COAT_D if px in (0, fw - 1) or face == 'front' and px == 4 or face == 'back' and px in (3, 4) else COAT
+        return shade(c, 1.0 - 0.1 * py / max(1, fh - 1))
+    p.fill_box(skirts, skirt)
     pauldron = M.parts['pauldron']['boxes'][0]
     p.band(pauldron, 2, IRON_D)
     p.put(pauldron, 'right', 2, 1, IRON_L)
@@ -360,12 +525,17 @@ def make(kind, seed):
     return p.tex
 
 
-KIND_HIDE = {
-    'prisoner': ('kettle_hat', 'pauldron', 'hood_tail', 'quiver'),
-    'guard': ('collar', 'shackle', 'hood_tail', 'quiver'),
-    'archer': ('collar', 'shackle', 'kettle_hat', 'pauldron'),
-    'acolyte': ('collar', 'shackle', 'kettle_hat', 'pauldron', 'quiver'),
+EXTRAS = ('collar', 'shackle', 'kettle_hat', 'pauldron', 'hood_tail', 'quiver', 'cap', 'belly', 'coat_tail')
+KIND_SHOW = {
+    'prisoner': ('collar', 'shackle'),
+    'guard': ('kettle_hat', 'pauldron'),
+    'archer': ('hood_tail', 'quiver'),
+    'acolyte': ('hood_tail',),
+    'townsman': ('cap',),
+    'butcher': ('belly',),
+    'watchman': ('kettle_hat', 'coat_tail'),
 }
+KIND_HIDE = {kind: tuple(e for e in EXTRAS if e not in shown) for kind, shown in KIND_SHOW.items()}
 STOOP = {'body': (0.24, 0, 0), 'right_leg': {'off': (0, -0.4, 2.9)}, 'left_leg': {'off': (0, -0.4, 2.9)}, 'head': (0.18, 0, 0),
          'right_arm': (-0.22, 0, 0.06), 'left_arm': (-0.22, 0, -0.06)}
 SWING = dict(STOOP, right_arm=(-2.75, 0, 0.4), body=(0.12, 0.35, 0), head=(-0.07, 0, 0))
@@ -374,7 +544,7 @@ SWING = dict(STOOP, right_arm=(-2.75, 0, 0.4), body=(0.12, 0.35, 0), head=(-0.07
 if __name__ == '__main__':
     M.write_java(JAVA)
     shots = []
-    for i, kind in enumerate(('prisoner', 'guard', 'archer', 'acolyte')):
+    for i, kind in enumerate(('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman')):
         tex = make(kind, 100 + i)
         tex.save(f'{A}/textures/entity/withered_{kind}.png')
         hidden = KIND_HIDE[kind]

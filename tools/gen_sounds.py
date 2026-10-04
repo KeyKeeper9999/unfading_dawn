@@ -268,6 +268,73 @@ for k in range(2):
 d = 0.55
 S['player/weapon_swing_heavy'] = whoosh(d, 250, 1300, 0.5, 0.5) + whoosh(d, 80, 300, 0.5, 0.6) * 0.8
 
+# ============================================================== the village: a dog's throat, the bell of the watch, the gravedigger
+DOG = ((420, 120, 1.0), (980, 180, 0.8), (2100, 300, 0.4))
+
+
+def hound_ambient(k):
+    d = 1.1 + 0.3 * k
+    f = sweep(74 + 8 * k, 62, d, 0.8) * (1 + 0.06 * np.sin(2 * np.pi * (5.0 + k) * t(d)))
+    growl = voice(f, d, DOG, breath=0.5, jitter=0.1, rough=0.95) * env(d, 0.2, 0.5)
+    pant = moving_bandpass(noise(d), sweep(1800, 1100, d), 0.5) * (0.5 + 0.5 * np.sin(2 * np.pi * 6 * t(d))) * env(d, 0.3, 0.4) * 0.25
+    return reverb(growl + pant, 0.4, 0.18, 0.3)
+
+
+S['hound/ambient1'] = hound_ambient(0)
+S['hound/ambient2'] = hound_ambient(1)
+d = 0.34
+yelp_f = np.concatenate([sweep(520, 980, 0.09, 0.5), sweep(980, 430, 0.25, 0.7)])
+S['hound/hurt'] = reverb(voice(yelp_f, d, ((800, 200, 1.0), (1700, 260, 0.9), (3000, 400, 0.4)), breath=0.3, jitter=0.05, rough=0.2) * env(d, 0.005, 0.2), 0.4, 0.2, 0.25)
+d = 1.3
+whine_f = np.concatenate([sweep(640, 820, 0.2, 0.6), sweep(820, 210, 1.1, 0.8)])
+S['hound/death'] = reverb(voice(whine_f, d, ((700, 200, 1.0), (1500, 260, 0.7), (2700, 400, 0.3)), breath=0.5, jitter=0.08, rough=0.35) * env(d, 0.01, 0.9)
+                          + place(d, (0.85, thump(0.3, 80, 45, 0.07) * 0.5)), 0.6, 0.25, 0.4)
+d = 0.42
+S['hound/bite'] = reverb(place(d, (0.0, voice(sweep(110, 180, 0.2, 0.5), 0.2, DOG, breath=0.6, jitter=0.1, rough=0.9) * env(0.2, 0.01, 0.08) * 0.9),
+                               (0.17, highpass(noise(0.05), 1800) * decay(0.05, 0.006) * 1.4), (0.17, tone(sweep(900, 300, 0.06), 0.06) * decay(0.06, 0.012) * 0.6),
+                               (0.19, bandpass(noise(0.2), 300, 1200) * decay(0.2, 0.04) * 0.5)), 0.3, 0.15, 0.2)
+
+# the watchman swings a hand bell over his head and shouts what is left of "who goes there"
+d = 1.7
+hand_bell = np.zeros(int(SR * d))
+for i, at in enumerate((0.0, 0.21, 0.4, 0.62, 0.8, 1.02)):
+    stroke = bell(1320 * (1.0 if i % 2 else 1.03), 0.7, 1.6) * (1.0 if i % 2 else 0.8)
+    a = int(at * SR)
+    hand_bell[a:a + len(stroke)] += stroke[:len(hand_bell) - a]
+cry_f = np.concatenate([sweep(150, 210, 0.3, 0.6), sweep(210, 190, 0.5), sweep(190, 120, 0.4, 1.3)])
+cry = voice(cry_f, 1.2, ((650, 140, 1.0), (1250, 180, 0.8), (2600, 300, 0.4)), breath=0.7, jitter=0.07, rough=0.6) * env(1.2, 0.05, 0.5)
+S['watchman/alarm'] = reverb(hand_bell * 0.7 + place(d, (0.25, cry * 0.9)), 0.9, 0.3, 0.6)
+
+# the gravedigger breathes through a sack, and everything he does sounds of wet earth and a spade
+SACKED = ((240, 90, 1.0), (520, 120, 0.7), (980, 180, 0.2))
+
+
+def gravedigger_ambient(k):
+    d = 2.6
+    f = sweep(70 + 6 * k, 56, d, 0.8) * (1 + 0.03 * np.sin(2 * np.pi * 0.9 * t(d)))
+    v = lowpass(voice(f, d, SACKED, breath=0.8, jitter=0.05, rough=0.7), 900) * env(d, 0.7, 1.1)
+    breath = lowpass(moving_bandpass(noise(d), sweep(420, 700 if k else 280, d), 0.5), 1200) * env(d, 0.8, 1.0) * 0.7
+    return reverb(v + breath, 0.9, 0.3, 0.5)
+
+
+S['gravedigger/ambient1'] = gravedigger_ambient(0)
+S['gravedigger/ambient2'] = gravedigger_ambient(1)
+d = 0.7
+S['gravedigger/hurt'] = reverb(lowpass(voice(sweep(120, 74, d, 0.5), d, SACKED, breath=0.7, jitter=0.07, rough=0.8), 1100) * env(d, 0.01, 0.45)
+                               + place(d, (0.0, thump(0.2, 140, 70, 0.05) * 0.5)), 0.6, 0.25, 0.4)
+d = 3.4
+S['gravedigger/death'] = reverb(place(d, (0.0, lowpass(voice(sweep(125, 40, 2.4, 0.6), 2.4, SACKED, breath=0.8, jitter=0.08, rough=0.9), 1000) * env(2.4, 0.03, 1.7)),
+                                      (1.7, clang(310, 0.9, strike=0.7) * 0.5), (1.85, clang(1450, 0.35) * 0.2),
+                                      (2.1, thump(0.9, 85, 30, 0.22) * 1.6), (2.1, bandpass(noise(0.5), 150, 700) * decay(0.5, 0.09) * 1.0),
+                                      (2.2, crackle(0.9, 40, 900) * 0.4)), 1.2, 0.35, 0.8)
+d = 0.9
+S['gravedigger/dig'] = reverb(place(d, (0.0, thump(0.5, 110, 42, 0.12) * 1.5), (0.0, clang(420, 0.5, strike=1.0) * 0.35),
+                                    (0.02, bandpass(noise(0.5), 200, 1400) * decay(0.5, 0.07) * 1.1), (0.12, crackle(0.7, 70, 1100) * 0.6)), 0.6, 0.25, 0.4)
+d = 3.0
+rumble = lowpass(noise(d), 110, 3) * env(d, 0.6, 1.2) * 3.0 + tone(sweep(38, 52, d), d) * env(d, 0.8, 1.0) * 0.7
+moan = choir((sweep(98, 104, d), sweep(146.8, 138.6, d), sweep(73.4, 69.3, d)), d, 0.9, 1.3, ((380, 110, 1.0), (800, 150, 0.5), (2300, 260, 0.12)))
+S['gravedigger/raise'] = reverb(rumble + moan * 1.1 + place(d, (0.5, crackle(2.2, 45, 900) * 0.45), (0.9, bell(147, 2.0, 0.6) * 0.35)), 1.6, 0.4, 1.0)
+
 # ============================================================== the overseer: a huge chest, iron, a chain
 BIG = ((260, 90, 1.0), (620, 130, 0.8), (1300, 220, 0.35))
 
@@ -533,6 +600,16 @@ EVENTS = {
     'entity.chaplain.cast': ['chaplain/cast'],
     'entity.chaplain.bell': ['chaplain/bell'],
     'entity.chaplain.blink': ['chaplain/blink'],
+    'entity.hound.ambient': ['hound/ambient1', 'hound/ambient2'],
+    'entity.hound.hurt': ['hound/hurt'],
+    'entity.hound.death': ['hound/death'],
+    'entity.hound.bite': ['hound/bite'],
+    'entity.watchman.alarm': ['watchman/alarm'],
+    'entity.gravedigger.ambient': ['gravedigger/ambient1', 'gravedigger/ambient2'],
+    'entity.gravedigger.hurt': ['gravedigger/hurt'],
+    'entity.gravedigger.death': ['gravedigger/death'],
+    'entity.gravedigger.dig': ['gravedigger/dig'],
+    'entity.gravedigger.raise': ['gravedigger/raise'],
     'entity.keykeeper.ambient': ['keykeeper/ambient1', 'keykeeper/ambient2'],
     'entity.keykeeper.give': ['keykeeper/give'],
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],
@@ -583,7 +660,7 @@ if __name__ == '__main__':
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
         names = [n for n in S if n != 'music/boss']
-        fig, axes = plt.subplots(8, 7, figsize=(28, 24))
+        fig, axes = plt.subplots(10, 7, figsize=(28, 30))
         axes = axes.ravel()
         for ax, name in zip(axes, names):
             x = np.asarray(S[name], float)

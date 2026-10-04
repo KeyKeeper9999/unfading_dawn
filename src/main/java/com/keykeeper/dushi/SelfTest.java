@@ -93,13 +93,15 @@ public final class SelfTest {
         List<EntityType<? extends Mob>> types = new ArrayList<>();
         Dushi.WITHERED.values().forEach(type -> types.add(type.get()));
         types.add(Dushi.RUST_KNIGHT.get());
+        types.add(Dushi.CARRION_HOUND.get());
+        types.add(Dushi.GRAVEDIGGER.get());
         types.add(Dushi.KEYKEEPER.get());
         types.add(Dushi.OVERSEER.get());
         types.add(Dushi.CHAPLAIN.get());
         int index = 0;
         for (EntityType<? extends Mob> type : types) {
-            int x = -18 + (index % 4) * 12;
-            int z = -14 + (index / 4) * 16;
+            int x = -20 + (index % 5) * 10;
+            int z = -18 + (index / 5) * 13;
             BlockPos at = new BlockPos(x, FLOOR_Y + 1, z);
             Mob mob = type.spawn(level, at, EntitySpawnReason.COMMAND);
             String name = EntityType.getKey(type).getPath();
@@ -282,7 +284,7 @@ public final class SelfTest {
         }
         int index = 0;
         for (Map.Entry<EntityType<? extends SoulsMob>, int[]> entry : drillPlan().entrySet()) {
-            BlockPos at = new BlockPos(-15 + index * 10, FLOOR_Y + 1, 0);
+            BlockPos at = new BlockPos(-15 + (index % 4) * 10, FLOOR_Y + 1, -14 + (index / 4) * 14);
             SoulsMob mob = entry.getKey().spawn(level, at, EntitySpawnReason.COMMAND);
             Mob dummy = EntityTypes.IRON_GOLEM.spawn(level, at.offset(0, 0, 7), EntitySpawnReason.COMMAND);
             if (mob == null || dummy == null) {
@@ -302,6 +304,10 @@ public final class SelfTest {
         plan.put(Dushi.RUST_KNIGHT.get(), new int[] {1, 2, 3});
         plan.put(Dushi.OVERSEER.get(), new int[] {1, 2, 3, 4, 5});
         plan.put(Dushi.CHAPLAIN.get(), new int[] {1, 2, 3, 4, 5, 6});
+        plan.put(Dushi.WITHERED.get(com.keykeeper.dushi.entity.WitheredEntity.Kind.BUTCHER).get(), new int[] {1, 4});
+        plan.put(Dushi.WITHERED.get(com.keykeeper.dushi.entity.WitheredEntity.Kind.WATCHMAN).get(), new int[] {5, 6});
+        plan.put(Dushi.CARRION_HOUND.get(), new int[] {1, 2});
+        plan.put(Dushi.GRAVEDIGGER.get(), new int[] {1, 2, 3, 4, 5});
         return plan;
     }
 

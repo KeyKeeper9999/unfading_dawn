@@ -30,7 +30,7 @@ import net.minecraft.world.level.Level;
  */
 public class KeykeeperEntity extends PathfinderMob {
     private static final int FIRST_LINES = 4;
-    private static final int IDLE_LINES = 5;
+    private static final int IDLE_LINES = 8;
 
     public KeykeeperEntity(EntityType<? extends KeykeeperEntity> type, Level level) {
         super(type, level);

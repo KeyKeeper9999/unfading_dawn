@@ -19,7 +19,21 @@ import net.minecraft.world.level.ItemLike;
 public final class Forge {
     public record Part(Supplier<? extends ItemLike> item, int count) {}
 
-    public record Recipe(Supplier<ItemStack> result, List<Part> parts, int souls) {}
+    /** The shelves of the anvil's list. */
+    public enum Category {
+        WEAPONS("weapons"), SHIELDS("shields"), ARMOUR("armour"), MAGIC("magic"), SUPPLIES("supplies");
+
+        public final String id;
+
+        Category(String id) {
+            this.id = id;
+        }
+    }
+
+    public record Recipe(Supplier<ItemStack> result, List<Part> parts, int souls, Category category) {}
+
+    /** The shelf the recipes being listed go on. */
+    private static Category shelf = Category.WEAPONS;
 
     private static List<Recipe> recipes;
 
@@ -34,7 +48,7 @@ public final class Forge {
     }
 
     private static void add(List<Recipe> list, Supplier<? extends ItemLike> item, int count, int souls, Part... parts) {
-        list.add(new Recipe(() -> new ItemStack(item.get(), count), List.of(parts), souls));
+        list.add(new Recipe(() -> new ItemStack(item.get(), count), List.of(parts), souls, shelf));
     }
 
     private static void add(List<Recipe> list, Supplier<? extends ItemLike> item, int souls, Part... parts) {
@@ -44,11 +58,14 @@ public final class Forge {
     public static List<Recipe> recipes() {
         if (recipes == null) {
             List<Recipe> list = new ArrayList<>();
+            shelf = Category.WEAPONS;
             // blades and blunt things, from the cheapest up
             add(list, Dushi.SHIV, 0, scrap(1));
             add(list, Dushi.DAGGER, 100, scrap(2));
             add(list, Dushi.SHORTSWORD, 150, scrap(3));
+            add(list, Dushi.PITCHFORK, 150, scrap(2), cloth(1));
             add(list, Dushi.HATCHET, 200, scrap(3), cloth(1));
+            add(list, Dushi.CLEAVER, 350, scrap(4));
             add(list, Dushi.LONGSWORD, 400, scrap(5));
             add(list, Dushi.SABRE, 500, scrap(5), cloth(1));
             add(list, Dushi.BROADSWORD, 500, scrap(7));
@@ -56,13 +73,17 @@ public final class Forge {
             add(list, Dushi.BATTLE_AXE, 600, scrap(8));
             add(list, Dushi.RUST_GREATSWORD, 0, scrap(12), new Part(Dushi.GREAT_SOUL, 1));
             // what the lords of the stockade leave can be beaten into what they carried
+            add(list, Dushi.GRAVE_SPADE, 0, new Part(Dushi.GRAVEDIGGER_SOUL, 1), scrap(4));
             add(list, Dushi.GREAT_KEY, 0, new Part(Dushi.OVERSEER_SOUL, 1), scrap(6));
             add(list, Dushi.CENSER_FLAIL, 0, new Part(Dushi.CHAPLAIN_SOUL, 1), scrap(6));
+            shelf = Category.SUPPLIES;
             add(list, () -> Items.ARROW, 8, 0, scrap(1));
             // shields
+            shelf = Category.SHIELDS;
             add(list, Dushi.ROUND_SHIELD, 100, scrap(2), cloth(2));
             add(list, Dushi.GUARD_SHIELD, 400, scrap(6));
             add(list, Dushi.TOWER_SHIELD, 0, scrap(12), new Part(Dushi.GREAT_SOUL, 1));
+            shelf = Category.ARMOUR;
             // armour: rags of cloth, mail of scrap, plate hammered over the mail, vestments of cloth and a soul
             int[] shape = {2, 4, 3, 2};
             for (int piece = 0; piece < 4; piece++) {
@@ -77,6 +98,7 @@ public final class Forge {
             for (int piece = 0; piece < 4; piece++) {
                 add(list, ArmorSet.CHAPLAIN.pieces().get(piece), 150 * shape[piece], cloth(shape[piece] + 2), new Part(Dushi.NAMELESS_SOUL, 1));
             }
+            shelf = Category.MAGIC;
             // catalysts and spells: written with a soul
             add(list, Dushi.SCHOLAR_STAFF, 300, cloth(2), scrap(1));
             add(list, Dushi.PRAYER_BEADS, 300, cloth(2), new Part(Dushi.NAMELESS_SOUL, 1));
@@ -84,6 +106,7 @@ public final class Forge {
             add(list, Dushi.SPELLS.get(Spell.HEAVY_SOUL_SHARD), 500, new Part(Dushi.GREAT_SOUL, 1));
             add(list, Dushi.SPELLS.get(Spell.REBUKE), 300, new Part(Dushi.NAMELESS_SOUL, 2));
             add(list, Dushi.SPELLS.get(Spell.FIRE_ORB), 500, new Part(Dushi.GREAT_SOUL, 1));
+            shelf = Category.SUPPLIES;
             add(list, Dushi.TAR_POT, 2, 50, cloth(1));
             add(list, Dushi.RETURN_EMBER, 2, 0, new Part(Dushi.NAMELESS_SOUL, 1));
             recipes = List.copyOf(list);

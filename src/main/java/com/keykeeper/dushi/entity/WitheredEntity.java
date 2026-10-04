@@ -45,7 +45,13 @@ public class WitheredEntity extends SoulsMob {
         GUARD("withered_guard", 24.0, 5.0, 0.25, 4.0, 60),
         ARCHER("withered_archer", 16.0, 2.0, 0.26, 0.0, 50),
         /** A novice of the chapel in what is left of his habit: keeps away and throws slow spears of light. */
-        ACOLYTE("withered_acolyte", 20.0, 2.0, 0.25, 0.0, 90);
+        ACOLYTE("withered_acolyte", 20.0, 2.0, 0.25, 0.0, 90),
+        /** One of the townsfolk of the borough: bare hands, a broken blade or a pitchfork. */
+        TOWNSMAN("withered_townsman", 12.0, 3.0, 0.26, 0.0, 15),
+        /** A butcher of the shambles: slow to come, quick with the cleaver - two chops, one after the other. */
+        BUTCHER("withered_butcher", 28.0, 4.0, 0.24, 2.0, 70),
+        /** The night watch: a lantern, a pitchfork held like a pike, and a rattle that brings the street down on whoever he sees. */
+        WATCHMAN("withered_watchman", 20.0, 4.0, 0.25, 2.0, 55);
 
         public final String id;
         final double health;
@@ -76,10 +82,26 @@ public class WitheredEntity extends SoulsMob {
     public static final int CAST = 3;
     public static final int CAST_DURATION = 44;
     private static final int CAST_RELEASE = 26;
+    /** The butcher's two chops. */
+    public static final int CHOP = 4;
+    public static final int CHOP_DURATION = 36;
+    private static final int CHOP_FIRST = 10;
+    private static final int CHOP_SECOND = 22;
+    /** A thrust with a pitchfork: longer than an arm, narrow, easy to step round. */
+    public static final int THRUST = 5;
+    public static final int THRUST_DURATION = 28;
+    private static final int THRUST_IMPACT = 15;
+    /** The watchman's rattle: everyone of the dead within earshot comes. */
+    public static final int ALARM = 6;
+    public static final int ALARM_DURATION = 34;
+    private static final int ALARM_SOUND = 12;
+    private static final double ALARM_RANGE = 18.0;
     /** Blows the guard's shield takes before his arm drops. */
     private static final int GUARD_BREAK_HITS = 3;
 
     private final Kind kind;
+    /** A watchman sounds his rattle once for every time he takes notice of somebody. */
+    private boolean alarmed;
 
     public WitheredEntity(EntityType<? extends WitheredEntity> type, Level level, Kind kind) {
         super(type, level);
@@ -122,6 +144,19 @@ public class WitheredEntity extends SoulsMob {
             }
             case ARCHER -> this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.SHORT_BOW.get()), 0.1F);
             case ACOLYTE -> this.equip(EquipmentSlot.OFFHAND, new ItemStack(Dushi.PRAYER_BEADS.get()), 0.08F);
+            case TOWNSMAN -> {
+                int roll = this.random.nextInt(10);
+                if (roll < 4) {
+                    this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.PITCHFORK.get()), 0.06F);
+                } else if (roll < 6) {
+                    this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.BROKEN_SWORD.get()), 0.1F);
+                }
+            }
+            case BUTCHER -> this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.CLEAVER.get()), 0.08F);
+            case WATCHMAN -> {
+                this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.PITCHFORK.get()), 0.06F);
+                this.equip(EquipmentSlot.OFFHAND, new ItemStack(Items.LANTERN), 0.0F);
+            }
         }
         return data;
     }
@@ -138,12 +173,26 @@ public class WitheredEntity extends SoulsMob {
 
     @Override
     protected int attackDuration(int id) {
-        return id == SHOOT ? SHOOT_DURATION : id == CAST ? CAST_DURATION : SWING_DURATION;
+        return switch (id) {
+            case SHOOT -> SHOOT_DURATION;
+            case CAST -> CAST_DURATION;
+            case CHOP -> CHOP_DURATION;
+            case THRUST -> THRUST_DURATION;
+            case ALARM -> ALARM_DURATION;
+            default -> SWING_DURATION;
+        };
     }
 
     @Override
     protected int trackUntil(int id) {
-        return id == SHOOT ? SHOOT_RELEASE : id == CAST ? CAST_RELEASE : SWING_IMPACT - 3;
+        return switch (id) {
+            case SHOOT -> SHOOT_RELEASE;
+            case CAST -> CAST_RELEASE;
+            case CHOP -> CHOP_SECOND - 3;
+            case THRUST -> THRUST_IMPACT - 5;
+            case ALARM -> ALARM_DURATION;
+            default -> SWING_IMPACT - 3;
+        };
     }
 
     @Override
@@ -153,7 +202,18 @@ public class WitheredEntity extends SoulsMob {
 
     @Override
     public double stopDistance() {
-        return this.kind == Kind.ARCHER ? 9.0 : this.kind == Kind.ACOLYTE ? 8.0 : 1.4;
+        return this.kind == Kind.ARCHER ? 9.0 : this.kind == Kind.ACOLYTE ? 8.0 : this.hasPike() ? 2.3 : 1.4;
+    }
+
+    /** Whether it holds something to thrust with. */
+    private boolean hasPike() {
+        return this.getMainHandItem().is(Dushi.PITCHFORK.get());
+    }
+
+    @Override
+    protected void onReset() {
+        super.onReset();
+        this.alarmed = false;
     }
 
     @Override
@@ -164,6 +224,16 @@ public class WitheredEntity extends SoulsMob {
         if (this.kind == Kind.ACOLYTE && distance > 3.0) {
             return distance < 18.0 && this.hasLineOfSight(target) ? CAST : 0;
         }
+        if (this.kind == Kind.WATCHMAN && !this.alarmed && distance < 14.0 && this.hasLineOfSight(target)) {
+            this.alarmed = true;
+            return ALARM;
+        }
+        if (this.kind == Kind.BUTCHER) {
+            return distance < 2.3 ? (this.random.nextInt(10) < 7 ? CHOP : SWING) : 0;
+        }
+        if (this.hasPike()) {
+            return distance < 3.1 ? THRUST : 0;
+        }
         return distance < 2.1 ? SWING : 0;
     }
 
@@ -171,8 +241,8 @@ public class WitheredEntity extends SoulsMob {
     public void startAttack(int id) {
         super.startAttack(id);
         this.stopUsingItem();
-        if (id == SWING) {
-            this.playSound(Dushi.sound("entity.withered.ambient"), 0.8F, 1.3F);
+        if (id == SWING || id == CHOP || id == THRUST) {
+            this.playSound(Dushi.sound("entity.withered.ambient"), 0.8F, this.kind == Kind.BUTCHER ? 0.8F : 1.3F);
         }
         if (id == SHOOT) {
             this.startUsingItem(InteractionHand.MAIN_HAND);
@@ -188,6 +258,29 @@ public class WitheredEntity extends SoulsMob {
             this.swingArm();
             this.hitArc(level, 2.4, 55.0, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE)
                     + (this.getMainHandItem().isEmpty() ? 0.0F : 2.0F), 0.4);
+        } else if (id == CHOP) {
+            if (time == CHOP_FIRST || time == CHOP_SECOND) {
+                this.swingArm();
+                this.hitArc(level, 2.5, 50.0, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) + 2.0F, 0.3);
+            }
+            if (time == CHOP_FIRST + 4) {
+                // he comes on between the two
+                Vec3 step = this.facing().scale(0.42);
+                this.setDeltaMovement(step.x, this.getDeltaMovement().y, step.z);
+            }
+        } else if (id == THRUST && time == THRUST_IMPACT) {
+            this.swingArm();
+            this.hitArc(level, 3.8, 17.0, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) + 2.0F, 0.6);
+        } else if (id == ALARM && time == ALARM_SOUND) {
+            this.playSound(Dushi.sound("entity.watchman.alarm"), 3.0F, 1.0F);
+            level.sendParticles(ParticleTypes.NOTE, this.getX(), this.getY() + this.getBbHeight() + 0.6, this.getZ(), 4, 0.3, 0.2, 0.3, 0.0);
+            LivingEntity target = this.getTarget();
+            if (target != null) {
+                for (SoulsMob other : level.getEntitiesOfClass(SoulsMob.class, this.getBoundingBox().inflate(ALARM_RANGE, 6.0, ALARM_RANGE),
+                        mob -> mob != this && mob.isAlive() && !mob.isBoss() && mob.getTarget() == null)) {
+                    other.setTarget(target);
+                }
+            }
         } else if (id == SHOOT && time == SHOOT_RELEASE) {
             this.stopUsingItem();
             LivingEntity target = this.getTarget();
@@ -250,12 +343,34 @@ public class WitheredEntity extends SoulsMob {
                     this.spawnAtLocation(level, new ItemStack(Dushi.TAR_POT.get()));
                 }
             }
+            case TOWNSMAN -> {
+                this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 2);
+                this.leavePiece(level, ArmorSet.PRISONER, 0.05F);
+            }
+            case BUTCHER -> {
+                this.leave(level, Dushi.RUST_SCRAP.get(), 0, 2);
+                this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 1);
+                this.leaveMaybe(level, Dushi.NAMELESS_SOUL.get(), 0.1F);
+                this.leaveMaybe(level, Dushi.HATCHET.get(), 0.03F);
+            }
+            case WATCHMAN -> {
+                this.leave(level, Dushi.RUST_SCRAP.get(), 0, 2);
+                this.leavePiece(level, ArmorSet.GUARD, 0.05F);
+                if (this.random.nextInt(12) == 0) {
+                    this.spawnAtLocation(level, new ItemStack(Dushi.TAR_POT.get()));
+                }
+            }
             case ARCHER -> {
                 this.leave(level, Items.ARROW, 0, 3);
                 this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 1);
                 this.leavePiece(level, ArmorSet.PRISONER, 0.03F);
             }
         }
+    }
+
+    @Override
+    public float getVoicePitch() {
+        return this.kind == Kind.BUTCHER ? 0.72F + this.random.nextFloat() * 0.1F : super.getVoicePitch();
     }
 
     @Override

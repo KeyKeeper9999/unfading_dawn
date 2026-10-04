@@ -1,5 +1,6 @@
 package com.keykeeper.dushi.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.keykeeper.dushi.Forge;
@@ -20,6 +21,8 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 public class ForgeScreen extends Screen {
     private static final int PANEL_WIDTH = 336;
     private static final int ROW_HEIGHT = 24;
+    /** Where the list begins under the title, the souls and the tabs. */
+    private static final int LIST_TOP = 62;
     private static final int FRAME = 0xFF16120E;
     private static final int FRAME_LIGHT = 0xFF6B5A40;
     private static final int BACK = 0xE61A1510;
@@ -29,25 +32,42 @@ public class ForgeScreen extends Screen {
     private static final int SOULS = 0xFF9FE3FF;
     private static final int RED = 0xFFD06A5A;
 
-    private final List<Forge.Recipe> recipes = Forge.recipes();
+    private final List<Forge.Recipe> all = Forge.recipes();
+    /** The recipes of the open shelf, as indices into the whole list (which is what the server is told). */
+    private final List<Integer> recipes = new ArrayList<>();
     private final ItemStack[] results;
     private Button[] buttons = new Button[0];
+    private final Button[] tabs = new Button[Forge.Category.values().length];
+    private static Forge.Category shelf = Forge.Category.WEAPONS;
     private int scroll;
 
     public ForgeScreen() {
         super(Component.translatable("screen.vsratie_dushi.forge"));
-        this.results = new ItemStack[this.recipes.size()];
+        this.results = new ItemStack[this.all.size()];
         for (int i = 0; i < this.results.length; i++) {
-            this.results[i] = this.recipes.get(i).result().get();
+            this.results[i] = this.all.get(i).result().get();
         }
+        this.open(shelf);
+    }
+
+    private void open(Forge.Category category) {
+        shelf = category;
+        this.recipes.clear();
+        for (int i = 0; i < this.all.size(); i++) {
+            if (this.all.get(i).category() == category) {
+                this.recipes.add(i);
+            }
+        }
+        this.scroll = 0;
+        this.updateButtons();
     }
 
     private int visible() {
-        return Math.max(3, Math.min(9, (this.height - 86) / ROW_HEIGHT));
+        return Math.max(3, Math.min(8, (this.height - 110) / ROW_HEIGHT));
     }
 
     private int panelHeight() {
-        return this.visible() * ROW_HEIGHT + 74;
+        return this.visible() * ROW_HEIGHT + 98;
     }
 
     private int left() {
@@ -77,8 +97,18 @@ public class ForgeScreen extends Screen {
         for (int row = 0; row < visible; row++) {
             int line = row;
             this.buttons[row] = this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.forge.make"),
-                    button -> ClientPacketDistributor.sendToServer(new Net.Make(this.scroll + line)))
-                    .bounds(left + PANEL_WIDTH - 62, top + 38 + row * ROW_HEIGHT + 2, 54, 20).build());
+                    button -> {
+                        if (this.scroll + line < this.recipes.size()) {
+                            ClientPacketDistributor.sendToServer(new Net.Make(this.recipes.get(this.scroll + line)));
+                        }
+                    }).bounds(left + PANEL_WIDTH - 62, top + LIST_TOP + row * ROW_HEIGHT + 2, 54, 20).build());
+        }
+        Forge.Category[] categories = Forge.Category.values();
+        int tabWidth = (PANEL_WIDTH - 16) / categories.length;
+        for (int i = 0; i < categories.length; i++) {
+            Forge.Category category = categories[i];
+            this.tabs[i] = this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.forge.tab." + category.id),
+                    button -> this.open(category)).bounds(left + 8 + i * tabWidth, top + 34, tabWidth - 2, 20).build());
         }
         int bottom = top + this.panelHeight();
         this.addRenderableWidget(Button.builder(Component.literal("▲"), button -> this.scrollBy(-visible + 1)).bounds(left + 8, bottom - 26, 20, 20).build());
@@ -95,7 +125,12 @@ public class ForgeScreen extends Screen {
         for (int row = 0; row < this.buttons.length; row++) {
             int index = this.scroll + row;
             this.buttons[row].visible = index < this.recipes.size();
-            this.buttons[row].active = index < this.recipes.size() && Forge.canMake(this.minecraft.player, this.recipes.get(index));
+            this.buttons[row].active = index < this.recipes.size() && Forge.canMake(this.minecraft.player, this.all.get(this.recipes.get(index)));
+        }
+        for (int i = 0; i < this.tabs.length; i++) {
+            if (this.tabs[i] != null) {
+                this.tabs[i].active = Forge.Category.values()[i] != shelf;
+            }
         }
     }
 
@@ -131,7 +166,7 @@ public class ForgeScreen extends Screen {
         }
         String place = (this.scroll + 1) + "-" + Math.min(this.recipes.size(), this.scroll + this.visible()) + " / " + this.recipes.size();
         graphics.text(this.font, place, left + 10, top + 21, DIM);
-        graphics.fill(left + 8, top + 33, right - 8, top + 34, FRAME_LIGHT);
+        graphics.fill(left + 8, top + 57, right - 8, top + 58, FRAME_LIGHT);
     }
 
     @Override
@@ -150,12 +185,12 @@ public class ForgeScreen extends Screen {
             if (index >= this.recipes.size()) {
                 break;
             }
-            Forge.Recipe recipe = this.recipes.get(index);
-            int y = top + 38 + row * ROW_HEIGHT;
+            Forge.Recipe recipe = this.all.get(this.recipes.get(index));
+            int y = top + LIST_TOP + row * ROW_HEIGHT;
             if (row % 2 == 1) {
                 graphics.fill(left + 6, y, left + PANEL_WIDTH - 6, y + ROW_HEIGHT, 0x18FFFFFF);
             }
-            ItemStack result = this.results[index];
+            ItemStack result = this.results[this.recipes.get(index)];
             graphics.item(result, left + 10, y + 4);
             graphics.itemDecorations(this.font, result, left + 10, y + 4);
             if (mouseX >= left + 8 && mouseX < left + 30 && mouseY >= y && mouseY < y + ROW_HEIGHT) {

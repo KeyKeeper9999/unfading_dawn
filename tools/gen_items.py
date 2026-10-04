@@ -226,6 +226,23 @@ WEAPON_ART = {
         ".olo............",
         "..o.............",
         "................"],
+    'cleaver': [
+        "................",
+        "................",
+        "........oooo....",
+        ".......oSSSSo...",
+        "......oSSsssNo..",
+        ".....oSSsssdno..",
+        "....oSSsssddo...",
+        "....oSsssddo....",
+        ".....osddoo.....",
+        "....oWooo.......",
+        "...oWwo.........",
+        "..oWwo..........",
+        ".oLwo...........",
+        ".olo............",
+        "..o.............",
+        "................"],
     'flanged_mace': [
         "................",
         "..........oo....",
@@ -260,6 +277,16 @@ sp.art([".gGg.",
         "gGfhh",
         ".hhh."], PAL, ox=10, oy=5, lock='fF')
 sp.px(12, 4, g)
+sp.outline()
+
+# pitchfork: a long shaft, a bar across its end and three tines
+sp = icon('pitchfork', handheld=True)
+for i in range(9):
+    sp.px(1 + i, 14 - i, W if i % 3 else w)
+    sp.px(2 + i, 14 - i, w)
+sp.pts([(8, 3), (9, 4), (10, 5), (11, 6), (12, 7)], d)
+sp.pts([(9, 2), (10, 1), (11, 4), (12, 3), (13, 2), (13, 6), (14, 5)], s)
+sp.pts([(11, 0), (14, 1), (15, 4)], S)
 sp.outline()
 
 # scholar's staff: a crooked stick with a pale crystal bound to its top
@@ -332,6 +359,32 @@ for (ox_, oy_, ww, hh) in ((23, 9, 6, 4), (20, 13, 4, 3)):
             sp.px(ox_ + i + j, oy_ + j + i // 3, KEYC if (i + j) % 3 else KEYD)
 sp.pts([(27, 12), (28, 13), (25, 11)], (34, 28, 24))
 sp.pts([(27, 2), (28, 1), (29, 1), (28, 2), (29, 2), (29, 3), (30, 2)], KEYL)
+sp.outline(0.45, inner=False)
+
+sp = icon('grave_spade', 32, big=True)
+# the gravedigger's spade: a long worn shaft with a crossbar for the hands, a wide blade eaten by rust
+for i in range(17):
+    xx, yy = 5 + i, 26 - i
+    sp.px(xx, yy, W if i % 5 else w)
+    sp.px(xx + 1, yy, w)
+    sp.px(xx + 1, yy + 1, b)
+for kk in range(-3, 4):
+    sp.px(4 + kk, 27 + kk, W if kk % 2 else w)
+    sp.px(5 + kk, 27 + kk, b)
+for uu in range(9):
+    half = 4 if uu < 5 else 8 - uu
+    for vv in range(-half, half + 1):
+        xx, yy = 20 + uu + vv, 11 - uu + vv
+        if 0 <= xx < 32 and 0 <= yy < 32:
+            col = S if vv == -half else (d if vv == half else s)
+            if (uu * 5 + vv * 3) % 11 == 0:
+                col = R
+            if (uu * 3 + vv * 7) % 13 == 0:
+                col = r
+            sp.px(xx, yy, col)
+            if vv < half and xx + 1 < 32:
+                sp.px(xx + 1, yy, col if col in (s, R, r) else s)
+sp.pts([(20, 11), (21, 12), (22, 11), (21, 10)], D)
 sp.outline(0.45, inner=False)
 
 # ---------------------------------------------------------------------------------------------------- bow
@@ -542,6 +595,23 @@ ascii_icon('overseer_soul', [
     "..eeeffffeeee...",
     "....eeeeeee.....",
     "................"], lock='FfeM')
+ascii_icon('gravedigger_soul', [
+    ".......V........",
+    "......vVv..v....",
+    "..v...vVVv.V....",
+    "..V..vVVVvvV....",
+    "..Vv.vVVVVVv....",
+    ".vVVvVVCCCVv.v..",
+    ".vVVVVCCCCCVvV..",
+    ".vVVVCCkCkCCVv..",
+    "kvVVVCCCCCCCVvk.",
+    "kvVVVVCCkCCVVvk.",
+    "kvvVVVCkCkCVvvk.",
+    ".kvvVVVCCCVVvk..",
+    ".kkvvVVVVVVvkk..",
+    "..kkkvvvvkkkk...",
+    "....kkkkkkk.....",
+    "................"], lock='VvCk')
 ascii_icon('chaplain_soul', [
     ".......P........",
     "......pPp..p....",
@@ -671,6 +741,11 @@ egg('withered_prisoner', (104, 84, 68), (132, 118, 90), ((6, 8, EMB), (9, 8, EMB
 egg('withered_guard', (98, 97, 102), (112, 44, 40), ((6, 8, EMB), (9, 8, EMB)))
 egg('withered_archer', (62, 72, 52), (94, 62, 38), ((6, 8, EMB), (9, 8, EMB)))
 egg('withered_acolyte', (66, 46, 62), (214, 184, 106), ((6, 8, EMB), (9, 8, EMB)))
+egg('withered_townsman', (150, 140, 118), (98, 72, 48), ((6, 8, EMB), (9, 8, EMB)))
+egg('withered_butcher', (126, 104, 85), (124, 40, 36), ((6, 8, EMB), (9, 8, EMB)))
+egg('withered_watchman', (44, 50, 66), (214, 170, 80), ((6, 8, EMB), (9, 8, EMB)))
+egg('carrion_hound', (74, 64, 58), (38, 30, 28), ((5, 7, EMB), (10, 7, EMB), (7, 10, C), (8, 10, C)))
+egg('gravedigger', (86, 78, 66), (46, 40, 36), ((6, 7, F), (9, 7, F), (6, 10, C), (7, 10, C), (8, 10, C), (9, 10, C)))
 egg('gilded_knight', (176, 176, 186), (214, 184, 106), ((5, 8, O), (6, 8, EMB), (7, 8, O), (8, 8, O), (9, 8, EMB), (10, 8, O)))
 egg('rust_knight', (84, 76, 76), (150, 90, 52), ((5, 8, O), (6, 8, EMB), (7, 8, O), (8, 8, O), (9, 8, EMB), (10, 8, O)))
 egg('keykeeper', (72, 76, 88), (196, 160, 72), ((5, 8, C), (6, 8, C), (7, 8, C), (8, 8, C), (9, 8, C), (10, 8, C)))
@@ -707,7 +782,7 @@ def big_display(grip):
     return out
 
 
-BIG_GRIP = {'rust_greatsword': 5.5, 'great_key': 10.5}
+BIG_GRIP = {'rust_greatsword': 5.5, 'great_key': 10.5, 'grave_spade': 8.0}
 
 if __name__ == '__main__':
     os.makedirs(f'{A}/textures/item', exist_ok=True)

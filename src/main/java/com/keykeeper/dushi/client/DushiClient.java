@@ -52,6 +52,8 @@ public final class DushiClient {
         Dushi.WITHERED.forEach((kind, type) -> event.registerEntityRenderer(type.get(), context -> new WitheredRenderer(context, kind)));
         event.registerEntityRenderer(Dushi.RUST_KNIGHT.get(), context -> new RustKnightRenderer(context, "rust_knight"));
         event.registerEntityRenderer(Dushi.GILDED_KNIGHT.get(), context -> new RustKnightRenderer(context, "gilded_knight"));
+        event.registerEntityRenderer(Dushi.CARRION_HOUND.get(), CarrionHoundRenderer::new);
+        event.registerEntityRenderer(Dushi.GRAVEDIGGER.get(), GravediggerRenderer::new);
         event.registerEntityRenderer(Dushi.KEYKEEPER.get(), KeykeeperRenderer::new);
         event.registerEntityRenderer(Dushi.OVERSEER.get(), OverseerRenderer::new);
         event.registerEntityRenderer(Dushi.CHAPLAIN.get(), ChaplainRenderer::new);
@@ -61,6 +63,8 @@ public final class DushiClient {
     static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(WitheredModel.LAYER, WitheredModel::createLayer);
         event.registerLayerDefinition(RustKnightModel.LAYER, RustKnightModel::createLayer);
+        event.registerLayerDefinition(CarrionHoundModel.LAYER, CarrionHoundModel::createLayer);
+        event.registerLayerDefinition(GravediggerModel.LAYER, GravediggerModel::createLayer);
         event.registerLayerDefinition(KeykeeperModel.LAYER, KeykeeperModel::createLayer);
         event.registerLayerDefinition(OverseerModel.LAYER, OverseerModel::createLayer);
         event.registerLayerDefinition(ChaplainModel.LAYER, ChaplainModel::createLayer);

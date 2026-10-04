@@ -83,10 +83,23 @@ public final class SoulMechanics {
         PacketDistributor.sendToPlayer(player, new Net.Banner("", 0, "ui.souls_gain"));
     }
 
+    /** Whether a hearth stands within a few steps of the player: there the dead do not take notice of them. */
+    private static boolean nearHearth(ServerPlayer player) {
+        BlockPos centre = player.blockPosition();
+        for (BlockPos pos : BlockPos.betweenClosed(centre.offset(-HEARTH_PEACE, -2, -HEARTH_PEACE), centre.offset(HEARTH_PEACE, 2, HEARTH_PEACE))) {
+            if (player.level().getBlockState(pos).is(Dushi.HEARTH.get())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static final int HEARTH_PEACE = 6;
+
     /** Souls for killing {@code victim}. */
     public static int soulsFor(LivingEntity victim) {
         if (victim instanceof SoulsMob mob) {
-            return mob.soulReward();
+            return mob.reward();
         }
         if (victim instanceof Enemy) {
             return Math.max(5, Math.round(victim.getMaxHealth() * 1.5F));
@@ -290,13 +303,22 @@ public final class SoulMechanics {
                 weighDown(serverPlayer);
             }
             ground(serverPlayer, soul);
+            if (player.tickCount % 10 == 0) {
+                soul.atHearth = nearHearth(serverPlayer);
+            }
             // A threshold crossed: the name of the place, once, until another place has been named.
             BlockState at = serverPlayer.level().getBlockState(serverPlayer.blockPosition());
             if (at.getBlock() instanceof PlaceNameBlock) {
                 PlaceNameBlock.Place place = at.getValue(PlaceNameBlock.PLACE);
-                if (soul.place != place.ordinal()) {
+                if (place.named && soul.place != place.ordinal()) {
                     soul.place = place.ordinal();
                     PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("place.vsratie_dushi." + place.id, Net.Banner.PALE, "ui.place"));
+                }
+                // Every place has its hour; time stands still there, so the clock is simply set.
+                ServerLevel world = serverPlayer.level();
+                if (Math.floorMod(world.getDefaultClockTime(), 24000L) != place.hour) {
+                    world.getServer().getCommands().performPrefixedCommand(world.getServer().createCommandSourceStack().withSuppressedOutput(),
+                            "time set " + place.hour);
                 }
             }
             // The client counts by itself between these corrections.
@@ -382,6 +404,10 @@ public final class SoulMechanics {
         LivingEntity victim = event.getEntity();
         if (!(victim.level() instanceof ServerLevel level)) {
             return;
+        }
+        // The dead of a harder place hit harder, whatever they hit with.
+        if (event.getSource().getEntity() instanceof SoulsMob attacker && attacker.tier() > 0) {
+            event.setAmount(event.getAmount() * attacker.damageScale());
         }
         // Rolling through a blow.
         if (victim instanceof Player player && PlayerSoul.of(player).rollTicks > Net.ROLL_TICKS - Gear.burden(player).safeTicks

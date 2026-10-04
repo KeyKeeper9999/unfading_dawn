@@ -116,6 +116,9 @@ public final class PlayerSoul {
     /** Whether the keykeeper has already given this player his gift. */
     public boolean metKeykeeper;
 
+    /** Whether the player stands by a hearth: the dead do not take notice of them there. Not saved, server only. */
+    public boolean atHearth;
+
     /** The place whose name was last shown to the player (see PlaceNameBlock), -1 for none yet. Not saved, server only. */
     public int place = -1;
 

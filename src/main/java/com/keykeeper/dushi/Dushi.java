@@ -13,7 +13,10 @@ import com.keykeeper.dushi.block.HearthBlock;
 import com.keykeeper.dushi.block.MobMarkBlock;
 import com.keykeeper.dushi.block.MobMarkBlockEntity;
 import com.keykeeper.dushi.block.PlaceNameBlock;
+import com.keykeeper.dushi.block.ShardBlock;
+import com.keykeeper.dushi.entity.CarrionHoundEntity;
 import com.keykeeper.dushi.entity.ChaplainEntity;
+import com.keykeeper.dushi.entity.GravediggerEntity;
 import com.keykeeper.dushi.entity.KeykeeperEntity;
 import com.keykeeper.dushi.entity.OverseerEntity;
 import com.keykeeper.dushi.entity.RustKnightEntity;
@@ -107,6 +110,8 @@ public class Dushi {
             "entity.chaplain.blink",
             "entity.keykeeper.ambient", "entity.keykeeper.give",
             "ui.death", "ui.boss_defeated", "ui.hearth_lit", "ui.level_up", "ui.souls_gain", "ui.souls_retrieve", "ui.place",
+            "entity.hound.ambient", "entity.hound.hurt", "entity.hound.death", "entity.hound.bite", "entity.watchman.alarm",
+            "entity.gravedigger.ambient", "entity.gravedigger.hurt", "entity.gravedigger.death", "entity.gravedigger.dig", "entity.gravedigger.raise",
             "block.hearth.rest", "block.fog_gate.pass",
             "item.flask.drink", "item.flask.empty", "item.spell.shard", "item.spell.shard_hit", "item.spell.mend", "item.spell.rebuke",
             "item.spell.fire", "item.spell.fire_burst", "item.spell.fizzle",
@@ -148,6 +153,11 @@ public class Dushi {
             props -> props.mapColor(MapColor.COLOR_GRAY).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
                     .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.SAND));
     public static final DeferredItem<BlockItem> MOB_MARK_ITEM = ITEMS.registerSimpleBlockItem(MOB_MARK);
+
+    /** A flask shard glowing in a heap of ash, for whoever takes it: see {@link ShardBlock}. No item; maps set it. */
+    public static final DeferredBlock<ShardBlock> SHARD_HEAP = BLOCKS.registerBlock("shard_heap", ShardBlock::new,
+            props -> props.mapColor(MapColor.COLOR_ORANGE).strength(-1.0F, 3600000.0F).noOcclusion().noLootTable()
+                    .pushReaction(PushReaction.IMMOVEABLE).lightLevel(state -> 10).sound(SoundType.SAND));
 
     /** A threshold that names the place beyond it: see {@link PlaceNameBlock}. It has no item; maps set it with their builder. */
     public static final DeferredBlock<PlaceNameBlock> PLACE_NAME = BLOCKS.registerBlock("place_name", PlaceNameBlock::new,
@@ -208,8 +218,11 @@ public class Dushi {
     public static final DeferredItem<WeaponItem> BATTLE_AXE = weapon("battle_axe", 8.5F, 1.1F, 0.0F, 21.0F, 1.0F, 0.1F, 1.5F, 420, Rarity.COMMON);
     public static final DeferredItem<WeaponItem> CLUB = weapon("club", 6.0F, 1.3F, 0.0F, 16.0F, 0.9F, 0.0F, 1.5F, 200, Rarity.COMMON);
     public static final DeferredItem<WeaponItem> FLANGED_MACE = weapon("flanged_mace", 8.0F, 1.2F, 0.0F, 19.0F, 1.0F, 0.0F, 1.5F, 450, Rarity.COMMON);
+    public static final DeferredItem<WeaponItem> PITCHFORK = weapon("pitchfork", 5.0F, 1.5F, 0.75F, 14.0F, 0.3F, 0.7F, 1.4F, 240, Rarity.COMMON);
+    public static final DeferredItem<WeaponItem> CLEAVER = weapon("cleaver", 6.5F, 1.7F, -0.25F, 14.0F, 0.8F, 0.2F, 1.5F, 300, Rarity.COMMON);
     public static final DeferredItem<WeaponItem> RUST_GREATSWORD = weapon("rust_greatsword", 11.0F, 0.9F, 1.0F, 30.0F, 1.0F, 0.3F, 1.5F, 600, Rarity.UNCOMMON);
     public static final DeferredItem<WeaponItem> GREAT_KEY = weapon("great_key", 14.0F, 0.7F, 1.0F, 38.0F, 1.0F, 0.0F, 1.5F, 900, Rarity.EPIC);
+    public static final DeferredItem<WeaponItem> GRAVE_SPADE = weapon("grave_spade", 10.0F, 1.0F, 0.75F, 26.0F, 1.0F, 0.1F, 1.5F, 600, Rarity.EPIC);
     public static final DeferredItem<WeaponItem> CENSER_FLAIL = weapon("censer_flail", 9.0F, 1.2F, 1.0F, 22.0F, 0.4F, 0.6F, 1.5F, 700, Rarity.EPIC);
 
     public static final DeferredItem<ShortBowItem> SHORT_BOW = ITEMS.registerItem("short_bow", props -> new ShortBowItem(props.stacksTo(1)));
@@ -288,6 +301,8 @@ public class Dushi {
     public static final DeferredItem<SoulItem> NAMELESS_SOUL = ITEMS.registerItem("nameless_soul", props -> new SoulItem(props.stacksTo(64), 200));
     public static final DeferredItem<SoulItem> GREAT_SOUL = ITEMS.registerItem("great_soul",
             props -> new SoulItem(props.stacksTo(64).rarity(Rarity.UNCOMMON), 1000));
+    public static final DeferredItem<SoulItem> GRAVEDIGGER_SOUL = ITEMS.registerItem("gravedigger_soul",
+            props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 2500));
     public static final DeferredItem<SoulItem> OVERSEER_SOUL = ITEMS.registerItem("overseer_soul",
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 5000));
     public static final DeferredItem<SoulItem> CHAPLAIN_SOUL = ITEMS.registerItem("chaplain_soul",
@@ -327,6 +342,11 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<ChaplainEntity>> CHAPLAIN = ENTITIES.registerEntityType(
             "chaplain", ChaplainEntity::new, MobCategory.MONSTER, b -> b.sized(0.9F, 3.0F).eyeHeight(2.6F).clientTrackingRange(12));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<CarrionHoundEntity>> CARRION_HOUND = ENTITIES.registerEntityType(
+            "carrion_hound", CarrionHoundEntity::new, MobCategory.MONSTER, b -> b.sized(0.75F, 0.95F).eyeHeight(0.8F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<GravediggerEntity>> GRAVEDIGGER = ENTITIES.registerEntityType(
+            "gravedigger", GravediggerEntity::new, MobCategory.MONSTER, b -> b.sized(1.5F, 3.6F).eyeHeight(3.1F).clientTrackingRange(12));
+
     public static final List<DeferredItem<SpawnEggItem>> SPAWN_EGGS = new ArrayList<>();
 
     private static void egg(String name, Supplier<? extends EntityType<? extends Mob>> type) {
@@ -337,6 +357,8 @@ public class Dushi {
         WITHERED.forEach((kind, type) -> egg(kind.id, type));
         egg("rust_knight", RUST_KNIGHT);
         egg("gilded_knight", GILDED_KNIGHT);
+        egg("carrion_hound", CARRION_HOUND);
+        egg("gravedigger", GRAVEDIGGER);
         egg("keykeeper", KEYKEEPER);
         egg("overseer", OVERSEER);
         egg("chaplain", CHAPLAIN);
@@ -389,6 +411,8 @@ public class Dushi {
             WITHERED.forEach((kind, type) -> event.put(type.get(), WitheredEntity.createAttributes(kind).build()));
             event.put(RUST_KNIGHT.get(), RustKnightEntity.createAttributes().build());
             event.put(GILDED_KNIGHT.get(), RustKnightEntity.createGildedAttributes().build());
+            event.put(CARRION_HOUND.get(), CarrionHoundEntity.createAttributes().build());
+            event.put(GRAVEDIGGER.get(), GravediggerEntity.createAttributes().build());
             event.put(KEYKEEPER.get(), KeykeeperEntity.createAttributes().build());
             event.put(OVERSEER.get(), OverseerEntity.createAttributes().build());
             event.put(CHAPLAIN.get(), ChaplainEntity.createAttributes().build());

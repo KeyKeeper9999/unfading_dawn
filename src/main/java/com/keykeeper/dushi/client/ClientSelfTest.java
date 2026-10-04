@@ -8,7 +8,9 @@ import com.keykeeper.dushi.Dushi;
 import com.keykeeper.dushi.Gear;
 import com.keykeeper.dushi.PlayerSoul;
 import com.keykeeper.dushi.block.MobMarkBlockEntity;
+import com.keykeeper.dushi.entity.CarrionHoundEntity;
 import com.keykeeper.dushi.entity.ChaplainEntity;
+import com.keykeeper.dushi.entity.GravediggerEntity;
 import com.keykeeper.dushi.entity.OverseerEntity;
 import com.keykeeper.dushi.entity.RustKnightEntity;
 import com.keykeeper.dushi.entity.SoulsMob;
@@ -366,6 +368,49 @@ public final class ClientSelfTest {
         shot("21_chaplain_flames_throw_night");
         rest();
         command("time set 6000");
+
+        // 4a. the village: townsman, butcher, watchman and a hound; then the gravedigger
+        command(gone, look(0.5, 0.5, 0, 5), summon("withered_townsman", -3.5, 4.5, held("pitchfork", null)), summon("withered_butcher", -1.0, 4.5, held("cleaver", null)),
+                summon("withered_watchman", 1.5, 4.5, ",equipment:{mainhand:{id:\"vsratie_dushi:pitchfork\"},offhand:{id:\"minecraft:lantern\"}}"),
+                summon("carrion_hound", 4.0, 4.0, ""));
+        shot("v1_village", 30);
+        attack(WitheredEntity.class, WitheredEntity.CHOP, 9);
+        shot("v2_village_chop_raise");
+        attack(WitheredEntity.class, WitheredEntity.CHOP, 11);
+        shot("v2_village_chop_strike");
+        attack(WitheredEntity.class, WitheredEntity.THRUST, 15);
+        shot("v3_village_thrust");
+        attack(WitheredEntity.class, WitheredEntity.ALARM, 14);
+        attack(CarrionHoundEntity.class, CarrionHoundEntity.POUNCE, 13);
+        shot("v4_village_alarm_pounce");
+        command(look(-6.0, 6.5, -110, 5));
+        attack(WitheredEntity.class, WitheredEntity.THRUST, 15);
+        attack(CarrionHoundEntity.class, CarrionHoundEntity.BITE, 7);
+        shot("v5_village_side");
+        rest();
+        command(look(0.5, 9.0, 180, 5));
+        shot("v6_village_back");
+        command(gone, look(0.5, 0.5, 0, -10), summon("gravedigger", 0.5, 6.0, ""), "time set 18000");
+        shot("v7_gravedigger_night", 30);
+        command("time set 6000");
+        shot("v7_gravedigger", 20);
+        attack(GravediggerEntity.class, GravediggerEntity.SWEEP, 15);
+        shot("v8_gravedigger_sweep");
+        attack(GravediggerEntity.class, GravediggerEntity.SLAM, 13);
+        shot("v8_gravedigger_slam_raise");
+        attack(GravediggerEntity.class, GravediggerEntity.SLAM, 21);
+        shot("v8_gravedigger_slam_strike");
+        attack(GravediggerEntity.class, GravediggerEntity.DIRT, 18);
+        shot("v9_gravedigger_dirt");
+        command(look(-6.0, 8.0, -110, -6));
+        attack(GravediggerEntity.class, GravediggerEntity.RUSH, 20);
+        shot("v9_gravedigger_rush_side");
+        attack(GravediggerEntity.class, GravediggerEntity.RAISE, 24);
+        shot("v9_gravedigger_raise_side");
+        rest();
+        command(look(0.5, 11.0, 180, -10));
+        shot("v9_gravedigger_back");
+        command("kill @e[type=vsratie_dushi:withered_townsman]");
 
         // 5. every item of the mod as a picture in the air
         List<String> items = new ArrayList<>();

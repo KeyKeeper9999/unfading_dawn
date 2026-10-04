@@ -30,6 +30,10 @@ import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -63,6 +67,13 @@ public abstract class SoulsMob extends Monster {
     private static final double BAR_NEAR = 12.0;
     private static final double BAR_RANGE = 40.0;
     private int musicTicks;
+
+    /** How much stronger the dead of a harder place are: health, the blows they deal, the souls they leave. */
+    public static final float[] TIER_HEALTH = {1.0F, 1.6F, 2.3F, 3.0F};
+    public static final float[] TIER_DAMAGE = {1.0F, 1.35F, 1.7F, 2.1F};
+    public static final float[] TIER_SOULS = {1.0F, 2.5F, 4.5F, 7.0F};
+    private static final Identifier TIER_MODIFIER = Dushi.id("tier");
+    private int tier;
 
     private ServerBossEvent bossBar;
 
@@ -109,6 +120,44 @@ public abstract class SoulsMob extends Monster {
     /** The mob stops walking when it is this close to its target. */
     public double stopDistance() {
         return 1.5;
+    }
+
+    // ------------------------------------------------------------------ the place it belongs to
+
+    public int tier() {
+        return this.tier;
+    }
+
+    /** Set by the mark that raises the mob: 0 for the first places of a map, up to 3 for its last. */
+    public void setTier(int tier) {
+        this.tier = Math.max(0, Math.min(TIER_HEALTH.length - 1, tier));
+        AttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
+        if (health != null) {
+            health.removeModifier(TIER_MODIFIER);
+            if (this.tier > 0) {
+                health.addPermanentModifier(new AttributeModifier(TIER_MODIFIER, TIER_HEALTH[this.tier] - 1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+            }
+            this.setHealth(this.getMaxHealth());
+        }
+    }
+
+    public float damageScale() {
+        return TIER_DAMAGE[this.tier];
+    }
+
+    /** Souls given for killing it where it stands. */
+    public int reward() {
+        return Math.round(this.soulReward() * TIER_SOULS[this.tier]);
+    }
+
+    /** A player resting by a hearth is not noticed; one who struck first is. */
+    @Override
+    public void setTarget(LivingEntity target) {
+        if (target instanceof Player player && target != this.getTarget() && this.getLastHurtByMob() != target
+                && com.keykeeper.dushi.PlayerSoul.of(player).atHearth) {
+            return;
+        }
+        super.setTarget(target);
     }
 
     // ------------------------------------------------------------------ moves
@@ -496,11 +545,13 @@ public abstract class SoulsMob extends Monster {
     protected void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
         output.putInt("Phase", this.phase());
+        output.putInt("Tier", this.tier);
     }
 
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         this.setPhase(input.getIntOr("Phase", 1));
+        this.tier = Math.max(0, Math.min(TIER_HEALTH.length - 1, input.getIntOr("Tier", 0)));
     }
 }

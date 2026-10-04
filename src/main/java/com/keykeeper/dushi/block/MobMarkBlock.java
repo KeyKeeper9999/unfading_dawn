@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -46,7 +47,12 @@ public class MobMarkBlock extends Block implements EntityBlock {
         GILDED("gilded", () -> Dushi.GILDED_KNIGHT.get(), false),
         KEYKEEPER("keykeeper", () -> Dushi.KEYKEEPER.get(), false),
         OVERSEER("overseer", () -> Dushi.OVERSEER.get(), true),
-        CHAPLAIN("chaplain", () -> Dushi.CHAPLAIN.get(), true);
+        CHAPLAIN("chaplain", () -> Dushi.CHAPLAIN.get(), true),
+        TOWNSMAN("townsman", () -> Dushi.WITHERED.get(WitheredEntity.Kind.TOWNSMAN).get(), false),
+        BUTCHER("butcher", () -> Dushi.WITHERED.get(WitheredEntity.Kind.BUTCHER).get(), false),
+        WATCHMAN("watchman", () -> Dushi.WITHERED.get(WitheredEntity.Kind.WATCHMAN).get(), false),
+        HOUND("hound", () -> Dushi.CARRION_HOUND.get(), false),
+        GRAVEDIGGER("gravedigger", () -> Dushi.GRAVEDIGGER.get(), true);
 
         public final String id;
         private final Supplier<EntityType<? extends Mob>> type;
@@ -71,16 +77,18 @@ public class MobMarkBlock extends Block implements EntityBlock {
 
     public static final EnumProperty<Kind> MOB = EnumProperty.create("mob", Kind.class);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    /** How hard the place is: see SoulsMob.setTier. */
+    public static final IntegerProperty TIER = IntegerProperty.create("tier", 0, 3);
     private static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
 
     public MobMarkBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(MOB, Kind.PRISONER).setValue(FACING, Direction.SOUTH));
+        this.registerDefaultState(this.stateDefinition.any().setValue(MOB, Kind.PRISONER).setValue(FACING, Direction.SOUTH).setValue(TIER, 0));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(MOB, FACING);
+        builder.add(MOB, FACING, TIER);
     }
 
     @Override
