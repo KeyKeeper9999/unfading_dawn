@@ -360,6 +360,10 @@ public final class ClientSelfTest {
         command(look(0.5, 0.5, 0, -8), "data merge entity @e[type=vsratie_dushi:chaplain,limit=1] {Phase:2}", "time set 18000");
         attack(ChaplainEntity.class, ChaplainEntity.CALL, 25);
         shot("21_chaplain_call_night", 20);
+        attack(ChaplainEntity.class, ChaplainEntity.SPEARS, 20);
+        shot("21_chaplain_flames_gather_night");
+        attack(ChaplainEntity.class, ChaplainEntity.SPEARS, ChaplainEntity.FLAMES_GATHERED + 14);
+        shot("21_chaplain_flames_throw_night");
         rest();
         command("time set 6000");
 
