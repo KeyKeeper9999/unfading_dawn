@@ -139,7 +139,7 @@ public class Dushi {
     /** Where one of the dead keeps rising: see {@link MobMarkBlock}. */
     public static final DeferredBlock<MobMarkBlock> MOB_MARK = BLOCKS.registerBlock("mob_mark", MobMarkBlock::new,
             props -> props.mapColor(MapColor.COLOR_GRAY).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
-                    .pushReaction(PushReaction.BLOCK).sound(SoundType.SAND));
+                    .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.SAND));
     public static final DeferredItem<BlockItem> MOB_MARK_ITEM = ITEMS.registerSimpleBlockItem(MOB_MARK);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MobMarkBlockEntity>> MOB_MARK_ENTITY = BLOCK_ENTITIES.register("mob_mark",
             () -> new BlockEntityType<>(MobMarkBlockEntity::new, MOB_MARK.get()));
