@@ -45,7 +45,11 @@ jobs:
               'generator-settings={"layers"\:[{"block"\:"minecraft\:air","height"\:1}],"biome"\:"minecraft\:the_void"}' \
               'generate-structures=false' 'gamemode=adventure' 'difficulty=normal' 'spawn-protection=0' 'pause-when-empty-seconds=-1' > run/server.properties
             (DUSHI_BUILDMAP="$PWD/map/high_stockade.plan.txt" timeout 900 ./gradlew runServer --no-daemon > map.log 2>&1 || true)
-            rm -rf run/High_Stockade/playerdata run/High_Stockade/stats run/High_Stockade/advancements run/High_Stockade/session.lock
+            rm -rf run/High_Stockade/playerdata run/High_Stockade/stats run/High_Stockade/advancements run/High_Stockade/session.lock \
+              run/High_Stockade/players run/High_Stockade/level.dat_old run/High_Stockade/syncedconfig
+            python3 tools/name_world.py run/High_Stockade/level.dat "Вышний Острог" >> map.log 2>&1 || true
+            cp map/readme.txt run/High_Stockade/readme.txt || true
+            if [ -f map/icon.png ]; then cp map/icon.png run/High_Stockade/icon.png; fi
             (cd run && zip -qr ../High_Stockade.zip High_Stockade) || true
             ls -la High_Stockade.zip run/High_Stockade || true
             if [ -f .ci/mapshots ]; then

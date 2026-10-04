@@ -109,6 +109,7 @@ public final class MapSelfTest {
             case 1 -> {
                 if (minecraft.player != null && minecraft.level != null && minecraft.getSingleplayerServer() != null && screen == null) {
                     MinecraftServer server = minecraft.getSingleplayerServer();
+                    say("the world is called \"" + server.getWorldData().getLevelName() + "\"");
                     say("in the world: a newcomer plays " + minecraft.gameMode.getPlayerMode() + " at " + minecraft.player.blockPosition().toShortString()
                             + " looking " + Math.round(minecraft.player.getYRot()) + ", health " + minecraft.player.getHealth() + ", time "
                             + minecraft.level.getDefaultClockTime() + ", time moves " + server.overworld().getGameRules().get(GameRules.ADVANCE_TIME)
