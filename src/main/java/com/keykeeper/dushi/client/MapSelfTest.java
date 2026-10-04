@@ -7,14 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.keykeeper.dushi.Dushi;
+import com.keykeeper.dushi.entity.SoulsMob;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.tutorial.TutorialSteps;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.api.distmarker.Dist;
@@ -102,6 +105,10 @@ public final class MapSelfTest {
                             + ", commands allowed " + server.getPlayerList().isOp(server.getPlayerList().getPlayers().get(0).nameAndId()));
                     stage = 2;
                     wait = 300;
+                } else if (screen instanceof DeathScreen && minecraft.player != null) {
+                    say("FAILED: the newcomer died at " + minecraft.player.blockPosition().toShortString());
+                    minecraft.player.respawn();
+                    minecraft.gui.setScreen(null);
                 } else if (waited % 100 == 99 && screen != null) {
                     say("waiting for the world, screen is " + screen.getClass().getName());
                     for (var child : screen.children()) {
@@ -116,6 +123,15 @@ public final class MapSelfTest {
             }
             case 2 -> {
                 // the first picture is what the newcomer sees; after it the camera is set free
+                if (screen instanceof DeathScreen) {
+                    say("FAILED: the newcomer died at " + minecraft.player.blockPosition().toShortString());
+                    minecraft.player.respawn();
+                    minecraft.gui.setScreen(null);
+                    wait = 100;
+                    return;
+                }
+                say("after a while: at " + minecraft.player.blockPosition().toShortString() + ", health " + minecraft.player.getHealth()
+                        + ", on the ground " + minecraft.player.onGround());
                 shot(minecraft, "m00_first_sight");
                 MinecraftServer server = minecraft.getSingleplayerServer();
                 server.execute(() -> {
@@ -150,12 +166,27 @@ public final class MapSelfTest {
                 wait = 110;
             }
             case 4 -> {
+                if (!minecraft.gui.hud.isHidden()) {
+                    minecraft.gui.hud.toggle();
+                    wait = 6;
+                    return;
+                }
+                int mobs = 0;
+                for (Entity entity : minecraft.level.entitiesForRendering()) {
+                    if (entity instanceof SoulsMob && entity.distanceToSqr(minecraft.player) < 48.0 * 48.0) {
+                        mobs++;
+                    }
+                }
+                say(LIST.get(next).name + ": " + mobs + " of the dead within 48 blocks");
                 shot(minecraft, "m" + String.format("%02d", next + 1) + "_" + LIST.get(next).name);
                 next++;
                 stage = 3;
                 wait = 4;
             }
             case 5 -> {
+                if (minecraft.gui.hud.isHidden()) {
+                    minecraft.gui.hud.toggle();
+                }
                 minecraft.gui.setScreen(new ForgeScreen());
                 stage = 6;
                 wait = 20;

@@ -17,6 +17,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
@@ -177,6 +178,28 @@ public final class SoulMechanics {
             PlayerSoul soul = PlayerSoul.of(player);
             soul.applyAttributes(player);
             player.syncData(Dushi.PLAYER_SOUL);
+            settle(player);
+        }
+    }
+
+    /**
+     * In a world whose game mode is adventure the game does not look for a place around the world's spawn: it takes the spawn
+     * itself and lets the player sink to the floor under it. It does so before that place is loaded, finds no floor at all
+     * and leaves the player at the bottom of the world, which on a map built in the void is a fall to death. A player
+     * found in the column of the spawn, under its floor, is put back on it.
+     */
+    private static void settle(ServerPlayer player) {
+        if (!(player.level() instanceof ServerLevel level)) {
+            return;
+        }
+        LevelData.RespawnData spawn = level.getRespawnData();
+        BlockPos pos = spawn.pos();
+        BlockPos at = player.blockPosition();
+        if (spawn.dimension() == level.dimension() && at.getX() == pos.getX() && at.getZ() == pos.getZ() && at.getY() < pos.getY()
+                && !level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty()) {
+            player.connection.teleport(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, spawn.yaw(), spawn.pitch());
+            player.fallDistance = 0.0;
+            PlayerSoul.of(player).hasGround = false;
         }
     }
 
@@ -185,6 +208,7 @@ public final class SoulMechanics {
         if (event.getEntity() instanceof ServerPlayer player) {
             PlayerSoul soul = PlayerSoul.of(player);
             soul.applyAttributes(player);
+            settle(player);
             player.setHealth(player.getMaxHealth());
             soul.stamina = soul.maxStamina();
             soul.regenPause = 0;
