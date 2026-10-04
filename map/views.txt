@@ -1,3 +1,4 @@
+as_player_on_the_threshold -3.00 201.62 0.50 -22.50 203.00 0.50
 first_steps 1.50 201.60 0.50 -22.50 203.00 0.50
 arrival_from_outside 21.50 221.00 28.50 -30.50 199.00 0.50
 ward_from_the_gate -19.50 214.00 0.50 -62.50 199.00 0.50

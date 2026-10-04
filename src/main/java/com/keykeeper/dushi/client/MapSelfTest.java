@@ -143,7 +143,24 @@ public final class MapSelfTest {
                 say("after a while: at " + minecraft.player.blockPosition().toShortString() + ", health " + minecraft.player.getHealth()
                         + ", on the ground " + minecraft.player.onGround());
                 shot(minecraft, "m00_first_sight");
+                stage = 21;
+                wait = 5;
+            }
+            case 21 -> {
+                // views named as_player_... are walked to as the newcomer is, with the screen as a player sees it
                 MinecraftServer server = minecraft.getSingleplayerServer();
+                if (next < LIST.size() && LIST.get(next).name.startsWith("as_player_")) {
+                    View view = LIST.get(next);
+                    server.execute(() -> {
+                        ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                        double dx = view.toX - view.x;
+                        double dz = view.toZ - view.z;
+                        player.connection.teleport(view.x, view.y - 1.62, view.z, (float) Math.toDegrees(Math.atan2(-dx, dz)), 0.0F);
+                    });
+                    stage = 22;
+                    wait = 36;
+                    return;
+                }
                 server.execute(() -> {
                     ServerPlayer player = server.getPlayerList().getPlayers().get(0);
                     say("on the server: game mode " + player.gameMode.getGameModeForPlayer() + ", respawn " + player.level().getRespawnData());
@@ -153,6 +170,13 @@ public final class MapSelfTest {
                 });
                 stage = 3;
                 wait = 20;
+            }
+            case 22 -> {
+                say(LIST.get(next).name + ": at " + minecraft.player.blockPosition().toShortString() + ", health " + minecraft.player.getHealth());
+                shot(minecraft, "m00_" + LIST.get(next).name);
+                next++;
+                stage = 21;
+                wait = 4;
             }
             case 3 -> {
                 if (next >= LIST.size()) {

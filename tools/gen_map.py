@@ -1893,6 +1893,7 @@ def world(x, y, z):
 
 # pictures the client test takes of the finished world: name, the eye, what it looks at (in the plan's coordinates)
 VIEWS = (
+    ('as_player_on_the_threshold', (64, L0 + 2.62, 259.5), (64, L0 + 4, 240)),
     ('first_steps', (64, L0 + 2.6, 264), (64, L0 + 4, 240)),
     ('arrival_from_outside', (36, L0 + 22, 284), (64, L0, 232)),
     ('ward_from_the_gate', (64, L1 + 7, 243), (64, L0, 200)),
