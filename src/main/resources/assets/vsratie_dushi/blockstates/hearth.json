@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "vsratie_dushi:block/hearth"
+    },
+    "lit=true": {
+      "model": "vsratie_dushi:block/hearth_lit"
+    }
+  }
+}

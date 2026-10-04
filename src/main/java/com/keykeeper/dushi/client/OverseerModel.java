@@ -24,6 +24,7 @@ public class OverseerModel extends EntityModel<BossRenderState> {
     /** Must match SCALE in tools/gen_overseer.py. */
     private static final float MODEL_SCALE = 1.35F;
     private static final float DEG = (float) (Math.PI / 180.0);
+    private static final float KEY_REST = 0.6F;
 
     private final ModelPart body;
     private final ModelPart chest;
@@ -64,6 +65,67 @@ public class OverseerModel extends EntityModel<BossRenderState> {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
         // <generated mesh>
+        PartDefinition body = root.addOrReplaceChild("body", CubeListBuilder.create()
+                .texOffs(8, 27).addBox(-8.0F, -5.0F, -5.0F, 16.0F, 7.0F, 10.0F),
+                PartPose.offset(0.0F, 6.0F, 0.0F));
+        PartDefinition apron = body.addOrReplaceChild("apron", CubeListBuilder.create()
+                .texOffs(32, 44).addBox(-6.0F, 0.0F, -1.0F, 12.0F, 14.0F, 1.0F),
+                PartPose.offsetAndRotation(0.0F, -2.0F, -5.2F, -0.06F, 0.0F, 0.0F));
+        PartDefinition chest = body.addOrReplaceChild("chest", CubeListBuilder.create()
+                .texOffs(8, 0).addBox(-10.0F, -15.0F, -6.0F, 20.0F, 15.0F, 12.0F)
+                .texOffs(32, 99).addBox(-8.0F, -17.0F, -3.0F, 16.0F, 2.0F, 9.0F),
+                PartPose.offsetAndRotation(0.0F, -5.0F, 0.0F, 0.22F, 0.0F, 0.0F));
+        PartDefinition head = chest.addOrReplaceChild("head", CubeListBuilder.create()
+                .texOffs(0, 44).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F),
+                PartPose.offsetAndRotation(0.0F, -15.0F, -2.0F, -0.12F, 0.0F, 0.0F));
+        PartDefinition cage = head.addOrReplaceChild("cage", CubeListBuilder.create()
+                .texOffs(72, 0).addBox(-5.5F, -10.0F, -5.5F, 11.0F, 11.0F, 11.0F)
+                .texOffs(116, 7).addBox(-1.5F, -12.0F, -1.5F, 3.0F, 2.0F, 3.0F),
+                PartPose.ZERO);
+        PartDefinition right_arm = chest.addOrReplaceChild("right_arm", CubeListBuilder.create()
+                .texOffs(0, 60).addBox(-7.0F, -3.0F, -4.0F, 8.0F, 6.0F, 8.0F)
+                .texOffs(58, 57).addBox(-6.0F, 3.0F, -3.0F, 6.0F, 9.0F, 6.0F),
+                PartPose.offset(-10.0F, -12.0F, 0.0F));
+        PartDefinition right_forearm = right_arm.addOrReplaceChild("right_forearm", CubeListBuilder.create()
+                .texOffs(72, 22).addBox(-3.5F, 0.0F, -3.5F, 7.0F, 11.0F, 7.0F)
+                .texOffs(72, 86).addBox(-4.0F, 11.0F, -4.0F, 8.0F, 5.0F, 8.0F),
+                PartPose.offset(-3.0F, 12.0F, 0.0F));
+        PartDefinition key = right_forearm.addOrReplaceChild("key", CubeListBuilder.create()
+                .texOffs(0, 0).addBox(-1.0F, -26.0F, -1.0F, 2.0F, 30.0F, 2.0F)
+                .texOffs(106, 57).addBox(-3.0F, 4.0F, -1.0F, 6.0F, 6.0F, 2.0F)
+                .texOffs(0, 74).addBox(1.0F, -25.0F, -1.0F, 6.0F, 4.0F, 2.0F)
+                .texOffs(116, 12).addBox(1.0F, -19.0F, -1.0F, 4.0F, 3.0F, 2.0F)
+                .texOffs(106, 65).addBox(-2.0F, -28.0F, -2.0F, 4.0F, 3.0F, 4.0F),
+                PartPose.offsetAndRotation(0.0F, 13.5F, 0.0F, 1.5F, 0.0F, 0.0F));
+        PartDefinition left_arm = chest.addOrReplaceChild("left_arm", CubeListBuilder.create()
+                .texOffs(32, 72).addBox(-1.0F, -3.0F, -4.0F, 8.0F, 6.0F, 8.0F)
+                .texOffs(82, 57).addBox(0.0F, 3.0F, -3.0F, 6.0F, 9.0F, 6.0F),
+                PartPose.offset(10.0F, -12.0F, 0.0F));
+        PartDefinition left_forearm = left_arm.addOrReplaceChild("left_forearm", CubeListBuilder.create()
+                .texOffs(100, 22).addBox(-3.5F, 0.0F, -3.5F, 7.0F, 11.0F, 7.0F)
+                .texOffs(0, 99).addBox(-4.0F, 11.0F, -4.0F, 8.0F, 5.0F, 8.0F),
+                PartPose.offset(3.0F, 12.0F, 0.0F));
+        PartDefinition chain = left_forearm.addOrReplaceChild("chain", CubeListBuilder.create()
+                .texOffs(116, 0).addBox(-0.5F, 0.0F, -0.5F, 1.0F, 6.0F, 1.0F),
+                PartPose.offset(0.0F, 15.0F, 0.0F));
+        PartDefinition lantern = chain.addOrReplaceChild("lantern", CubeListBuilder.create()
+                .texOffs(32, 59).addBox(-3.0F, 0.0F, -3.0F, 6.0F, 7.0F, 6.0F)
+                .texOffs(16, 74).addBox(-2.0F, -1.0F, -2.0F, 4.0F, 1.0F, 4.0F),
+                PartPose.offset(0.0F, 6.0F, 0.0F));
+        PartDefinition right_leg = root.addOrReplaceChild("right_leg", CubeListBuilder.create()
+                .texOffs(60, 40).addBox(-4.0F, 0.0F, -4.0F, 8.0F, 9.0F, 8.0F),
+                PartPose.offset(-5.0F, 8.0F, 0.0F));
+        PartDefinition right_shin = right_leg.addOrReplaceChild("right_shin", CubeListBuilder.create()
+                .texOffs(64, 72).addBox(-3.5F, 0.0F, -3.5F, 7.0F, 7.0F, 7.0F)
+                .texOffs(0, 86).addBox(-4.0F, 4.0F, -6.0F, 8.0F, 3.0F, 10.0F),
+                PartPose.offset(0.0F, 9.0F, 0.0F));
+        PartDefinition left_leg = root.addOrReplaceChild("left_leg", CubeListBuilder.create()
+                .texOffs(92, 40).addBox(-4.0F, 0.0F, -4.0F, 8.0F, 9.0F, 8.0F),
+                PartPose.offset(5.0F, 8.0F, 0.0F));
+        PartDefinition left_shin = left_leg.addOrReplaceChild("left_shin", CubeListBuilder.create()
+                .texOffs(92, 72).addBox(-3.5F, 0.0F, -3.5F, 7.0F, 7.0F, 7.0F)
+                .texOffs(36, 86).addBox(-4.0F, 4.0F, -6.0F, 8.0F, 3.0F, 10.0F),
+                PartPose.offset(0.0F, 9.0F, 0.0F));
         // </generated mesh>
         return LayerDefinition.create(mesh, 128, 128).apply(MeshTransformer.scaling(MODEL_SCALE));
     }
@@ -84,11 +146,7 @@ public class OverseerModel extends EntityModel<BossRenderState> {
         this.leftArm.zRot -= 0.12F;
         this.rightArm.xRot += -0.55F;
         this.rightForearm.xRot += -1.25F;
-        this.leftForearm.xRot += -0.35F;
-        float swing = Mth.sin(age * 0.09F) * (0.14F + 0.3F * speed);
-        this.chain.xRot += swing;
-        this.chain.zRot += Mth.cos(age * 0.07F) * 0.08F;
-        this.lantern.xRot += swing * 0.6F;
+        this.leftForearm.xRot += -1.2F;
         this.apron.xRot += -0.1F * speed + breath * 0.01F;
 
         // The head follows what he looks at, as far as the cage lets it.
@@ -162,8 +220,7 @@ public class OverseerModel extends EntityModel<BossRenderState> {
                 this.leftArm.xRot = Anim.lerp(wind, this.leftArm.xRot, 1.0F);
                 this.leftArm.xRot = Anim.lerp(thrown, this.leftArm.xRot, -1.55F);
                 this.leftForearm.xRot = Anim.lerp(thrown, this.leftForearm.xRot, 0.0F);
-                this.chain.xRot = Anim.lerp(wind, this.chain.xRot, -2.2F + Mth.sin(t * 1.3F) * 0.8F);
-                this.chain.xRot = Anim.lerp(thrown, this.chain.xRot, 0.0F);
+                this.chain.xRot = Mth.sin(t * 1.3F) * 0.8F * wind;
                 this.chest.yRot += 0.45F * wind - 0.5F * thrown;
                 this.chest.xRot += 0.25F * thrown;
             }
@@ -189,5 +246,29 @@ public class OverseerModel extends EntityModel<BossRenderState> {
             default -> {
             }
         }
+        // At rest the key leans back over his shoulder; in a move it stands straight out of the fist.
+        this.key.xRot += KEY_REST * (1.0F - busy(state));
+        // The chain hangs straight down whatever the arm does, and swings a little; thrown, it flies out along the arm.
+        float swing = Mth.sin(age * 0.09F) * (0.14F + 0.3F * speed);
+        float thrown = state.attackId == OverseerEntity.CHAIN ? Anim.ramp(t, 0.0F, 12.0F) * (1.0F - Anim.ramp(t, 34.0F, 43.0F)) : 0.0F;
+        float hang = -(this.chest.xRot + this.leftArm.xRot + this.leftForearm.xRot) + swing;
+        this.chain.xRot = Anim.lerp(thrown, hang, this.chain.xRot);
+        this.chain.zRot += Mth.cos(age * 0.07F) * 0.08F - this.leftArm.zRot;
+        this.lantern.xRot += swing * 0.6F;
+    }
+
+    /** 1 while a move is running, easing in over its first ticks and out over its last. */
+    private static float busy(BossRenderState state) {
+        if (state.attackId == 0) {
+            return 0.0F;
+        }
+        float length = switch (state.attackId) {
+            case OverseerEntity.SLAM -> OverseerEntity.SLAM_DURATION;
+            case OverseerEntity.SWEEP -> OverseerEntity.SWEEP_DURATION;
+            case OverseerEntity.LEAP -> OverseerEntity.LEAP_DURATION;
+            case OverseerEntity.CHAIN -> OverseerEntity.CHAIN_DURATION;
+            default -> OverseerEntity.ROAR_DURATION;
+        };
+        return Anim.pulse(state.attackTime, 0.0F, 6.0F, length - 8.0F, length);
     }
 }

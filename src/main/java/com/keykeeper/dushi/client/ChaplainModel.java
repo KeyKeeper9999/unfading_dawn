@@ -45,6 +45,38 @@ public class ChaplainModel extends EntityModel<BossRenderState> {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
         // <generated mesh>
+        PartDefinition robe = root.addOrReplaceChild("robe", CubeListBuilder.create()
+                .texOffs(10, 21).addBox(-5.0F, 0.0F, -4.0F, 10.0F, 9.0F, 8.0F)
+                .texOffs(0, 38).addBox(-6.0F, 9.0F, -5.0F, 12.0F, 6.0F, 10.0F),
+                PartPose.offset(0.0F, 9.0F, 0.0F));
+        PartDefinition torso = root.addOrReplaceChild("torso", CubeListBuilder.create()
+                .texOffs(10, 0).addBox(-4.5F, -15.0F, -3.0F, 9.0F, 15.0F, 6.0F)
+                .texOffs(0, 0).addBox(-2.0F, -15.0F, -3.7F, 4.0F, 22.0F, 1.0F),
+                PartPose.offset(0.0F, 9.0F, 0.0F));
+        PartDefinition head = torso.addOrReplaceChild("head", CubeListBuilder.create()
+                .texOffs(0, 54).addBox(-3.5F, -8.0F, -3.5F, 7.0F, 8.0F, 7.0F)
+                .texOffs(28, 54).addBox(-4.0F, -11.0F, -4.0F, 8.0F, 3.0F, 8.0F)
+                .texOffs(28, 65).addBox(-3.5F, -17.0F, -2.0F, 7.0F, 6.0F, 4.0F)
+                .texOffs(46, 28).addBox(-4.0F, -8.0F, 3.5F, 8.0F, 11.0F, 1.0F),
+                PartPose.offset(0.0F, -15.0F, 0.0F));
+        PartDefinition right_arm = torso.addOrReplaceChild("right_arm", CubeListBuilder.create()
+                .texOffs(40, 0).addBox(-3.0F, -1.0F, -2.0F, 3.0F, 10.0F, 4.0F)
+                .texOffs(44, 40).addBox(-3.5F, 9.0F, -2.5F, 4.0F, 5.0F, 5.0F)
+                .texOffs(54, 9).addBox(-2.5F, 14.0F, -1.0F, 2.0F, 3.0F, 2.0F),
+                PartPose.offset(-5.5F, -13.0F, 0.0F));
+        PartDefinition left_arm = torso.addOrReplaceChild("left_arm", CubeListBuilder.create()
+                .texOffs(46, 14).addBox(0.0F, -1.0F, -2.0F, 3.0F, 10.0F, 4.0F)
+                .texOffs(0, 69).addBox(-0.5F, 9.0F, -2.5F, 4.0F, 5.0F, 5.0F)
+                .texOffs(0, 23).addBox(0.5F, 14.0F, -1.0F, 2.0F, 3.0F, 2.0F),
+                PartPose.offset(5.5F, -13.0F, 0.0F));
+        PartDefinition censer_chain = right_arm.addOrReplaceChild("censer_chain", CubeListBuilder.create()
+                .texOffs(54, 0).addBox(-0.5F, 0.0F, -0.5F, 1.0F, 8.0F, 1.0F),
+                PartPose.offset(-1.5F, 16.5F, 0.0F));
+        PartDefinition censer = censer_chain.addOrReplaceChild("censer", CubeListBuilder.create()
+                .texOffs(18, 75).addBox(-2.5F, 1.0F, -2.5F, 5.0F, 4.0F, 5.0F)
+                .texOffs(50, 65).addBox(-1.5F, -1.0F, -1.5F, 3.0F, 2.0F, 3.0F)
+                .texOffs(0, 28).addBox(-1.0F, 5.0F, -1.0F, 2.0F, 1.0F, 2.0F),
+                PartPose.offset(0.0F, 8.0F, 0.0F));
         // </generated mesh>
         return LayerDefinition.create(mesh, 64, 96);
     }
@@ -70,7 +102,7 @@ public class ChaplainModel extends EntityModel<BossRenderState> {
         this.rightArm.zRot += 0.3F;
         this.rightArm.xRot += -0.35F;
         this.leftArm.xRot += -0.75F;
-        this.leftArm.yRot += -0.5F;
+        this.leftArm.yRot += 0.5F;
         float pendulum = Mth.sin(age * 0.12F) * (0.35F + 0.3F * speed);
         this.censerChain.zRot += -0.3F + pendulum * 0.4F;
         this.censerChain.xRot += 0.35F + pendulum;

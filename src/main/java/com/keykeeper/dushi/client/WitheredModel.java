@@ -39,8 +39,42 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
         PartDefinition head = root.getChild("head");
         PartDefinition body = root.getChild("body");
         // <generated mesh>
+        PartDefinition right_arm = root.addOrReplaceChild("right_arm", CubeListBuilder.create()
+                .texOffs(40, 16).addBox(-2.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F),
+                PartPose.offset(-5.0F, 2.0F, 0.0F));
+        PartDefinition left_arm = root.addOrReplaceChild("left_arm", CubeListBuilder.create()
+                .texOffs(32, 48).addBox(-1.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F),
+                PartPose.offset(5.0F, 2.0F, 0.0F));
+        PartDefinition right_leg = root.addOrReplaceChild("right_leg", CubeListBuilder.create()
+                .texOffs(0, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+                PartPose.offset(-1.9F, 12.0F, 0.0F));
+        PartDefinition left_leg = root.addOrReplaceChild("left_leg", CubeListBuilder.create()
+                .texOffs(16, 48).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+                PartPose.offset(1.9F, 12.0F, 0.0F));
+        PartDefinition collar = body.addOrReplaceChild("collar", CubeListBuilder.create()
+                .texOffs(36, 73).addBox(-4.5F, -0.6F, -2.5F, 9.0F, 2.0F, 5.0F),
+                PartPose.ZERO);
+        PartDefinition shackle = left_arm.addOrReplaceChild("shackle", CubeListBuilder.create()
+                .texOffs(46, 45).addBox(-2.0F, 0.0F, -2.5F, 4.0F, 2.0F, 5.0F)
+                .texOffs(0, 45).addBox(-0.5F, 2.0F, -3.3F, 1.0F, 6.0F, 1.0F),
+                PartPose.offset(0.5F, 7.0F, 0.0F));
+        PartDefinition kettle_hat = head.addOrReplaceChild("kettle_hat", CubeListBuilder.create()
+                .texOffs(0, 32).addBox(-6.0F, -6.6F, -6.0F, 12.0F, 1.0F, 12.0F)
+                .texOffs(0, 64).addBox(-4.5F, -9.6F, -4.5F, 9.0F, 3.0F, 9.0F),
+                PartPose.ZERO);
+        PartDefinition pauldron = right_arm.addOrReplaceChild("pauldron", CubeListBuilder.create()
+                .texOffs(36, 64).addBox(-3.0F, -3.0F, -3.0F, 4.0F, 3.0F, 6.0F),
+                PartPose.ZERO);
+        PartDefinition hood_tail = head.addOrReplaceChild("hood_tail", CubeListBuilder.create()
+                .texOffs(48, 32).addBox(-2.0F, -1.0F, -1.0F, 4.0F, 4.0F, 3.0F)
+                .texOffs(54, 27).addBox(-1.0F, 3.0F, 0.5F, 2.0F, 4.0F, 1.0F),
+                PartPose.offsetAndRotation(0.0F, -6.5F, 4.0F, 0.45F, 0.0F, 0.0F));
+        PartDefinition quiver = body.addOrReplaceChild("quiver", CubeListBuilder.create()
+                .texOffs(54, 16).addBox(-1.5F, 0.0F, 0.0F, 3.0F, 9.0F, 2.0F)
+                .texOffs(48, 39).addBox(-1.0F, -2.0F, 0.5F, 2.0F, 2.0F, 1.0F),
+                PartPose.offsetAndRotation(2.2F, 1.0F, 2.0F, 0.0F, 0.0F, 0.32F));
         // </generated mesh>
-        return LayerDefinition.create(mesh, 64, 64);
+        return LayerDefinition.create(mesh, 64, 96);
     }
 
     @Override

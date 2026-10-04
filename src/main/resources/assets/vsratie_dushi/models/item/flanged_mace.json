@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "vsratie_dushi:item/flanged_mace"
+  }
+}

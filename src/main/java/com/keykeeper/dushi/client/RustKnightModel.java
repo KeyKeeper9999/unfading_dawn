@@ -34,8 +34,45 @@ public class RustKnightModel extends HumanoidModel<SoulsRenderState> {
         PartDefinition head = root.getChild("head");
         PartDefinition body = root.getChild("body");
         // <generated mesh>
+        PartDefinition right_arm = root.addOrReplaceChild("right_arm", CubeListBuilder.create()
+                .texOffs(40, 16).addBox(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+                PartPose.offset(-5.0F, 2.0F, 0.0F));
+        PartDefinition left_arm = root.addOrReplaceChild("left_arm", CubeListBuilder.create()
+                .texOffs(32, 48).addBox(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+                PartPose.offset(5.0F, 2.0F, 0.0F));
+        PartDefinition right_leg = root.addOrReplaceChild("right_leg", CubeListBuilder.create()
+                .texOffs(0, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+                PartPose.offset(-1.9F, 12.0F, 0.0F));
+        PartDefinition left_leg = root.addOrReplaceChild("left_leg", CubeListBuilder.create()
+                .texOffs(16, 48).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+                PartPose.offset(1.9F, 12.0F, 0.0F));
+        PartDefinition great_helm = head.addOrReplaceChild("great_helm", CubeListBuilder.create()
+                .texOffs(0, 64).addBox(-4.5F, -8.7F, -4.5F, 9.0F, 9.0F, 9.0F)
+                .texOffs(20, 82).addBox(-0.5F, -11.7F, -4.0F, 1.0F, 3.0F, 8.0F),
+                PartPose.ZERO);
+        PartDefinition breastplate = body.addOrReplaceChild("breastplate", CubeListBuilder.create()
+                .texOffs(0, 32).addBox(-4.5F, -0.3F, -2.5F, 9.0F, 8.0F, 5.0F)
+                .texOffs(20, 93).addBox(-4.5F, 8.2F, -2.5F, 9.0F, 5.0F, 5.0F),
+                PartPose.ZERO);
+        PartDefinition cape = body.addOrReplaceChild("cape", CubeListBuilder.create()
+                .texOffs(36, 64).addBox(-4.0F, 0.0F, 0.0F, 8.0F, 17.0F, 1.0F),
+                PartPose.offsetAndRotation(0.0F, 0.5F, 2.6F, 0.08F, 0.0F, 0.0F));
+        PartDefinition right_pauldron = right_arm.addOrReplaceChild("right_pauldron", CubeListBuilder.create()
+                .texOffs(38, 82).addBox(-4.0F, -3.2F, -3.0F, 5.0F, 4.0F, 6.0F)
+                .texOffs(22, 103).addBox(-3.5F, 5.5F, -2.5F, 5.0F, 5.0F, 5.0F),
+                PartPose.ZERO);
+        PartDefinition left_pauldron = left_arm.addOrReplaceChild("left_pauldron", CubeListBuilder.create()
+                .texOffs(0, 103).addBox(-1.0F, -3.2F, -3.0F, 5.0F, 4.0F, 6.0F)
+                .texOffs(42, 103).addBox(-1.5F, 5.5F, -2.5F, 5.0F, 5.0F, 5.0F),
+                PartPose.ZERO);
+        PartDefinition right_greave = right_leg.addOrReplaceChild("right_greave", CubeListBuilder.create()
+                .texOffs(28, 32).addBox(-2.5F, 5.5F, -2.5F, 5.0F, 7.0F, 5.0F),
+                PartPose.ZERO);
+        PartDefinition left_greave = left_leg.addOrReplaceChild("left_greave", CubeListBuilder.create()
+                .texOffs(0, 82).addBox(-2.5F, 5.5F, -2.5F, 5.0F, 7.0F, 5.0F),
+                PartPose.ZERO);
         // </generated mesh>
-        return LayerDefinition.create(mesh, 64, 96);
+        return LayerDefinition.create(mesh, 64, 128);
     }
 
     @Override

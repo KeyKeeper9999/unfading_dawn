@@ -1,0 +1,277 @@
+{
+  "entity.withered.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.withered.ambient",
+    "sounds": [
+      "vsratie_dushi:withered/ambient1",
+      "vsratie_dushi:withered/ambient2",
+      "vsratie_dushi:withered/ambient3"
+    ]
+  },
+  "entity.withered.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.withered.hurt",
+    "sounds": [
+      "vsratie_dushi:withered/hurt1",
+      "vsratie_dushi:withered/hurt2"
+    ]
+  },
+  "entity.withered.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.withered.death",
+    "sounds": [
+      "vsratie_dushi:withered/death"
+    ]
+  },
+  "entity.rust_knight.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.rust_knight.ambient",
+    "sounds": [
+      "vsratie_dushi:rust_knight/ambient1",
+      "vsratie_dushi:rust_knight/ambient2"
+    ]
+  },
+  "entity.rust_knight.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.rust_knight.hurt",
+    "sounds": [
+      "vsratie_dushi:rust_knight/hurt"
+    ]
+  },
+  "entity.rust_knight.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.rust_knight.death",
+    "sounds": [
+      "vsratie_dushi:rust_knight/death"
+    ]
+  },
+  "entity.rust_knight.step": {
+    "subtitle": "subtitles.vsratie_dushi.entity.rust_knight.step",
+    "sounds": [
+      "vsratie_dushi:rust_knight/step1",
+      "vsratie_dushi:rust_knight/step2"
+    ]
+  },
+  "entity.overseer.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.overseer.ambient",
+    "sounds": [
+      "vsratie_dushi:overseer/ambient1",
+      "vsratie_dushi:overseer/ambient2"
+    ]
+  },
+  "entity.overseer.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.overseer.hurt",
+    "sounds": [
+      "vsratie_dushi:overseer/hurt"
+    ]
+  },
+  "entity.overseer.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.overseer.death",
+    "sounds": [
+      "vsratie_dushi:overseer/death"
+    ]
+  },
+  "entity.overseer.roar": {
+    "subtitle": "subtitles.vsratie_dushi.entity.overseer.roar",
+    "sounds": [
+      "vsratie_dushi:overseer/roar"
+    ]
+  },
+  "entity.overseer.slam": {
+    "subtitle": "subtitles.vsratie_dushi.entity.overseer.slam",
+    "sounds": [
+      "vsratie_dushi:overseer/slam"
+    ]
+  },
+  "entity.overseer.swing": {
+    "subtitle": "subtitles.vsratie_dushi.entity.overseer.swing",
+    "sounds": [
+      "vsratie_dushi:overseer/swing"
+    ]
+  },
+  "entity.overseer.chain": {
+    "subtitle": "subtitles.vsratie_dushi.entity.overseer.chain",
+    "sounds": [
+      "vsratie_dushi:overseer/chain"
+    ]
+  },
+  "entity.chaplain.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.chaplain.ambient",
+    "sounds": [
+      "vsratie_dushi:chaplain/ambient1",
+      "vsratie_dushi:chaplain/ambient2"
+    ]
+  },
+  "entity.chaplain.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.chaplain.hurt",
+    "sounds": [
+      "vsratie_dushi:chaplain/hurt"
+    ]
+  },
+  "entity.chaplain.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.chaplain.death",
+    "sounds": [
+      "vsratie_dushi:chaplain/death"
+    ]
+  },
+  "entity.chaplain.cast": {
+    "subtitle": "subtitles.vsratie_dushi.entity.chaplain.cast",
+    "sounds": [
+      "vsratie_dushi:chaplain/cast"
+    ]
+  },
+  "entity.chaplain.bell": {
+    "subtitle": "subtitles.vsratie_dushi.entity.chaplain.bell",
+    "sounds": [
+      "vsratie_dushi:chaplain/bell"
+    ]
+  },
+  "entity.chaplain.blink": {
+    "subtitle": "subtitles.vsratie_dushi.entity.chaplain.blink",
+    "sounds": [
+      "vsratie_dushi:chaplain/blink"
+    ]
+  },
+  "entity.keykeeper.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.keykeeper.ambient",
+    "sounds": [
+      "vsratie_dushi:keykeeper/ambient1",
+      "vsratie_dushi:keykeeper/ambient2"
+    ]
+  },
+  "entity.keykeeper.give": {
+    "subtitle": "subtitles.vsratie_dushi.entity.keykeeper.give",
+    "sounds": [
+      "vsratie_dushi:keykeeper/give"
+    ]
+  },
+  "ui.death": {
+    "subtitle": "subtitles.vsratie_dushi.ui.death",
+    "sounds": [
+      "vsratie_dushi:ui/death"
+    ]
+  },
+  "ui.boss_defeated": {
+    "subtitle": "subtitles.vsratie_dushi.ui.boss_defeated",
+    "sounds": [
+      "vsratie_dushi:ui/boss_defeated"
+    ]
+  },
+  "ui.hearth_lit": {
+    "subtitle": "subtitles.vsratie_dushi.ui.hearth_lit",
+    "sounds": [
+      "vsratie_dushi:ui/hearth_lit"
+    ]
+  },
+  "ui.level_up": {
+    "subtitle": "subtitles.vsratie_dushi.ui.level_up",
+    "sounds": [
+      "vsratie_dushi:ui/level_up"
+    ]
+  },
+  "ui.souls_gain": {
+    "subtitle": "subtitles.vsratie_dushi.ui.souls_gain",
+    "sounds": [
+      "vsratie_dushi:ui/souls_gain"
+    ]
+  },
+  "ui.souls_retrieve": {
+    "subtitle": "subtitles.vsratie_dushi.ui.souls_retrieve",
+    "sounds": [
+      "vsratie_dushi:ui/souls_retrieve"
+    ]
+  },
+  "block.hearth.rest": {
+    "subtitle": "subtitles.vsratie_dushi.block.hearth.rest",
+    "sounds": [
+      "vsratie_dushi:block/hearth_rest"
+    ]
+  },
+  "block.fog_gate.pass": {
+    "subtitle": "subtitles.vsratie_dushi.block.fog_gate.pass",
+    "sounds": [
+      "vsratie_dushi:block/fog_gate_pass"
+    ]
+  },
+  "item.flask.drink": {
+    "subtitle": "subtitles.vsratie_dushi.item.flask.drink",
+    "sounds": [
+      "vsratie_dushi:item/flask_drink"
+    ]
+  },
+  "item.flask.empty": {
+    "subtitle": "subtitles.vsratie_dushi.item.flask.empty",
+    "sounds": [
+      "vsratie_dushi:item/flask_empty"
+    ]
+  },
+  "item.spell.shard": {
+    "subtitle": "subtitles.vsratie_dushi.item.spell.shard",
+    "sounds": [
+      "vsratie_dushi:item/spell_shard"
+    ]
+  },
+  "item.spell.shard_hit": {
+    "subtitle": "subtitles.vsratie_dushi.item.spell.shard_hit",
+    "sounds": [
+      "vsratie_dushi:item/spell_shard_hit"
+    ]
+  },
+  "item.spell.mend": {
+    "subtitle": "subtitles.vsratie_dushi.item.spell.mend",
+    "sounds": [
+      "vsratie_dushi:item/spell_mend"
+    ]
+  },
+  "item.spell.rebuke": {
+    "subtitle": "subtitles.vsratie_dushi.item.spell.rebuke",
+    "sounds": [
+      "vsratie_dushi:item/spell_rebuke"
+    ]
+  },
+  "item.spell.fire": {
+    "subtitle": "subtitles.vsratie_dushi.item.spell.fire",
+    "sounds": [
+      "vsratie_dushi:item/spell_fire"
+    ]
+  },
+  "item.spell.fire_burst": {
+    "subtitle": "subtitles.vsratie_dushi.item.spell.fire_burst",
+    "sounds": [
+      "vsratie_dushi:item/spell_fire_burst"
+    ]
+  },
+  "item.spell.fizzle": {
+    "subtitle": "subtitles.vsratie_dushi.item.spell.fizzle",
+    "sounds": [
+      "vsratie_dushi:item/spell_fizzle"
+    ]
+  },
+  "player.roll": {
+    "subtitle": "subtitles.vsratie_dushi.player.roll",
+    "sounds": [
+      "vsratie_dushi:player/roll"
+    ]
+  },
+  "player.backstab": {
+    "subtitle": "subtitles.vsratie_dushi.player.backstab",
+    "sounds": [
+      "vsratie_dushi:player/backstab"
+    ]
+  },
+  "player.guard_break": {
+    "subtitle": "subtitles.vsratie_dushi.player.guard_break",
+    "sounds": [
+      "vsratie_dushi:player/guard_break"
+    ]
+  },
+  "player.weapon_swing_heavy": {
+    "subtitle": "subtitles.vsratie_dushi.player.weapon_swing_heavy",
+    "sounds": [
+      "vsratie_dushi:player/weapon_swing_heavy"
+    ]
+  },
+  "music.boss": {
+    "subtitle": "subtitles.vsratie_dushi.music.boss",
+    "sounds": [
+      {
+        "name": "vsratie_dushi:music/boss",
+        "stream": true
+      }
+    ]
+  }
+}

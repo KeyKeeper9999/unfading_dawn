@@ -378,3 +378,17 @@ def material(base, dark=0.72, light=1.16, noise=(0.93, 1.0, 1.0, 1.06), edge=0.8
             return shade(rim, rnd.choice(noise))
         return shade(base, f)
     return fn
+
+
+def blotch(seed, x, y, cell=3.0):
+    """Smooth 2D noise in 0..1: the same seed and position always give the same value. Used for patches of rust, dirt and wear."""
+    gx, gy = x / cell, y / cell
+    x0, y0 = math.floor(gx), math.floor(gy)
+    tx, ty = gx - x0, gy - y0
+    tx, ty = tx * tx * (3 - 2 * tx), ty * ty * (3 - 2 * ty)
+
+    def corner(ix, iy):
+        return random.Random(f'{seed}:{ix}:{iy}').random()
+    top = corner(x0, y0) * (1 - tx) + corner(x0 + 1, y0) * tx
+    bottom = corner(x0, y0 + 1) * (1 - tx) + corner(x0 + 1, y0 + 1) * tx
+    return top * (1 - ty) + bottom * ty

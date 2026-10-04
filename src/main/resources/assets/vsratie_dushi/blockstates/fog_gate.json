@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "vsratie_dushi:block/fog_gate"
+    },
+    "axis=z": {
+      "model": "vsratie_dushi:block/fog_gate",
+      "y": 90
+    }
+  }
+}

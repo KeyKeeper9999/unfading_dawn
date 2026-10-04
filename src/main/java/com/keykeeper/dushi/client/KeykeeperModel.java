@@ -36,6 +36,30 @@ public class KeykeeperModel extends HumanoidModel<HumanoidRenderState> {
         PartDefinition head = root.getChild("head");
         PartDefinition body = root.getChild("body");
         // <generated mesh>
+        PartDefinition right_arm = root.addOrReplaceChild("right_arm", CubeListBuilder.create()
+                .texOffs(40, 16).addBox(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+                PartPose.offset(-5.0F, 2.0F, 0.0F));
+        PartDefinition left_arm = root.addOrReplaceChild("left_arm", CubeListBuilder.create()
+                .texOffs(32, 48).addBox(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+                PartPose.offset(5.0F, 2.0F, 0.0F));
+        PartDefinition right_leg = root.addOrReplaceChild("right_leg", CubeListBuilder.create()
+                .texOffs(0, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+                PartPose.offset(-1.9F, 12.0F, 0.0F));
+        PartDefinition left_leg = root.addOrReplaceChild("left_leg", CubeListBuilder.create()
+                .texOffs(16, 48).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+                PartPose.offset(1.9F, 12.0F, 0.0F));
+        PartDefinition beard = head.addOrReplaceChild("beard", CubeListBuilder.create()
+                .texOffs(0, 32).addBox(-2.5F, -1.5F, -4.7F, 5.0F, 8.0F, 1.0F),
+                PartPose.ZERO);
+        PartDefinition pendant = body.addOrReplaceChild("pendant", CubeListBuilder.create()
+                .texOffs(56, 16).addBox(-1.0F, 3.0F, -2.9F, 2.0F, 6.0F, 1.0F),
+                PartPose.ZERO);
+        PartDefinition key_ring = body.addOrReplaceChild("key_ring", CubeListBuilder.create()
+                .texOffs(56, 29).addBox(-1.5F, 0.0F, -0.5F, 3.0F, 3.0F, 1.0F)
+                .texOffs(60, 23).addBox(-1.5F, 3.0F, -0.5F, 1.0F, 4.0F, 1.0F)
+                .texOffs(56, 23).addBox(-0.3F, 3.0F, -0.5F, 1.0F, 5.0F, 1.0F)
+                .texOffs(12, 32).addBox(0.9F, 3.0F, -0.5F, 1.0F, 3.0F, 1.0F),
+                PartPose.offset(3.2F, 9.5F, -2.3F));
         // </generated mesh>
         return LayerDefinition.create(mesh, 64, 64);
     }

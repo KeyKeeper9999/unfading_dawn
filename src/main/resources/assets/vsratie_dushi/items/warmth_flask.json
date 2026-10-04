@@ -1,0 +1,14 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "property": "minecraft:broken",
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "vsratie_dushi:item/warmth_flask_empty"
+    },
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "vsratie_dushi:item/warmth_flask"
+    }
+  }
+}

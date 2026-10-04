@@ -1,0 +1,44 @@
+{
+  "textures": {
+    "t": "vsratie_dushi:block/fog_gate",
+    "particle": "vsratie_dushi:block/fog_gate"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        7
+      ],
+      "to": [
+        16,
+        16,
+        9
+      ],
+      "shade": false,
+      "light_emission": 8,
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#t",
+          "cullface": "north"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#t",
+          "cullface": "south"
+        }
+      }
+    }
+  ]
+}

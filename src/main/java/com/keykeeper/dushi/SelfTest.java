@@ -49,6 +49,8 @@ public final class SelfTest {
     /** For every mob, how many times each of its moves was started. */
     private static final Map<String, Map<Integer, Integer>> MOVES = new LinkedHashMap<>();
     private static final Map<String, Integer> LAST_MOVE = new LinkedHashMap<>();
+    private static final int DRILL_TICKS = 520;
+    private static final List<Drill> DRILL = new ArrayList<>();
     private static int ticks = -1;
 
     private SelfTest() {}
@@ -136,8 +138,8 @@ public final class SelfTest {
 
         // The flask: drink twice, then rest at the hearth and see it full again.
         ItemStack flask = new ItemStack(Dushi.WARMTH_FLASK.get());
-        player.getInventory().add(flask);
-        ItemStack held = player.getInventory().getItem(0);
+        player.getInventory().setItem(5, flask);
+        ItemStack held = player.getInventory().getItem(5);
         player.setHealth(4.0F);
         held.finishUsingItem(level, player);
         float healed = player.getHealth();
@@ -234,6 +236,13 @@ public final class SelfTest {
             }
             if (ticks == RUN_TICKS) {
                 report(level);
+                startDrill(level);
+            }
+            if (ticks > RUN_TICKS) {
+                drill();
+            }
+            if (ticks == RUN_TICKS + DRILL_TICKS) {
+                reportDrill();
                 event.getServer().halt(false);
                 ticks = -1;
             }
@@ -242,6 +251,82 @@ public final class SelfTest {
             e.printStackTrace(System.out);
             ticks = -1;
             event.getServer().halt(false);
+        }
+    }
+
+    /**
+     * The fight with the golems only shows the moves the mobs choose at arm's length. The drill makes fresh ones go through
+     * every move they have, one after another, against a golem that just stands there.
+     */
+    private static void startDrill(ServerLevel level) {
+        AABB arena = new AABB(-26, FLOOR_Y - 2, -26, 26, FLOOR_Y + 20, 26);
+        for (Entity entity : level.getEntitiesOfClass(Entity.class, arena)) {
+            entity.discard();
+        }
+        int index = 0;
+        for (Map.Entry<EntityType<? extends SoulsMob>, int[]> entry : drillPlan().entrySet()) {
+            BlockPos at = new BlockPos(-15 + index * 10, FLOOR_Y + 1, 0);
+            SoulsMob mob = entry.getKey().spawn(level, at, EntitySpawnReason.COMMAND);
+            Mob dummy = EntityTypes.IRON_GOLEM.spawn(level, at.offset(0, 0, 7), EntitySpawnReason.COMMAND);
+            if (mob == null || dummy == null) {
+                say("drill: FAILED to spawn " + EntityType.getKey(entry.getKey()).getPath());
+                continue;
+            }
+            dummy.setNoAi(true);
+            mob.setTarget(dummy);
+            DRILL.add(new Drill(EntityType.getKey(entry.getKey()).getPath(), mob, dummy, entry.getValue()));
+            index++;
+        }
+    }
+
+    private static Map<EntityType<? extends SoulsMob>, int[]> drillPlan() {
+        Map<EntityType<? extends SoulsMob>, int[]> plan = new LinkedHashMap<>();
+        plan.put(Dushi.WITHERED.get(com.keykeeper.dushi.entity.WitheredEntity.Kind.ARCHER).get(), new int[] {1, 2});
+        plan.put(Dushi.RUST_KNIGHT.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.OVERSEER.get(), new int[] {1, 2, 3, 4, 5});
+        plan.put(Dushi.CHAPLAIN.get(), new int[] {1, 2, 3, 4, 5, 6});
+        return plan;
+    }
+
+    private static void drill() {
+        for (Drill d : DRILL) {
+            if (!d.mob.isAlive()) {
+                continue;
+            }
+            d.mob.setTarget(d.dummy);
+            if (d.mob.attackId() == 0 && d.next < d.moves.length) {
+                if (d.next > 0) {
+                    d.done.append(d.moves[d.next - 1]).append(' ');
+                }
+                d.mob.startAttack(d.moves[d.next++]);
+            } else if (d.mob.attackId() == 0 && d.next == d.moves.length) {
+                d.done.append(d.moves[d.next - 1]).append(' ');
+                d.next++;
+            }
+        }
+    }
+
+    private static void reportDrill() {
+        for (Drill d : DRILL) {
+            say("drill " + d.name + ": finished moves [" + d.done.toString().trim() + "] of " + d.moves.length + ", alive=" + d.mob.isAlive()
+                    + " phase=" + d.mob.phase() + " dummy health=" + Math.round(d.dummy.getHealth()) + "/" + Math.round(d.dummy.getMaxHealth()));
+        }
+        say("drill done");
+    }
+
+    private static final class Drill {
+        final String name;
+        final SoulsMob mob;
+        final Mob dummy;
+        final int[] moves;
+        final StringBuilder done = new StringBuilder();
+        int next;
+
+        Drill(String name, SoulsMob mob, Mob dummy, int[] moves) {
+            this.name = name;
+            this.mob = mob;
+            this.dummy = dummy;
+            this.moves = moves;
         }
     }
 
