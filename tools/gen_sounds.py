@@ -208,31 +208,63 @@ S['withered/death'] = reverb(voice(sweep(170, 55, d, 0.6), d, RASP, breath=0.9, 
                              + place(d, (1.0, crackle(0.7, 30, 1500) * 0.25)), 0.8, 0.3, 0.6)
 
 # ============================================================== the rust knight: breath in a helmet, plate
+def plate(freq, dur, bright=1.0, seed=0):
+    """A plate of armour struck or knocked against another: many partials that do not line up, crowded towards the
+    top the way a sheet of steel rings, the high ones dying first, and the hard bright crack of metal on metal. (A few
+    low pure partials, as in `clang`, sound like a pipe; it is the crowd of high ones that says steel.)"""
+    r = np.random.default_rng(1000 + seed)
+    out = np.zeros(int(SR * dur))
+    for n in range(26):
+        mult = 1.0 + 0.62 * n ** 1.45 * (1.0 + r.uniform(-0.06, 0.06))
+        f = freq * mult
+        if f > 15000:
+            break
+        amp = (1.0 / (1.0 + 0.11 * n)) * (0.55 + 0.45 * r.random()) * (bright if n > 5 else 1.0)
+        tau = dur * (0.42 / (1.0 + 0.16 * n)) * (0.8 + 0.4 * r.random())
+        # two close partials beat against each other: the shimmer of a thin sheet
+        out += amp * (tone(f, dur, r.uniform(0, 6)) + 0.6 * tone(f * (1.0 + r.uniform(0.002, 0.007)), dur, r.uniform(0, 6))) * decay(dur, tau)
+    crack = highpass(noise(dur), 3800) * decay(dur, 0.004) * 1.6 + bandpass(noise(dur), 5200, 9500) * decay(dur, 0.03) * 0.5 * bright
+    return (out * 0.5 + crack) * env(dur, 0.0005, 0.02)
+
+
+def rattle(dur, count, lo, hi, seed=0):
+    """Loose plates knocking: a handful of small bright hits."""
+    r = np.random.default_rng(2000 + seed)
+    parts = [(float(r.uniform(0, dur * 0.7)), plate(float(r.uniform(lo, hi)), float(r.uniform(0.07, 0.14)), 1.2, seed * 31 + i) * float(r.uniform(0.2, 0.5)))
+             for i in range(count)]
+    return place(dur, *parts)
+
+
 def knight_ambient(k):
     d = 2.2
-    breath_in = moving_bandpass(noise(0.9), sweep(350, 800, 0.9), 0.45) * env(0.9, 0.35, 0.3)
-    breath_out = moving_bandpass(noise(1.1), sweep(700, 300, 1.1), 0.45) * env(1.1, 0.2, 0.7)
+    # breath heard through the slits of a helm: hiss, not a note
+    breath_in = bandpass(noise(0.9), 900, 3800) * env(0.9, 0.35, 0.3) * 0.5 + lowpass(noise(0.9), 500) * env(0.9, 0.4, 0.3) * 0.3
+    breath_out = bandpass(noise(1.1), 700, 3000) * env(1.1, 0.15, 0.75) * 0.6 + lowpass(noise(1.1), 400) * env(1.1, 0.2, 0.7) * 0.35
     x = place(d, (0.0, breath_in * 0.8), (1.0 + 0.05 * k, breath_out))
-    # the helmet rings faintly with every breath
-    ring = signal.fftconvolve(x, clang(410 + 40 * k, 0.4, strike=0.0) * 0.02)[:len(x)]
-    return reverb(x + ring, 0.5, 0.25, 0.3)
+    # the harness shifts as he breathes
+    x = x + place(d, (0.15, rattle(0.6, 3, 900, 1700, k) * 0.5), (1.2, rattle(0.7, 2 + k, 800, 1500, 5 + k) * 0.45),
+                  (0.7 + 0.2 * k, plate(620 + 90 * k, 0.5, 0.8, 9 + k) * 0.16))
+    return reverb(x, 0.5, 0.22, 0.3, bright=7000)
 
 
 S['rust_knight/ambient1'] = knight_ambient(0)
 S['rust_knight/ambient2'] = knight_ambient(1)
 d = 0.7
-S['rust_knight/hurt'] = reverb(clang(330, d) * 0.9 + place(d, (0.03, clang(520, 0.5) * 0.5))
-                               + voice(sweep(120, 90, d), d, ((400, 120, 1.0), (900, 150, 0.4)), breath=0.5, rough=0.5) * env(d, 0.01, 0.5) * 0.5,
-                               0.5, 0.22, 0.3)
+S['rust_knight/hurt'] = reverb(place(d, (0.0, plate(540, 0.6, 1.2, 20) * 0.9), (0.025, plate(880, 0.4, 1.3, 21) * 0.55), (0.06, rattle(0.4, 3, 1000, 1900, 22) * 0.6),
+                                     (0.0, thump(0.12, 110, 60, 0.03) * 0.5))
+                               + voice(sweep(120, 90, d), d, ((400, 120, 1.0), (900, 150, 0.4)), breath=0.5, rough=0.5) * env(d, 0.01, 0.5) * 0.3,
+                               0.5, 0.2, 0.3, bright=8000)
 d = 2.4
 S['rust_knight/death'] = reverb(place(d, (0.0, voice(sweep(130, 60, 1.2, 0.7), 1.2, ((400, 120, 1.0), (900, 150, 0.4)), breath=0.6, rough=0.6)
-                                          * env(1.2, 0.02, 0.9) * 0.7),
-                                      (0.5, clang(260, 0.8)), (0.75, clang(390, 0.6) * 0.7), (0.95, clang(180, 0.9) * 0.9), (1.2, clang(470, 0.5) * 0.5),
-                                      (0.95, thump(0.5, 80, 35, 0.14) * 1.4), (1.45, clang(300, 0.7) * 0.4)), 0.9, 0.3, 0.5)
+                                          * env(1.2, 0.02, 0.9) * 0.55),
+                                      (0.5, plate(420, 0.8, 1.0, 30)), (0.72, plate(680, 0.6, 1.2, 31) * 0.7), (0.95, plate(300, 1.0, 1.0, 32) * 1.0),
+                                      (1.0, rattle(0.9, 7, 800, 2000, 33) * 0.8), (1.25, plate(760, 0.5, 1.3, 34) * 0.5),
+                                      (0.95, thump(0.5, 80, 35, 0.14) * 1.3), (1.5, plate(520, 0.7, 1.0, 35) * 0.4), (1.7, rattle(0.5, 3, 1100, 2100, 36) * 0.4)),
+                                0.9, 0.28, 0.5, bright=8000)
 for k in range(2):
-    d = 0.3
-    S[f'rust_knight/step{k + 1}'] = place(d, (0.0, clang(700 + 150 * k, 0.16) * 0.5), (0.04, clang(1100 - 100 * k, 0.12) * 0.35),
-                                          (0.0, thump(0.18, 70, 45, 0.05) * 0.8), (0.07, clang(520, 0.14) * 0.25))
+    d = 0.34
+    S[f'rust_knight/step{k + 1}'] = place(d, (0.0, thump(0.16, 75, 45, 0.045) * 0.9), (0.0, plate(900 + 160 * k, 0.2, 1.2, 40 + k) * 0.42),
+                                          (0.035, plate(1500 - 140 * k, 0.13, 1.4, 42 + k) * 0.3), (0.07, rattle(0.22, 2, 1200, 2200, 44 + k) * 0.45))
 d = 0.55
 S['player/weapon_swing_heavy'] = whoosh(d, 250, 1300, 0.5, 0.5) + whoosh(d, 80, 300, 0.5, 0.6) * 0.8
 
