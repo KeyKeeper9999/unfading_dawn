@@ -219,16 +219,24 @@ public abstract class SoulsMob extends Monster {
 
     /** A rest at a hearth sends a living boss back to where it waits, whole again. */
     public void returnHome(double x, double y, double z, float yaw) {
-        if (this.attackId() != 0) {
-            this.endAttack();
-        }
-        this.setTarget(null);
-        this.getNavigation().stop();
+        this.recover();
         this.teleportTo(x, y, z);
         this.setYRot(yaw);
         this.setYBodyRot(yaw);
         this.setYHeadRot(yaw);
+    }
+
+    /** Whole again and with nobody to fight, as if the fight had never begun: after a player's rest or death. */
+    public void recover() {
+        if (this.attackId() != 0) {
+            this.endAttack();
+        }
+        this.setTarget(null);
+        this.setLastHurtByMob(null);
+        this.getNavigation().stop();
         this.setHealth(this.getMaxHealth());
+        this.clearFire();
+        this.removeAllEffects();
         this.onReset();
         if (this.isBoss() && this.level() instanceof ServerLevel level) {
             this.stopMusic(level);

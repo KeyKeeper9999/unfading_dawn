@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.AABB;
 
 /** What a {@link MobMarkBlock} remembers: which mob is its own right now, and whether that mob has been killed. */
 public class MobMarkBlockEntity extends BlockEntity {
@@ -112,7 +113,7 @@ public class MobMarkBlockEntity extends BlockEntity {
         this.setChanged();
     }
 
-    /** Brings back the dead of every mark within {@code radius} blocks that is loaded. */
+    /** Brings back the dead of every mark within {@code radius} blocks that is loaded, and heals every enemy there that lived. */
     public static int resetAround(ServerLevel level, BlockPos centre, int radius) {
         List<MobMarkBlockEntity> marks = new ArrayList<>();
         int minX = (centre.getX() - radius) >> 4;
@@ -133,6 +134,12 @@ public class MobMarkBlockEntity extends BlockEntity {
             }
         }
         marks.forEach(mark -> mark.reset(level));
+        // Those that no mark answers for (hatched from an egg, or called by a boss) stay, but are whole again.
+        for (SoulsMob mob : level.getEntitiesOfClass(SoulsMob.class, new AABB(centre).inflate(radius), SoulsMob::isAlive)) {
+            if (homeOf(mob) == null) {
+                mob.recover();
+            }
+        }
         return marks.size();
     }
 

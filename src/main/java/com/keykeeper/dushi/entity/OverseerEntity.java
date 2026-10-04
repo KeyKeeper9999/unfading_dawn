@@ -2,6 +2,7 @@ package com.keykeeper.dushi.entity;
 
 import com.keykeeper.dushi.Dushi;
 import com.keykeeper.dushi.block.FogGateBlock;
+import com.keykeeper.dushi.block.MobMarkBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -342,7 +343,9 @@ public class OverseerEntity extends SoulsMob {
     public void die(DamageSource source) {
         super.die(source);
         if (this.level() instanceof ServerLevel level) {
-            FogGateBlock.lift(level, this.blockPosition(), 28);
+            // the gate of the room it kept, even if it was led out of it to die
+            BlockPos home = MobMarkBlockEntity.homeOf(this);
+            FogGateBlock.lift(level, home != null ? home : this.blockPosition(), 28);
         }
     }
 

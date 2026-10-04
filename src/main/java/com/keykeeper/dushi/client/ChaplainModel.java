@@ -112,9 +112,13 @@ public class ChaplainModel extends EntityModel<BossRenderState> {
         switch (state.attackId) {
             case ChaplainEntity.SPEARS -> {
                 // The free hand points at the target and flicks with every spear.
-                float aim = Anim.pulse(t, 0.0F, 9.0F, 34.0F, 45.0F);
-                float flick = Math.max(0.0F, Mth.sin(t * (float) Math.PI / 4.0F)) * aim;
-                this.leftArm.xRot = Anim.lerp(aim, this.leftArm.xRot, -1.5F - 0.3F * flick);
+                // (In the second phase the hand first goes up over the head, where the black flame gathers, and comes down with each throw.)
+                boolean dark = state.phase >= 2;
+                float aim = dark ? Anim.pulse(t, 0.0F, 12.0F, 62.0F, 76.0F) : Anim.pulse(t, 0.0F, 9.0F, 34.0F, 45.0F);
+                float flick = dark ? Anim.pulse((t - ChaplainEntity.FLAMES_GATHERED + 56.0F) % 14.0F, 9.0F, 13.5F, 13.6F, 14.0F)
+                        * (t > ChaplainEntity.FLAMES_GATHERED - 5.0F && t < ChaplainEntity.FLAMES_GATHERED + 30.0F ? 1.0F : 0.0F) * aim
+                        : Math.max(0.0F, Mth.sin(t * (float) Math.PI / 4.0F)) * aim;
+                this.leftArm.xRot = Anim.lerp(aim, this.leftArm.xRot, dark ? -2.85F + 1.5F * flick : -1.5F - 0.3F * flick);
                 this.leftArm.yRot = Anim.lerp(aim, this.leftArm.yRot, 0.1F);
                 this.torso.yRot += 0.2F * aim;
                 this.head.xRot -= 0.1F * aim;

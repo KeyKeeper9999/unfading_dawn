@@ -4,6 +4,7 @@ import com.keykeeper.dushi.ArmorSet;
 import com.keykeeper.dushi.Dushi;
 import com.keykeeper.dushi.Spell;
 import com.keykeeper.dushi.block.FogGateBlock;
+import com.keykeeper.dushi.block.MobMarkBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -40,6 +41,10 @@ import net.minecraft.world.phys.Vec3;
 public class ChaplainEntity extends SoulsMob {
     public static final int SPEARS = 1;
     public static final int SPEARS_DURATION = 46;
+    /** In the second phase the spears are black flames: he gathers them over his head first, and throws three, well apart. */
+    public static final int FLAMES_DURATION = 78;
+    public static final int FLAMES_GATHERED = 26;
+    private static final int FLAMES_BETWEEN = 14;
     public static final int WRATH = 2;
     public static final int WRATH_DURATION = 52;
     public static final int WRATH_BURST = 30;
@@ -102,7 +107,7 @@ public class ChaplainEntity extends SoulsMob {
     @Override
     protected int attackDuration(int id) {
         return switch (id) {
-            case SPEARS -> SPEARS_DURATION;
+            case SPEARS -> this.phase() >= 2 ? FLAMES_DURATION : SPEARS_DURATION;
             case WRATH -> WRATH_DURATION;
             case BLINK -> BLINK_DURATION;
             case CENSER -> CENSER_DURATION;
@@ -114,7 +119,7 @@ public class ChaplainEntity extends SoulsMob {
     @Override
     protected int trackUntil(int id) {
         return switch (id) {
-            case SPEARS -> SPEARS_DURATION;
+            case SPEARS -> this.phase() >= 2 ? FLAMES_DURATION : SPEARS_DURATION;
             case CENSER -> CENSER_IMPACT - 5;
             default -> 0;
         };
@@ -193,13 +198,30 @@ public class ChaplainEntity extends SoulsMob {
         boolean dark = this.phase() >= 2;
         switch (id) {
             case SPEARS -> {
-                boolean shot = dark ? (time == 12 || time == 18 || time == 24 || time == 30) : (time == 14 || time == 22 || time == 30);
+                int sinceGathered = time - FLAMES_GATHERED;
+                boolean shot = dark ? (sinceGathered >= 0 && sinceGathered <= 2 * FLAMES_BETWEEN && sinceGathered % FLAMES_BETWEEN == 0)
+                        : (time == 14 || time == 22 || time == 30);
+                if (dark) {
+                    // The warning: violet fire is drawn in from all sides to a point over his raised hand, brighter before every throw.
+                    Vec3 hand = this.position().add(0.0, this.getBbHeight() + 0.9, 0.0);
+                    int untilThrow = sinceGathered < 0 ? -sinceGathered : (FLAMES_BETWEEN - sinceGathered % FLAMES_BETWEEN) % FLAMES_BETWEEN;
+                    if (sinceGathered <= 2 * FLAMES_BETWEEN) {
+                        level.sendParticles(ParticleTypes.REVERSE_PORTAL, hand.x, hand.y, hand.z, 6, 0.9, 0.9, 0.9, 0.02);
+                        level.sendParticles(ParticleTypes.WITCH, hand.x, hand.y, hand.z, untilThrow <= 6 ? 6 : 2, 0.2, 0.2, 0.2, 0.0);
+                        if (untilThrow == 8) {
+                            this.playSound(Dushi.sound("entity.chaplain.bell"), 1.2F, 1.6F);
+                        }
+                    }
+                    if (time == 1) {
+                        this.playSound(Dushi.sound("item.spell.fizzle"), 2.0F, 0.5F);
+                    }
+                }
                 if (shot && target != null) {
                     Vec3 from = this.getEyePosition();
                     Vec3 aim = target.getBoundingBox().getCenter().subtract(from);
                     // Lead the target a little, so standing still is not the answer but strafing is.
                     aim = aim.add(target.getDeltaMovement().multiply(4.0, 0.0, 4.0));
-                    SpellBoltEntity.shoot(level, this, dark ? SpellBoltEntity.Kind.DARK_FLAME : SpellBoltEntity.Kind.LIGHT_SPEAR, aim, dark ? 1.0F : 1.35F,
+                    SpellBoltEntity.shoot(level, this, dark ? SpellBoltEntity.Kind.DARK_FLAME : SpellBoltEntity.Kind.LIGHT_SPEAR, aim, dark ? 0.75F : 1.35F,
                             dark ? 6.0F : 7.0F);
                     this.playSound(Dushi.sound("entity.chaplain.cast"), 2.0F, dark ? 0.7F : 1.0F + this.random.nextFloat() * 0.2F);
                 }
@@ -346,7 +368,9 @@ public class ChaplainEntity extends SoulsMob {
     public void die(DamageSource source) {
         super.die(source);
         if (this.level() instanceof ServerLevel level) {
-            FogGateBlock.lift(level, this.blockPosition(), 28);
+            // the gate of the room it kept, even if it was led out of it to die
+            BlockPos home = MobMarkBlockEntity.homeOf(this);
+            FogGateBlock.lift(level, home != null ? home : this.blockPosition(), 28);
         }
     }
 

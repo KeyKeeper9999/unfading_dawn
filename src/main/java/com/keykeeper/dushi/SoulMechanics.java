@@ -127,6 +127,9 @@ public final class SoulMechanics {
         player.setForcedPose(null);
         player.syncData(Dushi.PLAYER_SOUL);
         PacketDistributor.sendToPlayer(player, new Net.Banner("", Net.Banner.RED, "ui.death"));
+        // The enemies around are whole again at once, and the dead among them rise: the next attempt starts from the beginning,
+        // wherever the player comes back to.
+        MobMarkBlockEntity.resetAround(level, player.blockPosition(), MobMarkBlockEntity.RESET_RADIUS);
         // Remember what was carried and where: death takes the souls, not the belongings.
         Inventory inventory = player.getInventory();
         List<ItemStack> kept = new ArrayList<>(inventory.getContainerSize());

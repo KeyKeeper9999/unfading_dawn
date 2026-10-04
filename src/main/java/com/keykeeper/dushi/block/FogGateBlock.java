@@ -1,5 +1,7 @@
 package com.keykeeper.dushi.block;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -91,12 +93,33 @@ public class FogGateBlock extends Block {
         }
     }
 
-    /** Removes every fog gate within {@code radius} blocks of {@code centre}. */
+    /**
+     * Lifts one fog gate: the one nearest to {@code centre} within {@code radius} blocks, with every block of fog joined to it.
+     * Another gate in the same building, across another doorway, stays.
+     */
     public static void lift(ServerLevel level, BlockPos centre, int radius) {
+        BlockPos nearest = null;
         for (BlockPos pos : BlockPos.betweenClosed(centre.offset(-radius, -8, -radius), centre.offset(radius, 12, radius))) {
-            if (level.getBlockState(pos).is(Dushi.FOG_GATE.get())) {
-                level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-                level.sendParticles(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.3, 0.3, 0.3, 0.02);
+            if (level.getBlockState(pos).is(Dushi.FOG_GATE.get()) && (nearest == null || pos.distSqr(centre) < nearest.distSqr(centre))) {
+                nearest = pos.immutable();
+            }
+        }
+        if (nearest == null) {
+            return;
+        }
+        Deque<BlockPos> open = new ArrayDeque<>();
+        open.add(nearest);
+        int lifted = 0;
+        while (!open.isEmpty() && lifted < 512) {
+            BlockPos pos = open.poll();
+            if (!level.getBlockState(pos).is(Dushi.FOG_GATE.get())) {
+                continue;
+            }
+            level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+            level.sendParticles(ParticleTypes.CLOUD, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4, 0.3, 0.3, 0.3, 0.02);
+            lifted++;
+            for (Direction direction : Direction.values()) {
+                open.add(pos.relative(direction));
             }
         }
     }

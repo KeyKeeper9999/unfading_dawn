@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Unit;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -68,7 +70,8 @@ public enum ArmorSet {
     void register(DeferredRegister.Items items) {
         for (int i = 0; i < 4; i++) {
             ArmorType type = TYPES[i];
-            this.pieces.add(items.registerItem(this.names[i], props -> new Item(props.humanoidArmor(this.material, type).rarity(this.rarity))));
+            this.pieces.add(items.registerItem(this.names[i], props -> new Item(props.humanoidArmor(this.material, type).rarity(this.rarity)
+                    .component(DataComponents.UNBREAKABLE, Unit.INSTANCE))));
         }
     }
 

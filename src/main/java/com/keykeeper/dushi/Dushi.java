@@ -164,6 +164,7 @@ public class Dushi {
      * @param strength   how much it gains from strength, 0..1
      * @param dexterity  how much it gains from dexterity, 0..1
      * @param backstab   damage multiplier for a blow in the back
+     * @param durability unused: nothing of the mod wears out, because dying over and over must not cost the player their gear
      */
     private static DeferredItem<WeaponItem> weapon(String name, float damage, float speed, float reach, float stamina, float strength,
             float dexterity, float backstab, int durability, Rarity rarity) {
@@ -177,7 +178,7 @@ public class Dushi {
                 attributes.add(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(id("weapon_reach"), reach, AttributeModifier.Operation.ADD_VALUE),
                         EquipmentSlotGroup.MAINHAND);
             }
-            return new WeaponItem(props.durability(durability).rarity(rarity).attributes(attributes.build())
+            return new WeaponItem(props.stacksTo(1).rarity(rarity).attributes(attributes.build())
                     .component(DataComponents.WEAPON, new Weapon(1)).setNoCombineRepair(), stamina, strength, dexterity, backstab);
         });
         WEAPONS.add(item);
@@ -199,7 +200,7 @@ public class Dushi {
     public static final DeferredItem<WeaponItem> GREAT_KEY = weapon("great_key", 14.0F, 0.7F, 1.0F, 38.0F, 1.0F, 0.0F, 1.5F, 900, Rarity.EPIC);
     public static final DeferredItem<WeaponItem> CENSER_FLAIL = weapon("censer_flail", 9.0F, 1.2F, 1.0F, 22.0F, 0.4F, 0.6F, 1.5F, 700, Rarity.EPIC);
 
-    public static final DeferredItem<ShortBowItem> SHORT_BOW = ITEMS.registerItem("short_bow", props -> new ShortBowItem(props.durability(300)));
+    public static final DeferredItem<ShortBowItem> SHORT_BOW = ITEMS.registerItem("short_bow", props -> new ShortBowItem(props.stacksTo(1)));
 
     // ------------------------------------------------------------------ shields
 
@@ -210,11 +211,11 @@ public class Dushi {
      * @param stability share of the blow's force that does NOT cost stamina, 0..1
      */
     private static DeferredItem<Item> shield(String name, float reduction, float stability, int durability, Rarity rarity) {
-        DeferredItem<Item> item = ITEMS.registerItem(name, props -> new com.keykeeper.dushi.item.GuardShieldItem(props.durability(durability)
+        DeferredItem<Item> item = ITEMS.registerItem(name, props -> new com.keykeeper.dushi.item.GuardShieldItem(props.stacksTo(1)
                 .rarity(rarity).equippableUnswappable(net.minecraft.world.entity.EquipmentSlot.OFFHAND).setNoCombineRepair()
                 .delayedComponent(DataComponents.BLOCKS_ATTACKS, lookup -> new BlocksAttacks(0.15F, 1.0F,
                         List.of(new BlocksAttacks.DamageReduction(100.0F, Optional.empty(), 0.0F, reduction)),
-                        new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F),
+                        new BlocksAttacks.ItemDamageFunction(3.0F, 0.0F, 0.0F),
                         Optional.of(lookup.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypeTags.BYPASSES_SHIELD)),
                         Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK))), stability));
         SHIELDS.add(item);
