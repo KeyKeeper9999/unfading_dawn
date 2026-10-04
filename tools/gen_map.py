@@ -375,17 +375,38 @@ class Map(Build):
         self.set(x, y, z, 'minecraft:hay_block[axis=y]')
         self.set(x, y + 1, z, 'minecraft:campfire[lit=true,signal_fire=true]')
 
-    def cypress(self, x, y, z, height=7):
+    def cypress(self, x, y, z, height=8):
         """A dark narrow tree, of the kind that is planted in rows; stands on the block at y - 1."""
         self.set(x, y - 1, z, 'minecraft:coarse_dirt')
         leaf = 'minecraft:spruce_leaves[persistent=true,distance=1]'
-        self.fill(x, y, z, x, y + height - 2, z, 'minecraft:spruce_log[axis=y]')
-        for h in range(2, height):
-            if h < height - 2:
-                for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                    if self.free(x + dx, y + h, z + dz):
-                        self.set(x + dx, y + h, z + dz, leaf)
-        self.fill(x, y + height - 1, z, x, y + height, z, leaf)
+        self.fill(x, y, z, x, y + 1, z, 'minecraft:spruce_log[axis=y]')
+        self.fill(x, y + 2, z, x, y + height, z, leaf)
+        for h in range(2, height - 1):
+            for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                if self.free(x + dx, y + h, z + dz):
+                    self.set(x + dx, y + h, z + dz, leaf)
+        for h in range(3, 5):                                  # fuller near the foot
+            for dx, dz in ((1, 1), (-1, 1), (1, -1), (-1, -1)):
+                if self.free(x + dx, y + h, z + dz):
+                    self.set(x + dx, y + h, z + dz, leaf)
+
+    def sconce(self, x, y, z, lantern=LANTERN, arm='minecraft:polished_deepslate_wall'):
+        """A lamp on an arm: the arm at y + 1 (it joins the wall beside it), the lamp hanging under it at y."""
+        self.set(x, y + 1, z, arm)
+        self.set(x, y, z, lantern)
+
+    def ambient(self, xs, y, zs, level):
+        """Light without a lamp (the game's own unseen light block), for halls whose windows would fill them with the
+        evening: only in free cells, well above the heads."""
+        for x in xs:
+            for z in zs:
+                if self.free(x, y, z):
+                    self.set(x, y, z, f'minecraft:light[level={level}]')
+
+    def stand(self, x, y, z, height=2, candles=4, post='minecraft:polished_blackstone_wall'):
+        """A candlestick standing on the floor."""
+        self.fill(x, y, z, x, y + height - 1, z, post)
+        self.set(x, y + height, z, f'minecraft:candle[candles={candles},lit=true]')
 
     def urn(self, x, y, z, base='minecraft:quartz_pillar[axis=y]', height=1):
         self.fill(x, y, z, x, y + height - 1, z, base)
@@ -664,8 +685,8 @@ def gate_hall(b):
     for z in (126, 133, 140):
         b.window('z', 44, z, z + 2, L1 + 6, L1 + 11, 1)
         b.window('z', 84, z, z + 2, L1 + 6, L1 + 11, 2)
-    for x, z in ((64, 124), (64, 134), (64, 144), (50, 134), (78, 134)):
-        b.chandelier(x, z, L1 + 15, 5)
+    for x, z in ((64, 124), (64, 134), (64, 144), (50, 134), (78, 134), (50, 123), (78, 123), (50, 145), (78, 145)):
+        b.chandelier(x, z, L1 + 15, 8)
     # in from the bridge through the fog, out through the seal that lifts when he falls
     b.opening(62, L1 + 1, 149, 66, L1 + 6, 150, 'pale')
     b.fog('overseer', 62, L1 + 1, 150, 66, L1 + 5, 150, 'x')
@@ -923,8 +944,8 @@ def cathedral(b):
         if i < 2:
             nx = (54, 74) if i == 0 else (57, 71)
             b.clear(nx[0], VAULT + 1 + i, 10, nx[1], VAULT + 1 + i, 76)
-    for z in (70, 58, 46):
-        b.chandelier(64, z, VAULT + 3, 9)
+    for z in (70, 64, 58, 52, 46, 40):
+        b.chandelier(64, z, VAULT + 3, 17)
     # the roof outside
     b.gable(49, 79, Z0, Z1, VAULT + 1, 'z', end=white)
     for (xa, xb) in ((X0, 48), (80, X1)):
@@ -989,7 +1010,7 @@ def cathedral(b):
         b.window('z', X0 + 1, z, z + 1, GAL + 2, GAL + 5, z + 2)
         b.window('z', X1, z, z + 1, GAL + 2, GAL + 5, z + 3, bars=True)
         b.window('z', X1 - 1, z, z + 1, GAL + 2, GAL + 5, z + 3)
-    for z in (40, 52, 64):
+    for z in (40, 46, 52, 58, 64, 70):
         for x in (46, 82):
             b.set(x, GAL - 1, z, LANTERN)
             b.set(x, CLR - 1, z + 3, LANTERN)
@@ -1066,7 +1087,7 @@ def cathedral(b):
                     b.set(x, y, z, GLASS[1] if d < 4 else GLASS[0] if d < 8 else GLASS[2] if d < 11 else GLASS[3])
     for z in (16, 24):
         for x in (56, 72):
-            b.chandelier(x, z, VAULT + 1, 12, SOUL_LANTERN, wide=False)
+            b.chandelier(x, z, VAULT + 1, 15, SOUL_LANTERN, wide=False)
     for x in (45, 83):
         for z in (14, 22, 30):
             b.window('z', X0 if x == 45 else X1, z, z + 1, LC + 4, LC + 10, z + x)
@@ -1232,7 +1253,7 @@ def dress_gate_hall(b):
     for z in (119, 123, 130, 137, 144, 148):
         b.buttress(44, z, L1 - 3, L1 + 12, 'west', 'pale', drop=5)
         b.buttress(84, z, L1 - 3, L1 + 12, 'east', 'pale', drop=5)
-    for x, z in ((46, 118), (82, 118), (46, 148), (82, 148)):
+    for x, z in ((46, 148), (82, 148)):
         b.brazier(x, L1 + 16, z, 'minecraft:sandstone_wall')
     # inside: cloth on the pillars, fires in the corners
     for z in (123, 137):
@@ -1309,6 +1330,66 @@ def dress_cathedral(b):
     b.set(38, LC + 1, 42, stairs('spruce', 'north'))
     b.fill(32, LC + 1, 43, 36, LC + 1, 45, 'minecraft:red_carpet')
     b.set(34, LC + 1, 44, f'{MOD}:hearth[lit=false]')
+
+
+def lighting(b):
+    """Lamps and candles where the check found it too dark to play: the nave and the choir, the crypt, the stairs."""
+    # the nave: a lamp on a plinth before every pillar
+    for z in (72, 66, 60, 54, 48, 42, 36):
+        for x in (52, 76):
+            b.fill(x, LC + 1, z, x, LC + 2, z, 'minecraft:quartz_pillar[axis=y]')
+            b.set(x, LC + 3, z, FLOOR_LANTERN)
+    # the choir: candlesticks along the walls and before the screen
+    for x in (45, 83):
+        for z in (12, 21, 30):
+            b.stand(x, LC + 1, z)
+    for x in (55, 73):
+        for z in (18, 25, 31):
+            b.stand(x, LC + 1, z)
+    for x in (57, 71):
+        b.stand(x, LC + 2, 11, height=1)
+    # the crypt: cold lamps under the ceiling, warm ones only at the founder's tomb
+    for x in (57, 64, 72):
+        for z in (39, 45, 51, 57, 63):
+            if b.free(x, CY + 4, z):
+                b.set(x, CY + 4, z, SOUL_LANTERN)
+    for x in (61, 67):
+        b.stand(x, CY + 1, 59, height=1, candles=3)
+    b.chandelier(64, 23, VAULT + 1, 14)
+    # what the windows let in: the nave and its aisles, the choir under the great window, the gate hall
+    b.ambient((58, 64, 70), LC + 5, range(37, 76, 6), 10)
+    b.ambient((43, 85), LC + 4, range(37, 76, 6), 9)
+    b.ambient(range(46, 84, 6), LC + 5, (12, 18, 24, 30), 13)
+    b.ambient((48, 57, 71, 80), L1 + 5, range(120, 148, 6), 11)
+    b.ambient((64,), L1 + 5, (113,), 14)
+    b.ambient((46, 82), GAL + 3, (37, 43), 9)
+    for x, z in ((58, 75), (70, 75)):
+        b.fill(x, LC + 1, z, x, LC + 2, z, 'minecraft:quartz_pillar[axis=y]')
+        b.set(x, LC + 3, z, FLOOR_LANTERN)
+    # the crypt's pillars carry lamps too
+    for z in (40, 46, 52, 58):
+        b.sconce(61, CY + 3, z, LANTERN if z in (40, 52) else SOUL_LANTERN)
+        b.sconce(68, CY + 3, z, SOUL_LANTERN if z in (40, 52) else LANTERN)
+    # the chapter room's corners, the bell tower's landings
+    for x in (14, 28):
+        b.set(x, L2 + 6, 62, LANTERN)
+    for base in (L2, L2 + 12):
+        for z in (86, 92):
+            b.sconce(106, base + 9, z, arm='minecraft:sandstone_wall')
+            b.sconce(96, base + 15, z, arm='minecraft:sandstone_wall')
+    # the lower fortress
+    for x, z in ((97, 216), (103, 210), (103, 222)):
+        b.set(x, L0 + 5, z, LANTERN)
+    for z in (204, 210, 217, 228):
+        b.set(25, L0 + 4, z, LANTERN)
+    for x in (60, 68):
+        b.set(x, L1 + 5, 191, LANTERN)
+        b.set(x, L0 + 7, 187, LANTERN)
+    # the sacristy, the treasury's door, the hall stair
+    b.set(31, LC + 5, 45, LANTERN)
+    b.set(37, LC + 5, 47, LANTERN)
+    for z in (111, 113):
+        b.set(61, L2 + 5, z, LANTERN) if b.free(61, L2 + 5, z) and not b.free(61, L2 + 6, z) else None
 
 
 def far_tower(b, x0, z0, size, top, spire, mat, base=18, salt=0):
@@ -1432,6 +1513,10 @@ def bedrock(b):
         if state != AIR and (x, z) not in b.bridge:
             if y < lowest.get((x, z), 10 ** 6):
                 lowest[(x, z)] = y
+    # what sticks out of a wall high up - corbels, cloth, a covered walk on its piers - has no rock under it
+    for (x, z), y in list(lowest.items()):
+        if y > (L0 if z >= 156 else L2 + 1):
+            del lowest[(x, z)]
     # a pier's foot counts as hanging too; only wide masses get rock
     dist = {}
     queue = deque()
@@ -1469,7 +1554,7 @@ def route(target):
     return path[::-1]
 
 
-PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'skull', 'chain', 'banner')
+PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'skull', 'chain', 'banner', 'minecraft:light')
 
 
 def analyse(b, blocked=frozenset(), quiet=False):
@@ -1626,6 +1711,107 @@ def analyse(b, blocked=frozenset(), quiet=False):
     return report, problems, seen
 
 
+# ---------------------------------------------------------------------------------------------------- the light
+
+def emission(name):
+    if 'soul_lantern' in name:
+        return 10
+    if 'lantern' in name or 'froglight' in name or ('campfire' in name and 'lit=true' in name):
+        return 15
+    if 'end_rod' in name:
+        return 14
+    if 'candle' in name and 'lit=true' in name:
+        return 3 * int(name.split('candles=')[1][0])
+    if 'fog_gate' in name:
+        return 6
+    if name.startswith('minecraft:light['):
+        return int(name.split('level=')[1].split(']')[0].split(',')[0])
+    return 0
+
+
+CLEAR = ('glass', 'iron_bars', 'chain', 'lantern', 'candle', 'mob_mark', 'banner', 'iron_door', 'fog_gate', 'lever', 'carpet', 'skull', 'cobweb',
+         'dead_bush', 'end_rod', 'fence', '_wall', 'campfire', 'decorated_pot', 'cauldron', 'hearth', 'forge', 'bell', 'chest', 'minecraft:light')
+
+
+def lights(b):
+    """The light of the finished map, worked out roughly the way the game does (stairs and slabs are taken for solid,
+    which errs on the dark side): for every roofed-over cell that is not solid, the light of the sky that reaches it
+    sideways, and for every cell the light of lamps and fires. Returns (roof, sky, block)."""
+    cells = b.cells
+
+    def clear(c):
+        s = cells.get(c)
+        if s is None or s == AIR:
+            return True
+        name = s[2] if isinstance(s, tuple) else s
+        return any(k in name for k in CLEAR)
+
+    roof = {}
+    for (x, y, z), s in cells.items():
+        if s != AIR and not clear((x, y, z)) and y > roof.get((x, z), -1):
+            roof[(x, z)] = y
+    six = ((1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1), (0, 1, 0), (0, -1, 0))
+
+    def spread(seeds):
+        level = dict(seeds)
+        buckets = {}
+        for c, v in seeds.items():
+            buckets.setdefault(v, []).append(c)
+        for v in range(15, 1, -1):
+            for c in buckets.get(v, ()):
+                if level.get(c) != v:
+                    continue
+                x, y, z = c
+                for dx, dy, dz in six:
+                    n = (x + dx, y + dy, z + dz)
+                    if n[1] < 1 or n[1] > roof.get((n[0], n[2]), -1) or level.get(n, 0) >= v - 1 or not clear(n):
+                        continue                              # under the open sky nothing needs working out
+                    level[n] = v - 1
+                    buckets.setdefault(v - 1, []).append(n)
+        return level
+
+    seeds = {}
+    for (x, z), top in roof.items():
+        for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            other = roof.get((x + dx, z + dz), -1)
+            for y in range(max(other + 1, 1), top):
+                if clear((x, y, z)):
+                    seeds[(x, y, z)] = 14
+    sky = spread(seeds)
+    lamps = {}
+    for c, s in cells.items():
+        if s != AIR:
+            e = emission(s[2] if isinstance(s, tuple) else s)
+            if e:
+                lamps[c] = e
+    # lamps light the open air too; for that the roof must not stop them
+    saved, roof_all = roof, {k: 10 ** 6 for k in roof}
+    for (x, y, z) in list(lamps):
+        for dx in range(-15, 16):
+            for dz in range(-15 + abs(dx), 16 - abs(dx)):
+                roof_all.setdefault((x + dx, z + dz), 10 ** 6)
+    roof = roof_all
+    block = spread(lamps)
+    roof = saved
+    return roof, sky, block
+
+
+def dark_places(b, seen):
+    """Places a player can stand on where it is too dark to see what is coming: under 4 from lamps and under 7 from the
+    sky (which at the hour of the map counts for less than at noon)."""
+    roof, sky, block = lights(b)
+    dark = []
+    table = {}
+    for c in seen:
+        x, y, z = c
+        s = 15 if y > roof.get((x, z), -1) else sky.get(c, 0)
+        l = block.get(c, 0)
+        table[c] = (s, l)
+        if l < 4 and s < 7:
+            dark.append(c)
+    return dark, table
+
+
 ROCKS = ('minecraft:stone', 'minecraft:andesite', 'minecraft:tuff', 'minecraft:deepslate', 'minecraft:cobbled_deepslate')
 
 
@@ -1652,6 +1838,7 @@ def build():
     dress_gate_hall(b)
     dress_plaza(b)
     dress_cathedral(b)
+    lighting(b)
     skyline(b)
     return b
 
@@ -1700,7 +1887,7 @@ VIEWS = (
     ('east_gallery', (82, GAL + 2.6, 73), (80, GAL + 1.5, 40)),
     ('nave', (64, LC + 3, 75), (64, LC + 10, 34)),
     ('nave_from_the_gallery', (79.5, GAL + 2.6, 64), (52, LC + 3, 48)),
-    ('crypt_stair', (85.5, LC + 2.6, 50.5), (85.5, CY + 2, 37)),
+    ('crypt_stair', (85.5, LC + 2.6, 51.5), (85.5, CY + 4, 39)),
     ('crypt_hall', (65, CY + 2.6, 38.5), (64, CY + 2, 62)),
     ('crypt_passage', (52, CY + 2.6, 53.5), (32, CY + 2, 53.5)),
     ('choir', (64, LC + 3, 31), (64, LC + 10, 9)),
@@ -1715,20 +1902,6 @@ VIEWS = (
     ('great_window_outside', (64, LC + 16, -34), (64, LC + 14, 8)),
     ('lower_fortress_from_the_bridge', (64, L1 + 3, 153), (64, L1 + 3, 190)),
     ('lower_fortress_from_the_west', (-34, L1 + 14, 250), (40, L0, 215)),
-    # the same places as the evening goes on: which hour suits the map is chosen by looking
-    ('time', 12300),
-    ('t12300_gate_hall_front', (64, L1 + 2.6, 170), (64, L1 + 13, 150)),
-    ('t12300_into_the_city', (64, L2 + 2.6, 107), (64, L2 + 16, 78)),
-    ('t12300_nave', (64, LC + 3, 75), (64, LC + 10, 34)),
-    ('time', 12700),
-    ('t12700_gate_hall_front', (64, L1 + 2.6, 170), (64, L1 + 13, 150)),
-    ('t12700_into_the_city', (64, L2 + 2.6, 107), (64, L2 + 16, 78)),
-    ('t12700_nave', (64, LC + 3, 75), (64, LC + 10, 34)),
-    ('t12700_ward', (64, L1 + 7, 243), (64, L0, 200)),
-    ('time', 13100),
-    ('t13100_gate_hall_front', (64, L1 + 2.6, 170), (64, L1 + 13, 150)),
-    ('t13100_into_the_city', (64, L2 + 2.6, 107), (64, L2 + 16, 78)),
-    ('t13100_ward', (64, L1 + 7, 243), (64, L0, 200)),
 )
 
 # places where the finished world's light is read out by MapBuilder: under the sky, indoors, underground
@@ -1792,6 +1965,11 @@ if __name__ == '__main__':
     shut = frozenset((x, y, 76) for x in (96, 97) for y in range(GAL + 1, GAL + 4))
     without, _, seen_shut = analyse(b, blocked=shut)
     inside = (CX, LC + 1, 60) in seen_shut
+    dark, light_table = dark_places(b, seen)
+    groups = {}
+    for (x, y, z) in dark:
+        groups.setdefault((x // 10, y // 6, z // 10), []).append((x, y, z))
+    print(f'  dark places: {len(dark)} of {len(seen)}' + (': ' + ', '.join(f'{len(g)} near {sorted(g)[len(g) // 2]}' for g in sorted(groups.values(), key=len, reverse=True)[:24]) if dark else ''))
     print('  with the covered walk shut the nave is ' + ('REACHED: there is another way in. PROBLEM' if inside else 'not reached: good'))
     if len(sys.argv) > 1:
         out = sys.argv[1]
@@ -1802,7 +1980,8 @@ if __name__ == '__main__':
                                ('belfry', BELL + 4, BELL - 8)):
             img = b.top_down(top, scale=6)
             draw = ImageDraw.Draw(img)
-            for (x, y, z) in seen:                         # a green dot wherever a player can stand on this storey
+            for (x, y, z) in seen:                         # a dot wherever a player can stand on this storey: red where it is dark
                 if low <= y <= top + 1:
-                    draw.rectangle([x * 6 + 2, z * 6 + 2, x * 6 + 3, z * 6 + 3], fill=(60, 255, 90))
+                    sk, bl = light_table[(x, y, z)]
+                    draw.rectangle([x * 6 + 2, z * 6 + 2, x * 6 + 3, z * 6 + 3], fill=(255, 40, 40) if bl < 4 and sk < 7 else (60, 255, 90))
             img.save(f'{out}/map_{name}.png')

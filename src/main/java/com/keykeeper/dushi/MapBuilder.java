@@ -40,8 +40,8 @@ public final class MapBuilder {
     public static final BlockPos ORIGIN = new BlockPos(0, 200, 0);
     /** The plan is drawn with the way forward to the north; turned, it leads west, into the sunset. */
     public static final Rotation ROTATION = Rotation.COUNTERCLOCKWISE_90;
-    /** Just before the sun touches the horizon, for ever. */
-    private static final int SUNSET = 11800;
+    /** The sun is half under the edge of the cloud, for ever: the sky burns orange in the west, the lamps already count. */
+    private static final int SUNSET = 12350;
 
     private static int ticks = -1;
     /** 0: the blocks are down; 1: the light engine is being told about every chunk; 2: light is being spread; 3: done. */
