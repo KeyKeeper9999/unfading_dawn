@@ -22,6 +22,11 @@ Nothing can be built on a machine without access to the NeoForge and Mojang serv
   (`attack(type, id, tick)` in the script) - never by timing. The script also presses the real roll key, dies, respawns
   and walks into the stain, and prints what it measured as `DUSHI CLIENTTEST ...` lines in `client.log`.
 
+The server test ends with `WorldTest.java`: gear numbers, recipes and chest loot as loaded by the game, both buildings set
+down from their plans and counted, the marks raising, losing and raising their mobs, and both buildings looked up in the
+world the server generated. The client test makes an ordinary world, works on a stone stage at y = 180, and at the end
+flies to the nearest outpost and stockade and takes pictures from fixed places of their plans (`view(...)`).
+
 `git fetch origin ci-out` and read the files; the commit message of `ci-out` names the commit of `main` it was built from.
 
 Other switches: `.ci/dump_api` makes the workflow write `javap` signatures of the whole game to `ci-out/api/` (useful when
@@ -32,6 +37,13 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `src/main/java/com/keykeeper/dushi/` - `Dushi` (all registries), `PlayerSoul` (souls, stats, stamina of a player; a data
   attachment synced to the player's own client), `SoulMechanics` (the rules: souls for kills, the stain on death, stamina,
   rolling through blows, backstabs, guard break), `Net` (messages), `Spell`, `Shop`.
+- `Gear` - what the rules know about any piece of gear, the game's own included: stamina cost, scaling and backstab of
+  a weapon (by item tag for vanilla ones), stability of a shield, weight of everything worn or held, and the burden that
+  follows from the weight (it decides the roll). `ArmorSet` - the mod's four suits and the gift of each.
+- `block/MobMarkBlock` + `MobMarkBlockEntity` - a ring of ash where a mob of a building rises: when a player comes near,
+  and again after any rest at a hearth or death within 96 blocks. A slain boss stays slain; a living one goes back and heals.
+- `world/` - `Plan` reads a building from `data/vsratie_dushi/plan/NAME.txt`, `PlanStructure` picks a level, dry place
+  and one of four turns, `PlanPiece` sets the blocks. The worldgen JSON only names the plan.
 - `entity/` - `SoulsMob` is the base of every enemy: an attack is a "move" with a wind-up, an impact tick and a recovery,
   known on both sides so the model can show it. `SoulsCombatGoal` walks the mob to its target and lets it choose moves.
 - `client/` - models, renderers, `SoulsHud`, `HearthScreen`, `ShopScreen`, the roll key.
@@ -40,6 +52,10 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
     between the `// <generated mesh>` markers) and a software preview render;
   - `gen_withered.py`, `gen_knight.py`, `gen_keykeeper.py`, `gen_overseer.py`, `gen_chaplain.py` - the mobs;
   - `gen_items.py` (icons), `gen_shields.py` and `gen_blocks.py` (box models), `gen_sounds.py`, `gen_lang.py` (all texts);
+  - `gen_armor.py` - worn textures (64x32, the game's armour layout), icons and equipment definitions of the suits;
+  - `gen_structures.py` - the buildings, block by block, with top-down and isometric previews; bars, fences and walls
+    are written already joined to their neighbours, because nothing joins them during world generation;
+  - `gen_data.py` - recipes, chest loot, tags, structure and structure-set JSON;
   - `check_assets.py` - checks that everything registered has its files and names.
 
   Never edit generated textures, models, `sounds.json` or the lang files by hand: change the generator and run it.
@@ -55,6 +71,12 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   grip brought into the hand the same way (`big_display` in `gen_items.py`).
 - A held item always points at right angles to the arm, forward when the arm hangs. For a level thrust the arm is
   raised sideways (zRot), not forwards (see the knight's lunge).
+- In this version a loot entry's functions are written under the key `modifier` and a pool's conditions under
+  `condition` (see `gen_data.py`); `functions`/`conditions` are silently ignored.
+- The floor of a yard must not be dirt or grass: trees and flowers are planted after structures and grow through it.
+- A boss's bar is shown to players it fights or who stand within 12 blocks, not to everyone who can see the building.
+- Everything a player needs has a source: a recipe, a drop, a chest or the keykeeper. When adding an item, add at least
+  one of these in `gen_data.py`, the mob's `dropCustomDeathLoot` or `Shop`.
 - Dying costs the souls carried and nothing else: belongings are put back in their slots (`SoulMechanics.onPlayerDrops`).
 - Flask gulps and spell casts are kept as item wear whose last point is never spent ("broken" in the item definition
   means empty).
