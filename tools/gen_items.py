@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Item icons, item models and item definitions. Run from the repo root; pass a file name to also get a preview sheet."""
 import json
+import math
 import os
 import sys
 
@@ -687,12 +688,24 @@ def simple_definition(name, model=None):
     write_json(f'{A}/items/{name}.json', {'model': {'type': 'minecraft:model', 'model': f'{MOD}:item/{model or name}'}})
 
 
-BIG_DISPLAY = {
-    'thirdperson_righthand': {'rotation': [0, -90, 55], 'translation': [0, 9.5, 1.5], 'scale': [1.7, 1.7, 0.85]},
-    'thirdperson_lefthand': {'rotation': [0, 90, -55], 'translation': [0, 9.5, 1.5], 'scale': [1.7, 1.7, 0.85]},
-    'firstperson_righthand': {'rotation': [0, -90, 25], 'translation': [1.13, 6.5, 1.13], 'scale': [1.3, 1.3, 0.68]},
-    'firstperson_lefthand': {'rotation': [0, 90, -25], 'translation': [1.13, 6.5, 1.13], 'scale': [1.3, 1.3, 0.68]},
-}
+def big_display(grip):
+    """How a 32x32 weapon is held. It is drawn at twice the size of an ordinary one, so the place where the hand closes
+    (`grip`, in texture pixels from the bottom left corner) has to be brought back into the hand: the game's own
+    "handheld" entry assumes the grip of a 16x16 sword."""
+    out = {}
+    for view, tilt, move, scale, plain in (('thirdperson', 55, (0, 4.0, 0.5), 1.7, 0.85), ('firstperson', 25, (1.13, 3.2, 1.13), 1.0, 0.68)):
+        ours = (grip / 2.0 - 8.0) * scale          # the grip, from the middle of the item, in sixteenths of a block
+        vanilla = (2.5 - 8.0) * plain
+        d = vanilla - ours
+        a = math.radians(tilt)
+        along, up = d * (math.cos(a) - math.sin(a)), d * (math.sin(a) + math.cos(a))
+        t = [round(move[0], 2), round(move[1] + up, 2), round(move[2] + along, 2)]
+        for hand, sign in (('righthand', 1), ('lefthand', -1)):
+            out[f'{view}_{hand}'] = {'rotation': [0, -90 * sign, tilt * sign], 'translation': t, 'scale': [scale, scale, plain]}
+    return out
+
+
+BIG_GRIP = {'rust_greatsword': 5.5, 'great_key': 10.5}
 
 if __name__ == '__main__':
     os.makedirs(f'{A}/textures/item', exist_ok=True)
@@ -701,7 +714,7 @@ if __name__ == '__main__':
         model = {'parent': 'minecraft:item/handheld' if name in HANDHELD or name in BIG else 'minecraft:item/generated',
                  'textures': {'layer0': f'{MOD}:item/{name}'}}
         if name in BIG:
-            model['display'] = BIG_DISPLAY
+            model['display'] = big_display(BIG_GRIP[name])
         if name.startswith('short_bow'):
             model['parent'] = 'minecraft:item/bow'
         write_json(f'{A}/models/item/{name}.json', model)

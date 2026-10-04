@@ -3,9 +3,11 @@ package com.keykeeper.dushi.client;
 import com.keykeeper.dushi.Dushi;
 import com.keykeeper.dushi.entity.WitheredEntity;
 
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.HumanoidArm;
 
 public class WitheredRenderer extends HumanoidMobRenderer<WitheredEntity, SoulsRenderState, WitheredModel> {
     private final Identifier texture;
@@ -26,6 +28,11 @@ public class WitheredRenderer extends HumanoidMobRenderer<WitheredEntity, SoulsR
         state.attackId = entity.attackId();
         state.attackTime = entity.attackTime + partialTicks;
         state.armed = !entity.getMainHandItem().isEmpty();
+    }
+
+    @Override
+    protected HumanoidModel.ArmPose getArmPose(WitheredEntity entity, HumanoidArm arm) {
+        return ArmPoses.of(entity, arm);
     }
 
     @Override

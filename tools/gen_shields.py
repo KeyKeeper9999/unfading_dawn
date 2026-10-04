@@ -6,6 +6,8 @@ import math
 import os
 import sys
 
+import numpy as np
+
 from jsonmodel import JsonModel
 from modelkit import blotch, mix, shade, sheet
 
@@ -24,23 +26,153 @@ RED_D = (88, 30, 30)
 GOLD = (204, 184, 128)
 LEATHER = (92, 62, 40)
 
-# How the shield sits in the hand. The decorated side of the model looks south; these turn it to face away from the body.
-DISPLAY = {
-    'thirdperson_righthand': {'rotation': [0, 90, 0], 'translation': [3, 1, -1], 'scale': [1.0, 1.0, 1.0]},
-    'thirdperson_lefthand': {'rotation': [0, 90, 0], 'translation': [3, 1, -1], 'scale': [1.0, 1.0, 1.0]},
-    'firstperson_righthand': {'rotation': [0, 100, 0], 'translation': [3, 0, -2], 'scale': [1.0, 1.0, 1.0]},
-    'firstperson_lefthand': {'rotation': [0, 100, 0], 'translation': [3, 0, -2], 'scale': [1.0, 1.0, 1.0]},
-    'gui': {'rotation': [0, 205, 0], 'translation': [0, 0, 0], 'scale': [0.9, 0.9, 0.9]},
-    'ground': {'rotation': [0, 0, 0], 'translation': [0, 3, 0], 'scale': [0.5, 0.5, 0.5]},
-    'fixed': {'rotation': [0, 180, 0], 'translation': [0, 0, 0], 'scale': [1.0, 1.0, 1.0]},
-}
-BLOCKING = dict(DISPLAY)
-BLOCKING.update({
-    'thirdperson_righthand': {'rotation': [0, 60, 0], 'translation': [2, 3, 2], 'scale': [1.0, 1.0, 1.0]},
-    'thirdperson_lefthand': {'rotation': [0, 60, 0], 'translation': [2, 3, 2], 'scale': [1.0, 1.0, 1.0]},
-    'firstperson_righthand': {'rotation': [0, 150, 0], 'translation': [-4, 2, -3], 'scale': [1.1, 1.1, 1.1]},
-    'firstperson_lefthand': {'rotation': [0, 150, 0], 'translation': [-4, 2, -3], 'scale': [1.1, 1.1, 1.1]},
-})
+# ---------------------------------------------------------------- how the shield sits in the hand
+#
+# The game draws a held item like this (entity model space: 16 units per block, y down, the front of the body is -z,
+# the right arm is at -x):
+#     arm pose . rotate x -90 . rotate y 180 . move to the hand . [display: move, rotate x-y-z, scale] . model centred
+# For the left hand the display's x move and its y and z rotations are negated, which mirrors a symmetrical model.
+# Below, the wanted result is written down in body terms (which way is the shield's top, which way its face) and the
+# display entry is worked out from that, for an arm hanging down and for the arm raised the way the game raises it to block.
+
+def RX(deg):
+    a = math.radians(deg)
+    return np.array([[1, 0, 0], [0, math.cos(a), -math.sin(a)], [0, math.sin(a), math.cos(a)]])
+
+
+def RY(deg):
+    a = math.radians(deg)
+    return np.array([[math.cos(a), 0, math.sin(a)], [0, 1, 0], [-math.sin(a), 0, math.cos(a)]])
+
+
+def RZ(deg):
+    a = math.radians(deg)
+    return np.array([[math.cos(a), -math.sin(a), 0], [math.sin(a), math.cos(a), 0], [0, 0, 1]])
+
+
+def euler_xyz(r):
+    """Angles (degrees) a, b, c with RX(a) RY(b) RZ(c) = r, the order the display entry uses."""
+    b = math.asin(max(-1.0, min(1.0, r[0][2])))
+    a = math.atan2(-r[1][2], r[2][2])
+    c = math.atan2(-r[0][1], r[0][0])
+    return [round(math.degrees(v), 2) for v in (a, b, c)]
+
+
+def frame(up, face):
+    """Rotation that takes the model's +y to `up` and its decorated side (+z) to `face`."""
+    up = np.array(up, float) / np.linalg.norm(up)
+    face = np.array(face, float)
+    face = face - up * face.dot(up)
+    face /= np.linalg.norm(face)
+    return np.column_stack([np.cross(up, face), up, face])
+
+
+HAND = RX(-90) @ RY(180)                  # from the item's space to the arm's
+ARM_DOWN = np.eye(3)
+ARM_BLOCK = RY(-30) @ RX(-54)             # the right arm when blocking: raised forward and turned inward
+GRIP = 1.15                               # the grip is this far behind the middle of the plate
+
+UP = (0, -1, 0)
+FORWARD = np.array((0, 0, -1.0))
+OUTWARD = np.array((-1.0, 0, 0))          # for the right arm
+
+
+def turned(deg):
+    """Facing forward, turned outward (away from the body) by so many degrees."""
+    a = math.radians(deg)
+    return FORWARD * math.cos(a) + OUTWARD * math.sin(a)
+
+
+def third_person(arm, face, shift, scale=1.0):
+    """Display entry for the right hand: top up, face towards `face`, grip in the hand, then moved by `shift` (body space)."""
+    r = HAND.T @ arm.T @ frame(UP, face)
+    offset = GRIP * np.array(face) + np.array(shift, float)
+    t = HAND.T @ arm.T @ offset
+    return {'rotation': euler_xyz(r), 'translation': [round(float(v), 2) for v in t], 'scale': [scale] * 3}
+
+
+def first_person(turn, centre, scale):
+    """The right hand in first person: the item starts at (0.56, -0.52, -0.72) from the eye (x right, y up, -z ahead);
+    `centre` is where the middle of the shield should be instead. The back of the shield faces the eye."""
+    t = (np.array(centre) - np.array((0.56, -0.52, -0.72))) * 16
+    return {'rotation': [0, 180 - turn, 0], 'translation': [round(float(v), 2) for v in t], 'scale': [scale] * 3}
+
+
+def displays(blocking):
+    if blocking:
+        third = third_person(ARM_BLOCK, turned(8), (0, -2, 0))
+        first = first_person(4, (0.30, -0.40, -0.85), 0.85)
+    else:
+        third = third_person(ARM_DOWN, turned(28), (-2.0, -1.0, -1.0))
+        first = first_person(12, (0.78, -0.58, -0.92), 0.75)
+    return {
+        'thirdperson_righthand': third, 'thirdperson_lefthand': third,
+        'firstperson_righthand': first, 'firstperson_lefthand': first,
+        'gui': {'rotation': [0, 205, 0], 'translation': [0, 0, 0], 'scale': [0.9, 0.9, 0.9]},
+        'ground': {'rotation': [0, 0, 0], 'translation': [0, 3, 0], 'scale': [0.5, 0.5, 0.5]},
+        'fixed': {'rotation': [0, 180, 0], 'translation': [0, 0, 0], 'scale': [1.0, 1.0, 1.0]},
+    }
+
+
+DISPLAY = displays(False)
+BLOCKING = displays(True)
+
+
+# ---------------------------------------------------------------- a picture of a figure holding the shield
+
+def held_preview(model, blocking, left, view_yaw, size=(220, 300), zoom=7.0):
+    """A plain figure with the shield in the hand, placed by the same arithmetic as the game's (see above)."""
+    from PIL import Image, ImageDraw
+    entry = (BLOCKING if blocking else DISPLAY)['thirdperson_righthand']
+    k = -1 if left else 1
+    rot = entry['rotation']
+    r = RX(rot[0]) @ RY(k * rot[1]) @ RZ(k * rot[2])
+    t = np.array(entry['translation'], float) * (k, 1, 1)
+    arm = (ARM_BLOCK if blocking else ARM_DOWN)
+    if left:
+        mirror = np.diag([-1.0, 1.0, 1.0])
+        arm = mirror @ arm @ mirror
+    pivot = np.array((5.0 * (1 if left else -1), 2.0, 0.0))
+    hand = np.array((k * 1.0, 2.0, -10.0))          # (k/16, 0.125, -0.625) blocks
+
+    quads = []
+
+    def box(x0, y0, z0, x1, y1, z1, colour, place):
+        c = [(x, y, z) for x in (x0, x1) for y in (y0, y1) for z in (z0, z1)]
+        for idx in ((0, 1, 3, 2), (4, 5, 7, 6), (0, 1, 5, 4), (2, 3, 7, 6), (0, 2, 6, 4), (1, 3, 7, 5)):
+            quads.append(([place(np.array(c[i], float)) for i in idx], colour))
+
+    body = lambda p: p
+    box(-4, -8, -4, 4, 0, 4, (200, 170, 140), body)
+    box(-4, 0, -2, 4, 12, 2, (90, 110, 150), body)
+    box(-4, 12, -2, 0, 24, 2, (70, 70, 100), body)
+    box(0, 12, -2, 4, 24, 2, (60, 60, 90), body)
+    for side in (-1, 1):
+        a = arm if (side == 1) == left else (ARM_DOWN if not blocking else RX(-10))
+        pv = np.array((5.0 * side, 2.0, 0.0))
+        x0, x1 = (-3, 1) if side == -1 else (-1, 3)
+        box(x0, -2, -2, x1, 10, 2, (170, 140, 120), lambda p, a=a, pv=pv: pv + a @ p)
+    for e in model.elements:
+        colour = {'wood': WOOD, 'iron': IRON, 'leather': LEATHER, 'face': RED, 'plate': (84, 78, 78), 'rib': IRON_L}.get(e.mat, IRON)
+        box(*e.frm, *e.to, colour, lambda p: pivot + arm @ HAND @ (hand + t + r @ (p - 8.0)))
+
+    view = RY(view_yaw)
+    img = Image.new('RGB', size, (139, 139, 139))
+    draw = ImageDraw.Draw(img)
+    light = np.array((0.3, -0.8, -0.5))
+    light /= np.linalg.norm(light)
+    out = []
+    for pts, colour in quads:
+        cam = [view @ p for p in pts]
+        n = np.cross(cam[1] - cam[0], cam[3] - cam[0])
+        n = n / (np.linalg.norm(n) + 1e-9)
+        shade_k = 0.55 + 0.45 * abs(n.dot(view @ light))
+        depth = sum(c[2] for c in cam) / 4
+        out.append((depth, [(size[0] / 2 + c[0] * zoom, size[1] * 0.42 + c[1] * zoom) for c in cam], tuple(int(v * shade_k) for v in colour)))
+    # the viewer stands in front of the figure (at -z), so the farthest faces have the largest z
+    for depth, poly, colour in sorted(out, key=lambda q: -q[0]):
+        draw.polygon(poly, fill=colour, outline=(30, 30, 30))
+    return img
 
 
 def write_json(path, data):
@@ -186,9 +318,11 @@ def tower_shield():
 
 if __name__ == '__main__':
     shots = []
+    held = []
     for name, build in (('plank_shield', plank_shield), ('round_shield', round_shield), ('guard_shield', guard_shield), ('tower_shield', tower_shield)):
         m = build()
         m.display = DISPLAY
+        m.gui_light = 'front'
         m.save(A, f'item/{name}', f'item/{name}')
         # the same boxes with another position in the hand while blocking
         write_json(f'{A}/models/item/{name}_blocking.json', {'parent': f'{MOD}:item/{name}', 'display': BLOCKING})
@@ -198,5 +332,7 @@ if __name__ == '__main__':
             'on_false': {'type': 'minecraft:model', 'model': f'{MOD}:item/{name}'}}})
         shots.append(m.render(size=(220, 300), zoom=11, yaw=math.radians(180 + 25), pitch=0.1))
         shots.append(m.render(size=(220, 300), zoom=11, yaw=math.radians(-30), pitch=0.1))
+        held.extend([held_preview(m, False, True, 0), held_preview(m, False, True, 55), held_preview(m, True, True, 0), held_preview(m, True, True, -60)])
     if len(sys.argv) > 1:
         sheet(shots, 8).save(sys.argv[1])
+        sheet(held, 8).save(sys.argv[1].replace('.png', '_held.png'))

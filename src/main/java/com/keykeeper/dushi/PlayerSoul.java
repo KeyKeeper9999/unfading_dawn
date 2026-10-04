@@ -75,6 +75,9 @@ public final class PlayerSoul {
             soul.stamina = ByteBufCodecs.FLOAT.decode(buffer);
             soul.regenPause = ByteBufCodecs.VAR_INT.decode(buffer);
             soul.lostSouls = ByteBufCodecs.VAR_INT.decode(buffer);
+            // The roll travels too: the copy that arrives replaces the client's own, and must not cut its roll short.
+            soul.rollTicks = ByteBufCodecs.VAR_INT.decode(buffer);
+            soul.rollCooldown = ByteBufCodecs.VAR_INT.decode(buffer);
             return soul;
         }
 
@@ -87,6 +90,8 @@ public final class PlayerSoul {
             ByteBufCodecs.FLOAT.encode(buffer, soul.stamina);
             ByteBufCodecs.VAR_INT.encode(buffer, soul.regenPause);
             ByteBufCodecs.VAR_INT.encode(buffer, soul.lostSouls);
+            ByteBufCodecs.VAR_INT.encode(buffer, soul.rollTicks);
+            ByteBufCodecs.VAR_INT.encode(buffer, soul.rollCooldown);
         }
     };
 

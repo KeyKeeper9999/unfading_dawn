@@ -6,11 +6,15 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-/** A shield of the mod: blocking with it costs stamina, less the more stable the shield is. */
-public class GuardShieldItem extends Item {
+/**
+ * A shield of the mod: blocking with it costs stamina, less the more stable the shield is.
+ * It is a ShieldItem so that the game holds it like a shield in first person instead of like a blocking sword.
+ */
+public class GuardShieldItem extends ShieldItem {
     /** Share of a blocked blow's force that does not cost stamina, 0..1. */
     public final float stability;
 

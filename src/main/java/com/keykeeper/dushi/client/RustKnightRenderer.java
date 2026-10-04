@@ -4,9 +4,11 @@ import com.keykeeper.dushi.Dushi;
 import com.keykeeper.dushi.entity.RustKnightEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.HumanoidArm;
 
 public class RustKnightRenderer extends HumanoidMobRenderer<RustKnightEntity, SoulsRenderState, RustKnightModel> {
     private static final Identifier TEXTURE = Dushi.id("textures/entity/rust_knight.png");
@@ -33,6 +35,11 @@ public class RustKnightRenderer extends HumanoidMobRenderer<RustKnightEntity, So
     @Override
     protected void scale(SoulsRenderState state, PoseStack poseStack) {
         poseStack.scale(SIZE, SIZE, SIZE);
+    }
+
+    @Override
+    protected HumanoidModel.ArmPose getArmPose(RustKnightEntity entity, HumanoidArm arm) {
+        return ArmPoses.of(entity, arm);
     }
 
     @Override

@@ -50,6 +50,7 @@ class JsonModel:
         self.extra_textures = {}       # key -> resource location, for faces that use a vanilla texture
         self.display = None
         self.parent = None
+        self.gui_light = None          # 'front' lights an item in a slot from the front, like a flat icon
 
     def add(self, *args, **kwargs):
         e = Element(*args, **kwargs)
@@ -117,6 +118,8 @@ class JsonModel:
             out['parent'] = self.parent
         out['textures'] = textures
         out['elements'] = elements
+        if self.gui_light:
+            out['gui_light'] = self.gui_light
         if self.display:
             out['display'] = self.display
         return out

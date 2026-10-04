@@ -15,6 +15,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -174,7 +175,7 @@ public final class SoulMechanics {
                 player.setSprinting(false);
             }
         }
-        if (wasRolling && soul.rollTicks == 0) {
+        if (soul.rollTicks == 0 && (wasRolling || player.getForcedPose() == Pose.SWIMMING)) {
             player.setForcedPose(null);
         }
         // The client counts by itself between these corrections.
