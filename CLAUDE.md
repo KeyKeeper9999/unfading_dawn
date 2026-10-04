@@ -16,7 +16,7 @@ Nothing can be built on a machine without access to the NeoForge and Mojang serv
   golems, drills every move of every mob, drives a stand-in player through souls, levelling, the flask, spells, the hearth,
   the shop and death, prints `DUSHI SELFTEST ...` lines and stops the server;
 - `shots/*.png` and `client.log` - only if the file `.ci/client` exists: the real client is started under xvfb with
-  `DUSHI_CLIENTTEST=1`; `client/ClientSelfTest.java` makes a flat world, lines up mobs, blocks and items, takes screenshots
+  `DUSHI_CLIENTTEST=1`; `client/ClientSelfTest.java` makes a world, lines up mobs, blocks and items, takes screenshots
   and quits. This is how the look of the mod is checked. It adds about five minutes to the run. The client renders in
   software there, a few frames a second, so a picture of a move is taken with the move frozen at a chosen tick
   (`attack(type, id, tick)` in the script) - never by timing. The script also presses the real roll key, dies, respawns
