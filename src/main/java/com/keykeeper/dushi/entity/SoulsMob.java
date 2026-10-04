@@ -60,6 +60,8 @@ public abstract class SoulsMob extends Monster {
     private static final int MUSIC_LENGTH = 960;
     /** How far from its mark a mob of the stockade strays before it turns back. */
     private static final double HOME_RANGE = 14.0;
+    private static final double BAR_NEAR = 12.0;
+    private static final double BAR_RANGE = 40.0;
     private int musicTicks;
 
     private ServerBossEvent bossBar;
@@ -426,11 +428,31 @@ public abstract class SoulsMob extends Monster {
         }
     }
 
+    /**
+     * The bar is shown to those the boss is fighting or who stand in front of it, not to everyone who can see the building:
+     * to players within {@link #BAR_RANGE} while it has a target, and to anyone within {@link #BAR_NEAR} at any time.
+     */
+    private void updateBossBar(ServerLevel level) {
+        ServerBossEvent bar = this.bossBar();
+        boolean fighting = this.getTarget() != null && this.isAlive();
+        for (ServerPlayer player : level.players()) {
+            double distance = player.distanceToSqr(this);
+            boolean show = this.isAlive() && (distance < BAR_NEAR * BAR_NEAR || (fighting && distance < BAR_RANGE * BAR_RANGE));
+            if (show != bar.getPlayers().contains(player)) {
+                if (show) {
+                    bar.addPlayer(player);
+                } else {
+                    bar.removePlayer(player);
+                }
+            }
+        }
+    }
+
     @Override
-    public void startSeenByPlayer(ServerPlayer player) {
-        super.startSeenByPlayer(player);
-        if (this.isBoss()) {
-            this.bossBar().addPlayer(player);
+    public void tick() {
+        super.tick();
+        if (this.isBoss() && this.tickCount % 10 == 1 && this.level() instanceof ServerLevel level) {
+            this.updateBossBar(level);
         }
     }
 

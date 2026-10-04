@@ -189,7 +189,7 @@ COLOURS = [
     ('mob_mark', (230, 60, 50)), ('hearth', (255, 150, 40)), ('fog_gate', (235, 235, 245)),
     ('mossy', (104, 122, 98)), ('cracked_stone', (112, 112, 112)), ('stone_brick', (128, 128, 128)), ('cobblestone', (116, 112, 108)),
     ('deepslate', (72, 72, 78)), ('polished_andesite', (140, 142, 142)), ('andesite', (130, 132, 132)), ('gravel', (128, 122, 120)),
-    ('coarse_dirt', (120, 86, 60)), ('dirt', (130, 94, 66)), ('iron_bars', (90, 92, 98)), ('chain', (70, 72, 80)), ('lantern', (255, 214, 110)),
+    ('packed_mud', (120, 86, 60)), ('dirt', (130, 94, 66)), ('iron_bars', (90, 92, 98)), ('chain', (70, 72, 80)), ('lantern', (255, 214, 110)),
     ('hay', (190, 160, 50)), ('planks', (160, 128, 78)), ('oak', (140, 110, 66)), ('spruce', (104, 78, 46)), ('barrel', (128, 96, 56)),
     ('cobweb', (220, 220, 224)), ('blackstone', (44, 40, 48)), ('candle', (240, 220, 160)), ('ladder', (150, 120, 70)), ('skull', (210, 210, 200)),
     ('cauldron', (60, 60, 64)), ('glass', (150, 60, 60)), ('carpet', (120, 44, 40)), ('wool', (120, 44, 40)), ('bone', (220, 216, 200)),
@@ -213,8 +213,9 @@ def brick(x, y, z):
 
 
 def yard_ground(x, y, z):
+    # trodden earth: nothing the game could plant a tree or grass on
     n = noise(x, 0, z, 3)
-    return 'minecraft:coarse_dirt' if n < 0.55 else ('minecraft:gravel' if n < 0.8 else 'minecraft:cobblestone')
+    return 'minecraft:packed_mud' if n < 0.55 else ('minecraft:gravel' if n < 0.8 else 'minecraft:cobblestone')
 
 
 def path_ground(x, y, z):
@@ -419,7 +420,7 @@ def outpost():
     W, H, D = 13, 13, 16
     b = Build('outpost', W, H, D)
     b.fill(0, 1, 0, W - 1, H - 1, D - 1, AIR)
-    b.fill(0, 0, 0, W - 1, 0, D - 1, lambda x, y, z: yard_ground(x, y, z) if noise(x, 0, z, 9) < 0.8 else 'minecraft:grass_block')
+    b.fill(0, 0, 0, W - 1, 0, D - 1, yard_ground)
     # a square watchtower, its top long since fallen in
     b.box(3, 0, 5, 9, 10, 11, brick)
     b.fill(4, 0, 6, 8, 0, 10, room_floor)

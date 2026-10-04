@@ -141,8 +141,8 @@ def structure(plan):
 
 
 STRUCTURE_SETS = {
-    # a stockade every half a thousand blocks or so, outposts far more often but never right beside a stockade
-    'stockades': {'placement': {'type': 'minecraft:random_spread', 'salt': 918273645, 'spacing': 34, 'separation': 14},
+    # a stockade every few hundred blocks where the land allows (many places are too steep or too wet), outposts far more often but never right beside a stockade
+    'stockades': {'placement': {'type': 'minecraft:random_spread', 'salt': 918273645, 'spacing': 24, 'separation': 10},
                   'structures': [{'structure': f'{MOD}:stockade', 'weight': 1}]},
     'outposts': {'placement': {'type': 'minecraft:random_spread', 'salt': 564738291, 'spacing': 14, 'separation': 6,
                                'exclusion_zone': {'other_set': f'{MOD}:stockades', 'chunk_count': 6}},

@@ -8,7 +8,7 @@ minecraft:cobblestone
 minecraft:cracked_deepslate_tiles
 minecraft:deepslate_tiles
 minecraft:polished_deepslate
-minecraft:coarse_dirt
+minecraft:packed_mud
 minecraft:gravel
 minecraft:mossy_cobblestone
 minecraft:polished_andesite

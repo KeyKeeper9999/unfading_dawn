@@ -18,8 +18,6 @@ import net.minecraft.world.level.levelgen.structure.StructureType;
 public class PlanStructure extends Structure {
     public static final MapCodec<PlanStructure> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             settingsCodec(i), Codec.STRING.fieldOf("plan").forGetter(structure -> structure.plan)).apply(i, PlanStructure::new));
-    /** The ground under the building may differ by this much at most; steeper places are passed over. */
-    private static final int MAX_SLOPE = 7;
 
     private final String plan;
 
@@ -49,7 +47,10 @@ public class PlanStructure extends Structure {
             }
         }
         Arrays.sort(heights);
-        if (heights[heights.length - 1] - heights[0] > MAX_SLOPE) {
+        // The ground under the building may differ by this much at most; steeper places are passed over. A small building
+        // is fussier: a tower cut into a hillside looks wrong, a large yard hides a slope.
+        int maxSlope = 3 + Math.max(plan.width, plan.depth) / 14;
+        if (heights[heights.length - 1] - heights[0] > maxSlope) {
             return Optional.empty();
         }
         // the middle one of the five: the floor neither hangs in the air nor is dug deep into a slope

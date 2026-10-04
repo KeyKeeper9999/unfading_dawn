@@ -545,8 +545,8 @@ public final class ClientSelfTest {
         view("41_outpost_hearth", 12, 5, -6, 6, 1, 3);
         view("42_outpost_inside", 6, 2, 10, 5, 2, 6);
         building("stockade", 43);
-        view("43_stockade_from_south", 34, 22, 84, 22, 2, 30);
-        view("44_stockade_gate", 22, 3, 66, 22, 3, 50);
+        view("43_stockade_from_south", 36, 24, 80, 22, 2, 30);
+        view("44_stockade_gate", 23, 9, 70, 22, 3, 56);
         view("45_stockade_keeper_room", 16.5, 2.6, 51.5, 10, 1.5, 53.5);
         view("46_stockade_yard", 22.5, 4, 48, 22, 3, 20);
         view("47_stockade_cells", 10.5, 2.6, 42, 8, 2, 24);
@@ -587,8 +587,8 @@ public final class ClientSelfTest {
             player.getAbilities().flying = true;
             player.onUpdateAbilities();
         });
-        // the land round it has to be made and drawn before the first picture
-        pause(200);
+        // the land round it has to be made and drawn before the first picture; drawing is slow here
+        pause(500);
     }
 
     /** A picture taken from one cell of the building's plan, looking at another. */
