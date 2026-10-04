@@ -78,7 +78,7 @@ public enum Spell {
                     level.sendParticles(ParticleTypes.CLOUD, caster.getX() + Math.cos(angle) * 1.2, caster.getY() + 1.0, caster.getZ() + Math.sin(angle) * 1.2,
                             0, Math.cos(angle), 0.05, Math.sin(angle), 0.45);
                 }
-                level.sendParticles(ParticleTypes.FLASH, caster.getX(), caster.getY() + 1.0, caster.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
+                level.sendParticles(net.minecraft.core.particles.ColorParticleOption.create(ParticleTypes.FLASH, 0xFFFFFFFF), caster.getX(), caster.getY() + 1.0, caster.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
                 sound(level, caster, "item.spell.rebuke", 1.2F, 1.0F);
             }
             case FIRE_ORB -> {

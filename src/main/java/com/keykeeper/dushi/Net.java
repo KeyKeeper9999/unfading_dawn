@@ -68,23 +68,27 @@ public final class Net {
         }
 
         public static void handle(LevelUp payload, IPayloadContext context) {
-            if (!(context.player() instanceof ServerPlayer player) || payload.stat() < 0 || payload.stat() >= PlayerSoul.STAT_COUNT) {
-                return;
+            if (context.player() instanceof ServerPlayer player) {
+                apply(player, payload.stat());
             }
-            if (!nearLitHearth(player)) {
+        }
+
+        /** Trains one point of {@code stat} if the player stands by a lit hearth and can pay. */
+        public static void apply(ServerPlayer player, int stat) {
+            if (stat < 0 || stat >= PlayerSoul.STAT_COUNT || !nearLitHearth(player)) {
                 return;
             }
             PlayerSoul soul = PlayerSoul.of(player);
             int cost = soul.levelCost();
-            if (soul.stats[payload.stat()] >= PlayerSoul.STAT_CAP || (soul.souls < cost && !player.isCreative())) {
+            if (soul.stats[stat] >= PlayerSoul.STAT_CAP || (soul.souls < cost && !player.isCreative())) {
                 return;
             }
             if (!player.isCreative()) {
                 soul.souls -= cost;
             }
-            soul.stats[payload.stat()]++;
+            soul.stats[stat]++;
             soul.applyAttributes(player);
-            if (payload.stat() == PlayerSoul.VITALITY) {
+            if (stat == PlayerSoul.VITALITY) {
                 player.heal(2.0F);
             }
             soul.stamina = soul.maxStamina();

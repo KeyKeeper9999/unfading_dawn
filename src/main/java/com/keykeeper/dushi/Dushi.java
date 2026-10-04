@@ -122,7 +122,7 @@ public class Dushi {
     /** A wall of fog: players walk through it, nothing else does. */
     public static final DeferredBlock<FogGateBlock> FOG_GATE = BLOCKS.registerBlock("fog_gate", FogGateBlock::new,
             props -> props.mapColor(MapColor.SNOW).strength(-1.0F, 3600000.0F).noOcclusion().noLootTable().sound(SoundType.WOOL)
-                    .lightLevel(state -> 6).isSuffocating((state, level, pos) -> false).isViewBlocking((state, level, pos) -> false));
+                    .lightLevel(state -> 6).isSuffocating((state, level, pos) -> false));
     public static final DeferredItem<BlockItem> FOG_GATE_ITEM = ITEMS.registerSimpleBlockItem(FOG_GATE);
 
     // ------------------------------------------------------------------ weapons

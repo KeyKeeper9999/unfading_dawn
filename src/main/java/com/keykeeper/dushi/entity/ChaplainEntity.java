@@ -215,7 +215,7 @@ public class ChaplainEntity extends SoulsMob {
                 }
                 if (time == WRATH_BURST) {
                     this.hitAround(level, this.position(), WRATH_RADIUS, 12.0F, 2.0, this.damageSources().indirectMagic(this, this));
-                    level.sendParticles(ParticleTypes.FLASH, this.getX(), this.getY() + 1.5, this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
+                    level.sendParticles(net.minecraft.core.particles.ColorParticleOption.create(ParticleTypes.FLASH, 0xFFFFFFFF), this.getX(), this.getY() + 1.5, this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
                     for (int i = 0; i < 36; i++) {
                         double angle = i * Math.PI * 2.0 / 36.0;
                         level.sendParticles(ParticleTypes.CLOUD, this.getX() + Math.cos(angle) * 1.5, this.getY() + 1.0, this.getZ() + Math.sin(angle) * 1.5,

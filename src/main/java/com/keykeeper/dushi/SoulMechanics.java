@@ -78,17 +78,7 @@ public final class SoulMechanics {
             return;
         }
         if (victim instanceof ServerPlayer player) {
-            PlayerSoul soul = PlayerSoul.of(player);
-            soul.stainGeneration++;
-            soul.lostSouls = soul.souls;
-            if (soul.souls > 0) {
-                SoulStainEntity.drop(level, player, soul.souls, soul.stainGeneration);
-                soul.souls = 0;
-            }
-            soul.rollTicks = 0;
-            player.setForcedPose(null);
-            player.syncData(Dushi.PLAYER_SOUL);
-            PacketDistributor.sendToPlayer(player, new Net.Banner("", Net.Banner.RED, "ui.death"));
+            onPlayerDeath(level, player);
             return;
         }
         int souls = soulsFor(victim);
@@ -106,6 +96,21 @@ public final class SoulMechanics {
             giveSouls(player, souls);
             level.sendParticles(ParticleTypes.SOUL, victim.getX(), victim.getY() + victim.getBbHeight() * 0.5, victim.getZ(), 5, 0.2, 0.3, 0.2, 0.02);
         }
+    }
+
+    /** The souls carried stay where the player fell; an older stain of theirs, if any, is lost for good. */
+    public static void onPlayerDeath(ServerLevel level, ServerPlayer player) {
+        PlayerSoul soul = PlayerSoul.of(player);
+        soul.stainGeneration++;
+        soul.lostSouls = soul.souls;
+        if (soul.souls > 0) {
+            SoulStainEntity.drop(level, player, soul.souls, soul.stainGeneration);
+            soul.souls = 0;
+        }
+        soul.rollTicks = 0;
+        player.setForcedPose(null);
+        player.syncData(Dushi.PLAYER_SOUL);
+        PacketDistributor.sendToPlayer(player, new Net.Banner("", Net.Banner.RED, "ui.death"));
     }
 
     // ------------------------------------------------------------------ joining and respawning
