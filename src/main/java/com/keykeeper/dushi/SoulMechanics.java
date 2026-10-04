@@ -34,6 +34,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BlocksAttacks;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -48,6 +49,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -169,6 +171,17 @@ public final class SoulMechanics {
     static void onClone(PlayerEvent.Clone event) {
         if (event.isWasDeath()) {
             event.getEntity().getInventory().replaceWith(event.getOriginal().getInventory());
+        }
+    }
+
+    /**
+     * Who may not build (a player of an adventure map) may not put things into a painted pot either: there would be no
+     * getting them out again without breaking it.
+     */
+    @SubscribeEvent
+    static void onUsePot(PlayerInteractEvent.RightClickBlock event) {
+        if (!event.getEntity().getAbilities().mayBuild && event.getLevel().getBlockState(event.getPos()).is(Blocks.DECORATED_POT)) {
+            event.setCanceled(true);
         }
     }
 

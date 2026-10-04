@@ -143,6 +143,9 @@ Things learnt the hard way:
 - `chiseled_sandstone` has a creeper's face on it; the city's stone is smooth and cut sandstone.
 - A fall of more than 24 blocks over an empty column kills at once (`SoulMechanics.ground`), so the edge of the map
   needs no walls; with natural regeneration switched off (as the map does) hunger is held full.
+- A block with a direction of its own must turn with the plan (`rotate`): the fog gate did not, and stood edge-on in
+  every doorway of the map. What is built late (corbels, lamps) can land in a stair: the check counts headroom.
+- Painted pots swallow what is put into them; a player who may not build cannot use them (`SoulMechanics.onUsePot`).
 - The hour is set once (`MapBuilder.SUNSET`) and time does not move; the hour was chosen by looking at pictures.
 
 Balance (see `tools/balance.py`): one clearing of the lower fortress brings a player to about level 10-12 before the

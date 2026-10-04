@@ -159,6 +159,7 @@ class Map(Build):
         self.seals = {}                # name -> cells
         self.fogs = {}
         self.census = {}               # zone -> {kind: count}
+        self.flights = []              # every cell of every stair a player climbs
         self.zone = '?'
 
     # ------------------------------------------------------------------ building blocks
@@ -208,6 +209,7 @@ class Map(Build):
             for c in across:
                 x, z = (c, a) if dz else (a, c)
                 self.set(x, y + 1 + i, z, stairs(stair_of(mat), facing))
+                self.flights.append((x, y + 1 + i, z))
                 if fill is not None:
                     for yy in range(fill, y + 1 + i):
                         self.set(x, yy, z, MATS[mat](x, yy, z))
@@ -397,6 +399,31 @@ class Map(Build):
             for z in range(z0, z1 + 1):
                 if self.free(x, y, z):
                     self.set(x, y, z, f'{MOD}:place_name[place={place}]')
+
+    def tree(self, x, y, z, height=5, salt=0):
+        """A small crooked tree that still has its leaves."""
+        leaf = 'minecraft:oak_leaves[persistent=true,distance=1]'
+        self.set(x, y - 1, z, 'minecraft:coarse_dirt')
+        self.fill(x, y, z, x, y + height - 1, z, 'minecraft:oak_log[axis=y]')
+        for dx in range(-2, 3):
+            for dz in range(-2, 3):
+                for dy in range(-1, 3):
+                    far = abs(dx) + abs(dz) + (2 if dy == 2 else 0) + (1 if dy == -1 else 0)
+                    if far <= 3 and hsh(x + dx, dy, z + dz, 90 + salt) < 0.86 and self.free(x + dx, y + height - 1 + dy, z + dz):
+                        self.set(x + dx, y + height - 1 + dy, z + dz, leaf)
+
+    def cart(self, x, y, z, load=()):
+        """A cart standing along x: a bed three long and two wide on wheels, its shafts on the ground before it."""
+        for dx in range(3):
+            for dz in range(2):
+                self.set(x + dx, y, z + dz, 'minecraft:spruce_slab[type=top]')
+        for dx in (0, 2):
+            self.set(x + dx, y, z - 1, 'minecraft:dark_oak_trapdoor[facing=north,half=bottom,open=true]')
+            self.set(x + dx, y, z + 2, 'minecraft:dark_oak_trapdoor[facing=south,half=bottom,open=true]')
+        for dz in range(2):
+            self.set(x + 3, y, z + dz, 'minecraft:spruce_fence')
+        for dx, dz, state in load:
+            self.set(x + dx, y + 1, z + dz, state)
 
     def sconce(self, x, y, z, lantern=LANTERN, arm='minecraft:polished_deepslate_wall'):
         """A lamp on an arm: the arm at y + 1 (it joins the wall beside it), the lamp hanging under it at y."""
@@ -1179,7 +1206,9 @@ def dress_lower(b):
     b.zone = 'ward'
     top = L1
     # corbels under the parapets, buttresses down the outer faces
-    b.cornice(19, 189, 109, 247, top, 'stone_brick')
+    b.cornice(19, 189, 109, 247, top, 'stone_brick', 'sew')
+    b.cornice(19, 189, 54, 189, top, 'stone_brick', 'n')     # not through the bridge tower: its stair comes up there
+    b.cornice(74, 189, 109, 189, top, 'stone_brick', 'n')
     for z in (199, 209, 219, 229, 239):
         b.buttress(19, z, L0 - 3, top - 2, 'west', 'grey')
         b.buttress(109, z, L0 - 3, top - 2, 'east', 'grey')
@@ -1236,6 +1265,23 @@ def dress_lower(b):
         b.banner(35, L0 + 6, z, 'east')
     for z in (212, 219):
         b.banner(93, L0 + 5, z, 'west')
+    # the yard is lived in: a few trees that outlasted the garrison, carts, firewood, a pen
+    for i, (x, z, h) in enumerate(((43, 205, 5), (54, 237, 6), (76, 203, 5), (90, 237, 5), (38, 236, 4), (88, 199, 6), (71, 216, 5))):
+        b.tree(x, L0 + 1, z, h, i)
+    hay, barrel = 'minecraft:hay_block[axis=x]', 'minecraft:barrel[facing=up]'
+    b.cart(50, L0 + 1, 203, ((0, 0, barrel), (1, 0, barrel), (0, 1, hay), (1, 1, hay), (2, 1, barrel)))
+    b.cart(73, L0 + 1, 209, ((0, 0, hay), (1, 0, hay), (1, 1, hay)))
+    b.cart(46, L0 + 1, 231, ((1, 0, barrel),))
+    for x, y, z in ((55, 1, 196), (56, 1, 196), (57, 1, 196), (55, 2, 196), (56, 2, 196), (89, 1, 230), (89, 1, 229), (89, 2, 230)):
+        b.set(x, L0 + y, z, 'minecraft:spruce_log[axis=x]' if z == 196 else 'minecraft:spruce_log[axis=z]')
+    for x in range(36, 42):                                   # a pen against the cells' wall
+        b.set(x, L0 + 1, 234, 'minecraft:spruce_fence') if b.free(x, L0 + 1, 234) else None
+    for z in range(229, 234):
+        b.set(41, L0 + 1, z, 'minecraft:spruce_fence') if z != 231 and b.free(41, L0 + 1, z) else None
+    b.set(37, L0 + 1, 232, hay)
+    b.set(36, L0 + 1, 231, 'minecraft:cauldron')
+    for x, z in ((80, 231), (53, 220), (70, 199), (45, 212)):
+        b.set(x, L0 + 1, z, 'minecraft:skeleton_skull[rotation=%d]' % ((x * 7 + z) % 16)) if b.free(x, L0 + 1, z) else None
     # the great bridge: two fires on its parapets
     for x in (59, 69):
         b.set(x, L1 + 1, 166, grey(x, L1 + 1, 166))
@@ -2002,6 +2048,13 @@ if __name__ == '__main__':
     shut = frozenset((x, y, 76) for x in (96, 97) for y in range(GAL + 1, GAL + 4))
     without, _, seen_shut = analyse(b, blocked=shut)
     inside = (CX, LC + 1, 60) in seen_shut
+    # nothing built later may stand in a stair: three clear cells over every step (a corbel once shut the bridge tower's)
+    for (x, y, z) in b.flights:
+        if 'stairs' in str(b.get(x, y, z)):
+            for h in (1, 2, 3):
+                above = b.get(x, y + h, z)
+                if above not in (None, AIR) and not any(k in str(above) for k in PASSABLE):
+                    print(f'  PROBLEM: the stair at {(x, y, z)} is shut by {above} {h} above it')
     dark, light_table = dark_places(b, seen)
     groups = {}
     for (x, y, z) in dark:
