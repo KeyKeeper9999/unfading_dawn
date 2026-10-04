@@ -29,6 +29,21 @@ flies to the nearest outpost and stockade and takes pictures from fixed places o
 
 `git fetch origin ci-out` and read the files; the commit message of `ci-out` names the commit of `main` it was built from.
 
+The map (see "The map" below) is built by the same workflow when `.ci/map` exists: a dedicated server is started in an
+empty world with `DUSHI_BUILDMAP=map/high_stockade.plan.txt`, `MapBuilder.java` sets the plan down, works the light out
+again, sets the rules of the world, saves and stops; the world folder is zipped. `ci-out` then also has:
+
+- `map.log` - `DUSHI MAP ...` lines: the size of the plan, what stands in the world (a count of block entities), and the
+  light read out at the places listed in `map/light.txt`;
+- `High_Stockade.zip` - the map as players get it (unpack into `saves`);
+- `mapclient.log` and `shots/m*.png` - only if `.ci/mapshots` exists: the client opens the saved world the way a player
+  would (`client/MapSelfTest.java`, `DUSHI_MAPTEST=map/views.txt`), says how a newcomer starts (`DUSHI MAPTEST ...`),
+  flies to every view of `map/views.txt` and takes a picture, then throws every lever and kills both bosses and says
+  what the doors and the seals did.
+
+`.ci/skip_server` skips the server self-test (to save minutes while only the map is worked on); delete it and restore
+`.ci/client` before finishing, so that everything is checked once together.
+
 Other switches: `.ci/dump_api` makes the workflow write `javap` signatures of the whole game to `ci-out/api/` (useful when
 moving to a new Minecraft version: names change a lot between versions); `.ci/ref.txt` lists class files to copy out.
 
@@ -37,6 +52,10 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `src/main/java/com/keykeeper/dushi/` - `Dushi` (all registries), `PlayerSoul` (souls, stats, stamina of a player; a data
   attachment synced to the player's own client), `SoulMechanics` (the rules: souls for kills, the stain on death, stamina,
   rolling through blows, backstabs, guard break), `Net` (messages), `Spell`, `Shop`.
+- `Forge` (the recipes of the old anvil: parts and souls), `block/ForgeBlock`, `client/ForgeScreen` (a plain list).
+- `block/FogGateBlock` - fog before a boss; `sealed=true` is the amber seal that lets nobody through until the boss of
+  that room dies (`lift` clears the nearest fog and every seal within reach of the boss's mark).
+- `MapBuilder` (build only) and `client/MapSelfTest` (build only) - see "The map".
 - `Gear` - what the rules know about any piece of gear, the game's own included: stamina cost, scaling and backstab of
   a weapon (by item tag for vanilla ones), stability of a shield, weight of everything worn or held, and the burden that
   follows from the weight (it decides the roll). `ArmorSet` - the mod's four suits and the gift of each.
@@ -56,7 +75,9 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   - `gen_structures.py` - the buildings, block by block, with top-down and isometric previews; bars, fences and walls
     are written already joined to their neighbours, because nothing joins them during world generation;
   - `gen_data.py` - recipes, chest loot, tags, structure and structure-set JSON;
-  - `check_assets.py` - checks that everything registered has its files and names.
+  - `check_assets.py` - checks that everything registered has its files and names;
+  - `gen_map.py` - the map (not run by `build_assets.sh`: `PYTHONPATH=tools python3 tools/gen_map.py [preview dir]`);
+  - `balance.py` - the sums of the map's progression (`PYTHONPATH=tools python3 tools/balance.py`).
 
   Never edit generated textures, models, `sounds.json` or the lang files by hand: change the generator and run it.
   Animations (`setupAnim`) are hand-written Java; when a rest pose changes, update the pose in the generator's preview too.
@@ -81,3 +102,42 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - Flask gulps and spell casts are kept as item wear whose last point is never spent ("broken" in the item definition
   means empty).
 - Before adding content, look at the previews; after adding, check `server.log` and the screenshots.
+
+## The map
+
+"Вышний Острог" (the High Stockade) is an adventure map for the mod: a lower fortress and an upper city on two rocks above
+the clouds, at an hour of evening that never ends. It is the mod's own place, in the spirit of the great sunlit cities of
+the genre and a copy of none of them. `tools/gen_map.py` builds it block by block into `map/high_stockade.plan.txt`
+(the same format as the buildings; about 650 thousand blocks) and writes `map/views.txt` and `map/light.txt`; the game
+turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the sunset.
+
+The way through: arrival bridge -> south gate (hearth, keykeeper, anvil) -> ward, cells, walls -> bridge tower (its
+ground door is opened from inside) -> great bridge -> gate hall (the Overseer; a seal behind him) -> square (hearth,
+anvil) -> cloister and chapter room / bell tower -> covered walk -> the cathedral's east gallery -> nave (postern and
+west door open shortcuts; sacristy hearth) -> crypt under the nave (optional, comes out in the alley behind the chapter
+room) -> choir (the Chaplain) -> treasury and terrace.
+
+`gen_map.py` ends with a check of the map as a place to play, and every change to the map must leave it clean:
+
+- it walks the map the way a player can (steps, jumps, drops, levers, seals lifted boss by boss) and reports what is
+  reached at each stage, chests and mobs nobody can reach, places that are traps (ledges whose only way out is the fall
+  into the void are listed, not counted as traps), and that the cathedral cannot be entered except by the covered walk;
+- it works out the light like the game does (its numbers matched the game's at every probe) and reports walkable
+  places that are too dark; halls that windows would fill get the game's unseen `minecraft:light` blocks (`ambient`);
+- previews: `map_iso.png`, and one top-down picture per storey with a dot on every reachable place (red where dark).
+
+Things learnt the hard way:
+
+- In a world whose game mode is adventure the game drops a newcomer through the floor of the spawn if the place is not
+  loaded yet (they fell into the void). `SoulMechanics.settle` puts them back on it at login and respawn.
+- Blocks set one by one into an empty world leave the light wrong (whole storeys black, or everything fully lit).
+  `MapBuilder` therefore relights every chunk after building (`initializeLight`, then `lightChunk`).
+- Rock is put only under what stands on the ground (`bedrock`): corbels and other overhangs must not grow rock.
+- `chiseled_sandstone` has a creeper's face on it; the city's stone is smooth and cut sandstone.
+- A fall of more than 24 blocks over an empty column kills at once (`SoulMechanics.ground`), so the edge of the map
+  needs no walls; with natural regeneration switched off (as the map does) hunger is held full.
+- The hour is set once (`MapBuilder.SUNSET`) and time does not move; the hour was chosen by looking at pictures.
+
+Balance (see `tools/balance.py`): one clearing of the lower fortress brings a player to about level 10-12 before the
+Overseer; one clearing of everything to about level 24 before the Chaplain, who is tuned for 26-28 - one more round of
+the cathedral and the crypt from the sacristy's hearth. When mobs, weapons or the map change, run it again.

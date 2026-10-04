@@ -110,6 +110,18 @@ t(f'message.{M}.souls_left', 'На месте гибели осталось ду
 t(f'banner.{M}.boss_defeated', 'ГАД ПОВЕРЖЕН', 'FIEND FELLED')
 t(f'banner.{M}.hearth_lit', 'ОЧАГ РАЗОЖЖЁН', 'HEARTH LIT')
 t(f'banner.{M}.souls_retrieved', 'ДУШИ ВОЗВРАЩЕНЫ', 'SOULS RETRIEVED')
+# the names of the places of the map, shown when a threshold is crossed
+t(f'place.{M}.stockade', 'ВЫШНИЙ ОСТРОГ', 'THE HIGH STOCKADE')
+t(f'place.{M}.ward', 'НИЖНИЙ ДВОР', 'THE LOWER WARD')
+t(f'place.{M}.bridge', 'ДОЛГИЙ МОСТ', 'THE LONG BRIDGE')
+t(f'place.{M}.hall', 'ПАЛАТА НАДЗИРАТЕЛЯ', "THE OVERSEER'S HALL")
+t(f'place.{M}.city', 'ЗАКАТНЫЙ ГОРОД', 'THE SUNSET CITY')
+t(f'place.{M}.garden', 'МЁРТВЫЙ САД', 'THE DEAD GARDEN')
+t(f'place.{M}.belfry', 'ЗВОННИЦА', 'THE BELFRY')
+t(f'place.{M}.cathedral', 'СОБОР ПОСЛЕДНЕГО СВЕТА', 'CATHEDRAL OF THE LAST LIGHT')
+t(f'place.{M}.crypt', 'КРИПТА ОСНОВАТЕЛЯ', "THE FOUNDER'S CRYPT")
+t(f'place.{M}.edge', 'КРАЙ МИРА', 'THE EDGE OF THE WORLD')
+t(f'block.{M}.place_name', 'Порог с именем места', 'Named Threshold')
 t(f'hud.{M}.lost', 'потеряно: %s', 'lost: %s')
 
 t(f'screen.{M}.shop', 'Товары ключника', "The Keykeeper's Wares")
@@ -173,7 +185,7 @@ SUBTITLES = {
     'entity.keykeeper.ambient': ('Ключник кашляет', 'Keykeeper coughs'), 'entity.keykeeper.give': ('Звенят ключи', 'Keys jingle'),
     'ui.death': ('Ты помер', 'You croaked'), 'ui.boss_defeated': ('Гад повержен', 'Fiend felled'), 'ui.hearth_lit': ('Очаг разгорается', 'Hearth flares up'),
     'ui.level_up': ('Сила прибывает', 'Strength grows'), 'ui.souls_gain': ('Души стекаются', 'Souls gather'),
-    'ui.souls_retrieve': ('Души возвращаются', 'Souls return'),
+    'ui.souls_retrieve': ('Души возвращаются', 'Souls return'), 'ui.place': ('Новое место', 'A new place'),
     'block.hearth.rest': ('Очаг греет', 'Hearth warms'), 'block.fog_gate.pass': ('Туман расступается', 'Fog parts'),
     'item.flask.drink': ('Глоток из фляги', 'A gulp from the flask'), 'item.flask.empty': ('Фляга пуста', 'Flask is empty'),
     'item.spell.shard': ('Осколок души летит', 'Soul shard flies'), 'item.spell.shard_hit': ('Осколок души бьёт', 'Soul shard strikes'),

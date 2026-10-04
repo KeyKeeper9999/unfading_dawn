@@ -340,6 +340,9 @@ d = 2.6
 S['ui/hearth_lit'] = reverb(place(d, (0.0, whoosh(0.9, 200, 1800, 0.3, 0.6) * 1.2), (0.1, lowpass(noise(1.2), 700) * env(1.2, 0.05, 1.0) * 0.6),
                                   (0.25, crackle(2.0, 35, 2500) * 0.35), (0.3, pad_chord((D3, A3), 2.2, 0.5, 1.3, 1800) * 0.9),
                                   (0.5, chime(D4 * 2, 1.4) * 0.3), (0.8, chime(A4 * 2, 1.4) * 0.25)), 1.2, 0.35, 0.8)
+d = 3.2
+S['ui/place'] = reverb(place(d, (0.0, pad_chord((D3, A3), 2.8, 0.9, 1.6, 1300) * 0.8), (0.0, tone(D2, d) * env(d, 0.8, 1.8) * 0.35),
+                             (0.35, bell(D3, 2.4) * 0.3), (0.9, choir((A3,), 2.0, 0.6, 1.2) * 0.35)), 1.6, 0.4, 0.9)
 d = 1.5
 S['ui/level_up'] = reverb(place(d, (0.0, chime(D4 * 2, 0.9) * 0.5), (0.13, chime(F4 * 2, 0.9) * 0.5), (0.26, chime(A4 * 2, 0.9) * 0.55),
                                 (0.39, chime(D4 * 4, 1.0) * 0.6), (0.0, pad_chord((D4, A4), d, 0.2, 0.9, 2400) * 0.5)), 1.0, 0.35, 0.6)
@@ -501,7 +504,7 @@ EVENTS = {
     'entity.keykeeper.ambient': ['keykeeper/ambient1', 'keykeeper/ambient2'],
     'entity.keykeeper.give': ['keykeeper/give'],
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],
-    'ui.souls_gain': ['ui/souls_gain'], 'ui.souls_retrieve': ['ui/souls_retrieve'],
+    'ui.souls_gain': ['ui/souls_gain'], 'ui.souls_retrieve': ['ui/souls_retrieve'], 'ui.place': ['ui/place'],
     'block.hearth.rest': ['block/hearth_rest'], 'block.fog_gate.pass': ['block/fog_gate_pass'],
     'item.flask.drink': ['item/flask_drink'], 'item.flask.empty': ['item/flask_empty'],
     'item.spell.shard': ['item/spell_shard'], 'item.spell.shard_hit': ['item/spell_shard_hit'], 'item.spell.mend': ['item/spell_mend'],

@@ -175,6 +175,12 @@
       "vsratie_dushi:ui/souls_retrieve"
     ]
   },
+  "ui.place": {
+    "subtitle": "subtitles.vsratie_dushi.ui.place",
+    "sounds": [
+      "vsratie_dushi:ui/place"
+    ]
+  },
   "block.hearth.rest": {
     "subtitle": "subtitles.vsratie_dushi.block.hearth.rest",
     "sounds": [

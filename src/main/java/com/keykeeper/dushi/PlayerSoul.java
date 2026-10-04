@@ -116,6 +116,9 @@ public final class PlayerSoul {
     /** Whether the keykeeper has already given this player his gift. */
     public boolean metKeykeeper;
 
+    /** The place whose name was last shown to the player (see PlaceNameBlock), -1 for none yet. Not saved, server only. */
+    public int place = -1;
+
     /** Where the player last stood on something, for a stain left by a fall into nothing. Not saved, server only. */
     public double groundX;
     public double groundY;

@@ -12,6 +12,7 @@ import com.keykeeper.dushi.block.ForgeBlock;
 import com.keykeeper.dushi.block.HearthBlock;
 import com.keykeeper.dushi.block.MobMarkBlock;
 import com.keykeeper.dushi.block.MobMarkBlockEntity;
+import com.keykeeper.dushi.block.PlaceNameBlock;
 import com.keykeeper.dushi.entity.ChaplainEntity;
 import com.keykeeper.dushi.entity.KeykeeperEntity;
 import com.keykeeper.dushi.entity.OverseerEntity;
@@ -105,7 +106,7 @@ public class Dushi {
             "entity.chaplain.ambient", "entity.chaplain.hurt", "entity.chaplain.death", "entity.chaplain.cast", "entity.chaplain.bell",
             "entity.chaplain.blink",
             "entity.keykeeper.ambient", "entity.keykeeper.give",
-            "ui.death", "ui.boss_defeated", "ui.hearth_lit", "ui.level_up", "ui.souls_gain", "ui.souls_retrieve",
+            "ui.death", "ui.boss_defeated", "ui.hearth_lit", "ui.level_up", "ui.souls_gain", "ui.souls_retrieve", "ui.place",
             "block.hearth.rest", "block.fog_gate.pass",
             "item.flask.drink", "item.flask.empty", "item.spell.shard", "item.spell.shard_hit", "item.spell.mend", "item.spell.rebuke",
             "item.spell.fire", "item.spell.fire_burst", "item.spell.fizzle",
@@ -147,6 +148,11 @@ public class Dushi {
             props -> props.mapColor(MapColor.COLOR_GRAY).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
                     .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.SAND));
     public static final DeferredItem<BlockItem> MOB_MARK_ITEM = ITEMS.registerSimpleBlockItem(MOB_MARK);
+
+    /** A threshold that names the place beyond it: see {@link PlaceNameBlock}. It has no item; maps set it with their builder. */
+    public static final DeferredBlock<PlaceNameBlock> PLACE_NAME = BLOCKS.registerBlock("place_name", PlaceNameBlock::new,
+            props -> props.mapColor(MapColor.NONE).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
+                    .pushReaction(PushReaction.IMMOVEABLE));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MobMarkBlockEntity>> MOB_MARK_ENTITY = BLOCK_ENTITIES.register("mob_mark",
             () -> new BlockEntityType<>(MobMarkBlockEntity::new, MOB_MARK.get()));
 

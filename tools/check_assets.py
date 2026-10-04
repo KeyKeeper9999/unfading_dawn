@@ -20,7 +20,7 @@ mobs = kinds + ['rust_knight', 'gilded_knight', 'keykeeper', 'overseer', 'chapla
 armour = re.findall(r'"((?:prisoner|guard|rust|chaplain)_\w+)"', open(f'{J}/ArmorSet.java').read())
 items |= set(armour)
 items |= set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate', 'mob_mark', 'forge'}
-blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge'}
+blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name'}
 entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot'}
 lang = {l: json.load(open(f'{A}/lang/{l}.json', encoding='utf-8')) for l in ('ru_ru', 'en_us')}
 

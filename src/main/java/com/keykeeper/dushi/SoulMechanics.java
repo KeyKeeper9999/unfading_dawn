@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.keykeeper.dushi.block.MobMarkBlockEntity;
+import com.keykeeper.dushi.block.PlaceNameBlock;
 import com.keykeeper.dushi.entity.SoulStainEntity;
 import com.keykeeper.dushi.entity.SoulsMob;
 import com.keykeeper.dushi.item.FlaskItem;
@@ -33,6 +34,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BlocksAttacks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.core.component.DataComponents;
@@ -275,6 +277,15 @@ public final class SoulMechanics {
                 weighDown(serverPlayer);
             }
             ground(serverPlayer, soul);
+            // A threshold crossed: the name of the place, once, until another place has been named.
+            BlockState at = serverPlayer.level().getBlockState(serverPlayer.blockPosition());
+            if (at.getBlock() instanceof PlaceNameBlock) {
+                PlaceNameBlock.Place place = at.getValue(PlaceNameBlock.PLACE);
+                if (soul.place != place.ordinal()) {
+                    soul.place = place.ordinal();
+                    PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("place.vsratie_dushi." + place.id, Net.Banner.PALE, "ui.place"));
+                }
+            }
             // The client counts by itself between these corrections.
             if (player.tickCount % 40 == 0) {
                 serverPlayer.syncData(Dushi.PLAYER_SOUL);

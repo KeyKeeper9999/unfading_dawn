@@ -16,7 +16,7 @@ import gen_structures
 from gen_structures import AIR, COLOURS, MOD, Build
 
 # things a wall or a fence does not join, on top of the list the buildings use
-gen_structures.THIN += ('banner', 'campfire', 'leaves', 'decorated_pot', 'slab', 'trapdoor', 'carpet')
+gen_structures.THIN += ('banner', 'campfire', 'leaves', 'decorated_pot', 'slab', 'trapdoor', 'carpet', 'place_name', 'minecraft:light')
 
 OUT = 'map/high_stockade.plan.txt'
 W, H, D = 129, 152, 272
@@ -389,6 +389,14 @@ class Map(Build):
             for dx, dz in ((1, 1), (-1, 1), (1, -1), (-1, -1)):
                 if self.free(x + dx, y + h, z + dz):
                     self.set(x + dx, y + h, z + dz, leaf)
+
+    def threshold(self, place, x0, y, z0, x1, z1):
+        """A threshold across a way in: whoever steps through it is shown the name of the place (the mod's place_name
+        block, which is neither seen nor felt). Two cells deep, so that nobody runs through it between two looks."""
+        for x in range(x0, x1 + 1):
+            for z in range(z0, z1 + 1):
+                if self.free(x, y, z):
+                    self.set(x, y, z, f'{MOD}:place_name[place={place}]')
 
     def sconce(self, x, y, z, lantern=LANTERN, arm='minecraft:polished_deepslate_wall'):
         """A lamp on an arm: the arm at y + 1 (it joins the wall beside it), the lamp hanging under it at y."""
@@ -1392,6 +1400,27 @@ def lighting(b):
         b.set(61, L2 + 5, z, LANTERN) if b.free(61, L2 + 5, z) and not b.free(61, L2 + 6, z) else None
 
 
+def thresholds(b):
+    """Where the names of the places are shown."""
+    b.threshold('stockade', 61, L0 + 1, 258, 67, 259)             # a few steps from where the player wakes
+    b.threshold('ward', 61, L0 + 1, 237, 67, 238)                 # out of the south gate
+    b.threshold('ward', 62, L0 + 1, 197, 66, 198)                 # and back out of the bridge tower's door
+    b.threshold('bridge', 60, L1 + 1, 181, 68, 182)
+    b.threshold('bridge', 60, L1 + 1, 152, 68, 153)
+    b.threshold('hall', 62, L1 + 1, 147, 66, 148)
+    b.threshold('hall', 62, L1 + 1, 118, 66, 119)
+    b.threshold('city', 60, L2 + 1, 108, 68, 109)
+    b.threshold('city', 55, LC + 1, 79, 73, 80)                   # the cathedral's steps, coming out of the postern
+    b.threshold('garden', 31, L2 + 1, 93, 32, 95)
+    b.threshold('belfry', 96, L2 + 1, 89, 97, 90)
+    b.threshold('cathedral', 85, GAL + 1, 70, 86, 71)             # in from the covered walk
+    b.threshold('cathedral', 69, LC + 1, 75, 71, 76)              # in by the postern
+    b.threshold('cathedral', 42, LC + 1, 69, 43, 71)              # in by the west door
+    b.threshold('crypt', 85, CY + 1, 35, 86, 36)
+    b.threshold('crypt', 31, CY + 1, 53, 32, 54)
+    b.threshold('edge', 94, LC + 1, 6, 96, 7)
+
+
 def far_tower(b, x0, z0, size, top, spire, mat, base=18, salt=0):
     """A tower of the city that nobody will ever reach: it rises out of the cloud beside the fortress."""
     x1, z1 = x0 + size - 1, z0 + size - 1
@@ -1554,7 +1583,7 @@ def route(target):
     return path[::-1]
 
 
-PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'skull', 'chain', 'banner', 'minecraft:light')
+PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'skull', 'chain', 'banner', 'minecraft:light', 'place_name')
 
 
 def analyse(b, blocked=frozenset(), quiet=False):
@@ -1584,7 +1613,7 @@ def analyse(b, blocked=frozenset(), quiet=False):
         if below is None or below == AIR:
             return False
         name = below[2] if isinstance(below, tuple) else below
-        if any(k in name for k in ('mob_mark', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'chain', 'fog_gate', 'iron_bars', 'ladder', 'campfire', 'banner', 'carpet')):
+        if any(k in name for k in ('mob_mark', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'chain', 'fog_gate', 'iron_bars', 'ladder', 'campfire', 'banner', 'carpet', 'place_name', 'minecraft:light')):
             return False
         if (x, y - 1, z) in doors:
             return False
@@ -1730,7 +1759,7 @@ def emission(name):
 
 
 CLEAR = ('glass', 'iron_bars', 'chain', 'lantern', 'candle', 'mob_mark', 'banner', 'iron_door', 'fog_gate', 'lever', 'carpet', 'skull', 'cobweb',
-         'dead_bush', 'end_rod', 'fence', '_wall', 'campfire', 'decorated_pot', 'cauldron', 'hearth', 'forge', 'bell', 'chest', 'minecraft:light')
+         'dead_bush', 'end_rod', 'fence', '_wall', 'campfire', 'decorated_pot', 'cauldron', 'hearth', 'forge', 'bell', 'chest', 'minecraft:light', 'place_name')
 
 
 def lights(b):
@@ -1839,6 +1868,7 @@ def build():
     dress_plaza(b)
     dress_cathedral(b)
     lighting(b)
+    thresholds(b)
     skyline(b)
     return b
 
@@ -1887,7 +1917,7 @@ VIEWS = (
     ('east_gallery', (82, GAL + 2.6, 73), (80, GAL + 1.5, 40)),
     ('nave', (64, LC + 3, 75), (64, LC + 10, 34)),
     ('nave_from_the_gallery', (79.5, GAL + 2.6, 64), (52, LC + 3, 48)),
-    ('crypt_stair', (85.5, LC + 2.6, 51.5), (85.5, CY + 4, 39)),
+    ('crypt_stair', (83.5, LC + 2.6, 49.5), (85.5, CY + 3, 40)),
     ('crypt_hall', (65, CY + 2.6, 38.5), (64, CY + 2, 62)),
     ('crypt_passage', (52, CY + 2.6, 53.5), (32, CY + 2, 53.5)),
     ('choir', (64, LC + 3, 31), (64, LC + 10, 9)),

@@ -226,6 +226,10 @@ if __name__ == '__main__':
         'axis=x,sealed=false': {'model': f'{MOD}:block/fog_gate'}, 'axis=z,sealed=false': {'model': f'{MOD}:block/fog_gate', 'y': 90},
         'axis=x,sealed=true': {'model': f'{MOD}:block/fog_seal'}, 'axis=z,sealed=true': {'model': f'{MOD}:block/fog_seal', 'y': 90}}})
 
+    # a threshold that names a place: nothing is drawn, the game only needs to be told so
+    write_json(f'{A}/models/block/place_name.json', {'textures': {'particle': 'minecraft:block/stone'}})
+    write_json(f'{A}/blockstates/place_name.json', {'variants': {'': {'model': f'{MOD}:block/place_name'}}})
+
     anvil = forge()
     anvil.save(A, 'block/forge', 'block/forge')
     shots.append(anvil.render(size=(300, 300), zoom=13))
