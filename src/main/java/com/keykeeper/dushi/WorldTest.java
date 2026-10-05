@@ -108,20 +108,16 @@ final class WorldTest {
         say("rules: the shard in the ash: taken=" + taken + (taken ? "" : " FAILED"));
         player.getInventory().clearContent();
         if (risen != null) {
+            // (a stand-in player is not in the world, so the mob cannot hold it as a target: the choice itself is asked)
             boolean far = SoulMechanics.nearHearth(player);
             level.setBlock(at.offset(7, 0, 0), Dushi.HEARTH.get().defaultBlockState(), 3);
-            soul.atHearth = SoulMechanics.nearHearth(player);
-            risen.setTarget(player);
-            boolean spared = risen.getTargetUnchecked() == null;
+            boolean near = SoulMechanics.nearHearth(player);
+            soul.atHearth = near;
+            boolean spared = risen.overlooks(player);
             soul.atHearth = false;
-            risen.setTarget(player);
-            boolean noticed = risen.getTargetUnchecked() == player;
-            soul.atHearth = true;
-            risen.setTarget(player);
-            boolean kept = risen.getTargetUnchecked() == player;
-            soul.atHearth = false;
-            say("rules: by a hearth: none near before=" + !far + ", not noticed there=" + spared + ", noticed away from it=" + noticed + ", not let off once fought=" + kept
-                    + (!far && spared && noticed && kept ? "" : " FAILED"));
+            boolean noticed = !risen.overlooks(player);
+            say("rules: by a hearth: none near before=" + !far + ", one near after=" + near + ", not noticed there=" + spared + ", noticed away from it=" + noticed
+                    + (!far && near && spared && noticed ? "" : " FAILED"));
             risen.discard();
         }
         level.setBlock(at, Blocks.AIR.defaultBlockState(), 3);

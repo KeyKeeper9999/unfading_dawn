@@ -150,11 +150,18 @@ public abstract class SoulsMob extends Monster {
         return Math.round(this.soulReward() * TIER_SOULS[this.tier]);
     }
 
-    /** A player resting by a hearth is not noticed; one who struck first is. */
+    /**
+     * Whether the mob takes no notice of this target: a player by a hearth, unless it is fighting them already or they
+     * struck it first.
+     */
+    public boolean overlooks(LivingEntity target) {
+        return target instanceof Player player && target != this.getTarget() && this.getLastHurtByMob() != target
+                && com.keykeeper.dushi.PlayerSoul.of(player).atHearth;
+    }
+
     @Override
     public void setTarget(LivingEntity target) {
-        if (target instanceof Player player && target != this.getTarget() && this.getLastHurtByMob() != target
-                && com.keykeeper.dushi.PlayerSoul.of(player).atHearth) {
+        if (this.overlooks(target)) {
             return;
         }
         super.setTarget(target);
