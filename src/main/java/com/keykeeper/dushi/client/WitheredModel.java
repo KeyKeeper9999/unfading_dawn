@@ -174,9 +174,10 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
             float ready = Anim.pulse(t, 0.0F, 9.0F, 12.0F, 14.5F);
             float thrust = Anim.pulse(t, 12.0F, 14.5F, 19.0F, 27.0F);
             float held = Math.max(ready, thrust);
-            this.rightArm.xRot = Anim.lerp(held, this.rightArm.xRot, -0.08F) + 0.16F * ready - 0.3F * thrust;
+            // (a long weapon hangs a little below the level when the arm hangs: the arm is held half a radian forward for it)
+            this.rightArm.xRot = Anim.lerp(held, this.rightArm.xRot, -0.5F) - 0.18F * thrust;
             this.rightArm.zRot = Anim.lerp(held, this.rightArm.zRot, 0.08F);
-            this.rightArm.z += 6.5F * ready - 8.0F * thrust;
+            this.rightArm.z += 7.5F * ready - 7.0F * thrust;
             this.rightArm.y += 1.0F * thrust;
             this.leftArm.xRot = Anim.lerp(held, this.leftArm.xRot, -0.75F) - 0.45F * thrust;
             this.leftArm.yRot += 0.55F * held;
