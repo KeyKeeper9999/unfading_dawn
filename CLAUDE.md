@@ -29,9 +29,10 @@ flies to the nearest outpost and stockade and takes pictures from fixed places o
 
 `git fetch origin ci-out` and read the files; the commit message of `ci-out` names the commit of `main` it was built from.
 
-The map (see "The map" below) is built by the same workflow when `.ci/map` exists: a dedicated server is started in an
-empty world with `DUSHI_BUILDMAP=map/high_stockade.plan.txt`, `MapBuilder.java` sets the plan down, works the light out
-again, sets the rules of the world, saves and stops; the world folder is zipped. `ci-out` then also has:
+The map (see "The map" below) is built by the same workflow when `.ci/map` exists: a dedicated server is started in a
+flat world of forest (the `generator-settings` in the workflow: its top layer is at y = 63) with
+`DUSHI_BUILDMAP=map/high_stockade.plan.txt`; `MapBuilder.java` fells the forest where the map goes, sets the plan down,
+works the light out again, sets the rules of the world, saves and stops; the world folder is zipped. `ci-out` then also has:
 
 - `map.log` - `DUSHI MAP ...` lines: the size of the plan, what stands in the world (a count of block entities), and the
   light read out at the places listed in `map/light.txt`;
@@ -39,7 +40,7 @@ again, sets the rules of the world, saves and stops; the world folder is zipped.
   (`tools/name_world.py`), `map/icon.png` and `map/readme.txt`;
 - `mapclient.log` and `shots/m*.png` - only if `.ci/mapshots` exists: the client opens the saved world the way a player
   would (`client/MapSelfTest.java`, `DUSHI_MAPTEST=map/views.txt`), says how a newcomer starts (`DUSHI MAPTEST ...`),
-  flies to every view of `map/views.txt` and takes a picture, then throws every lever and kills both bosses and says
+  flies to every view of `map/views.txt` and takes a picture, then throws every lever and kills the bosses and says
   what the doors and the seals did.
 
 `.ci/skip_server` skips the server self-test (to save minutes while only the map is worked on); delete it and restore
@@ -53,18 +54,27 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `src/main/java/com/keykeeper/dushi/` - `Dushi` (all registries), `PlayerSoul` (souls, stats, stamina of a player; a data
   attachment synced to the player's own client), `SoulMechanics` (the rules: souls for kills, the stain on death, stamina,
   rolling through blows, backstabs, guard break), `Net` (messages), `Spell`, `Shop`.
-- `Forge` (the recipes of the old anvil: parts and souls), `block/ForgeBlock`, `client/ForgeScreen` (a plain list).
+- `Forge` (the recipes of the old anvil: parts and souls, each on a shelf: weapons, shields, armour, magic, supplies),
+  `block/ForgeBlock`, `client/ForgeScreen` (a tab for every shelf).
 - `block/FogGateBlock` - fog before a boss; `sealed=true` is the amber seal that lets nobody through until the boss of
   that room dies (`lift` clears the nearest fog and every seal within reach of the boss's mark).
 - `block/PlaceNameBlock` - a threshold nobody sees or feels: a player who steps through it is shown the name of the
-  place (`place.vsratie_dushi.<id>` in the texts; the list of places is the enum in the block). No item: a map's builder
-  sets it; with a mob mark in hand it can be seen and removed in creative.
+  place (`place.vsratie_dushi.<id>` in the texts; the list of places is the enum in the block). Every place has its
+  hour, and in a world whose time stands still the threshold sets the clock (`SoulMechanics.hour`); `to_night` and
+  `to_dusk` have no name and only do that. No item: a map's builder sets it; with a mob mark in hand it can be seen
+  and removed in creative. A hearth remembers the hour it was rested at, for those who come back to it by dying.
+- `block/ShardBlock` (`shard_heap`) - a flask shard glowing in a heap of ash: taken with a click, once. Flask shards
+  are not put in chests: they lie in such heaps or are left by the lords, about two to a part of a map.
 - `MapBuilder` (build only) and `client/MapSelfTest` (build only) - see "The map".
 - `Gear` - what the rules know about any piece of gear, the game's own included: stamina cost, scaling and backstab of
   a weapon (by item tag for vanilla ones), stability of a shield, weight of everything worn or held, and the burden that
   follows from the weight (it decides the roll). `ArmorSet` - the mod's four suits and the gift of each.
 - `block/MobMarkBlock` + `MobMarkBlockEntity` - a ring of ash where a mob of a building rises: when a player comes near,
   and again after any rest at a hearth or death within 96 blocks. A slain boss stays slain; a living one goes back and heals.
+  A mark has a `tier` (0-3): the same mob with more health, harder blows and more souls (`SoulsMob.TIER_*`), so that a
+  later place can use the dead of an earlier one.
+- A player within six blocks of a hearth is not noticed by the dead (`PlayerSoul.atHearth`, `SoulsMob.setTarget`); one
+  they are already fighting is not let off by running to it.
 - `world/` - `Plan` reads a building from `data/vsratie_dushi/plan/NAME.txt`, `PlanStructure` picks a level, dry place
   and one of four turns, `PlanPiece` sets the blocks. The worldgen JSON only names the plan.
 - `entity/` - `SoulsMob` is the base of every enemy: an attack is a "move" with a wind-up, an impact tick and a recovery,
@@ -73,14 +83,17 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `tools/` - everything generated is generated from here; run `sh tools/build_assets.sh [preview dir]` from the repo root:
   - `modelkit.py` - entity models described once in Python: texture layout, the mesh part of the Java model class (written
     between the `// <generated mesh>` markers) and a software preview render;
-  - `gen_withered.py`, `gen_knight.py`, `gen_keykeeper.py`, `gen_overseer.py`, `gen_chaplain.py` - the mobs;
+  - `gen_withered.py` (seven kinds on one model: prisoner, guard, archer, acolyte, and the town's townsman, butcher
+    and watchman), `gen_knight.py`, `gen_keykeeper.py`, `gen_overseer.py`, `gen_chaplain.py`, `gen_hound.py`,
+    `gen_gravedigger.py` - the mobs;
   - `gen_items.py` (icons), `gen_shields.py` and `gen_blocks.py` (box models), `gen_sounds.py`, `gen_lang.py` (all texts);
   - `gen_armor.py` - worn textures (64x32, the game's armour layout), icons and equipment definitions of the suits;
   - `gen_structures.py` - the buildings, block by block, with top-down and isometric previews; bars, fences and walls
     are written already joined to their neighbours, because nothing joins them during world generation;
   - `gen_data.py` - recipes, chest loot, tags, structure and structure-set JSON;
   - `check_assets.py` - checks that everything registered has its files and names;
-  - `gen_map.py` - the map (not run by `build_assets.sh`: `PYTHONPATH=tools python3 tools/gen_map.py [preview dir]`);
+  - `gen_world.py` - the map (not run by `build_assets.sh`: `PYTHONPATH=tools python3 tools/gen_world.py [preview dir]`);
+    it puts together the land, `gen_village.py` (the Dead Borough) and `gen_map.py` (the High Stockade);
   - `balance.py` - the sums of the map's progression (`PYTHONPATH=tools python3 tools/balance.py`).
 
   Never edit generated textures, models, `sounds.json` or the lang files by hand: change the generator and run it.
@@ -109,45 +122,70 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 
 ## The map
 
-"Вышний Острог" (the High Stockade) is an adventure map for the mod: a lower fortress and an upper city on two rocks above
-the clouds, at an hour of evening that never ends. It is the mod's own place, in the spirit of the great sunlit cities of
-the genre and a copy of none of them. `tools/gen_map.py` builds it block by block into `map/high_stockade.plan.txt`
-(the same format as the buildings; about 650 thousand blocks) and writes `map/views.txt` and `map/light.txt`; the game
-turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the sunset.
+"Вышний Острог" (the High Stockade) is an adventure map for the mod, one world that grows place by place. It is the
+mod's own country, in the spirit of the genre and a copy of nothing in it. The land is a wooded plateau with a gorge cut
+into it (`tools/gen_world.py`); the country outside the plan is the flat forest the world itself is made of.
 
-The way through: arrival bridge -> south gate (hearth, keykeeper, anvil) -> ward, cells, walls -> bridge tower (its
-ground door is opened from inside) -> great bridge -> gate hall (the Overseer; a seal behind him) -> square (hearth,
-anvil) -> cloister and chapter room / bell tower -> covered walk -> the cathedral's east gallery -> nave (postern and
-west door open shortcuts; sacristy hearth) -> crypt under the nave (optional, comes out in the alley behind the chapter
-room) -> choir (the Chaplain) -> treasury and terrace.
+- The Dead Borough (`tools/gen_village.py`) in the south of the gorge: a walled town of small houses under a night that
+  never ends, where the game begins. It is drawn on a grid of tiles of three blocks: walls, streets and the places built
+  by hand are named in the file, every other tile is a lot and the lots are cut into houses.
+  Yard of the first hearth (keykeeper, anvil, the starter chest; no enemy sees it) -> Low Street -> the lanes of the
+  borough, west or east about (the high street is shut by a gate that opens from the town's side) -> market -> the
+  Shambles (the street is barricaded: through the butchers' shop or round by the back alley) -> Church Lane (the
+  sexton's lodge: a hearth) -> the churchyard (the Gravedigger; a seal on the gate to the road behind him).
+- The road: from the churchyard's north gate under a spur of the plateau by a tunnel with a bend in it. In the bend,
+  where neither mouth is seen, lie the thresholds that turn the clock: evening towards the fortress, night towards the
+  town. Then along the gorge and up a causeway to the fortress's bridge.
+- The High Stockade (`tools/gen_map.py`, in its own coordinates; `gen_world.py` sets it down on the floor of the gorge):
+  a lower fortress and an upper city on two crags, at an hour of evening that never ends. South gate (hearth, anvil) ->
+  ward, cells, walls -> bridge tower (its ground door is opened from inside) -> great bridge -> gate hall (the Overseer;
+  a seal behind him) -> square (hearth, anvil) -> cloister and chapter room / bell tower -> covered walk -> the
+  cathedral's east gallery -> nave (postern and west door open shortcuts; sacristy hearth) -> crypt under the nave
+  (optional, comes out in the alley behind the chapter room) -> choir (the Chaplain) -> treasury and terrace.
+  Whoever falls from its walls lands on the floor of the gorge and walks back round to the causeway.
 
-The names of the places are thresholds across the ways in (`thresholds` in `gen_map.py`). Views whose name begins
-with `as_player_` are walked to by the test as the newcomer is, before the camera is set free.
+`gen_world.py` writes `map/high_stockade.plan.txt` (the same format as the buildings; about 1.2 million blocks),
+`map/views.txt` and `map/light.txt`. The plan's origin is the place where the newcomer wakes; the game puts it at
+0, 64, 0 and turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the
+sunset. The dead of the town are of tier 0, of the lower fortress tier 1, of the upper city tier 2 (`World.tiers`).
 
-`gen_map.py` ends with a check of the map as a place to play, and every change to the map must leave it clean:
+A new place is a new file like `gen_village.py`: it builds into the world's `Map` at an offset, and `gen_world.py` gives
+it a piece of the gorge (`in_gorge`), a road, and - if its hour differs - a passage where the clock is turned. The yard
+of the first hearth is the hub the roads start from.
 
-- it walks the map the way a player can (steps, jumps, drops, levers, seals lifted boss by boss) and reports what is
-  reached at each stage, chests and mobs nobody can reach, places that are traps (ledges whose only way out is the fall
-  into the void are listed, not counted as traps), and that the cathedral cannot be entered except by the covered walk;
+The names of the places are thresholds across the ways in, each on its own side of the line between two places. Views
+whose name begins with `as_player_` are walked to by the test as the newcomer is, before the camera is set free.
+
+`gen_world.py` ends with a check of the map as a place to play, and every change to the map must leave it clean:
+
+- it walks the map the way a player can (steps, jumps, drops, levers, seals lifted lord by lord) and reports what is
+  reached at each stage, chests, shards and mobs nobody can reach, places that are traps, that nobody gets out of the
+  gorge (no place at the edge of the plan is reached), and that the cathedral cannot be entered except by the covered walk;
 - it works out the light like the game does (its numbers matched the game's at every probe) and reports walkable
-  places that are too dark; halls that windows would fill get the game's unseen `minecraft:light` blocks (`ambient`);
-- previews: `map_iso.png`, and one top-down picture per storey with a dot on every reachable place (red where dark).
+  places under a roof that are too dark, and how much of the town's streets the lamps reach;
+- previews: `world_ground.png`, `town_ground.png` (a dot on every reachable place), `town_roofs.png`, `town_iso.png`.
 
 Things learnt the hard way:
 
 - In a world whose game mode is adventure the game drops a newcomer through the floor of the spawn if the place is not
   loaded yet (they fell into the void). `SoulMechanics.settle` puts them back on it at login and respawn.
+- Whatever a player can stand on is a stair: a boulder beside a fir let the check climb the needles onto the plateau,
+  and the low plinth of a wall let it walk over the corner. In the gorge trees stand clear of rock and walls and are
+  bare to four blocks, barricades are three high with nothing beside them, walls have no ledges.
+- Nothing may be put in front of a door (`Village.kept`): a barrel there shut a house with a chest in it.
 - Blocks set one by one into an empty world leave the light wrong (whole storeys black, or everything fully lit).
   `MapBuilder` therefore relights every chunk after building (`initializeLight`, then `lightChunk`).
-- Rock is put only under what stands on the ground (`bedrock`): corbels and other overhangs must not grow rock.
+- Rock is put only under what stands on the ground (`bedrock`), straight down: corbels and other overhangs must not grow rock.
 - `chiseled_sandstone` has a creeper's face on it; the city's stone is smooth and cut sandstone.
-- A fall of more than 24 blocks over an empty column kills at once (`SoulMechanics.ground`), so the edge of the map
-  needs no walls; with natural regeneration switched off (as the map does) hunger is held full.
+- With natural regeneration switched off (as the map does) hunger is held full. The game's own mobs do not spawn
+  (`SPAWN_MOBS`): the night would fill with them.
 - A block with a direction of its own must turn with the plan (`rotate`): the fog gate did not, and stood edge-on in
   every doorway of the map. What is built late (corbels, lamps) can land in a stair: the check counts headroom.
 - Painted pots swallow what is put into them; a player who may not build cannot use them (`SoulMechanics.onUsePot`).
-- The hour is set once (`MapBuilder.SUNSET`) and time does not move; the hour was chosen by looking at pictures.
+- Time does not move; the hours (`PlaceNameBlock.DUSK`, `NIGHT`) were chosen by looking at pictures. `time set` is
+  for the whole world: with several players in different places the last threshold crossed wins.
 
-Balance (see `tools/balance.py`): one clearing of the lower fortress brings a player to about level 10-12 before the
-Overseer; one clearing of everything to about level 24 before the Chaplain, who is tuned for 26-28 - one more round of
-the cathedral and the crypt from the sacristy's hearth. When mobs, weapons or the map change, run it again.
+Balance (see `tools/balance.py`): one clearing of the town brings a player to about level 10-12 before the Gravedigger;
+the lower fortress to about 18 before the Overseer; the upper city to about 29 before the Chaplain. The fortress was
+first tuned for a newcomer; its tiers make up for the levels a player now brings to it. When mobs, weapons, tiers or
+the map change, run it again.
