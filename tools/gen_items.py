@@ -397,6 +397,50 @@ for uu in range(9):
 sp.pts([(20, 11), (21, 12), (22, 11), (21, 10)], D)
 sp.outline(0.45, inner=False)
 
+# the quarry's pick: a long haft and a bar of iron across its end drawn out to a point either way
+sp = icon('quarry_pick', 32, big=True)
+for i in range(19):
+    xx, yy = 4 + i, 27 - i
+    sp.px(xx, yy, W if i % 5 else w)
+    sp.px(xx + 1, yy, w)
+    sp.px(xx + 1, yy + 1, b)
+for kk in range(-9, 10):
+    bend = (abs(kk) * abs(kk)) // 22                     # the points droop towards the hands
+    xx, yy = 22 + kk - bend, 9 + kk + bend
+    thick = 2 if abs(kk) < 6 else (1 if abs(kk) < 9 else 0)
+    for tt in range(-1, thick):
+        col = S if tt == thick - 1 else (d if tt == -1 else s)
+        if 0 <= xx + tt < 31 and 0 <= yy - tt < 32:
+            sp.px(xx + tt + 1, yy - tt, d if tt == -1 else s)
+            sp.px(xx + tt, yy - tt, col)
+    if (kk * 7) % 11 == 0 and abs(kk) < 8:
+        sp.px(xx, yy, R)
+sp.pts([(21, 9), (22, 10), (23, 9), (22, 8), (21, 10), (23, 8)], D)
+sp.outline(0.45, inner=False)
+
+# the Taskmaster's maul: a block of iron on a haft as long as a man
+sp = icon('great_maul', 32, big=True)
+for i in range(19):
+    xx, yy = 3 + i, 28 - i
+    sp.px(xx, yy, W if i % 6 else w)
+    sp.px(xx + 1, yy, w)
+    sp.px(xx + 1, yy + 1, b)
+for i in range(4):                                       # the grip, wound with rag
+    sp.px(4 + i * 2, 27 - i * 2, C)
+    sp.px(5 + i * 2, 27 - i * 2, c)
+for uu in range(-3, 5):                                  # along the haft
+    for vv in range(-7, 8):                              # across it
+        xx, yy = 23 + uu + vv, 9 - uu + vv
+        if 0 <= xx < 31 and 0 <= yy < 32:
+            col = S if uu == 4 or vv == -7 else (D if uu == -3 or vv == 7 else (d if (uu + vv * 2) % 5 == 0 else s))
+            if abs(vv) >= 6:
+                col = M if col == s else col             # the struck faces, darker
+            if (uu * 5 + vv * 3) % 13 == 0:
+                col = r
+            sp.px(xx, yy, col)
+            sp.px(xx + 1, yy, col if col != S else s)
+sp.outline(0.45, inner=False)
+
 # ---------------------------------------------------------------------------------------------------- bow
 
 def bow(name, pull):
@@ -674,6 +718,109 @@ ascii_icon('tar_pot', [
     "................",
     "................"], lock='fF').outline(inner=False)
 
+ascii_icon('eater_claw', [
+    "...........oo...",
+    "..........oCCo..",
+    ".........oCCco..",
+    "........oCCcko..",
+    ".......oCCcko...",
+    "......oCCcko....",
+    ".....oCCcko.....",
+    "....oCCcko......",
+    "....oCcko.......",
+    "...oLCko........",
+    "..oLlLo.........",
+    ".oLlLo..........",
+    "oWlLo...........",
+    "oWwo............",
+    ".oo.............",
+    "................"], handheld=True)
+ascii_icon('iron_wedge', [
+    "................",
+    "................",
+    ".....oooooo.....",
+    "....oSSSSSSo....",
+    "....oDddddDo....",
+    "....osssssdo....",
+    ".....osssdo.....",
+    ".....osssdo.....",
+    ".....osssdo.....",
+    "......ossdo.....",
+    "......osRdo.....",
+    "......osdo......",
+    ".......odo......",
+    ".......oo.......",
+    "................",
+    "................"])
+ascii_icon('powder_pot', [
+    "................",
+    "..........F.....",
+    ".........fC.....",
+    "........cc......",
+    ".......kCk......",
+    ".....oMMMMo.....",
+    "....oMmmmmMo....",
+    "...oMMMMMMMMo...",
+    "...oMCCCCCCMo...",
+    "...oMCmCCmCMo...",
+    "...oMCCmmCCMo...",
+    "...oMMMMMMMMo...",
+    "....oMmmmmMo....",
+    ".....oooooo.....",
+    "................",
+    "................"], lock='Ff').outline(inner=False)
+ascii_icon('quarry_key', [
+    "................",
+    "..........ooo...",
+    ".........oSsdo..",
+    "........oSo.odo.",
+    "........oso.odo.",
+    "........oSdodo..",
+    ".......oSsddo...",
+    "......oSsdoo....",
+    ".....oSsdo......",
+    "....oSsdo.......",
+    "...oSsdoo.......",
+    "..oSsdoso.......",
+    ".oSsdosdo.......",
+    ".osdo.oo........",
+    "..oo............",
+    "................"])
+ascii_icon('taskmaster_soul', [
+    ".......C........",
+    "......cCc..c....",
+    "..c...cCCc.C....",
+    "..C..cCCCccC....",
+    "..Cc.cCCCCCc....",
+    ".cCCcCCMMMCc.c..",
+    ".cCCCCMMMMMCcC..",
+    ".cCCCMMFMFMMCc..",
+    "kcCCCMMMMMMMCck.",
+    "kcCCCCMMmMMCCck.",
+    "kccCCCMmMmMCcck.",
+    ".kccCCCMMMCCck..",
+    ".kkccCCCCCCckk..",
+    "..kkkcccckkkk...",
+    "....kkkkkkk.....",
+    "................"], lock='CcMFk')
+ascii_icon('stone_eater_soul', [
+    ".......1........",
+    "......212..2....",
+    "..2...2112.1....",
+    "..1..2111221....",
+    "..12.2111112....",
+    ".211211ddd12.2..",
+    ".21111ddddd121..",
+    ".2111ddMdMdd12..",
+    "D2111ddddddd12D.",
+    "D21111ddMdd112D.",
+    "D221111MdMd122D.",
+    ".D22111ddd112D..",
+    ".DD2211111122DD.",
+    "..DDD2222DDDD...",
+    "....DDDDDDD.....",
+    "................"], {'1': (150, 240, 214), '2': (84, 170, 150)}, lock='12dMD')
+
 # ---------------------------------------------------------------------------------------------------- flying spells
 
 def bolt(name, core, mid, edge, rows):
@@ -756,6 +903,14 @@ egg('withered_butcher', (126, 104, 85), (124, 40, 36), ((6, 8, EMB), (9, 8, EMB)
 egg('withered_watchman', (44, 50, 66), (214, 170, 80), ((6, 8, EMB), (9, 8, EMB)))
 egg('carrion_hound', (74, 64, 58), (38, 30, 28), ((5, 7, EMB), (10, 7, EMB), (7, 10, C), (8, 10, C)))
 egg('gravedigger', (86, 78, 66), (46, 40, 36), ((6, 7, F), (9, 7, F), (6, 10, C), (7, 10, C), (8, 10, C), (9, 10, C)))
+DUSTY = (190, 186, 174)
+egg('withered_digger', DUSTY, (94, 62, 38), ((6, 8, EMB), (9, 8, EMB), (7, 4, F), (7, 5, C)))
+egg('withered_barrowman', DUSTY, (112, 88, 60), ((6, 8, EMB), (9, 8, EMB), (6, 11, M), (7, 11, M), (8, 11, M), (9, 11, M)))
+egg('withered_sapper', (94, 62, 38), (40, 34, 32), ((6, 8, EMB), (9, 8, EMB), (8, 3, F)))
+egg('blind_crawler', (188, 180, 170), (134, 128, 150), ((6, 9, N), (7, 9, C), (8, 9, N), (9, 9, C), (5, 9, C)))
+egg('unhewn', (206, 202, 190), (126, 122, 116), ((6, 7, F), (9, 7, F), (7, 10, k), (8, 10, k)))
+egg('taskmaster', (150, 138, 124), (92, 64, 42), ((7, 5, F), (8, 5, F), (6, 8, EMB), (9, 8, EMB), (6, 10, C), (7, 10, C), (8, 10, C), (9, 10, C)))
+egg('stone_eater', (96, 90, 96), (120, 220, 190), ((5, 10, C), (6, 10, n), (7, 10, C), (8, 10, n), (9, 10, C), (10, 10, n)))
 egg('gilded_knight', (176, 176, 186), (214, 184, 106), ((5, 8, O), (6, 8, EMB), (7, 8, O), (8, 8, O), (9, 8, EMB), (10, 8, O)))
 egg('rust_knight', (84, 76, 76), (150, 90, 52), ((5, 8, O), (6, 8, EMB), (7, 8, O), (8, 8, O), (9, 8, EMB), (10, 8, O)))
 egg('keykeeper', (72, 76, 88), (196, 160, 72), ((5, 8, C), (6, 8, C), (7, 8, C), (8, 8, C), (9, 8, C), (10, 8, C)))
@@ -792,7 +947,7 @@ def big_display(grip):
     return out
 
 
-BIG_GRIP = {'rust_greatsword': 5.5, 'great_key': 10.5, 'grave_spade': 8.0, 'pitchfork': 10.0}
+BIG_GRIP = {'rust_greatsword': 5.5, 'great_key': 10.5, 'grave_spade': 8.0, 'pitchfork': 10.0, 'quarry_pick': 9.0, 'great_maul': 8.0}
 
 if __name__ == '__main__':
     os.makedirs(f'{A}/textures/item', exist_ok=True)

@@ -135,6 +135,45 @@ final class WorldTest {
         boolean set = Math.floorMod(level.getDefaultClockTime(), 24000L) == 18000L && SoulMechanics.hourNow(level) == 18000;
         level.getGameRules().set(net.minecraft.world.level.gamerules.GameRules.ADVANCE_TIME, true, level.getServer());
         say("rules: the hour of a place: left alone where time moves=" + untouched + ", set where it stands=" + set + (untouched && set ? "" : " FAILED"));
+        quarry(level, at, player);
+    }
+
+    /** What the quarry leans on: a grate that wants its key, a crawler that hears and does not see, a statue that wakes. */
+    private static void quarry(ServerLevel level, BlockPos at, FakePlayer player) {
+        BlockPos gate = at.offset(-5, 0, -5);
+        for (BlockPos pos : BlockPos.betweenClosed(gate, gate.offset(2, 2, 0))) {
+            level.setBlock(pos, Dushi.LOCKED_GATE.get().defaultBlockState(), 3);
+        }
+        net.minecraft.world.phys.BlockHitResult hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(gate),
+                net.minecraft.core.Direction.SOUTH, gate, false);
+        player.getInventory().clearContent();
+        level.getBlockState(gate).useWithoutItem(level, player, hit);
+        boolean held = level.getBlockState(gate.offset(2, 2, 0)).is(Dushi.LOCKED_GATE.get());
+        player.getInventory().add(new ItemStack(Dushi.QUARRY_KEY.get()));
+        level.getBlockState(gate).useWithoutItem(level, player, hit);
+        boolean opened = level.getBlockState(gate).isAir() && level.getBlockState(gate.offset(2, 2, 0)).isAir();
+        boolean kept = Forge.count(player, Dushi.QUARRY_KEY.get()) == 1;
+        player.getInventory().clearContent();
+        say("rules: the locked grate: holds without the key=" + held + ", opens whole with it=" + opened + ", the key is kept=" + kept
+                + (held && opened && kept ? "" : " FAILED"));
+
+        com.keykeeper.dushi.entity.BlindCrawlerEntity crawler = Dushi.BLIND_CRAWLER.get().create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        boolean ears = crawler != null && crawler.hears(false, 10.0) && !crawler.hears(true, 10.0) && crawler.hears(true, 2.5) && !crawler.hears(false, 16.0);
+        say("rules: the blind crawler: hears a walker at ten blocks and a creeper only at arm's length=" + ears + (ears ? "" : " FAILED"));
+
+        com.keykeeper.dushi.entity.UnhewnEntity statue = Dushi.UNHEWN.get().spawn(level, at.offset(-4, 0, 4), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        if (statue == null) {
+            say("rules: the unhewn did not spawn FAILED");
+            return;
+        }
+        boolean asleep = !statue.awake() && statue.overlooks(player);
+        statue.hurtServer(level, level.damageSources().generic(), 1.0F);
+        boolean woken = statue.awake() && statue.attackId() == com.keykeeper.dushi.entity.UnhewnEntity.WAKE;
+        statue.recover();
+        boolean again = !statue.awake();
+        statue.discard();
+        say("rules: the unhewn: a statue until touched=" + asleep + ", wakes when struck=" + woken + ", stone again after a rest=" + again
+                + (asleep && woken && again ? "" : " FAILED"));
     }
 
     // ------------------------------------------------------------------ gear

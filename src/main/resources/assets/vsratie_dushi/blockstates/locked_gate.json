@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "axis=x,lock=quarry": {
+      "model": "vsratie_dushi:block/locked_gate"
+    },
+    "axis=z,lock=quarry": {
+      "model": "vsratie_dushi:block/locked_gate",
+      "y": 90
+    }
+  }
+}

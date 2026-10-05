@@ -51,7 +51,13 @@ public class WitheredEntity extends SoulsMob {
         /** A butcher of the shambles: a big man, slow to come, whose cleaver goes round level and clears the lane before him. */
         BUTCHER("withered_butcher", 28.0, 4.0, 0.24, 2.0, 70),
         /** The night watch: a lantern, a pitchfork held like a pike, and a rattle that brings the street down on whoever he sees. */
-        WATCHMAN("withered_watchman", 20.0, 4.0, 0.25, 2.0, 55);
+        WATCHMAN("withered_watchman", 20.0, 4.0, 0.25, 2.0, 55),
+        /** A digger of the quarry, white with its dust: his pick comes down with both hands and no shield holds it. */
+        DIGGER("withered_digger", 46.0, 9.0, 0.25, 4.0, 260),
+        /** A barrowman: he never let go of his barrow of cut stone, and runs whoever he sees down with it. */
+        BARROWMAN("withered_barrowman", 62.0, 10.0, 0.24, 4.0, 320),
+        /** A sapper with a keg of blasting powder on his back: lobs lit pots from afar, and when he is nearly done lights the keg. */
+        SAPPER("withered_sapper", 36.0, 6.0, 0.26, 2.0, 300);
 
         public final String id;
         final double health;
@@ -97,12 +103,36 @@ public class WitheredEntity extends SoulsMob {
     public static final int ALARM_DURATION = 34;
     private static final int ALARM_SOUND = 12;
     private static final double ALARM_RANGE = 18.0;
+    /** The digger's pick: up over the head in both hands, down through any guard, and then stuck in the floor while he tugs at it. */
+    public static final int PICK = 7;
+    public static final int PICK_DURATION = 48;
+    public static final int PICK_IMPACT = 17;
+    /** The barrowman's run: he sets his feet, puts his head down and goes straight, and cannot turn or stop. */
+    public static final int CHARGE = 8;
+    public static final int CHARGE_DURATION = 56;
+    public static final int CHARGE_START = 15;
+    public static final int CHARGE_END = 36;
+    /** The sapper's pot: lit in his hand - the sparks are the warning - and lobbed high. */
+    public static final int LOB = 9;
+    public static final int LOB_DURATION = 42;
+    public static final int LOB_RELEASE = 26;
+    /** The sapper's end: he lights the keg on his back and runs at whoever hurt him. */
+    public static final int FUSE = 10;
+    public static final int FUSE_DURATION = 84;
+    public static final int FUSE_RUN = 16;
+    /** A short shove of the barrow at whoever stands right before it. */
+    public static final int RAM = 11;
+    public static final int RAM_DURATION = 24;
+    public static final int RAM_IMPACT = 10;
     /** Blows the guard's shield takes before his arm drops. */
     private static final int GUARD_BREAK_HITS = 3;
 
     private final Kind kind;
     /** A watchman sounds his rattle once for every time he takes notice of somebody. */
     private boolean alarmed;
+    private boolean chargeHit;
+    private boolean burst;
+    private int chargeCooldown = 40;
 
     public WitheredEntity(EntityType<? extends WitheredEntity> type, Level level, Kind kind) {
         super(type, level);
@@ -158,6 +188,10 @@ public class WitheredEntity extends SoulsMob {
                 this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.PITCHFORK.get()), 0.06F);
                 this.equip(EquipmentSlot.OFFHAND, new ItemStack(Items.LANTERN), 0.0F);
             }
+            case DIGGER -> this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.QUARRY_PICK.get()), 0.05F);
+            case SAPPER -> this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.POWDER_POT.get()), 0.0F);
+            case BARROWMAN -> {
+            }
         }
         return data;
     }
@@ -180,6 +214,11 @@ public class WitheredEntity extends SoulsMob {
             case CLEAVE -> CLEAVE_DURATION;
             case THRUST -> THRUST_DURATION;
             case ALARM -> ALARM_DURATION;
+            case PICK -> PICK_DURATION;
+            case CHARGE -> CHARGE_DURATION;
+            case LOB -> LOB_DURATION;
+            case FUSE -> FUSE_DURATION;
+            case RAM -> RAM_DURATION;
             default -> SWING_DURATION;
         };
     }
@@ -192,6 +231,11 @@ public class WitheredEntity extends SoulsMob {
             case CLEAVE -> CLEAVE_IMPACT - 6;
             case THRUST -> THRUST_IMPACT - 5;
             case ALARM -> ALARM_DURATION;
+            case PICK -> PICK_IMPACT - 7;
+            case CHARGE -> CHARGE_START - 2;
+            case LOB -> LOB_RELEASE;
+            case FUSE -> FUSE_DURATION;
+            case RAM -> RAM_IMPACT - 3;
             default -> SWING_IMPACT - 3;
         };
     }
@@ -201,12 +245,19 @@ public class WitheredEntity extends SoulsMob {
         if (finishedId == CLEAVE) {
             return 22 + this.random.nextInt(10);             // he has to gather himself after it
         }
+        if (finishedId == CHARGE) {
+            return 26 + this.random.nextInt(10);
+        }
+        if (finishedId == LOB) {
+            return 34 + this.random.nextInt(20);
+        }
         return finishedId == SHOOT || finishedId == CAST ? 25 + this.random.nextInt(20) : 14 + this.random.nextInt(10);
     }
 
     @Override
     public double stopDistance() {
-        return this.kind == Kind.ARCHER ? 9.0 : this.kind == Kind.ACOLYTE ? 8.0 : this.hasPike() ? 2.3 : 1.4;
+        return this.kind == Kind.ARCHER ? 9.0 : this.kind == Kind.ACOLYTE ? 8.0 : this.kind == Kind.SAPPER ? 8.5 : this.kind == Kind.BARROWMAN ? 2.2
+                : this.hasPike() ? 2.3 : this.kind == Kind.DIGGER ? 1.9 : 1.4;
     }
 
     /** Whether it holds something to thrust with. */
@@ -218,6 +269,7 @@ public class WitheredEntity extends SoulsMob {
     protected void onReset() {
         super.onReset();
         this.alarmed = false;
+        this.burst = false;
     }
 
     @Override
@@ -235,6 +287,25 @@ public class WitheredEntity extends SoulsMob {
         if (this.kind == Kind.BUTCHER) {
             return distance < 2.5 ? (this.random.nextInt(10) < 7 ? CLEAVE : SWING) : 0;
         }
+        if (this.kind == Kind.DIGGER) {
+            return distance < 2.6 ? (this.random.nextInt(10) < 7 ? PICK : SWING) : 0;
+        }
+        if (this.kind == Kind.BARROWMAN) {
+            if (distance > 4.0 && distance < 13.0 && this.chargeCooldown <= 0 && this.hasLineOfSight(target)) {
+                this.chargeCooldown = 90 + this.random.nextInt(40);
+                return CHARGE;
+            }
+            return distance < 2.8 ? RAM : 0;
+        }
+        if (this.kind == Kind.SAPPER) {
+            if (this.getHealth() < this.getMaxHealth() * 0.35F) {
+                return FUSE;
+            }
+            if (distance < 2.2) {
+                return SWING;
+            }
+            return distance > 3.5 && distance < 17.0 && this.hasLineOfSight(target) ? LOB : 0;
+        }
         if (this.hasPike()) {
             return distance < 3.1 ? THRUST : 0;
         }
@@ -245,7 +316,15 @@ public class WitheredEntity extends SoulsMob {
     public void startAttack(int id) {
         super.startAttack(id);
         this.stopUsingItem();
-        if (id == SWING || id == CLEAVE || id == THRUST) {
+        this.chargeHit = false;
+        if (id == FUSE) {
+            this.setPhase(2);
+            this.playSound(Dushi.sound("entity.quarry.fuse"), 2.0F, 1.0F);
+        }
+        if (id == CHARGE) {
+            this.playSound(Dushi.sound("entity.withered.ambient"), 1.4F, 0.7F);
+        }
+        if (id == SWING || id == CLEAVE || id == THRUST || id == PICK) {
             this.playSound(Dushi.sound("entity.withered.ambient"), 0.8F, this.kind == Kind.BUTCHER ? 0.8F : 1.3F);
         }
         if (id == SHOOT) {
@@ -258,7 +337,86 @@ public class WitheredEntity extends SoulsMob {
 
     @Override
     protected void attackTick(ServerLevel level, int id, int time) {
-        if (id == SWING && time == SWING_IMPACT) {
+        float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        if (id == PICK) {
+            if (time == PICK_IMPACT - 3) {
+                this.playSound(Dushi.sound("player.weapon_swing_heavy"), 0.9F, 0.9F);
+            }
+            if (time == PICK_IMPACT) {
+                this.hitArc(level, this.facing(), 3.0, 24.0, damage + 5.0F, 0.5, true);
+                Vec3 at = this.position().add(this.facing().scale(2.0));
+                this.rubble(level, at, 16, 0.3);
+                level.playSound(null, at.x, at.y, at.z, Dushi.sound("entity.quarry.pick"), this.getSoundSource(), 1.3F, 0.9F + this.random.nextFloat() * 0.2F);
+            }
+            if (time == PICK_IMPACT + 12 || time == PICK_IMPACT + 20) {
+                // the pick is fast in the floor: he works it loose
+                Vec3 at = this.position().add(this.facing().scale(2.0));
+                this.rubble(level, at, 4, 0.2);
+            }
+        } else if (id == CHARGE) {
+            if (time >= CHARGE_START && time < CHARGE_END) {
+                Vec3 run = this.facing().scale(0.52);
+                this.setDeltaMovement(run.x, this.getDeltaMovement().y, run.z);
+                if (time % 3 == 0) {
+                    this.rubble(level, this.position().add(this.facing().scale(1.4)), 3, 0.3);
+                    this.playSound(Dushi.sound("entity.quarry.barrow"), 1.2F, 0.9F + this.random.nextFloat() * 0.2F);
+                }
+                if (!this.chargeHit && this.hitArc(level, 2.2, 40.0, damage * 1.3F, 2.4) > 0) {
+                    this.chargeHit = true;
+                }
+                if (this.horizontalCollision && time > CHARGE_START + 3) {
+                    // into a wall: the barrow stops and he does not
+                    this.attackTime = CHARGE_END - 1;
+                    this.rubble(level, this.position().add(this.facing().scale(1.6)), 20, 0.5);
+                    this.playSound(Dushi.sound("entity.quarry.pick"), 1.2F, 0.6F);
+                }
+            }
+            if (time == CHARGE_END) {
+                this.setDeltaMovement(0.0, this.getDeltaMovement().y, 0.0);
+                this.playSound(Dushi.sound("entity.withered.hurt"), 1.0F, 0.7F);
+            }
+        } else if (id == RAM) {
+            if (time == RAM_IMPACT - 2) {
+                this.playSound(Dushi.sound("entity.quarry.barrow"), 1.2F, 1.2F);
+            }
+            if (time == RAM_IMPACT) {
+                this.hitArc(level, 2.9, 28.0, damage * 0.7F, 1.5);
+            }
+        } else if (id == LOB) {
+            if (time >= 6 && time < LOB_RELEASE && time % 2 == 0) {
+                Vec3 hand = this.position().add(0.0, this.getBbHeight() + 0.3, 0.0).add(this.facing().yRot(-1.2F).scale(0.4));
+                level.sendParticles(ParticleTypes.SMALL_FLAME, hand.x, hand.y, hand.z, 1, 0.05, 0.05, 0.05, 0.01);
+                level.sendParticles(ParticleTypes.CRIT, hand.x, hand.y, hand.z, 1, 0.1, 0.1, 0.1, 0.05);
+            }
+            if (time == 6) {
+                this.playSound(Dushi.sound("entity.quarry.fuse"), 1.0F, 1.4F);
+            }
+            LivingEntity target = this.getTarget();
+            if (time == LOB_RELEASE && target != null) {
+                PowderPotEntity pot = new PowderPotEntity(level, this, new ItemStack(Dushi.POWDER_POT.get()));
+                double dx = target.getX() - this.getX();
+                double dz = target.getZ() - this.getZ();
+                double flat = Math.sqrt(dx * dx + dz * dz);
+                pot.shoot(dx, target.getY() - pot.getY() + flat * 0.42, dz, (float) Math.min(1.25, 0.42 + flat * 0.052), 2.5F);
+                level.addFreshEntity(pot);
+                this.playSound(SoundEvents.SNOWBALL_THROW, 1.0F, 0.6F);
+            }
+        } else if (id == FUSE) {
+            Vec3 keg = this.position().add(0.0, this.getBbHeight() * 0.75, 0.0).subtract(this.facing().scale(0.35));
+            level.sendParticles(ParticleTypes.SMALL_FLAME, keg.x, keg.y + 0.4, keg.z, 2, 0.08, 0.08, 0.08, 0.02);
+            level.sendParticles(ParticleTypes.SMOKE, keg.x, keg.y + 0.5, keg.z, 1, 0.1, 0.1, 0.1, 0.01);
+            if (time % 12 == 0) {
+                this.playSound(Dushi.sound("entity.quarry.fuse"), 1.6F, 1.0F + time * 0.008F);
+            }
+            LivingEntity target = this.getTarget();
+            if (time >= FUSE_RUN) {
+                Vec3 run = this.facing().scale(0.36);
+                this.setDeltaMovement(run.x, this.getDeltaMovement().y, run.z);
+                if ((target != null && this.distanceToSqr(target) < 2.6 * 2.6 && time > FUSE_RUN + 4) || time >= FUSE_DURATION - 2) {
+                    this.burst(level);
+                }
+            }
+        } else if (id == SWING && time == SWING_IMPACT) {
             this.swingArm();
             this.hitArc(level, 2.4, 55.0, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE)
                     + (this.getMainHandItem().isEmpty() ? 0.0F : 2.0F), 0.4);
@@ -321,6 +479,34 @@ public class WitheredEntity extends SoulsMob {
         }
     }
 
+    /** The keg goes up, and he with it. */
+    private void burst(ServerLevel level) {
+        if (this.burst) {
+            return;
+        }
+        this.burst = true;
+        PowderPotEntity.blast(level, this, null, this.position().add(0.0, 0.8, 0.0), 4.2, 15.0F);
+        if (this.isAlive()) {
+            this.kill(level);
+        }
+    }
+
+    @Override
+    public void die(DamageSource source) {
+        super.die(source);
+        if (this.kind == Kind.SAPPER && this.phase() >= 2 && this.level() instanceof ServerLevel level) {
+            this.burst(level);
+        }
+    }
+
+    @Override
+    protected void customServerAiStep(ServerLevel level) {
+        super.customServerAiStep(level);
+        if (this.chargeCooldown > 0) {
+            this.chargeCooldown--;
+        }
+    }
+
     @Override
     protected int guardBreakHits() {
         return this.kind == Kind.GUARD ? GUARD_BREAK_HITS : 0;
@@ -371,6 +557,22 @@ public class WitheredEntity extends SoulsMob {
                     this.spawnAtLocation(level, new ItemStack(Dushi.TAR_POT.get()));
                 }
             }
+            case DIGGER -> {
+                this.leave(level, Dushi.RUST_SCRAP.get(), 0, 2);
+                this.leaveMaybe(level, Dushi.IRON_WEDGE.get(), 0.3F);
+                this.leaveMaybe(level, Dushi.NAMELESS_SOUL.get(), 0.1F);
+            }
+            case BARROWMAN -> {
+                this.leave(level, Dushi.RUST_SCRAP.get(), 1, 2);
+                this.leaveMaybe(level, Dushi.IRON_WEDGE.get(), 0.35F);
+                this.leaveMaybe(level, Dushi.GREAT_SOUL.get(), 0.06F);
+            }
+            case SAPPER -> {
+                this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 2);
+                if (this.phase() < 2) {
+                    this.leave(level, Dushi.POWDER_POT.get(), 0, 2);
+                }
+            }
             case ARCHER -> {
                 this.leave(level, Items.ARROW, 0, 3);
                 this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 1);
@@ -381,7 +583,7 @@ public class WitheredEntity extends SoulsMob {
 
     @Override
     public float getVoicePitch() {
-        return this.kind == Kind.BUTCHER ? 0.72F + this.random.nextFloat() * 0.1F : super.getVoicePitch();
+        return this.kind == Kind.BUTCHER || this.kind == Kind.BARROWMAN ? 0.72F + this.random.nextFloat() * 0.1F : super.getVoicePitch();
     }
 
     @Override

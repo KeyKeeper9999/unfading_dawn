@@ -1627,11 +1627,16 @@ def route(target):
     return path[::-1]
 
 
-PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'skull', 'chain', 'banner', 'minecraft:light', 'place_name')
+PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'skull', 'chain', 'banner', 'minecraft:light', 'place_name',
+            'ladder', 'rail', 'glow_lichen', 'torch')
+# what is opened, in this order, and what the report calls the game from then on (a lord's name: his seals lift)
+STAGES = (('gravedigger', 'after the Gravedigger'), ('overseer', 'after the Overseer'), ('chaplain', 'after the Chaplain'),
+          ('quarry_key', "with the key of the Quarrymen's Gate"), ('taskmaster', 'after the Taskmaster'), ('stone_eater', 'after the Stone-Eater'))
 
 
 def analyse(b, blocked=frozenset(), quiet=False, stages=None):
-    """Walks the map the way a player can: step, jump one block up, drop any distance, jump a gap of up to three. Reports
+    """Walks the map the way a player can: step, jump one block up, drop any distance, jump a gap of up to three, climb a
+    ladder. A locked gate is a seal that its key lifts (the seal named after the key). Reports
     what is reached at each stage of the game, and any place that can be reached but not left towards a hearth."""
     cells = b.cells
     doors = {c for door, lever in b.doors for c in door}
@@ -1649,10 +1654,18 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
             return c not in open_doors
         if 'fog_gate' in name:
             return c in all_seals and c not in open_seals
+        if 'locked_gate' in name:
+            return c not in open_seals
         return not any(k in name for k in PASSABLE)
+
+    def ladder(c):
+        s = cells.get(c)
+        return s is not None and s != AIR and 'ladder' in (s[2] if isinstance(s, tuple) else s)
 
     def stands(c, od, os_):
         x, y, z = c
+        if ladder(c):
+            return not solid((x, y + 1, z), od, os_)           # on a ladder one hangs wherever there is room for the head
         below = cells.get((x, y - 1, z))
         if below is None or below == AIR:
             return False
@@ -1667,6 +1680,10 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
 
     def neighbours(c, od, os_):
         x, y, z = c
+        if ladder(c):
+            for ny in (y + 1, y - 1):
+                if ladder((x, ny, z)) and stands((x, ny, z), od, os_):
+                    yield (x, ny, z)
         for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             for reach in (1, 2, 3, 4):
                 nx, nz = x + dx * reach, z + dz * reach
@@ -1715,7 +1732,7 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
     report = []
     od, os_ = set(), set()
     if stages is None:
-        stages = [('at the start', None)] + [(f'after the {name.capitalize()}', name) for name in ('gravedigger', 'overseer', 'chaplain') if name in seals]
+        stages = [('at the start', None)] + [(label, name) for name, label in STAGES if name in seals]
     marks = [(k, x, y, z) for k, x, y, z in b.marks]
     problems = []
     final = None
@@ -1802,13 +1819,20 @@ def emission(name):
         return 3 * int(name.split('candles=')[1][0])
     if 'fog_gate' in name:
         return 6
+    if 'glow_lichen' in name:
+        return 7
+    if 'torch' in name:
+        return 10 if 'soul' in name else 14
+    if 'shard_heap' in name:
+        return 10
     if name.startswith('minecraft:light['):
         return int(name.split('level=')[1].split(']')[0].split(',')[0])
     return 0
 
 
 CLEAR = ('glass', 'iron_bars', 'chain', 'lantern', 'candle', 'mob_mark', 'banner', 'iron_door', 'fog_gate', 'lever', 'carpet', 'skull', 'cobweb',
-         'dead_bush', 'end_rod', 'fence', '_wall', 'campfire', 'decorated_pot', 'cauldron', 'hearth', 'forge', 'bell', 'chest', 'minecraft:light', 'place_name')
+         'dead_bush', 'end_rod', 'fence', '_wall', 'campfire', 'decorated_pot', 'cauldron', 'hearth', 'forge', 'bell', 'chest', 'minecraft:light', 'place_name',
+         'ladder', 'rail', 'glow_lichen', 'torch', 'locked_gate', 'pointed_dripstone', 'trapdoor', 'grindstone')
 
 
 def lights(b):

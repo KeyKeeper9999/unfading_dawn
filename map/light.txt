@@ -37,3 +37,10 @@ crypt_hall -460 -33 16
 crypt_hall_corner -471 -33 23
 crypt_passage -457 -33 38
 belfry -421 0 -21
+quarry_pit -14 -52 98
+quarry_maw -17 -52 128
+quarry_drift -16 -52 146
+quarry_shop 3 -38 146
+quarry_hall -12 -59 174
+quarry_workings -47 -59 201
+quarry_breach -72 -59 176

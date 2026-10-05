@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""The withered (prisoner, guard, archer, acolyte; townsman, butcher, watchman of the village): mesh extras for WitheredModel.java and their textures.
+"""The withered (prisoner, guard, archer, acolyte; townsman, butcher, watchman of the village; digger, barrowman,
+sapper of the quarry): mesh extras for WitheredModel.java and their textures.
 Run from the repo root; pass a file name to also get a preview sheet."""
 import random
 import sys
@@ -11,7 +12,7 @@ A = 'src/main/resources/assets/vsratie_dushi'
 JAVA = 'src/main/java/com/keykeeper/dushi/client/WitheredModel.java'
 
 # ---------------------------------------------------------------- mesh
-M = humanoid(128, slim_arms=True)
+M = humanoid(192, slim_arms=True)
 # prisoner: an iron collar and a shackle with a few links of chain still on the left wrist
 M.part('collar', 'body', (0, 0, 0), boxes=[Box(-4.5, -0.6, -2.5, 9, 2, 5, 'iron', 'collar')])
 M.part('shackle', 'left_arm', (0.5, 7, 0), boxes=[Box(-2, 0, -2.5, 4, 2, 5, 'iron', 'cuff'), Box(-0.5, 2, -3.3, 1, 6, 1, 'iron', 'chain')])
@@ -32,6 +33,17 @@ M.part('brawn_r', 'right_arm', (0, 0, 0), boxes=[Box(-3, -3, -3, 5, 8, 6, 'flesh
 M.part('brawn_l', 'left_arm', (0, 0, 0), boxes=[Box(-2, -3, -3, 5, 8, 6, 'flesh', 'brawn')])
 # watchman: the skirts of a long coat
 M.part('coat_tail', 'body', (0, 0, 0), boxes=[Box(-4, 12, -2, 8, 6, 4, 'coat', 'skirts', inflate=0.45)])
+# the quarry. A digger: a leather skullcap with a tallow candle stuck to its front
+M.part('candle_cap', 'head', (0, 0, 0), boxes=[Box(-4.5, -9.2, -4.5, 9, 3, 9, 'leather', 'skullcap'), Box(-1.5, -7.6, -5.5, 3, 1, 1, 'iron', 'sconce'),
+                                               Box(-0.5, -10.6, -5.5, 1, 3, 1, 'tallow', 'candle')])
+# a barrowman: his barrow, loaded with cut stone. It hangs from the model's root in front of him and turns about its axle
+M.part('barrow', None, (0, 20, -24), boxes=[
+    Box(-1, -4, -4, 2, 8, 8, 'wheel', 'wheel'), Box(-6, -9, 3, 12, 6, 14, 'plank', 'tray'), Box(-4.5, -12, 5, 9, 3, 10, 'stone', 'load'),
+    Box(-6.5, -8.5, 17, 1, 1, 8, 'plank', 'handle_r'), Box(5.5, -8.5, 17, 1, 1, 8, 'plank', 'handle_l'),
+    Box(-5.5, -3, 14, 1, 6, 1, 'plank', 'leg_r'), Box(4.5, -3, 14, 1, 6, 1, 'plank', 'leg_l'),
+    Box(-2.5, -1, -1, 1, 2, 5, 'plank', 'fork_r'), Box(1.5, -1, -1, 1, 2, 5, 'plank', 'fork_l')])
+# a sapper: a keg of blasting powder on his back, the match cord coiled over it
+M.part('keg', 'body', (0, 0, 0), boxes=[Box(-3, 1, 2, 6, 8, 5, 'keg', 'keg'), Box(0.5, -2, 4, 1, 3, 1, 'fuse', 'fuse')])
 M.pack(start_y=0)
 
 # ---------------------------------------------------------------- colours
@@ -201,6 +213,38 @@ def iron(face, px, py, fw, fh, rnd):
     return c
 
 
+QUARRY = ('digger', 'barrowman', 'sapper')
+DUST = (196, 192, 180)
+TALLOW = (226, 214, 176)
+FLAME = (255, 214, 110)
+PLANK = (112, 88, 60)
+PLANK_D = (80, 62, 44)
+PLANK_L = (140, 112, 78)
+STONE = (190, 188, 180)
+STONE_D = (128, 126, 122)
+STONE_L = (220, 218, 208)
+
+
+def blotch_(seed, x, y, cell=2.4):
+    from modelkit import blotch
+    return blotch(seed, x, y, cell)
+
+
+def dust(p, boxes, rnd):
+    """The white dust of the quarry on everything: thick on what faces up and on the feet, in streaks elsewhere."""
+    for b in boxes:
+        for face, (fx, fy, fw, fh) in b.faces().items():
+            for x in range(fw):
+                for y in range(fh):
+                    c = p.tex.getpixel((fx + x, fy + y))
+                    if c[3] == 0 or c[:3] in (BLACK, EMBER):
+                        continue
+                    amount = 0.55 if face == 'top' else 0.1 + 0.45 * blotch_(f'dust{b.part}{face}', x, y)
+                    if face not in ('top', 'bottom') and y >= fh - 2:
+                        amount += 0.2
+                    p.px(fx + x, fy + y, mix(c, DUST, min(0.75, amount)))
+
+
 def make(kind, seed):
     rnd = random.Random(seed)
     p = Painter(M, seed)
@@ -349,6 +393,65 @@ def make(kind, seed):
                     if rnd.random() < 0.35 + 0.1 * (y - 5):
                         p.put(ra, face, x, y, GORE if y < 10 else GORE_D)
         cloth_rows(p, la, range(7, 10), LEATHER, LEATHER_D, rnd, ragged=False)
+    elif kind == 'digger':
+        # stripped to the waist for the heat of the drift: sackcloth breeches tied with rope, rags bound round the
+        # hands, a strap across the chest for the wedges
+        for b in (rl, ll):
+            cloth_rows(p, b, range(0, 9), SACK, SACK_D, rnd)
+        cloth_rows(p, body, range(9, 12), SACK, SACK_D, rnd, ragged=False)
+        p.band(body, 9, ROPE)
+        for b in (ra, la):
+            cloth_rows(p, b, range(8, 11), LINEN, LINEN_D, rnd, ragged=False)
+        for i in range(8):
+            for face in ('front', 'back'):
+                p.put(body, face, i, min(8, i + 1), LEATHER_D)
+                p.put(body, face, i, min(8, i + 2), LEATHER)
+        for x, y in ((2, 4), (4, 6)):
+            p.put(body, 'front', x, y, IRON_L)
+            p.put(body, 'front', x, y + 1, IRON_D)
+    elif kind == 'barrowman':
+        # a sack with holes for the head and arms, girt with rope; the yoke strap of the barrow over both shoulders
+        cloth_rows(p, body, range(0, 12), SACK, SACK_D, rnd, ragged=False)
+        for b in (rl, ll):
+            cloth_rows(p, b, range(0, 6), SACK, SACK_D, rnd)
+            cloth_rows(p, b, range(9, 12), LINEN_D, shade(LINEN_D, 0.8), rnd, ragged=False)
+        p.band(body, 8, ROPE)
+        for face in ('front', 'back'):
+            for y in range(0, 8):
+                p.put(body, face, 1, y, LEATHER if y % 3 else LEATHER_D)
+                p.put(body, face, 6, y, LEATHER if y % 3 else LEATHER_D)
+        for x in range(8):
+            for z in range(4):
+                p.put(body, 'top', x, z, LEATHER_D if x in (1, 6) else SACK)
+        for b in (ra, la):
+            cloth_rows(p, b, range(8, 11), LEATHER, LEATHER_D, rnd, ragged=False)
+    elif kind == 'sapper':
+        # a long leather coat buttoned to the neck against the sparks, black to the elbows with powder
+        for b, rows in ((body, range(0, 12)), (ra, range(0, 9)), (la, range(0, 9))):
+            cloth_rows(p, b, rows, LEATHER, LEATHER_D, rnd, ragged=False)
+        for b in (rl, ll):
+            cloth_rows(p, b, range(0, 5), LEATHER, LEATHER_D, rnd, ragged=False)
+            cloth_rows(p, b, range(5, 12), BOOT, shade(BOOT, 0.8), rnd, ragged=False)
+        for y in range(0, 12):
+            p.put(body, 'front', 4, y, LEATHER_D)
+            if y % 3 == 1:
+                p.put(body, 'front', 3, y, BRASS)
+        p.band(body, 8, shade(LEATHER_D, 0.8))
+        # the straps of the keg, and a slow match wound round the left arm
+        for face in ('front',):
+            for y in range(0, 8):
+                p.put(body, face, 1, y, ROPE)
+                p.put(body, face, 6, y, ROPE)
+        for y in (2, 4, 6):
+            p.band(la, y, (190, 170, 120))
+        for b in (ra, la):
+            for face in ('right', 'front', 'left', 'back'):
+                for x in range(3):
+                    for y in range(9, 12):
+                        p.put(b, face, x, y, shade(BLACK, 1.2 + 0.5 * (y == 9)))
+        for x in range(8):
+            for z in range(4):
+                p.put(body, 'top', x, z, LEATHER)
     elif kind == 'watchman':
         # the night watch: a long dark coat with brass buttons, a wide belt, tall boots, gloves
         for b, rows in ((body, range(0, 12)), (ra, range(0, 9)), (la, range(0, 9)), (rl, range(0, 6)), (ll, range(0, 6))):
@@ -380,10 +483,12 @@ def make(kind, seed):
             for z in range(4):
                 p.put(body, 'top', x, z, COAT)
 
-    hood_c, hood_d, hood_l = (ROBE, ROBE_D, ROBE_L) if kind == 'acolyte' else (HOOD, HOOD_D, HOOD_L)
+    if kind in QUARRY:
+        dust(p, [body, ra, la, rl, ll, head], rnd)
+    hood_c, hood_d, hood_l = (ROBE, ROBE_D, ROBE_L) if kind == 'acolyte' else (LEATHER, LEATHER_D, shade(LEATHER, 1.2)) if kind == 'sapper' else (HOOD, HOOD_D, HOOD_L)
     # ---- the second layer of the head: scraps of hair for the prisoner, nothing for the guard, a hood for the archer
     hat = box_of(M, 'hat')
-    if kind in ('archer', 'acolyte'):
+    if kind in ('archer', 'acolyte', 'sapper'):
         def hood(face, px, py, fw, fh, r):
             if face == 'bottom':
                 return None
@@ -406,8 +511,8 @@ def make(kind, seed):
             for y in range(top, top + length):
                 p.put(hat, 'back', x, y, (58, 50, 46) if y % 2 else (46, 40, 37))
 
-    elif kind == 'butcher':
-        # a rag tied over the skull, stiff with the same blood
+    elif kind in ('butcher', 'barrowman'):
+        # a rag tied over the skull, stiff with the same blood (the barrowman's is only grey with dust)
         def wrap(face, px, py, fw, fh, r):
             if face == 'bottom':
                 return None
@@ -416,7 +521,7 @@ def make(kind, seed):
             if py > 2 or py == 2 and (px + (face == 'left')) % 3 == 0:
                 return None
             c = LINEN if (px * 2 + py) % 5 else LINEN_D
-            if face in ('front', 'right') and r.random() < 0.3:
+            if kind == 'butcher' and face in ('front', 'right') and r.random() < 0.3:
                 c = GORE
             return c
         p.fill_box(hat, wrap)
@@ -520,8 +625,10 @@ def make(kind, seed):
                     c = shade(SKIN_D, 0.9)
                 if (px * 3 + py) % 7 == 0:
                     c = shade(SKIN_D, 1.05)
-                if name == 'brawn_r' and py >= 4 and r.random() < 0.12 * (py - 3):
+                if kind == 'butcher' and name == 'brawn_r' and py >= 4 and r.random() < 0.12 * (py - 3):
                     c = GORE
+                if kind == 'barrowman':
+                    c = mix(c, DUST, 0.15 + 0.4 * blotch_(name + face, px, py))
             return c
         p.fill_box(box, brawn)
     skirts = M.parts['coat_tail']['boxes'][0]
@@ -531,7 +638,8 @@ def make(kind, seed):
             return COAT_D
         if py == fh - 1 and px % 3 == 1:
             return None
-        c = COAT_D if px in (0, fw - 1) or face == 'front' and px == 4 or face == 'back' and px in (3, 4) else COAT
+        dark, base = (LEATHER_D, LEATHER) if kind == 'sapper' else (COAT_D, COAT)
+        c = dark if px in (0, fw - 1) or face == 'front' and px == 4 or face == 'back' and px in (3, 4) else base
         return shade(c, 1.0 - 0.1 * py / max(1, fh - 1))
     p.fill_box(skirts, skirt)
     pauldron = M.parts['pauldron']['boxes'][0]
@@ -559,10 +667,76 @@ def make(kind, seed):
     p.band(quiver, 1, (150, 130, 96))
     p.band(quiver, 7, LEATHER_D)
     p.fill_box(fletch, lambda face, px, py, fw, fh, r: (200, 196, 184) if (px + py) % 2 else (150, 60, 50))
+    # ---- the quarry's things
+    skullcap, sconce, candle = M.parts['candle_cap']['boxes']
+
+    def cap_leather(face, px, py, fw, fh, r):
+        c = LEATHER if (px * 2 + py * 3) % 7 else LEATHER_D
+        if face not in ('top', 'bottom') and py == fh - 1:
+            c = LEATHER_D
+        return mix(shade(c, {'top': 1.15, 'bottom': 0.7}.get(face, 1.0)), DUST, 0.3 if face == 'top' else 0.12)
+    p.fill_box(skullcap, cap_leather)
+    p.fill_box(sconce, iron)
+    p.fill_box(candle, lambda face, px, py, fw, fh, r: FLAME if face == 'top' or py == 0 else (TALLOW if py > 1 else (250, 226, 150)))
+    wheel, tray, load, handle_r, handle_l, leg_r, leg_l, fork_r, fork_l = M.parts['barrow']['boxes']
+
+    def plank(face, px, py, fw, fh, r):
+        along = px if fw >= fh else py
+        across = py if fw >= fh else px
+        c = PLANK_D if across % 3 == 2 or along % 6 == 5 else (PLANK_L if r.random() < 0.1 else PLANK)
+        return mix(shade(c, {'top': 1.12, 'bottom': 0.68}.get(face, 1.0)), DUST, 0.18)
+    for b in (tray, handle_r, handle_l, leg_r, leg_l, fork_r, fork_l):
+        p.fill_box(b, plank)
+    # the tray is open: its top shows the boards of its floor in shadow round the load
+    fx, fy, fw, fh = tray.faces()['top']
+    for x in range(fw):
+        for y in range(fh):
+            edge = x in (0, fw - 1) or y in (0, fh - 1)
+            p.put(tray, 'top', x, y, shade(PLANK, 1.1) if edge else shade(PLANK_D, 0.6))
+    p.band(tray, 0, IRON_D, every=1)
+    for face in ('right', 'left'):
+        for y in range(6):
+            p.put(tray, face, 3, y, IRON_D)
+            p.put(tray, face, 10, y, IRON_D)
+
+    def wheel_paint(face, px, py, fw, fh, r):
+        if face in ('right', 'left'):
+            cx, cy = px - 3.5, py - 3.5
+            d = (cx * cx + cy * cy) ** 0.5
+            if d > 4.3:
+                return None
+            if d > 3.0:
+                return IRON_D if (px + py) % 2 else IRON
+            return IRON_L if d < 0.8 else (PLANK_D if abs(cx) < 0.6 or abs(cy) < 0.6 else PLANK)
+        return IRON_D if (px + py) % 3 else IRON
+    p.fill_box(wheel, wheel_paint)
+
+    def stone(face, px, py, fw, fh, r):
+        c = STONE_L if blotch_(f'load{face}', px, py) < 0.4 else STONE
+        if face == 'top' and (px == 4 or py in (3, 6)):
+            c = STONE_D                                      # the joints between the blocks
+        if face not in ('top', 'bottom') and px % 4 == 3:
+            c = STONE_D
+        return shade(c, {'top': 1.1, 'bottom': 0.7}.get(face, 0.95))
+    p.fill_box(load, stone)
+    keg, fuse = M.parts['keg']['boxes']
+
+    def keg_paint(face, px, py, fw, fh, r):
+        if face in ('top', 'bottom'):
+            return shade(PLANK_D if (px + py) % 2 else PLANK, 0.9 if face == 'top' else 0.6)
+        if py in (1, fh - 2):
+            return IRON_D if px % 2 else IRON
+        c = PLANK_D if px % 2 else PLANK
+        if face == 'back' and 2 <= px <= 3 and 3 <= py <= 4:
+            c = BLACK                                        # the mark of the powder mill, burnt in
+        return shade(c, 1.0 - 0.1 * py / fh)
+    p.fill_box(keg, keg_paint)
+    p.fill_box(fuse, lambda face, px, py, fw, fh, r: (255, 190, 80) if py == 0 and face != 'bottom' else ((190, 170, 120) if py % 2 else (150, 130, 90)))
     return p.tex
 
 
-EXTRAS = ('collar', 'shackle', 'kettle_hat', 'pauldron', 'hood_tail', 'quiver', 'cap', 'bulk', 'belly', 'apron', 'brawn_r', 'brawn_l', 'coat_tail')
+EXTRAS = ('collar', 'shackle', 'kettle_hat', 'pauldron', 'hood_tail', 'quiver', 'cap', 'bulk', 'belly', 'apron', 'brawn_r', 'brawn_l', 'coat_tail',
+          'candle_cap', 'barrow', 'keg')
 KIND_SHOW = {
     'prisoner': ('collar', 'shackle'),
     'guard': ('kettle_hat', 'pauldron'),
@@ -571,6 +745,9 @@ KIND_SHOW = {
     'townsman': ('cap',),
     'butcher': ('bulk', 'belly', 'apron', 'brawn_r', 'brawn_l'),
     'watchman': ('kettle_hat', 'coat_tail'),
+    'digger': ('candle_cap',),
+    'barrowman': ('barrow', 'brawn_r', 'brawn_l'),
+    'sapper': ('hood_tail', 'keg', 'coat_tail'),
 }
 KIND_HIDE = {kind: tuple(e for e in EXTRAS if e not in shown) for kind, shown in KIND_SHOW.items()}
 STOOP = {'body': (0.24, 0, 0), 'right_leg': {'off': (0, -0.4, 2.9)}, 'left_leg': {'off': (0, -0.4, 2.9)}, 'head': (0.18, 0, 0),
@@ -582,18 +759,23 @@ BULKY = {'body': (0.12, 0, 0), 'right_leg': {'off': (0, -0.1, 1.45)}, 'left_leg'
 CLEAVE_DRAW = dict(BULKY, right_arm={'rot': (-1.35, -1.2, 0), 'off': (-1.5, 0, 0)}, body=(0.06, -0.6, 0))
 CLEAVE_CUT = dict(BULKY, right_arm={'rot': (-1.35, 0.9, 0), 'off': (-1.5, 0, 0)}, body=(0.3, 0.6, 0))
 
+PUSH = dict(STOOP, right_arm={'rot': (-0.5, 0, 0.0), 'off': (-1.5, 0, 0)}, left_arm={'rot': (-0.5, 0, 0.0), 'off': (1.5, 0, 0)}, body=(0.32, 0, 0))
+PICK_UP = dict(STOOP, right_arm=(-2.7, 0, -0.35), left_arm=(-2.5, 0, 0.45), body=(0.0, 0, 0), head=(-0.2, 0, 0))
+PICK_DOWN = dict(STOOP, right_arm=(-0.9, 0, -0.3), left_arm=(-0.8, 0, 0.4), body=(0.6, 0, 0), head=(0.1, 0, 0))
+
 
 if __name__ == '__main__':
     M.write_java(JAVA)
     shots = []
-    for i, kind in enumerate(('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman')):
+    for i, kind in enumerate(('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman', 'digger', 'barrowman', 'sapper')):
         tex = make(kind, 100 + i)
         tex.save(f'{A}/textures/entity/withered_{kind}.png')
         hidden = KIND_HIDE[kind]
         poses = ((-0.45, BULKY), (0.9, BULKY), (3.0, BULKY), (-0.6, CLEAVE_DRAW)) if kind == 'butcher' else ((-0.45, STOOP), (0.9, STOOP), (3.0, STOOP), (-0.6, SWING))
+        poses = {'barrowman': ((-0.6, PUSH), (1.2, PUSH), (2.6, PUSH), (-1.2, PUSH)), 'digger': ((-0.45, STOOP), (0.9, STOOP), (-0.8, PICK_UP), (-1.2, PICK_DOWN))}.get(kind, poses)
         for yaw, pose in poses:
             shots.append(M.render(tex, yaw=yaw, pose=pose, size=(230, 330), zoom=8.5, centre=(0, 8), hidden=hidden))
     if len(sys.argv) > 1:
         sheet(shots, 4).save(sys.argv[1])
         tex = make('prisoner', 100)
-        tex.resize((512, 768), 0).save(sys.argv[1].replace('.png', '_tex.png'))
+        tex.resize((384, 1152), 0).save(sys.argv[1].replace('.png', '_tex.png'))

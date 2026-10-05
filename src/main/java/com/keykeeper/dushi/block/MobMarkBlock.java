@@ -52,7 +52,14 @@ public class MobMarkBlock extends Block implements EntityBlock {
         BUTCHER("butcher", () -> Dushi.WITHERED.get(WitheredEntity.Kind.BUTCHER).get(), false),
         WATCHMAN("watchman", () -> Dushi.WITHERED.get(WitheredEntity.Kind.WATCHMAN).get(), false),
         HOUND("hound", () -> Dushi.CARRION_HOUND.get(), false),
-        GRAVEDIGGER("gravedigger", () -> Dushi.GRAVEDIGGER.get(), true);
+        GRAVEDIGGER("gravedigger", () -> Dushi.GRAVEDIGGER.get(), true),
+        DIGGER("digger", () -> Dushi.WITHERED.get(WitheredEntity.Kind.DIGGER).get(), false),
+        BARROWMAN("barrowman", () -> Dushi.WITHERED.get(WitheredEntity.Kind.BARROWMAN).get(), false),
+        SAPPER("sapper", () -> Dushi.WITHERED.get(WitheredEntity.Kind.SAPPER).get(), false),
+        CRAWLER("crawler", () -> Dushi.BLIND_CRAWLER.get(), false),
+        UNHEWN("unhewn", () -> Dushi.UNHEWN.get(), false),
+        TASKMASTER("taskmaster", () -> Dushi.TASKMASTER.get(), true),
+        STONE_EATER("stone_eater", () -> Dushi.STONE_EATER.get(), true);
 
         public final String id;
         private final Supplier<EntityType<? extends Mob>> type;

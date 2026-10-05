@@ -335,6 +335,177 @@ rumble = lowpass(noise(d), 110, 3) * env(d, 0.6, 1.2) * 3.0 + tone(sweep(38, 52,
 moan = choir((sweep(98, 104, d), sweep(146.8, 138.6, d), sweep(73.4, 69.3, d)), d, 0.9, 1.3, ((380, 110, 1.0), (800, 150, 0.5), (2300, 260, 0.12)))
 S['gravedigger/raise'] = reverb(rumble + moan * 1.1 + place(d, (0.5, crackle(2.2, 45, 900) * 0.45), (0.9, bell(147, 2.0, 0.6) * 0.35)), 1.6, 0.4, 1.0)
 
+# ============================================================== the quarry: iron on stone, powder, falling rock, and what lives under it
+def contour(d, *points):
+    """A pitch that passes through (place 0..1, Hz) points over d seconds."""
+    xs, fs = zip(*points)
+    return np.interp(t(d) / d, xs, fs)
+
+
+def stone_hit(d, f=900, body=160, grit=0.6):
+    """Iron or stone on stone: a hard click, a short ring that is mostly noise, a knock in the floor, and chips."""
+    click = bandpass(noise(d), f * 0.6, f * 3.2) * decay(d, 0.018)
+    ring = (tone(f, d) + 0.6 * tone(f * 1.83, d) + 0.4 * tone(f * 2.71, d)) * decay(d, 0.05) * 0.35
+    low = thump(d, body, body * 0.45, 0.07) * 0.9
+    chips = crackle(d, 60, 2600) * decay(d, 0.16) * grit
+    return click * 1.3 + ring + low + chips
+
+
+def grind(d, lo=120, hi=700, seed=0):
+    """Stone dragged over stone: noise that sticks and slips."""
+    r = np.random.default_rng(900 + seed)
+    slip = np.clip(lowpass(r.standard_normal(int(SR * d)), 9) * 9 + 0.55, 0.05, 1.6)
+    return bandpass(noise(d), lo, hi) * slip + tone(55, d) * slip * 0.15
+
+
+for k in (0, 1):
+    S[f'quarry/pick{k + 1}'] = reverb(stone_hit(0.5, 1400 - 180 * k, 150, 0.7) + clang(2100 + 240 * k, 0.5, strike=0.8) * 0.22, 0.7, 0.3, 0.5)
+d = 1.6
+S['quarry/blast'] = reverb(place(d, (0.0, thump(1.4, 130, 26, 0.3) * 2.2), (0.0, lowpass(noise(0.5), 1100) * decay(0.5, 0.1) * 1.8),
+                                 (0.0, highpass(noise(0.12), 1500) * decay(0.12, 0.02) * 1.0), (0.18, crackle(1.3, 55, 1400) * decay(1.3, 0.45) * 0.8),
+                                 (0.1, lowpass(noise(1.4), 220, 3) * decay(1.4, 0.4) * 2.5)), 1.5, 0.4, 1.0)
+d = 0.9
+S['quarry/fuse'] = (bandpass(noise(d), 3200, 9000) * (0.5 + 0.5 * np.clip(lowpass(noise(d), 30) * 6, -1, 1)) * 0.7 + crackle(d, 150, 5000) * 0.6) * env(d, 0.03, 0.2)
+for k in (0, 1):
+    d = 1.3
+    S[f'quarry/rockfall{k + 1}'] = reverb(place(d, (0.0, stone_hit(0.6, 420 + 60 * k, 110, 1.0) * 1.3), (0.13 + 0.05 * k, stone_hit(0.5, 610, 140, 0.8) * 0.9),
+                                               (0.31, stone_hit(0.5, 350, 90, 0.9) * 0.7), (0.5 - 0.1 * k, stone_hit(0.4, 800, 170, 0.6) * 0.45),
+                                               (0.0, lowpass(noise(1.2), 180, 3) * decay(1.2, 0.3) * 2.0), (0.2, crackle(1.0, 50, 1500) * decay(1.0, 0.3) * 0.5)),
+                                          1.2, 0.35, 0.8)
+d = 0.5
+S['quarry/barrow'] = reverb(rattle(d, 7, 260, 900, seed=41) * 0.9 + tone(sweep(1750, 1480, d), d) * env(d, 0.05, 0.3) * 0.12
+                            + place(d, (0.05, thump(0.25, 120, 60, 0.05) * 0.6), (0.27, thump(0.2, 105, 55, 0.05) * 0.5)), 0.4, 0.2, 0.25)
+
+# the crawler has no eyes: it clicks to itself in the dark and listens to what comes back
+THIN = ((900, 220, 1.0), (2100, 320, 0.9), (3600, 500, 0.5))
+
+
+def crawler_ambient(k):
+    d = 1.5
+    out = np.zeros(int(SR * d))
+    at, gap = 0.05, 0.2 - 0.03 * k
+    while at < d - 0.3:
+        c = bandpass(noise(0.03), 1800 + 500 * k, 5200) * decay(0.03, 0.004)
+        i = int(at * SR)
+        out[i:i + len(c)] += c * (0.6 + 0.4 * rng.random())
+        at += gap
+        gap = max(0.035, gap * 0.82)
+    wheeze = voice(contour(d, (0, 310), (0.6, 280), (1, 340 + 60 * k)), d, THIN, breath=1.4, jitter=0.08, rough=0.3) * env(d, 0.5, 0.5) * 0.12
+    return reverb(out + wheeze, 1.2, 0.35, 0.8)
+
+
+S['crawler/ambient1'] = crawler_ambient(0)
+S['crawler/ambient2'] = crawler_ambient(1)
+d = 0.4
+S['crawler/hurt'] = reverb(voice(contour(d, (0, 560), (0.3, 640), (1, 380)), d, THIN, breath=1.0, jitter=0.08, rough=0.5) * env(d, 0.005, 0.25)
+                           + bandpass(noise(d), 2500, 7000) * decay(d, 0.1) * 0.35, 0.6, 0.25, 0.4)
+d = 1.3
+S['crawler/death'] = reverb(voice(contour(d, (0, 480), (0.25, 420), (1, 110)), d, THIN, breath=1.2, jitter=0.1, rough=0.8) * env(d, 0.01, 0.8)
+                            + place(d, (0.5, bandpass(noise(0.03), 1800, 5200) * decay(0.03, 0.004)), (0.78, bandpass(noise(0.03), 1800, 5200) * decay(0.03, 0.004) * 0.7),
+                                    (1.12, bandpass(noise(0.03), 1800, 5200) * decay(0.03, 0.004) * 0.4)), 1.0, 0.3, 0.7)
+d = 0.95
+S['crawler/screech'] = reverb(voice(contour(d, (0, 700), (0.22, 1180), (0.6, 1090), (1, 820)), d, ((1300, 300, 1.0), (2700, 400, 1.0), (4300, 600, 0.6)),
+                                    breath=0.8, jitter=0.1, rough=0.85) * env(d, 0.02, 0.35) + bandpass(noise(d), 3000, 6500) * env(d, 0.05, 0.5) * 0.25,
+                              1.6, 0.4, 1.1)
+
+# the unhewn is stone and sounds of nothing else
+for k in (0, 1):
+    d = 1.5
+    S[f'unhewn/ambient{k + 1}'] = reverb(grind(d, 110 + 30 * k, 640 + 120 * k, seed=k) * env(d, 0.3, 0.6) * 1.2, 1.0, 0.3, 0.6)
+S['unhewn/hurt'] = reverb(stone_hit(0.45, 720, 120, 1.0), 0.6, 0.25, 0.4)
+d = 2.4
+S['unhewn/death'] = reverb(place(d, (0.0, stone_hit(0.6, 520, 100, 1.0) * 1.2), (0.0, grind(1.4, 100, 600, seed=5) * env(1.4, 0.05, 0.9) * 1.1),
+                                 (0.35, stone_hit(0.5, 400, 90, 1.0)), (0.7, stone_hit(0.5, 640, 130, 0.9) * 0.8), (1.0, thump(0.9, 80, 30, 0.2) * 1.8),
+                                 (1.0, crackle(1.3, 45, 1300) * decay(1.3, 0.4) * 0.8), (1.45, stone_hit(0.4, 880, 150, 0.6) * 0.4)), 1.3, 0.35, 0.9)
+d = 1.8
+S['unhewn/wake'] = reverb(place(d, (0.0, highpass(noise(0.08), 1800) * decay(0.08, 0.012) * 1.6), (0.0, stone_hit(0.5, 1100, 140, 0.9)),
+                                (0.25, grind(1.5, 90, 520, seed=7) * env(1.5, 0.6, 0.4) * 1.3), (0.9, stone_hit(0.4, 760, 120, 0.8) * 0.6),
+                                (0.2, crackle(1.4, 30, 1500) * 0.35)), 1.2, 0.35, 0.8)
+d = 1.2
+S['unhewn/slam'] = reverb(place(d, (0.0, thump(1.0, 85, 28, 0.2) * 2.2), (0.0, stone_hit(0.6, 380, 90, 1.0) * 1.2),
+                                (0.0, lowpass(noise(0.4), 600) * decay(0.4, 0.07) * 1.2), (0.12, crackle(1.0, 60, 1400) * decay(1.0, 0.3) * 0.7)), 1.1, 0.35, 0.8)
+d = 0.42
+S['unhewn/step'] = reverb(grind(d, 140, 620, seed=9) * env(d, 0.02, 0.22) * 0.8 + place(d, (0.2, thump(0.2, 95, 45, 0.05) * 1.0)), 0.5, 0.2, 0.3)
+
+# the taskmaster breathes through a cloth, and his work is a maul, wedges and the rock they split
+CLOTHED = ((280, 100, 1.0), (640, 140, 0.6), (1150, 200, 0.18))
+
+
+def taskmaster_ambient(k):
+    d = 2.4
+    f = contour(d, (0, 86 + 6 * k), (0.5, 74), (1, 66)) * (1 + 0.03 * np.sin(2 * np.pi * 1.1 * t(d)))
+    v = lowpass(voice(f, d, CLOTHED, breath=0.7, jitter=0.05, rough=0.75), 800) * env(d, 0.5, 1.0)
+    breath = lowpass(moving_bandpass(noise(d), sweep(360, 760 if k else 300, d), 0.5), 1000) * env(d, 0.6, 0.9) * 0.9
+    return reverb(v + breath, 1.0, 0.3, 0.6)
+
+
+S['taskmaster/ambient1'] = taskmaster_ambient(0)
+S['taskmaster/ambient2'] = taskmaster_ambient(1)
+d = 0.65
+S['taskmaster/hurt'] = reverb(lowpass(voice(contour(d, (0, 140), (0.2, 150), (1, 84)), d, CLOTHED, breath=0.6, jitter=0.07, rough=0.85), 1000) * env(d, 0.01, 0.4), 0.7, 0.25, 0.5)
+d = 3.6
+S['taskmaster/death'] = reverb(place(d, (0.0, lowpass(voice(contour(2.5, (0, 150), (0.15, 130), (1, 44)), 2.5, CLOTHED, breath=0.8, jitter=0.08, rough=0.9), 900) * env(2.5, 0.03, 1.8)),
+                                     (1.9, clang(170, 1.2, strike=0.9) * 0.7), (1.9, stone_hit(0.5, 420, 100, 0.8) * 0.8), (2.4, thump(1.0, 80, 28, 0.25) * 1.8),
+                                     (2.4, lowpass(noise(0.5), 500) * decay(0.5, 0.09) * 1.0), (2.55, crackle(0.9, 40, 1000) * 0.4)), 1.4, 0.35, 1.0)
+d = 1.9
+S['taskmaster/shout'] = reverb(voice(contour(d, (0, 105), (0.2, 168), (0.65, 150), (1, 88)), d, ((420, 130, 1.0), (980, 180, 0.9), (2300, 300, 0.35)),
+                                     breath=0.5, jitter=0.07, rough=0.9) * env(d, 0.06, 0.6), 1.8, 0.4, 1.3)
+d = 1.1
+S['taskmaster/maul'] = reverb(place(d, (0.0, thump(0.9, 96, 30, 0.18) * 2.2), (0.0, clang(180, 0.9, strike=1.0) * 0.5), (0.0, stone_hit(0.5, 520, 110, 1.0) * 1.0),
+                                    (0.1, crackle(0.9, 60, 1400) * decay(0.9, 0.25) * 0.6)), 1.0, 0.35, 0.8)
+d = 0.6
+S['taskmaster/wedge'] = reverb(clang(2300, d, strike=1.0) * 0.8 + clang(3450, d) * 0.35 + place(d, (0.0, thump(0.15, 220, 120, 0.03) * 0.5)), 0.8, 0.3, 0.6)
+d = 1.5
+cracks = np.zeros(int(SR * d))
+at, gap = 0.0, 0.2
+while at < d - 0.25:
+    c = highpass(noise(0.07), 1400) * decay(0.07, 0.011) * (0.7 + 0.5 * rng.random()) + thump(0.07, 260, 110, 0.02) * 0.6
+    i = int(at * SR)
+    cracks[i:i + len(c)] += c[:len(cracks) - i]
+    at += gap
+    gap = max(0.035, gap * 0.8)
+S['taskmaster/crack'] = reverb(cracks + lowpass(noise(d), 200, 3) * env(d, 0.3, 0.6) * 2.2 + crackle(d, 50, 1600) * env(d, 0.4, 0.5) * 0.5, 1.2, 0.35, 0.9)
+
+# the stone-eater: a chest like a cellar, and rock giving way round it
+DEEP = ((170, 80, 1.0), (430, 120, 0.9), (900, 200, 0.4))
+
+
+def eater_ambient(k):
+    d = 2.8
+    f = contour(d, (0, 50 + 4 * k), (0.5, 43), (1, 38 + 6 * k)) * (1 + 0.04 * np.sin(2 * np.pi * 0.7 * t(d)))
+    v = voice(f, d, DEEP, breath=0.4, jitter=0.06, rough=1.0) * env(d, 0.6, 1.1)
+    gravel = lowpass(noise(d), 320) * (0.5 + 0.5 * np.clip(lowpass(noise(d), 12) * 8, -1, 1)) * env(d, 0.7, 1.0) * 0.8
+    return reverb(v * 1.2 + gravel, 1.4, 0.35, 0.9)
+
+
+S['stone_eater/ambient1'] = eater_ambient(0)
+S['stone_eater/ambient2'] = eater_ambient(1)
+d = 0.9
+S['stone_eater/hurt'] = reverb(voice(contour(d, (0, 98), (0.2, 112), (1, 58)), d, DEEP, breath=0.5, jitter=0.08, rough=1.0) * env(d, 0.01, 0.55)
+                               + bandpass(noise(d), 900, 2600) * decay(d, 0.15) * 0.25, 1.0, 0.3, 0.7)
+d = 3.8
+S['stone_eater/death'] = reverb(place(d, (0.0, voice(contour(2.8, (0, 105), (0.2, 90), (1, 30)), 2.8, DEEP, breath=0.6, jitter=0.09, rough=1.0) * env(2.8, 0.03, 2.0) * 1.2),
+                                      (0.0, lowpass(noise(3.4), 160, 3) * env(3.4, 0.5, 1.5) * 2.0), (2.2, thump(1.2, 70, 24, 0.3) * 2.2),
+                                      (2.2, stone_hit(0.6, 380, 90, 1.0)), (2.4, crackle(1.3, 45, 1200) * decay(1.3, 0.4) * 0.7)), 1.8, 0.4, 1.2)
+d = 2.5
+S['stone_eater/roar'] = reverb(voice(contour(d, (0, 58), (0.18, 112), (0.6, 96), (1, 46)), d, ((230, 100, 1.0), (560, 150, 1.0), (1200, 260, 0.6), (2400, 400, 0.25)),
+                                     breath=0.5, jitter=0.08, rough=1.0) * env(d, 0.08, 0.9) * 1.3
+                               + bandpass(noise(d), 1000, 3000) * env(d, 0.2, 1.0) * 0.2 + lowpass(noise(d), 120, 3) * env(d, 0.3, 1.0) * 2.0, 2.0, 0.4, 1.5)
+d = 1.6
+scrapes = np.zeros(int(SR * d))
+for i, at in enumerate((0.0, 0.34, 0.66, 0.98)):
+    sc = bandpass(noise(0.3), 220, 1500 - 150 * i) * env(0.3, 0.12, 0.1) * (1.0 - 0.1 * i) + stone_hit(0.3, 520, 110, 0.9) * 0.4
+    a = int(at * SR)
+    scrapes[a:a + len(sc)] += sc
+S['stone_eater/burrow'] = reverb(scrapes + lowpass(noise(d), 150, 3) * env(d, 0.2, 0.5) * 2.4 + crackle(d, 35, 1300) * 0.35, 1.1, 0.35, 0.8)
+d = 1.8
+S['stone_eater/erupt'] = reverb(place(d, (0.0, thump(1.5, 110, 24, 0.33) * 2.4), (0.0, lowpass(noise(0.6), 900) * decay(0.6, 0.12) * 1.8),
+                                      (0.02, stone_hit(0.6, 420, 100, 1.0) * 1.1), (0.15, stone_hit(0.5, 640, 130, 0.9) * 0.7),
+                                      (0.1, crackle(1.6, 70, 1300) * decay(1.6, 0.5) * 0.9), (0.0, lowpass(noise(1.6), 200, 3) * decay(1.6, 0.45) * 2.4)), 1.6, 0.4, 1.1)
+d = 0.55
+S['stone_eater/bite'] = reverb(place(d, (0.0, stone_hit(0.3, 900, 170, 0.5) * 1.0), (0.035, stone_hit(0.3, 700, 140, 0.4) * 0.8),
+                                     (0.0, voice(contour(0.4, (0, 90), (1, 60)), 0.4, DEEP, breath=0.5, jitter=0.08, rough=1.0) * env(0.4, 0.01, 0.25) * 0.8)), 0.7, 0.3, 0.5)
+
 # ============================================================== the overseer: a huge chest, iron, a chain
 BIG = ((260, 90, 1.0), (620, 130, 0.8), (1300, 220, 0.35))
 
@@ -610,6 +781,18 @@ EVENTS = {
     'entity.gravedigger.death': ['gravedigger/death'],
     'entity.gravedigger.dig': ['gravedigger/dig'],
     'entity.gravedigger.raise': ['gravedigger/raise'],
+    'entity.quarry.pick': ['quarry/pick1', 'quarry/pick2'], 'entity.quarry.blast': ['quarry/blast'], 'entity.quarry.fuse': ['quarry/fuse'],
+    'entity.quarry.rockfall': ['quarry/rockfall1', 'quarry/rockfall2'], 'entity.quarry.barrow': ['quarry/barrow'],
+    'entity.crawler.ambient': ['crawler/ambient1', 'crawler/ambient2'], 'entity.crawler.hurt': ['crawler/hurt'],
+    'entity.crawler.death': ['crawler/death'], 'entity.crawler.screech': ['crawler/screech'],
+    'entity.unhewn.ambient': ['unhewn/ambient1', 'unhewn/ambient2'], 'entity.unhewn.hurt': ['unhewn/hurt'], 'entity.unhewn.death': ['unhewn/death'],
+    'entity.unhewn.wake': ['unhewn/wake'], 'entity.unhewn.slam': ['unhewn/slam'], 'entity.unhewn.step': ['unhewn/step'],
+    'entity.taskmaster.ambient': ['taskmaster/ambient1', 'taskmaster/ambient2'], 'entity.taskmaster.hurt': ['taskmaster/hurt'],
+    'entity.taskmaster.death': ['taskmaster/death'], 'entity.taskmaster.shout': ['taskmaster/shout'], 'entity.taskmaster.maul': ['taskmaster/maul'],
+    'entity.taskmaster.wedge': ['taskmaster/wedge'], 'entity.taskmaster.crack': ['taskmaster/crack'],
+    'entity.stone_eater.ambient': ['stone_eater/ambient1', 'stone_eater/ambient2'], 'entity.stone_eater.hurt': ['stone_eater/hurt'],
+    'entity.stone_eater.death': ['stone_eater/death'], 'entity.stone_eater.roar': ['stone_eater/roar'], 'entity.stone_eater.burrow': ['stone_eater/burrow'],
+    'entity.stone_eater.erupt': ['stone_eater/erupt'], 'entity.stone_eater.bite': ['stone_eater/bite'],
     'entity.keykeeper.ambient': ['keykeeper/ambient1', 'keykeeper/ambient2'],
     'entity.keykeeper.give': ['keykeeper/give'],
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],
@@ -660,7 +843,7 @@ if __name__ == '__main__':
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
         names = [n for n in S if n != 'music/boss']
-        fig, axes = plt.subplots(10, 7, figsize=(28, 30))
+        fig, axes = plt.subplots(12, 9, figsize=(36, 36))
         axes = axes.ravel()
         for ax, name in zip(axes, names):
             x = np.asarray(S[name], float)

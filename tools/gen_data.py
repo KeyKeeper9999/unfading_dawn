@@ -149,8 +149,17 @@ MAP_CHESTS = {
     'sacristy': [(M + 'mend', 1), (M + 'return_ember', 2), (SOUL, 2)],
     'crypt': [(GREAT, 1), (M + 'rust_cuirass', 1)],
     'crypt_side': [(SCRAP, 6), (M + 'heavy_soul_shard', 1), (SOUL, 2)],
-    'treasury': [(GREAT, 3)],
+    'treasury': [(GREAT, 3), (M + 'quarry_key', 1)],          # the key of the Quarrymen's Gate: the way to the White Pit
     'treasury_arms': [(M + 'chaplain_skirt', 1), (M + 'chaplain_shoes', 1), (M + 'tower_shield', 1)],
+    # the White Pit (tools/gen_quarry.py)
+    'quarry_shed': [(M + 'powder_pot', 4), (M + 'iron_wedge', 2), (SCRAP, 3)],
+    'quarry_field': [(M + 'iron_wedge', 3), (SOUL, 2), (M + 'return_ember', 1)],
+    'quarry_shop': [(GREAT, 1), (M + 'iron_wedge', 2), (CLOTH, 4)],
+    'quarry_eyes': [(GREAT, 2), (M + 'powder_pot', 3)],
+    'quarry_rim': [(M + 'powder_pot', 4), (M + 'return_ember', 2), (SOUL, 2)],
+    'quarry_workings': [(GREAT, 2), (M + 'iron_wedge', 3)],
+    'quarry_stall': [(GREAT, 1), (M + 'rust_helm', 1), (SCRAP, 6)],
+    'quarry_breach': [(GREAT, 4), (M + 'return_ember', 3), (M + 'iron_wedge', 4)],
 }
 for _name, _items in MAP_CHESTS.items():
     CHESTS['map/' + _name] = [pool(item(_id, count=(_n, _n)) if _n > 1 else item(_id)) for _id, _n in _items]

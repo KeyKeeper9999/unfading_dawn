@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import com.keykeeper.dushi.block.FogGateBlock;
 import com.keykeeper.dushi.block.ForgeBlock;
 import com.keykeeper.dushi.block.HearthBlock;
+import com.keykeeper.dushi.block.LockedGateBlock;
 import com.keykeeper.dushi.block.MobMarkBlock;
 import com.keykeeper.dushi.block.MobMarkBlockEntity;
 import com.keykeeper.dushi.block.PlaceNameBlock;
@@ -112,6 +113,13 @@ public class Dushi {
             "ui.death", "ui.boss_defeated", "ui.hearth_lit", "ui.level_up", "ui.souls_gain", "ui.souls_retrieve", "ui.place",
             "entity.hound.ambient", "entity.hound.hurt", "entity.hound.death", "entity.hound.bite", "entity.watchman.alarm",
             "entity.gravedigger.ambient", "entity.gravedigger.hurt", "entity.gravedigger.death", "entity.gravedigger.dig", "entity.gravedigger.raise",
+            "entity.quarry.pick", "entity.quarry.blast", "entity.quarry.fuse", "entity.quarry.rockfall", "entity.quarry.barrow",
+            "entity.crawler.ambient", "entity.crawler.hurt", "entity.crawler.death", "entity.crawler.screech",
+            "entity.unhewn.ambient", "entity.unhewn.hurt", "entity.unhewn.death", "entity.unhewn.wake", "entity.unhewn.slam", "entity.unhewn.step",
+            "entity.taskmaster.ambient", "entity.taskmaster.hurt", "entity.taskmaster.death", "entity.taskmaster.shout", "entity.taskmaster.maul",
+            "entity.taskmaster.wedge", "entity.taskmaster.crack",
+            "entity.stone_eater.ambient", "entity.stone_eater.hurt", "entity.stone_eater.death", "entity.stone_eater.roar", "entity.stone_eater.burrow",
+            "entity.stone_eater.erupt", "entity.stone_eater.bite",
             "block.hearth.rest", "block.fog_gate.pass",
             "item.flask.drink", "item.flask.empty", "item.spell.shard", "item.spell.shard_hit", "item.spell.mend", "item.spell.rebuke",
             "item.spell.fire", "item.spell.fire_burst", "item.spell.fizzle",
@@ -163,6 +171,10 @@ public class Dushi {
     public static final DeferredBlock<PlaceNameBlock> PLACE_NAME = BLOCKS.registerBlock("place_name", PlaceNameBlock::new,
             props -> props.mapColor(MapColor.NONE).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
                     .pushReaction(PushReaction.IMMOVEABLE));
+    /** An iron grate that opens to whoever carries its key: see {@link LockedGateBlock}. It has no item; maps set it. */
+    public static final DeferredBlock<LockedGateBlock> LOCKED_GATE = BLOCKS.registerBlock("locked_gate", LockedGateBlock::new,
+            props -> props.mapColor(MapColor.METAL).strength(-1.0F, 3600000.0F).noOcclusion().noLootTable()
+                    .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.METAL));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MobMarkBlockEntity>> MOB_MARK_ENTITY = BLOCK_ENTITIES.register("mob_mark",
             () -> new BlockEntityType<>(MobMarkBlockEntity::new, MOB_MARK.get()));
 
@@ -224,6 +236,10 @@ public class Dushi {
     public static final DeferredItem<WeaponItem> GREAT_KEY = weapon("great_key", 14.0F, 0.7F, 1.0F, 38.0F, 1.0F, 0.0F, 1.5F, 900, Rarity.EPIC);
     public static final DeferredItem<WeaponItem> GRAVE_SPADE = weapon("grave_spade", 10.0F, 1.0F, 0.75F, 26.0F, 1.0F, 0.1F, 1.5F, 600, Rarity.EPIC);
     public static final DeferredItem<WeaponItem> CENSER_FLAIL = weapon("censer_flail", 9.0F, 1.2F, 1.0F, 22.0F, 0.4F, 0.6F, 1.5F, 700, Rarity.EPIC);
+    /** The quarry: a digger's pick, the Taskmaster's maul, and a blade of the Stone-Eater's claw bound to a haft. */
+    public static final DeferredItem<WeaponItem> QUARRY_PICK = weapon("quarry_pick", 9.0F, 1.1F, 0.25F, 22.0F, 0.9F, 0.2F, 1.5F, 500, Rarity.UNCOMMON);
+    public static final DeferredItem<WeaponItem> GREAT_MAUL = weapon("great_maul", 16.0F, 0.65F, 1.0F, 42.0F, 1.0F, 0.0F, 1.5F, 900, Rarity.EPIC);
+    public static final DeferredItem<WeaponItem> EATER_CLAW = weapon("eater_claw", 9.5F, 1.9F, 0.0F, 14.0F, 0.2F, 0.9F, 2.0F, 800, Rarity.EPIC);
 
     public static final DeferredItem<ShortBowItem> SHORT_BOW = ITEMS.registerItem("short_bow", props -> new ShortBowItem(props.stacksTo(1)));
 
@@ -263,6 +279,8 @@ public class Dushi {
     /** What the dead of the stockade leave behind; the mod's armour is made and mended with these. */
     public static final DeferredItem<Item> TATTERED_CLOTH = ITEMS.registerSimpleItem("tattered_cloth");
     public static final DeferredItem<Item> RUST_SCRAP = ITEMS.registerSimpleItem("rust_scrap");
+    /** A quarryman's splitting wedge: the iron of the quarry, for what is forged from it. */
+    public static final DeferredItem<Item> IRON_WEDGE = ITEMS.registerSimpleItem("iron_wedge");
 
     // ------------------------------------------------------------------ magic
 
@@ -307,6 +325,14 @@ public class Dushi {
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 5000));
     public static final DeferredItem<SoulItem> CHAPLAIN_SOUL = ITEMS.registerItem("chaplain_soul",
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 8000));
+    public static final DeferredItem<SoulItem> TASKMASTER_SOUL = ITEMS.registerItem("taskmaster_soul",
+            props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 10000));
+    public static final DeferredItem<SoulItem> STONE_EATER_SOUL = ITEMS.registerItem("stone_eater_soul",
+            props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 14000));
+    /** Opens the Quarrymen's Gate of the borough: see {@link LockedGateBlock}. */
+    public static final DeferredItem<Item> QUARRY_KEY = ITEMS.registerItem("quarry_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
+    public static final DeferredItem<com.keykeeper.dushi.item.PowderPotItem> POWDER_POT = ITEMS.registerItem("powder_pot",
+            props -> new com.keykeeper.dushi.item.PowderPotItem(props.stacksTo(16)));
     public static final DeferredItem<ReturnEmberItem> RETURN_EMBER = ITEMS.registerItem("return_ember", props -> new ReturnEmberItem(props.stacksTo(16)));
     public static final DeferredItem<TarPotItem> TAR_POT = ITEMS.registerItem("tar_pot", props -> new TarPotItem(props.stacksTo(16)));
     public static final DeferredItem<com.keykeeper.dushi.item.FlaskShardItem> FLASK_SHARD = ITEMS.registerItem("flask_shard",
@@ -320,6 +346,11 @@ public class Dushi {
             "spell_bolt", SpellBoltEntity::new, MobCategory.MISC, b -> b.sized(0.35F, 0.35F).clientTrackingRange(6).updateInterval(2));
     public static final DeferredHolder<EntityType<?>, EntityType<TarPotEntity>> TAR_POT_ENTITY = ENTITIES.registerEntityType(
             "tar_pot", TarPotEntity::new, MobCategory.MISC, b -> b.sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(10));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.PowderPotEntity>> POWDER_POT_ENTITY = ENTITIES.registerEntityType(
+            "powder_pot", com.keykeeper.dushi.entity.PowderPotEntity::new, MobCategory.MISC, b -> b.sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(10));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.WedgeEntity>> WEDGE_ENTITY = ENTITIES.registerEntityType(
+            "thrown_wedge", com.keykeeper.dushi.entity.WedgeEntity::new, MobCategory.MISC, b -> b.sized(0.3F, 0.3F).clientTrackingRange(6).updateInterval(5));
 
     /** The undead of the stockade, see {@link WitheredEntity.Kind}. */
     public static final Map<WitheredEntity.Kind, DeferredHolder<EntityType<?>, EntityType<WitheredEntity>>> WITHERED = new LinkedHashMap<>();
@@ -347,6 +378,15 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<GravediggerEntity>> GRAVEDIGGER = ENTITIES.registerEntityType(
             "gravedigger", GravediggerEntity::new, MobCategory.MONSTER, b -> b.sized(1.5F, 3.6F).eyeHeight(3.1F).clientTrackingRange(12));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.BlindCrawlerEntity>> BLIND_CRAWLER = ENTITIES.registerEntityType(
+            "blind_crawler", com.keykeeper.dushi.entity.BlindCrawlerEntity::new, MobCategory.MONSTER, b -> b.sized(0.9F, 0.9F).eyeHeight(0.6F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.UnhewnEntity>> UNHEWN = ENTITIES.registerEntityType(
+            "unhewn", com.keykeeper.dushi.entity.UnhewnEntity::new, MobCategory.MONSTER, b -> b.sized(1.1F, 2.7F).eyeHeight(2.4F).clientTrackingRange(10).fireImmune());
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.TaskmasterEntity>> TASKMASTER = ENTITIES.registerEntityType(
+            "taskmaster", com.keykeeper.dushi.entity.TaskmasterEntity::new, MobCategory.MONSTER, b -> b.sized(1.5F, 3.4F).eyeHeight(2.9F).clientTrackingRange(12));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.StoneEaterEntity>> STONE_EATER = ENTITIES.registerEntityType(
+            "stone_eater", com.keykeeper.dushi.entity.StoneEaterEntity::new, MobCategory.MONSTER, b -> b.sized(2.4F, 2.1F).eyeHeight(1.5F).clientTrackingRange(12).fireImmune());
+
     public static final List<DeferredItem<SpawnEggItem>> SPAWN_EGGS = new ArrayList<>();
 
     private static void egg(String name, Supplier<? extends EntityType<? extends Mob>> type) {
@@ -359,6 +399,10 @@ public class Dushi {
         egg("gilded_knight", GILDED_KNIGHT);
         egg("carrion_hound", CARRION_HOUND);
         egg("gravedigger", GRAVEDIGGER);
+        egg("blind_crawler", BLIND_CRAWLER);
+        egg("unhewn", UNHEWN);
+        egg("taskmaster", TASKMASTER);
+        egg("stone_eater", STONE_EATER);
         egg("keykeeper", KEYKEEPER);
         egg("overseer", OVERSEER);
         egg("chaplain", CHAPLAIN);
@@ -378,10 +422,16 @@ public class Dushi {
                 output.accept(FLASK_SHARD.get());
                 output.accept(RETURN_EMBER.get());
                 output.accept(TAR_POT.get());
+                output.accept(POWDER_POT.get());
+                output.accept(IRON_WEDGE.get());
+                output.accept(QUARRY_KEY.get());
                 output.accept(NAMELESS_SOUL.get());
                 output.accept(GREAT_SOUL.get());
                 output.accept(OVERSEER_SOUL.get());
                 output.accept(CHAPLAIN_SOUL.get());
+                output.accept(GRAVEDIGGER_SOUL.get());
+                output.accept(TASKMASTER_SOUL.get());
+                output.accept(STONE_EATER_SOUL.get());
                 WEAPONS.forEach(item -> output.accept(item.get()));
                 output.accept(SHORT_BOW.get());
                 SHIELDS.forEach(item -> output.accept(item.get()));
@@ -413,6 +463,10 @@ public class Dushi {
             event.put(GILDED_KNIGHT.get(), RustKnightEntity.createGildedAttributes().build());
             event.put(CARRION_HOUND.get(), CarrionHoundEntity.createAttributes().build());
             event.put(GRAVEDIGGER.get(), GravediggerEntity.createAttributes().build());
+            event.put(BLIND_CRAWLER.get(), com.keykeeper.dushi.entity.BlindCrawlerEntity.createAttributes().build());
+            event.put(UNHEWN.get(), com.keykeeper.dushi.entity.UnhewnEntity.createAttributes().build());
+            event.put(TASKMASTER.get(), com.keykeeper.dushi.entity.TaskmasterEntity.createAttributes().build());
+            event.put(STONE_EATER.get(), com.keykeeper.dushi.entity.StoneEaterEntity.createAttributes().build());
             event.put(KEYKEEPER.get(), KeykeeperEntity.createAttributes().build());
             event.put(OVERSEER.get(), OverseerEntity.createAttributes().build());
             event.put(CHAPLAIN.get(), ChaplainEntity.createAttributes().build());

@@ -39,8 +39,8 @@ def tiles():
         rect(c0, r0, c1, r1, ',')
     for ch, (c0, r0, c1, r1) in SPECIAL.items():
         rect(c0, r0, c1, r1, ch)
-    for c, r in ((20, 0), (21, 0), (20, 11), (21, 11), (20, 43), (21, 43)):
-        g[r][c] = ':'                         # the three gates
+    for c, r in ((20, 0), (21, 0), (20, 11), (21, 11), (20, 43), (21, 43), QUARRY_GATE):
+        g[r][c] = ':'                         # the three gates, and the fourth that is locked
     for c, r in BARRICADES:
         g[r][c] = '%'
     return g
@@ -66,7 +66,8 @@ SPECIAL = {
     'p': (10, 38, 12, 40),        # a house in the borough
     'q': (32, 39, 34, 40),        # a house with a back door to a yard
 }
-BARRICADES = ((20, 15), (21, 15), (29, 14), (3, 42), (38, 42))
+BARRICADES = ((20, 15), (21, 15), (29, 14), (38, 42))
+QUARRY_GATE = (2, 42)                                          # the Quarrymen's Gate, at the west end of Low Street
 
 
 def lots(g):
@@ -760,6 +761,41 @@ class Village:
         b.set(dx + 2, gy + 3, z + 1, 'minecraft:spruce_fence')
         b.set(dx + 2, gy + 2, z + 1, LANTERN)
 
+    def quarry_gate(self):
+        """The Quarrymen's Gate at the west end of Low Street: a low arch through the wall, shut by an iron grate whose
+        key is not in the town (see LockedGateBlock; the key lies in the treasury of the Stockade). The stone of the
+        fortress came in by it; two blocks of that stone still lie on a broken sledge before it."""
+        b, gy = self.b, self.gy
+        x0, z0 = self.at(*QUARRY_GATE, 0, 0)
+        for x in range(x0, x0 + T):
+            for z in range(z0, z0 + T):
+                b.set(x, gy, z, cobble(x, gy, z))
+                b.fill(x, gy + 1, z, x, gy + 4, z, 'minecraft:air')
+                b.fill(x, gy + 5, z, x, gy + 7, z, town_wall)
+                if (x + z) % 2 == 0 and x != x0 + 1:
+                    b.set(x, gy + 8, z, town_wall(x, gy + 8, z))
+        for x in range(x0, x0 + T):                              # the corners of the arch
+            b.set(x, gy + 4, z0, 'minecraft:stone_brick_stairs[facing=north,half=top]')
+            b.set(x, gy + 4, z0 + 2, 'minecraft:stone_brick_stairs[facing=south,half=top]')
+        cells = [(x0 + 1, y, z) for z in range(z0, z0 + T) for y in range(gy + 1, gy + 5)]
+        for cell in cells:
+            b.set(*cell, 'vsratie_dushi:locked_gate[axis=z,lock=quarry]')
+        b.set(x0 + 1, gy + 4, z0, 'minecraft:stone_brick_stairs[facing=north,half=top]')
+        b.set(x0 + 1, gy + 4, z0 + 2, 'minecraft:stone_brick_stairs[facing=south,half=top]')
+        cells = [c for c in cells if 'locked_gate' in b.get(*c)]
+        b.seals['quarry_key'] = cells
+        self.quarry_gate_cells = cells
+        # a lamp either side of it on the town's face of the wall, and what was left where the hauling stopped
+        for z in (z0 - 1, z0 + T):
+            b.set(x0 + T, gy + 4, z, 'minecraft:spruce_fence')
+            b.set(x0 + T, gy + 3, z, LANTERN)
+        sx, sz = x0 + T + 3, z0 + T
+        if all(b.free(sx + dx, gy + 1, sz) for dx in range(3)):
+            b.set(sx, gy + 1, sz, 'minecraft:spruce_slab[type=bottom]')
+            b.set(sx + 1, gy + 1, sz, 'minecraft:calcite')
+            b.set(sx + 2, gy + 1, sz, 'minecraft:polished_diorite')
+            self.kept.add((sx, sz))
+
     def people(self):
         """Who walks the lanes. (tile column, tile row, kind, facing)"""
         b, gy = self.b, self.gy
@@ -834,6 +870,7 @@ class Village:
         self.lodge()
         self.homes()
         self.high_gate()
+        self.quarry_gate()
         self.barricades()
         self.street_dressing()
         self.people()

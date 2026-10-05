@@ -76,6 +76,10 @@ public final class Forge {
             add(list, Dushi.GRAVE_SPADE, 0, new Part(Dushi.GRAVEDIGGER_SOUL, 1), scrap(4));
             add(list, Dushi.GREAT_KEY, 0, new Part(Dushi.OVERSEER_SOUL, 1), scrap(6));
             add(list, Dushi.CENSER_FLAIL, 0, new Part(Dushi.CHAPLAIN_SOUL, 1), scrap(6));
+            // the quarry's iron
+            add(list, Dushi.QUARRY_PICK, 600, new Part(Dushi.IRON_WEDGE, 3), scrap(3));
+            add(list, Dushi.GREAT_MAUL, 0, new Part(Dushi.TASKMASTER_SOUL, 1), new Part(Dushi.IRON_WEDGE, 6));
+            add(list, Dushi.EATER_CLAW, 0, new Part(Dushi.STONE_EATER_SOUL, 1), new Part(Dushi.IRON_WEDGE, 2));
             shelf = Category.SUPPLIES;
             add(list, () -> Items.ARROW, 8, 0, scrap(1));
             // shields
@@ -108,6 +112,7 @@ public final class Forge {
             add(list, Dushi.SPELLS.get(Spell.FIRE_ORB), 500, new Part(Dushi.GREAT_SOUL, 1));
             shelf = Category.SUPPLIES;
             add(list, Dushi.TAR_POT, 2, 50, cloth(1));
+            add(list, Dushi.POWDER_POT, 2, 150, cloth(1), new Part(Dushi.IRON_WEDGE, 1));
             add(list, Dushi.RETURN_EMBER, 2, 0, new Part(Dushi.NAMELESS_SOUL, 1));
             recipes = List.copyOf(list);
         }

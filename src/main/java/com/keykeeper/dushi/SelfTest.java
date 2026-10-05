@@ -95,6 +95,10 @@ public final class SelfTest {
         types.add(Dushi.RUST_KNIGHT.get());
         types.add(Dushi.CARRION_HOUND.get());
         types.add(Dushi.GRAVEDIGGER.get());
+        types.add(Dushi.BLIND_CRAWLER.get());
+        types.add(Dushi.UNHEWN.get());
+        types.add(Dushi.TASKMASTER.get());
+        types.add(Dushi.STONE_EATER.get());
         types.add(Dushi.KEYKEEPER.get());
         types.add(Dushi.OVERSEER.get());
         types.add(Dushi.CHAPLAIN.get());
@@ -284,7 +288,7 @@ public final class SelfTest {
         }
         int index = 0;
         for (Map.Entry<EntityType<? extends SoulsMob>, int[]> entry : drillPlan().entrySet()) {
-            BlockPos at = new BlockPos(-15 + (index % 4) * 10, FLOOR_Y + 1, -14 + (index / 4) * 14);
+            BlockPos at = new BlockPos(-18 + (index % 5) * 9, FLOOR_Y + 1, -21 + (index / 5) * 13);
             SoulsMob mob = entry.getKey().spawn(level, at, EntitySpawnReason.COMMAND);
             Mob dummy = EntityTypes.IRON_GOLEM.spawn(level, at.offset(0, 0, 7), EntitySpawnReason.COMMAND);
             if (mob == null || dummy == null) {
@@ -308,6 +312,14 @@ public final class SelfTest {
         plan.put(Dushi.WITHERED.get(com.keykeeper.dushi.entity.WitheredEntity.Kind.WATCHMAN).get(), new int[] {5, 6});
         plan.put(Dushi.CARRION_HOUND.get(), new int[] {1, 2});
         plan.put(Dushi.GRAVEDIGGER.get(), new int[] {1, 2, 3, 4, 5});
+        // the quarry (the sapper's last move is his end: he is not alive after it)
+        plan.put(Dushi.WITHERED.get(com.keykeeper.dushi.entity.WitheredEntity.Kind.DIGGER).get(), new int[] {7, 1});
+        plan.put(Dushi.WITHERED.get(com.keykeeper.dushi.entity.WitheredEntity.Kind.BARROWMAN).get(), new int[] {8, 11});
+        plan.put(Dushi.WITHERED.get(com.keykeeper.dushi.entity.WitheredEntity.Kind.SAPPER).get(), new int[] {9, 10});
+        plan.put(Dushi.BLIND_CRAWLER.get(), new int[] {3, 1, 2});
+        plan.put(Dushi.UNHEWN.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.TASKMASTER.get(), new int[] {1, 2, 3, 4, 5});
+        plan.put(Dushi.STONE_EATER.get(), new int[] {1, 2, 3, 4, 5});
         return plan;
     }
 

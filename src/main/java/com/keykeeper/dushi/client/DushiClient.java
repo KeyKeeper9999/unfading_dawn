@@ -49,6 +49,16 @@ public final class DushiClient {
         event.registerEntityRenderer(Dushi.SOUL_STAIN.get(), context -> new ThrownItemRenderer<>(context, 2.2F, true));
         event.registerEntityRenderer(Dushi.SPELL_BOLT.get(), context -> new ThrownItemRenderer<>(context, 1.6F, true));
         event.registerEntityRenderer(Dushi.TAR_POT_ENTITY.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(Dushi.POWDER_POT_ENTITY.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(Dushi.WEDGE_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.3F, false));
+        event.registerEntityRenderer(Dushi.BLIND_CRAWLER.get(),
+                context -> new QuarryRenderer<>(context, new BlindCrawlerModel(context.bakeLayer(BlindCrawlerModel.LAYER)), "blind_crawler", 0.5F, false, false));
+        event.registerEntityRenderer(Dushi.UNHEWN.get(),
+                context -> new QuarryRenderer<>(context, new UnhewnModel(context.bakeLayer(UnhewnModel.LAYER)), "unhewn", 0.8F, false, true));
+        event.registerEntityRenderer(Dushi.TASKMASTER.get(),
+                context -> new QuarryRenderer<>(context, new TaskmasterModel(context.bakeLayer(TaskmasterModel.LAYER)), "taskmaster", 1.0F, true, true));
+        event.registerEntityRenderer(Dushi.STONE_EATER.get(),
+                context -> new QuarryRenderer<>(context, new StoneEaterModel(context.bakeLayer(StoneEaterModel.LAYER)), "stone_eater", 1.6F, true, true));
         Dushi.WITHERED.forEach((kind, type) -> event.registerEntityRenderer(type.get(), context -> new WitheredRenderer(context, kind)));
         event.registerEntityRenderer(Dushi.RUST_KNIGHT.get(), context -> new RustKnightRenderer(context, "rust_knight"));
         event.registerEntityRenderer(Dushi.GILDED_KNIGHT.get(), context -> new RustKnightRenderer(context, "gilded_knight"));
@@ -65,6 +75,10 @@ public final class DushiClient {
         event.registerLayerDefinition(RustKnightModel.LAYER, RustKnightModel::createLayer);
         event.registerLayerDefinition(CarrionHoundModel.LAYER, CarrionHoundModel::createLayer);
         event.registerLayerDefinition(GravediggerModel.LAYER, GravediggerModel::createLayer);
+        event.registerLayerDefinition(BlindCrawlerModel.LAYER, BlindCrawlerModel::createLayer);
+        event.registerLayerDefinition(UnhewnModel.LAYER, UnhewnModel::createLayer);
+        event.registerLayerDefinition(TaskmasterModel.LAYER, TaskmasterModel::createLayer);
+        event.registerLayerDefinition(StoneEaterModel.LAYER, StoneEaterModel::createLayer);
         event.registerLayerDefinition(KeykeeperModel.LAYER, KeykeeperModel::createLayer);
         event.registerLayerDefinition(OverseerModel.LAYER, OverseerModel::createLayer);
         event.registerLayerDefinition(ChaplainModel.LAYER, ChaplainModel::createLayer);

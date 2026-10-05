@@ -206,6 +206,29 @@ def fog_texture(frames=16, tint=(1.0, 1.0, 1.0), thick=0):
     return img
 
 
+def locked_gate_texture():
+    """A grate of square iron bars riveted to two flat bands; see-through between them."""
+    size = 16
+    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    for y in range(size):
+        for x in range(size):
+            bar = x % 4 in (1, 2)
+            band = y in (2, 3, 12, 13)
+            if not (bar or band):
+                continue
+            c = IRON
+            if bar and not band:
+                c = IRON_L if x % 4 == 1 else IRON_D
+            elif band:
+                c = IRON_L if y in (2, 12) else IRON
+                if bar and x % 4 == 1:
+                    c = (150, 150, 160)                    # a rivet head
+            if blotch('grate', x, y, 2.2) > 0.72:
+                c = mix(c, RUST, 0.6)
+            img.putpixel((x, y), tuple(c) + (255,))
+    return img
+
+
 def mob_mark_texture():
     """A broken ring of ash, see-through elsewhere."""
     size = 16
@@ -254,6 +277,17 @@ if __name__ == '__main__':
     write_json(f'{A}/blockstates/fog_gate.json', {'variants': {
         'axis=x,sealed=false': {'model': f'{MOD}:block/fog_gate'}, 'axis=z,sealed=false': {'model': f'{MOD}:block/fog_gate', 'y': 90},
         'axis=x,sealed=true': {'model': f'{MOD}:block/fog_seal'}, 'axis=z,sealed=true': {'model': f'{MOD}:block/fog_seal', 'y': 90}}})
+
+    # the locked grate of a map: bars a hand's breadth thick, drawn from both sides
+    grate = locked_gate_texture()
+    grate.save(f'{A}/textures/block/locked_gate.png')
+    write_json(f'{A}/models/block/locked_gate.json', {
+        'textures': {'t': f'{MOD}:block/locked_gate', 'particle': f'{MOD}:block/locked_gate'},
+        'elements': [{'from': [0, 0, 7], 'to': [16, 16, 9],
+                      'faces': {'north': dict(face), 'south': dict(face), 'up': {'uv': [0, 2, 16, 4], 'texture': '#t'},
+                                'down': {'uv': [0, 12, 16, 14], 'texture': '#t'}}}]})
+    write_json(f'{A}/blockstates/locked_gate.json', {'variants': {
+        'axis=x,lock=quarry': {'model': f'{MOD}:block/locked_gate'}, 'axis=z,lock=quarry': {'model': f'{MOD}:block/locked_gate', 'y': 90}}})
 
     # a threshold that names a place: nothing is drawn, the game only needs to be told so
     write_json(f'{A}/models/block/place_name.json', {'textures': {'particle': 'minecraft:block/stone'}})

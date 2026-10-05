@@ -20,6 +20,16 @@
           ]
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:quarry_key",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

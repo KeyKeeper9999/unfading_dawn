@@ -20,6 +20,7 @@ t(f'block.{M}.hearth', 'Очаг', 'Hearth')
 t(f'block.{M}.fog_gate', 'Туманная завеса', 'Fog Gate')
 t(f'block.{M}.forge', 'Старая наковальня', 'Old Anvil')
 t(f'block.{M}.mob_mark', 'Метка восставшего', 'Mark of the Risen')
+t(f'block.{M}.locked_gate', 'Запертая решётка', 'Locked Grate')
 
 for key, ru, en in (
         ('broken_sword', 'Обломок меча', 'Broken Sword'), ('shiv', 'Заточка', 'Shiv'), ('dagger', 'Кинжал', 'Dagger'),
@@ -50,6 +51,10 @@ for key, ru, en in (
         ('chaplain_skirt', 'Подрясник капеллана', "Chaplain's Skirt"), ('chaplain_shoes', 'Туфли капеллана', "Chaplain's Shoes"),
         ('pitchfork', 'Вилы', 'Pitchfork'), ('cleaver', 'Тесак мясника', "Butcher's Cleaver"), ('grave_spade', 'Заступ могильщика', "Gravedigger's Spade"),
         ('gravedigger_soul', 'Душа Могильщика', 'Soul of the Gravedigger'),
+        ('quarry_pick', 'Кирка ломщика', "Quarryman's Pick"), ('great_maul', 'Кувалда Десятника', "Taskmaster's Maul"),
+        ('eater_claw', 'Коготь Камнееда', "Stone-Eater's Claw"), ('iron_wedge', 'Железный клин', 'Iron Wedge'),
+        ('powder_pot', 'Пороховой горшок', 'Powder Pot'), ('quarry_key', 'Ключ от Ломовых ворот', "Key to the Quarrymen's Gate"),
+        ('taskmaster_soul', 'Душа Десятника', 'Soul of the Taskmaster'), ('stone_eater_soul', 'Душа Камнееда', 'Soul of the Stone-Eater'),
         ('tattered_cloth', 'Ветошь', 'Tattered Cloth'), ('rust_scrap', 'Ржавый лом', 'Rust Scrap')):
     t(f'item.{M}.{key}', ru, en)
 
@@ -58,6 +63,9 @@ MOBS = (('withered_prisoner', 'Истлевший узник', 'Withered Prisone
         ('withered_townsman', 'Истлевший посадский', 'Withered Townsman'), ('withered_butcher', 'Истлевший мясник', 'Withered Butcher'),
         ('withered_watchman', 'Истлевший сторож', 'Withered Watchman'), ('carrion_hound', 'Трупный пёс', 'Carrion Hound'),
         ('gravedigger', 'Могильщик Посада', 'Gravedigger of the Borough'),
+        ('withered_digger', 'Истлевший ломщик', 'Withered Digger'), ('withered_barrowman', 'Истлевший тачечник', 'Withered Barrowman'),
+        ('withered_sapper', 'Истлевший подрывник', 'Withered Sapper'), ('blind_crawler', 'Слепыш', 'Blind Crawler'), ('unhewn', 'Недотёс', 'The Unhewn'),
+        ('taskmaster', 'Десятник Каменоломни', 'Taskmaster of the Quarry'), ('stone_eater', 'Камнеед', 'The Stone-Eater'),
         ('gilded_knight', 'Золочёный рыцарь', 'Gilded Knight'), ('rust_knight', 'Ржавый рыцарь', 'Rust Knight'),
         ('keykeeper', 'Слепой ключник', 'Blind Keykeeper'), ('overseer', 'Надзиратель Острога', 'Overseer of the Stockade'),
         ('chaplain', 'Капеллан Острога', 'Chaplain of the Stockade'))
@@ -67,6 +75,8 @@ for key, ru, en in MOBS:
 t(f'entity.{M}.soul_stain', 'Пятно душ', 'Soul Stain')
 t(f'entity.{M}.spell_bolt', 'Заклинание', 'Spell')
 t(f'entity.{M}.tar_pot', 'Горшок смолы', 'Tar Pot')
+t(f'entity.{M}.powder_pot', 'Пороховой горшок', 'Powder Pot')
+t(f'entity.{M}.thrown_wedge', 'Железный клин', 'Iron Wedge')
 
 t(f'tooltip.{M}.scaling', 'Сила: %s   Ловкость: %s', 'Strength: %s   Dexterity: %s')
 t(f'tooltip.{M}.stamina', 'Расход сил: %s', 'Stamina cost: %s')
@@ -132,6 +142,14 @@ t(f'place.{M}.market', 'ТОРГ', 'THE MARKET')
 t(f'place.{M}.shambles', 'МЯСНОЙ РЯД', 'THE SHAMBLES')
 t(f'place.{M}.churchyard', 'ПОГОСТ', 'THE CHURCHYARD')
 t(f'place.{M}.road', 'ОСТРОЖНАЯ ДОРОГА', 'THE STOCKADE ROAD')
+t(f'place.{M}.quarry', 'БЕЛЫЙ КАРЬЕР', 'THE WHITE PIT')
+t(f'place.{M}.drifts', 'ШТОЛЬНИ', 'THE DRIFTS')
+t(f'place.{M}.carvers', 'МАСТЕРСКАЯ ТЁСЧИКОВ', "THE CARVERS' SHOP")
+t(f'place.{M}.wheel', 'КОЛЁСНЫЙ ЗАЛ', 'THE WHEEL HALL')
+t(f'place.{M}.workings', 'НИЖНИЕ ВЫРАБОТКИ', 'THE LOWER WORKINGS')
+t(f'place.{M}.breach', 'ПРОЛОМ', 'THE BREACH')
+t(f'message.{M}.gate_locked.quarry', 'Заперто. Камень отсюда возили в Острог — там и ключ.', 'Locked. The stone from here went to the Stockade; so did the key.')
+t(f'message.{M}.gate_opened.quarry', 'Ломовые ворота отперты', "The Quarrymen's Gate is unlocked")
 t(f'block.{M}.shard_heap', 'Тлеющий осколок', 'Glowing Shard')
 t(f'message.{M}.shard_found', 'Осколок фляги. У очага он вплавится во флягу сам.', 'A flask shard. At a hearth it will melt into the flask by itself.')
 t(f'screen.{M}.forge.tab.weapons', 'Оружие', 'Weapons')
@@ -157,7 +175,8 @@ t(f'message.{M}.hearth_gone', 'Того очага больше нет.', 'That 
 for key, ru, en in (('none', 'Очаг (%s, %s, %s)', 'A hearth (%s, %s, %s)'), ('yard', 'Двор первого очага', 'The Yard of the First Hearth'),
                     ('lodge', 'Сторожка у погоста', "The Sexton's Lodge"), ('keeper', 'Привратницкая Острога', 'The Stockade Gate'),
                     ('smithy', 'Кузня на площади', 'The Smithy on the Square'), ('sacristy', 'Ризница собора', 'The Cathedral Sacristy'),
-                    ('terrace', 'Терраса над долиной', 'The Terrace above the Vale')):
+                    ('terrace', 'Терраса над долиной', 'The Terrace above the Vale'), ('maw', 'Под Зевом', 'Under the Maw'),
+                    ('cage', 'У клети', 'By the Cage')):
     t(f'hearth.{M}.{key}', ru, en)
 t(f'screen.{M}.hearth.level', 'Уровень: %s', 'Level: %s')
 t(f'screen.{M}.hearth.souls', 'Души: %s', 'Souls: %s')
@@ -224,6 +243,22 @@ SUBTITLES = {
     'entity.gravedigger.ambient': ('Могильщик дышит сквозь мешок', 'Gravedigger breathes through his sack'),
     'entity.gravedigger.hurt': ('Могильщик глухо мычит', 'Gravedigger grunts'), 'entity.gravedigger.death': ('Могильщик ложится в землю', 'Gravedigger goes to ground'),
     'entity.gravedigger.dig': ('Заступ входит в землю', 'A spade bites the earth'), 'entity.gravedigger.raise': ('Могилы шевелятся', 'The graves stir'),
+    'entity.quarry.pick': ('Кирка бьёт в камень', 'A pick strikes stone'), 'entity.quarry.blast': ('Рвётся порох', 'Powder goes off'),
+    'entity.quarry.fuse': ('Шипит фитиль', 'A fuse hisses'), 'entity.quarry.rockfall': ('Рушится камень', 'Rock comes down'),
+    'entity.quarry.barrow': ('Гремит тачка', 'A barrow rattles'),
+    'entity.crawler.ambient': ('Слепыш щёлкает', 'Crawler clicks'), 'entity.crawler.hurt': ('Слепыш шипит', 'Crawler hisses'),
+    'entity.crawler.death': ('Слепыш затихает', 'Crawler goes still'), 'entity.crawler.screech': ('Слепыш визжит', 'Crawler shrieks'),
+    'entity.unhewn.ambient': ('Камень скрежещет', 'Stone grinds'), 'entity.unhewn.hurt': ('Камень крошится', 'Stone chips'),
+    'entity.unhewn.death': ('Статуя рассыпается', 'A statue falls apart'), 'entity.unhewn.wake': ('Статуя оживает', 'A statue wakes'),
+    'entity.unhewn.slam': ('Глыба бьёт в пол', 'A block strikes the floor'), 'entity.unhewn.step': ('Камень переваливается', 'Stone lurches'),
+    'entity.taskmaster.ambient': ('Десятник сопит', 'Taskmaster wheezes'), 'entity.taskmaster.hurt': ('Десятник рычит', 'Taskmaster growls'),
+    'entity.taskmaster.death': ('Десятник падает', 'Taskmaster falls'), 'entity.taskmaster.shout': ('Десятник орёт на свод', 'Taskmaster bellows at the roof'),
+    'entity.taskmaster.maul': ('Кувалда бьёт в пол', 'A maul strikes the floor'), 'entity.taskmaster.wedge': ('Звенит клин', 'A wedge rings'),
+    'entity.taskmaster.crack': ('Трещит скала', 'The rock splits'),
+    'entity.stone_eater.ambient': ('Камнеед ворчит', 'Stone-Eater rumbles'), 'entity.stone_eater.hurt': ('Камнеед ревёт от боли', 'Stone-Eater bellows in pain'),
+    'entity.stone_eater.death': ('Камнеед издыхает', 'Stone-Eater dies'), 'entity.stone_eater.roar': ('Камнеед ревёт', 'Stone-Eater roars'),
+    'entity.stone_eater.burrow': ('Что-то роет камень', 'Something digs through rock'), 'entity.stone_eater.erupt': ('Пол взрывается', 'The floor bursts'),
+    'entity.stone_eater.bite': ('Лязгают челюсти', 'Jaws clash'),
     'entity.keykeeper.ambient': ('Ключник кашляет', 'Keykeeper coughs'), 'entity.keykeeper.give': ('Звенят ключи', 'Keys jingle'),
     'ui.death': ('Ты помер', 'You croaked'), 'ui.boss_defeated': ('Гад повержен', 'Fiend felled'), 'ui.hearth_lit': ('Очаг разгорается', 'Hearth flares up'),
     'ui.level_up': ('Сила прибывает', 'Strength grows'), 'ui.souls_gain': ('Души стекаются', 'Souls gather'),

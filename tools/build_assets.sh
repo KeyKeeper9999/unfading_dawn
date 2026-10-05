@@ -13,6 +13,10 @@ python3 tools/gen_overseer.py ${P:+$P/overseer.png}
 python3 tools/gen_chaplain.py ${P:+$P/chaplain.png}
 python3 tools/gen_hound.py ${P:+$P/hound.png}
 python3 tools/gen_gravedigger.py ${P:+$P/gravedigger.png}
+python3 tools/gen_crawler.py ${P:+$P/crawler.png}
+python3 tools/gen_unhewn.py ${P:+$P/unhewn.png}
+python3 tools/gen_taskmaster.py ${P:+$P/taskmaster.png}
+python3 tools/gen_stone_eater.py ${P:+$P/stone_eater.png}
 python3 tools/gen_items.py ${P:+$P/items.png}
 python3 tools/gen_shields.py ${P:+$P/shields.png}
 python3 tools/gen_armor.py ${P:+$P/armor.png}

@@ -1,5 +1,7 @@
 package com.keykeeper.dushi.entity;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +26,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.BlocksAttacks;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.damagesource.DamageSource;
@@ -76,6 +80,12 @@ public abstract class SoulsMob extends Monster {
     private int tier;
 
     private ServerBossEvent bossBar;
+
+    /** A blow on its way to a place on the ground: a rock coming down from the roof, a crack running along the floor. */
+    private record Pending(Vec3 at, int due, double radius, float damage, boolean fromAbove) {}
+
+    private final List<Pending> pending = new ArrayList<>();
+    private int clock;
 
     protected SoulsMob(EntityType<? extends SoulsMob> type, Level level) {
         super(type, level);
@@ -161,8 +171,8 @@ public abstract class SoulsMob extends Monster {
 
     @Override
     public void setTarget(LivingEntity target) {
-        if (this.overlooks(target)) {
-            return;
+        if (this.overlooks(target) || target instanceof SoulsMob) {
+            return;                                       // (a sapper's powder hurts his fellows; they do not turn on him for it)
         }
         super.setTarget(target);
     }
@@ -238,6 +248,10 @@ public abstract class SoulsMob extends Monster {
         if (this.guardBreakHits() > 0) {
             this.guardTick();
         }
+        this.clock++;
+        if (!this.pending.isEmpty()) {
+            this.pendingTick(level);
+        }
         if (this.tickCount % 60 == 0) {
             this.homeTick();
         }
@@ -302,6 +316,7 @@ public abstract class SoulsMob extends Monster {
     /** A boss has fully recovered after losing its target. */
     protected void onReset() {
         this.setPhase(1);
+        this.pending.clear();
     }
 
     // ------------------------------------------------------------------ hitting
@@ -323,7 +338,14 @@ public abstract class SoulsMob extends Monster {
      * @return how many were hit
      */
     protected int hitArc(ServerLevel level, double range, double halfAngle, float damage, double knockback) {
-        Vec3 facing = this.facing();
+        return this.hitArc(level, this.facing(), range, halfAngle, damage, knockback, false);
+    }
+
+    /**
+     * The same, in any direction (a tail strikes behind), and, if {@code breaksGuard}, with a blow no shield holds: a
+     * guard it lands on is knocked down and most of the blow goes through.
+     */
+    protected int hitArc(ServerLevel level, Vec3 facing, double range, double halfAngle, float damage, double knockback, boolean breaksGuard) {
         double minDot = Math.cos(Math.toRadians(halfAngle));
         DamageSource source = this.damageSources().mobAttack(this);
         int hits = 0;
@@ -337,7 +359,12 @@ public abstract class SoulsMob extends Monster {
             if (halfAngle < 180.0 && to.lengthSqr() > 0.6 && to.normalize().dot(facing) < minDot) {
                 continue;
             }
-            if (victim.hurtServer(level, source, damage)) {
+            float dealt = damage;
+            if (breaksGuard && victim.isBlocking()) {
+                breakGuard(level, victim);
+                dealt = damage * 0.7F;
+            }
+            if (victim.hurtServer(level, source, dealt)) {
                 hits++;
                 if (knockback > 0.0) {
                     victim.knockback(knockback, this.getX() - victim.getX(), this.getZ() - victim.getZ(), source, damage);
@@ -345,6 +372,65 @@ public abstract class SoulsMob extends Monster {
             }
         }
         return hits;
+    }
+
+    /** Knocks a raised shield down for a couple of seconds. */
+    protected static void breakGuard(ServerLevel level, LivingEntity victim) {
+        ItemStack shield = victim.getItemBlockingWith();
+        if (shield != null) {
+            BlocksAttacks blocks = shield.get(DataComponents.BLOCKS_ATTACKS);
+            if (blocks != null) {
+                blocks.disable(level, victim, 2.0F, shield);
+            }
+        }
+        victim.stopUsingItem();
+        level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), Dushi.sound("player.guard_break"), SoundSource.PLAYERS, 1.0F, 1.0F);
+        level.sendParticles(ParticleTypes.CRIT, victim.getX(), victim.getY() + victim.getBbHeight() * 0.6, victim.getZ(), 10, 0.3, 0.3, 0.3, 0.2);
+    }
+
+    /** Stone thrown up from the ground: chips of the block and a puff of dust. */
+    protected void rubble(ServerLevel level, Vec3 at, int count, double spread) {
+        level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK, net.minecraft.world.level.block.Blocks.CALCITE.defaultBlockState()),
+                at.x, at.y + 0.2, at.z, count, spread, 0.25, spread, 0.18);
+        level.sendParticles(ParticleTypes.POOF, at.x, at.y + 0.2, at.z, Math.max(1, count / 5), spread * 0.6, 0.1, spread * 0.6, 0.02);
+    }
+
+    /**
+     * In {@code delay} ticks the ground at {@code at} is struck: whoever still stands within {@code radius} of it is hurt.
+     * Until then the place is marked - dust sifting down from the roof for a falling rock, chips jumping for a crack -
+     * so that it can be stepped out of.
+     */
+    protected void strikeLater(Vec3 at, int delay, double radius, float damage, boolean fromAbove) {
+        this.pending.add(new Pending(at, this.clock + delay, radius, damage, fromAbove));
+    }
+
+    public int pendingStrikes() {
+        return this.pending.size();
+    }
+
+    private void pendingTick(ServerLevel level) {
+        Iterator<Pending> all = this.pending.iterator();
+        while (all.hasNext()) {
+            Pending strike = all.next();
+            Vec3 at = strike.at();
+            if (this.clock >= strike.due()) {
+                all.remove();
+                this.hitAround(level, at, strike.radius(), strike.damage(), 0.4, this.damageSources().mobAttack(this));
+                this.rubble(level, at, strike.fromAbove() ? 36 : 14, strike.radius() * 0.5);
+                if (strike.fromAbove()) {
+                    level.playSound(null, at.x, at.y, at.z, Dushi.sound("entity.quarry.rockfall"), this.getSoundSource(), 1.6F, 0.85F + this.random.nextFloat() * 0.3F);
+                }
+            } else if (strike.fromAbove()) {
+                if (this.clock % 2 == 0) {
+                    level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.FALLING_DUST,
+                            net.minecraft.world.level.block.Blocks.CALCITE.defaultBlockState()), at.x, at.y + 4.5, at.z, 3, strike.radius() * 0.4, 0.6,
+                            strike.radius() * 0.4, 0.0);
+                    level.sendParticles(ParticleTypes.WHITE_ASH, at.x, at.y + 0.15, at.z, 4, strike.radius() * 0.45, 0.02, strike.radius() * 0.45, 0.0);
+                }
+            } else if (this.clock % 2 == 0) {
+                this.rubble(level, at, 3, strike.radius() * 0.3);
+            }
+        }
     }
 
     /** Hurts everything standing within {@code radius} of a point. */

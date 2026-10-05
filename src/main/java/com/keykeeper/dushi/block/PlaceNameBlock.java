@@ -42,6 +42,13 @@ public class PlaceNameBlock extends Block {
         SHAMBLES("shambles", NIGHT, true),
         CHURCHYARD("churchyard", NIGHT, true),
         ROAD("road", NIGHT, true),
+        /** The quarry under the plateau, west of the borough: the same night, and then no sky at all. */
+        QUARRY("quarry", NIGHT, true),
+        DRIFTS("drifts", NIGHT, true),
+        CARVERS("carvers", NIGHT, true),
+        WHEEL("wheel", NIGHT, true),
+        WORKINGS("workings", NIGHT, true),
+        BREACH("breach", NIGHT, true),
         /** Says nothing: only turns the hour, in a bend of a passage from which no sky is seen. */
         TO_NIGHT("to_night", NIGHT, false),
         TO_DUSK("to_dusk", DUSK, false);

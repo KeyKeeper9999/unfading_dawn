@@ -15,15 +15,17 @@ import sys
 from collections import deque
 
 import gen_map as castle
+import gen_quarry
 import gen_village
 from gen_map import (BARS, BELL, CY, FLOOR_LANTERN, GAL, L0, L1, L2, LANTERN, LC, PASSABLE, VAULT, Map, analyse, cobbles, dark_places, hsh, stairs, valid_blocks)
 from gen_structures import AIR, COLOURS, MOD
 
 OUT = 'map/high_stockade.plan.txt'
-GY = 8                              # the ground block of the valley; the flat world's own top layer is put at this height
-OX, OZ = 42, 42                     # where the fortress's own plan lies in this one
+GY = 16                             # the ground block of the valley; the flat world's own top layer is put at this height (and has this much stone
+                                    # under it: the quarry goes down thirteen)
+OX, OZ = 138, 42                    # where the fortress's own plan lies in this one
 DY = GY - castle.GROUND             # and how much lower: its ground is the valley's
-W, H, D = 212, 128, 586
+W, H, D = 308, 138, 606
 AX = OX + castle.CX                 # the axis of the fortress: its bridge, the causeway, the road
 TX = AX + 16                        # the tunnel comes out this much further east: the bend
 VX, VZ = TX - 62, 408               # the corner of the village's grid of tiles; its north gate is on the tunnel's line
@@ -104,6 +106,7 @@ class World:
     def __init__(self):
         self.b = Map('high_stockade', W, H, D)
         self.village = gen_village.Village(self.b, VX, VZ, GY)
+        self.quarry = gen_quarry.Quarry(self.b, GY, self.village)
         self.keep = set()                # columns of the valley where nothing may grow: roads, the feet of walls
 
     # ------------------------------------------------------------------ the shape of the gorge
@@ -139,6 +142,7 @@ class World:
                         dist[n] = dist[(x, z)] + 1
                         queue.append(n)
         self.height = {}
+        self.white = set()
         for (x, z), d in dist.items():
             if d == 0:
                 self.height[(x, z)] = 0
@@ -149,6 +153,10 @@ class World:
                 h = min(h, border * 0.85)
             if d <= 2:
                 h = max(h, 6)
+            white = gen_quarry.hill(x, z)                         # the hill over the quarry, west of the town
+            if white > h:
+                h = white
+                self.white.add((x, z))
             self.height[(x, z)] = int(h)
         for (x, z), h in self.height.items():
             if h == 0:
@@ -157,7 +165,8 @@ class World:
                 continue
             for y in range(GY + 1, GY + h + 1):
                 exposed = y > GY + h - 2 and all(self.height.get((x + dx, z + dz), 0) >= y - GY - 1 for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)))
-                b.set(x, y, z, cliff(x, y, z) if not exposed else ('minecraft:dirt' if y < GY + h else turf(x, y, z)))
+                stone = gen_quarry.chalk if (x, z) in self.white else cliff
+                b.set(x, y, z, stone(x, y, z) if not exposed else ('minecraft:dirt' if y < GY + h else turf(x, y, z)))
         self.inside = inside
         self.dist = dist
 
@@ -380,6 +389,10 @@ class World:
         end = self.causeway()
         self.highway(end)
         self.tunnel()
+        b.zone = 'quarry'
+        self.quarry.build()
+        for column in self.quarry.open_sky:                      # nothing grows in the air over the pit
+            self.height[column] = 0
         self.woods()
         self.tiers()
         return b
@@ -451,6 +464,8 @@ def views(w):
     out.append(('gorge_under_the_bridge', C(40, castle.GROUND + 2.6, 168), C(64, L1, 168)))
     out.append(('fortress_from_the_gorge', C(100, castle.GROUND + 2.6, 290), C(64, L1 + 6, 240)))
     out.append(('valley_from_the_terrace', C(96, LC + 2.6, 4), C(150, LC - 6, -30)))
+    out.append(('time', 18000))
+    out += w.quarry.views()
     return out
 
 
@@ -468,6 +483,7 @@ def probes(w):
            ('churchyard', v.at(20, 6)[:1] + (GY + 1,) + v.at(20, 6)[1:]), ('tunnel_bend', (AX + 8, GY + 1, w.cross)), ('tunnel_south', (TX, GY + 1, SPUR[1] - 10)),
            ('road', (AX, GY + 1, OZ + 300))]
     out += [(name, C(*at)) for name, at in castle.PROBES]
+    out += w.quarry.probes()
     return out
 
 
@@ -475,7 +491,8 @@ EXTRA_COLOURS = castle.EXTRA_COLOURS + [
     ('shard_heap', (120, 255, 255)), ('spruce_leaves', (44, 70, 46)), ('podzol', (90, 66, 36)), ('moss', (88, 110, 44)), ('water', (50, 80, 200)),
     ('white_terracotta', (210, 178, 160)), ('light_gray_terracotta', (135, 107, 98)), ('mud_bricks', (137, 104, 79)), ('froglight', (250, 220, 120)),
     ('black_stained', (30, 30, 36)), ('black_wool', (20, 20, 24)), ('dark_oak', (66, 44, 22)), ('place_name', (255, 0, 255)), ('fern', (70, 110, 60)),
-    ('short_grass', (90, 130, 70)), ('dirt_path', (148, 122, 65)),
+    ('short_grass', (90, 130, 70)), ('dirt_path', (148, 122, 65)), ('locked_gate', (255, 120, 0)), ('calcite', (222, 222, 214)), ('diorite', (196, 196, 196)),
+    ('dripstone', (132, 104, 88)), ('glow_lichen', (110, 220, 190)), ('rail', (150, 120, 80)), ('spruce', (104, 78, 48)),
 ]
 
 if __name__ == '__main__':
@@ -495,7 +512,7 @@ if __name__ == '__main__':
     report, problems, seen = analyse(b)
     spawn = b.spawn
     for kind, x, y, z in b.marks:
-        for h in (0, 1) if kind not in ('gravedigger', 'overseer', 'chaplain', 'knight', 'gilded') else (0, 1, 2):
+        for h in (0, 1) if kind not in ('gravedigger', 'overseer', 'chaplain', 'knight', 'gilded', 'unhewn', 'taskmaster', 'stone_eater') else (0, 1, 2):
             above = b.get(x, y + h, z)
             if h and above not in (None, AIR) and not any(k in str(above) for k in castle.PASSABLE):
                 problems.append(f'the {kind} at {(x, y, z)} has {above} over its head')
@@ -516,7 +533,9 @@ if __name__ == '__main__':
         v = w.village
         gx, gz = v.at(20, 6)
         for boss, eye, look in (('gravedigger', (gx + 1.5, GY + 3, v.at(20, 10)[1]), (gx + 1.5, GY + 3, v.at(20, 3)[1])),
-                                ('overseer', C(64, L1 + 3, 146.5), C(64, L1 + 4, 120)), ('chaplain', C(64, LC + 3, 31), C(64, LC + 10, 9))):
+                                ('overseer', C(64, L1 + 3, 146.5), C(64, L1 + 4, 120)), ('chaplain', C(64, LC + 3, 31), C(64, LC + 10, 9)),
+                                ('taskmaster', (55, GY - 10, 525), (43, GY - 10, 535)),
+                                ('stone_eater', (31, GY - 10, 488), (39, GY - 10, 477))):
             f.write(f'near_the_{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')
     with open('map/light.txt', 'w') as f:
@@ -580,6 +599,24 @@ if __name__ == '__main__':
                         bl = light_table[(x, y, z)][1]
                         px, pz = (x - vx0) * 8 + 3, (z - vz0) * 8 + 3
                         draw.rectangle([px, pz, px + 1, pz + 1], fill=(255, 230, 80) if bl >= 8 else ((200, 150, 60) if bl >= 4 else (70, 110, 255)))
+            img.save(f'{out}/{name}.png')
+        # the quarry: what lies at each of its three levels (everything above taken off), and a cut through it from
+        # the gate westwards along the line of the street
+        q = w.quarry
+        for name, top in (('quarry_low', q.LOW + 3), ('quarry_mid', q.MID + 4), ('quarry_top', q.TOP + 4), ('quarry_sky', H - 1)):
+            b.top_down(top, scale=6).crop((0, 430 * 6, 175 * 6, D * 6)).save(f'{out}/{name}.png')
+        from PIL import Image
+        for name, zz in (('quarry_cut_street', q.zc), ('quarry_cut_shaft', q.zc - 11), ('quarry_cut_field', q.zc + 20)):
+            img = Image.new('RGB', (175 * 6, 60 * 6), (16, 18, 24))
+            draw = ImageDraw.Draw(img)
+            for x in range(175):
+                for y in range(60):
+                    state = b.cells.get((x, y, zz))
+                    if state is None or state == AIR:
+                        if state == AIR:
+                            draw.rectangle([x * 6, (59 - y) * 6, x * 6 + 5, (59 - y) * 6 + 5], fill=(70, 80, 96) if (x, y, zz) in seen or (x, y - 1, zz) in seen else (44, 50, 62))
+                        continue
+                    draw.rectangle([x * 6, (59 - y) * 6, x * 6 + 5, (59 - y) * 6 + 5], fill=b.colour(state))
             img.save(f'{out}/{name}.png')
         sub = Map('part', W, H, D)
         sub.cells = {c: s for c, s in b.cells.items() if vx0 <= c[0] < vx1 and VZ - 4 <= c[2] < vz1 and c[1] >= GY}

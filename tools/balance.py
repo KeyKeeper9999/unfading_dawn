@@ -37,7 +37,8 @@ def mobs():
     out['gilded'] = dict(attributes(knight, 'createGildedAttributes'), souls=int(re.search(r'gilded \? (\d+) : (\d+)', knight).group(1)))
     out['knight'] = dict(attributes(knight, 'createAttributes'), souls=int(re.search(r'gilded \? (\d+) : (\d+)', knight).group(2)))
     for name, path in (('overseer', 'entity/OverseerEntity.java'), ('chaplain', 'entity/ChaplainEntity.java'), ('gravedigger', 'entity/GravediggerEntity.java'),
-                       ('hound', 'entity/CarrionHoundEntity.java')):
+                       ('hound', 'entity/CarrionHoundEntity.java'), ('crawler', 'entity/BlindCrawlerEntity.java'), ('unhewn', 'entity/UnhewnEntity.java'),
+                       ('taskmaster', 'entity/TaskmasterEntity.java'), ('stone_eater', 'entity/StoneEaterEntity.java')):
         text = read(path)
         out[name] = dict(attributes(text, 'createAttributes'), souls=int(re.search(r'soulReward\(\) \{\s+return (\d+);', text).group(1)))
     return out
@@ -85,8 +86,10 @@ VITALITY = float(re.search(r'HEALTH_PER_VITALITY = ([0-9.]+)', PLAYER).group(1))
 WRATH = float(re.search(r'WRATH_DAMAGE = ([0-9.]+)F', read('entity/ChaplainEntity.java')).group(1))
 DROP = 1 / 14          # a nameless soul from any of the withered
 KNIGHT_GREAT = 0.35
-BOSSES = ('gravedigger', 'overseer', 'chaplain')
-WITHERED = ('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman')
+BOSSES = ('gravedigger', 'overseer', 'chaplain', 'taskmaster', 'stone_eater')
+# what opens the map, in order: the lords' seals, and the gate whose key lies behind the Chaplain
+ORDER = ('gravedigger', 'overseer', 'chaplain', 'quarry_key', 'taskmaster', 'stone_eater')
+WITHERED = ('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman', 'digger', 'barrowman', 'sapper')
 
 
 def build_of(level):
@@ -110,8 +113,9 @@ if __name__ == '__main__':
     seen_before = []
     shut = set()
     for boss in BOSSES:
-        blocked = frozenset(c for name in BOSSES[BOSSES.index(boss):] for c in b.seals[name])
-        _, _, seen = gen_map.analyse(b, blocked=blocked, stages=[('x', None)] + [(name, name) for name in BOSSES[:BOSSES.index(boss)]])
+        at = ORDER.index(boss)
+        blocked = frozenset(c for name in ORDER[at:] for c in b.seals[name])
+        _, _, seen = gen_map.analyse(b, blocked=blocked, stages=[('x', None)] + [(name, name) for name in ORDER[:at]])
         seen_before.append(seen)
     print('levels: one more point costs', ', '.join(f'{lv}->{lv + 1}: {level_cost(lv)}' for lv in (1, 5, 10, 15, 20, 25, 30)))
     print('tiers: health x', TH, ' damage x', TD, ' souls x', TS)
@@ -145,7 +149,7 @@ if __name__ == '__main__':
         print()
         print(f'before the {boss.capitalize()}: ' + ', '.join(f'{n} {k}' + (f' (tier {t})' if t else '') for (k, t), n in sorted(kinds.items())))
         print(f'  one clearing: {souls:.0f} for kills, about {drops:.0f} in souls dropped, {chest_souls} in chests (+{chest_great} in great souls, if not kept for the anvil)')
-        spent = (350, 1500, 2500)[i]                          # arms and armour bought or forged on the way
+        spent = (350, 1500, 2500, 2500, 1500)[i]              # arms and armour bought or forged on the way
         for label, clears in (('one clearing', 1.0), ('one and a half', 1.5)):
             have = total + (souls + drops) * clears + chest_souls + chest_great * 0.5 - spent
             print(f'  {label}: {have:.0f} souls for levels after {spent} more spent on gear -> level {level_for(have)}')
@@ -156,7 +160,8 @@ if __name__ == '__main__':
         gulp = max(10, health * 0.5)
         print(f'  the {boss.capitalize()} (tier {bt}: {boss_mob["health"]:.0f} health, armour {boss_mob["armor"]:.0f}, blow {boss_mob["damage"]:.1f}) '
               f'against level {lv} (vitality {vit}, endurance {end}, strength {st}; {health:.0f} health, {flask} gulps of {gulp:.0f}):')
-        arms = (('broken_sword', 'club', 'pitchfork', 'hatchet'), ('club', 'shortsword', 'longsword', 'cleaver', 'grave_spade'), ('longsword', 'broadsword', 'rust_greatsword', 'great_key'))[i]
+        arms = (('broken_sword', 'club', 'pitchfork', 'hatchet'), ('club', 'shortsword', 'longsword', 'cleaver', 'grave_spade'), ('longsword', 'broadsword', 'rust_greatsword', 'great_key'),
+                ('longsword', 'broadsword', 'rust_greatsword', 'great_key', 'censer_flail'), ('broadsword', 'quarry_pick', 'great_key', 'censer_flail', 'great_maul'))[i]
         for wname in arms:
             n, blow = hits(WPN[wname], st, 0, boss_mob)
             print(f'    {wname}: {blow:.1f} a blow, {n} blows, {n / WPN[wname]["speed"]:.0f} s of pure striking')
