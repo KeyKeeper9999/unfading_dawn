@@ -52,11 +52,13 @@ public class TravelScreen extends Screen {
         int top = this.top();
         for (int row = 0; row < ROWS && this.first + row < this.stops.size(); row++) {
             int index = this.first + row;
-            Button go = this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.travel.go"), button -> {
+            if (this.stops.get(index).here()) {
+                continue;                                  // where the button would be, the row says "you are here"
+            }
+            this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.travel.go"), button -> {
                 ClientPacketDistributor.sendToServer(new Net.Travel(index));
                 this.onClose();
             }).bounds(left + PANEL_WIDTH - 62, top + 30 + row * ROW_HEIGHT, 50, 20).build());
-            go.active = !this.stops.get(index).here();
         }
         if (this.stops.size() > ROWS) {
             Button up = this.addRenderableWidget(Button.builder(Component.literal("\u25B2"), button -> this.page(-ROWS))
@@ -95,7 +97,7 @@ public class TravelScreen extends Screen {
             graphics.text(this.font, name(stop), left + 12, y + 6, stop.here() ? GOLD : PALE);
             if (stop.here()) {
                 Component here = Component.translatable("screen.vsratie_dushi.travel.here");
-                graphics.text(this.font, here, right - 68 - this.font.width(here), y + 6, DIM);
+                graphics.text(this.font, here, right - 12 - this.font.width(here), y + 6, DIM);
             }
         }
         graphics.centeredText(this.font, Component.translatable("screen.vsratie_dushi.travel.hint"), this.width / 2, top + 34 + ROWS * ROW_HEIGHT, DIM);

@@ -155,7 +155,7 @@ t(f'screen.{M}.travel.back', 'Назад', 'Back')
 t(f'screen.{M}.travel.hint', 'Очаги, у которых ты отдыхал', 'The hearths you have rested at')
 t(f'message.{M}.hearth_gone', 'Того очага больше нет.', 'That hearth is no more.')
 for key, ru, en in (('none', 'Очаг (%s, %s, %s)', 'A hearth (%s, %s, %s)'), ('yard', 'Двор первого очага', 'The Yard of the First Hearth'),
-                    ('lodge', 'Сторожка у погоста', "The Sexton's Lodge"), ('keeper', 'Привратницкая Острога', 'The Stockade Gatehouse'),
+                    ('lodge', 'Сторожка у погоста', "The Sexton's Lodge"), ('keeper', 'Привратницкая Острога', 'The Stockade Gate'),
                     ('smithy', 'Кузня на площади', 'The Smithy on the Square'), ('sacristy', 'Ризница собора', 'The Cathedral Sacristy'),
                     ('terrace', 'Терраса над долиной', 'The Terrace above the Vale')):
     t(f'hearth.{M}.{key}', ru, en)
