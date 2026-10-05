@@ -112,13 +112,13 @@ final class WorldTest {
             level.setBlock(at.offset(7, 0, 0), Dushi.HEARTH.get().defaultBlockState(), 3);
             soul.atHearth = SoulMechanics.nearHearth(player);
             risen.setTarget(player);
-            boolean spared = risen.getTarget() == null;
+            boolean spared = risen.getTargetUnchecked() == null;
             soul.atHearth = false;
             risen.setTarget(player);
-            boolean noticed = risen.getTarget() == player;
+            boolean noticed = risen.getTargetUnchecked() == player;
             soul.atHearth = true;
             risen.setTarget(player);
-            boolean kept = risen.getTarget() == player;
+            boolean kept = risen.getTargetUnchecked() == player;
             soul.atHearth = false;
             say("rules: by a hearth: none near before=" + !far + ", not noticed there=" + spared + ", noticed away from it=" + noticed + ", not let off once fought=" + kept
                     + (!far && spared && noticed && kept ? "" : " FAILED"));
