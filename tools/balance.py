@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""How the map plays out in numbers: what a player earns on the way to each boss, what level that buys, and how the two
+"""How the map plays out in numbers: what a player earns on the way to each lord, what level that buys, and how the
 fights look at that level. The numbers of the mobs and weapons are read from the Java sources, the enemies of each part
-of the map from tools/gen_map.py. Run from the repo root: PYTHONPATH=tools python3 tools/balance.py
+of the map (and their tiers) from the plan tools/gen_world.py builds. Run from the repo root:
+PYTHONPATH=tools python3 tools/balance.py
 
 Nothing here is a test: it is the sum a designer would do on paper, kept next to the map so that it is redone whenever
 the map or the mobs change."""
 import math
 import re
 
+import gen_data
 import gen_map
+import gen_world
 
 JAVA = 'src/main/java/com/keykeeper/dushi/'
 
@@ -33,7 +36,8 @@ def mobs():
     knight = read('entity/RustKnightEntity.java')
     out['gilded'] = dict(attributes(knight, 'createGildedAttributes'), souls=int(re.search(r'gilded \? (\d+) : (\d+)', knight).group(1)))
     out['knight'] = dict(attributes(knight, 'createAttributes'), souls=int(re.search(r'gilded \? (\d+) : (\d+)', knight).group(2)))
-    for name, path in (('overseer', 'entity/OverseerEntity.java'), ('chaplain', 'entity/ChaplainEntity.java')):
+    for name, path in (('overseer', 'entity/OverseerEntity.java'), ('chaplain', 'entity/ChaplainEntity.java'), ('gravedigger', 'entity/GravediggerEntity.java'),
+                       ('hound', 'entity/CarrionHoundEntity.java')):
         text = read(path)
         out[name] = dict(attributes(text, 'createAttributes'), souls=int(re.search(r'soulReward\(\) \{\s+return (\d+);', text).group(1)))
     return out
@@ -45,6 +49,10 @@ def weapons():
             r'weapon\("(\w+)", ([0-9.]+)F, ([0-9.]+)F, (-?[0-9.]+)F, ([0-9.]+)F, ([0-9.]+)F, ([0-9.]+)F, ([0-9.]+)F', read('Dushi.java')):
         out[name] = {'damage': float(dmg), 'speed': float(speed), 'stamina': float(stamina), 'str': float(strength), 'dex': float(dex), 'back': float(back)}
     return out
+
+
+def tier_table(name):
+    return [float(v) for v in re.search(name + r' = \{([^}]+)\}', read('entity/SoulsMob.java')).group(1).replace('F', '').split(',')]
 
 
 def level_cost(level):
@@ -64,10 +72,10 @@ def after_armor(damage, armor, toughness=0.0):
     return damage * (1 - min(20.0, max(armor / 5.0, armor - 4.0 * damage / (toughness + 8.0))) / 25.0)
 
 
-def hits(weapon, strength, dexterity, mob):
+def hits(weapon, strength, dexterity, mob, health_scale=1.0):
     blow = weapon['damage'] * (1 + WEAPON_BONUS * (weapon['str'] * strength + weapon['dex'] * dexterity))
     blow = after_armor(blow, mob['armor'])
-    return math.ceil(mob['health'] / blow), blow
+    return math.ceil(mob['health'] * health_scale / blow), blow
 
 
 SOUL, GREAT = 200, 1000
@@ -77,101 +85,91 @@ VITALITY = float(re.search(r'HEALTH_PER_VITALITY = ([0-9.]+)', PLAYER).group(1))
 WRATH = float(re.search(r'WRATH_DAMAGE = ([0-9.]+)F', read('entity/ChaplainEntity.java')).group(1))
 DROP = 1 / 14          # a nameless soul from any of the withered
 KNIGHT_GREAT = 0.35
+BOSSES = ('gravedigger', 'overseer', 'chaplain')
+WITHERED = ('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman')
+
+
+def build_of(level):
+    """How a fighter might have spent the points of this level: (vitality, endurance, strength)."""
+    pts = level - 1
+    vit, end = round(pts * 0.35), round(pts * 0.2)
+    return vit, end, pts - vit - end
+
 
 if __name__ == '__main__':
     M, WPN = mobs(), weapons()
-    b = gen_map.build()
-    gen_map.bedrock(b)
-    stages = {}
-    od, known = None, set()
-    # which marks are in reach before the Overseer falls, and which only after
-    report, problems, seen = gen_map.analyse(b, quiet=True)
-    seals = set(b.seals['overseer'])
-    first, _, seen_first = gen_map.analyse(b, blocked=frozenset(seals))
-    early, late = {}, {}
+    TH, TD, TS = tier_table('TIER_HEALTH'), tier_table('TIER_DAMAGE'), tier_table('TIER_SOULS')
+    w = gen_world.World()
+    b = w.build()
+    gen_map.PASSABLE = gen_map.PASSABLE + ('fern', 'short_grass')
+    tier_at = {}
     for kind, x, y, z in b.marks:
-        if kind in ('keykeeper', 'overseer', 'chaplain'):
-            continue
-        (early if (x, y, z) in seen_first else late).setdefault(kind, 0)
-        (early if (x, y, z) in seen_first else late)[kind] += 1
-    chest_souls = {'early': 0, 'late': 0, 'early_great': 0, 'late_great': 0}
-    import gen_data
-    for name, x, y, z in b.chests:
-        where = 'early' if any((x + dx, y + dy, z + dz) in seen_first for dx in range(-2, 3) for dy in (-1, 0, 1) for dz in range(-2, 3)) else 'late'
-        if name in ('treasury', 'treasury_arms'):
-            continue                                          # behind the last boss
-        for item, count in gen_data.MAP_CHESTS[name]:
-            if item == gen_data.SOUL:
-                chest_souls[where] += count * SOUL
-            if item == gen_data.GREAT:
-                chest_souls[where + '_great'] += count * GREAT
-
-    def income(kinds):
-        kills = sum(M[k]['souls'] * n for k, n in kinds.items())
-        withered = sum(n for k, n in kinds.items() if k in ('prisoner', 'guard', 'archer', 'acolyte'))
-        drops = withered * DROP * SOUL + kinds.get('acolyte', 0) * 0.2 * SOUL
-        greats = (kinds.get('knight', 0) + kinds.get('gilded', 0)) * KNIGHT_GREAT * GREAT
-        return kills, drops, greats
-
+        state = b.cells[(x, y, z)]
+        tier_at[(x, y, z)] = int(state.split('tier=')[1][0]) if 'tier=' in state else 0
+    # what is in reach before each lord falls
+    seen_before = []
+    shut = set()
+    for boss in BOSSES:
+        blocked = frozenset(c for name in BOSSES[BOSSES.index(boss):] for c in b.seals[name])
+        _, _, seen = gen_map.analyse(b, blocked=blocked, stages=[('x', None)] + [(name, name) for name in BOSSES[:BOSSES.index(boss)]])
+        seen_before.append(seen)
     print('levels: one more point costs', ', '.join(f'{lv}->{lv + 1}: {level_cost(lv)}' for lv in (1, 5, 10, 15, 20, 25, 30)))
-    print()
-    k1, d1, g1 = income(early)
-    lower = k1 + d1 + chest_souls['early']
-    print(f'before the Overseer: {dict(sorted(early.items()))}')
-    print(f'  one clearing: {k1} for kills, about {d1:.0f} in souls dropped, {chest_souls["early"]} from chests (+{chest_souls["early_great"] + g1:.0f} in great souls, if not kept for the anvil)')
-    spent = 300 + 150                                        # a shortsword and a club's worth of other things
-    for label, clears in (('one clearing', 1.0), ('one and a half (the way back through the yard after a death or two)', 1.5)):
-        souls = (k1 + d1) * clears + chest_souls['early'] - spent
-        lv = level_for(souls)
-        print(f'  {label}: {souls:.0f} souls for levels after {spent} spent on arms -> level {lv}')
-    lv = level_for((k1 + d1) * 1.5 + chest_souls['early'] - spent)
-    pts = lv - 1
-    vit, end, st = round(pts * 0.35), round(pts * 0.2), pts - round(pts * 0.35) - round(pts * 0.2)
-    print(f'  the Overseer ({M["overseer"]["health"]:.0f} health, armour {M["overseer"]["armor"]:.0f}, blow {M["overseer"]["damage"]:.0f}, heavy blow {M["overseer"]["damage"] * 1.2:.1f}) '
-          f'against level {lv} (vitality {vit}, endurance {end}, strength {st}):')
-    for w in ('club', 'shortsword', 'longsword', 'hatchet'):
-        n, blow = hits(WPN[w], st, 0, M['overseer'])
-        print(f'    {w}: {blow:.1f} a blow, {n} blows, {n / WPN[w]["speed"]:.0f} s of pure striking')
-    health = 20 + VITALITY * vit
-    for label, armor in (('rags (5)', 5), ('mail (12)', 12)):
-        blow, heavy = after_armor(M['overseer']['damage'], armor), after_armor(M['overseer']['damage'] * 1.2, armor)
-        gulp = max(10, health * 0.5)
-        print(f'    in {label}: {health:.0f} health, a blow takes {blow:.1f}, a heavy one {heavy:.1f}; with 6 gulps of {gulp:.0f} that is '
-              f'{(health + 6 * gulp) / heavy:.0f} heavy blows before the end')
-    print()
-    k2, d2, g2 = income(late)
-    boss = M['overseer']['souls']
-    print(f'between the bosses: {dict(sorted(late.items()))}')
-    print(f'  one clearing: {k2} for kills, about {d2:.0f} dropped, {chest_souls["late"]} from chests, {boss} for the Overseer himself '
-          f'(+{chest_souls["late_great"] + g2:.0f} in great souls, +5000 if his soul is crushed instead of forged)')
-    gear = 400 + 1100 + 400 + 300                             # a longsword or the like, mail, a shield, pots and embers
-    base = (k1 + d1) * 1.5 + chest_souls['early'] - spent
-    for label, extra in (('one clearing of everything', 0), ('and one more round of the cathedral, the crypt and the cloister from the sacristy', None),
-                         ('and two more rounds', None), ('and the Overseer\'s soul crushed', 5000)):
-        if label.startswith('and one'):
-            total += round_
-        elif label.startswith('and two'):
-            total += round_
-        elif extra:
-            total += extra
-        else:
-            total = base + k2 + d2 + chest_souls['late'] + boss + (chest_souls['late_great'] + chest_souls['early_great']) * 0.5 - gear
-            near = {k: n for k, n in late.items()}
-            round_ = sum(M[k]['souls'] * n for k, n in near.items() if k in ('gilded', 'acolyte', 'knight')) * 0.75
-        print(f'  {label}: {total:.0f} souls for levels -> level {level_for(total)}')
-    print()
-    ch = M['chaplain']
-    print(f'the Chaplain ({ch["health"]:.0f} health, armour {ch["armor"]:.0f}, blow {ch["damage"]:.0f}, wrath {WRATH:.0f} through armour):')
-    for lv in (19, 22, 25, 28):
-        pts = lv - 1
-        vit, end = round(pts * 0.35), round(pts * 0.2)
-        st = pts - vit - end
+    print('tiers: health x', TH, ' damage x', TD, ' souls x', TS)
+    total = 0.0
+    done_marks, done_chests = set(), set()
+    gulps = 5
+    for i, boss in enumerate(BOSSES):
+        seen = seen_before[i]
+        kinds, souls, withered, knights = {}, 0.0, 0, 0
+        for kind, x, y, z in b.marks:
+            if kind in BOSSES or kind == 'keykeeper' or (x, y, z) in done_marks or (x, y, z) not in seen:
+                continue
+            done_marks.add((x, y, z))
+            t = tier_at[(x, y, z)]
+            kinds[(kind, t)] = kinds.get((kind, t), 0) + 1
+            souls += M[kind]['souls'] * TS[t]
+            withered += kind in WITHERED
+            knights += kind in ('knight', 'gilded')
+        chest_souls = chest_great = 0
+        for name, x, y, z in b.chests:
+            if name in done_chests or not any((x + dx, y + dy, z + dz) in seen for dx in range(-2, 3) for dy in (-1, 0, 1) for dz in range(-2, 3)):
+                continue
+            done_chests.add(name)
+            for item, count in gen_data.MAP_CHESTS[name]:
+                chest_souls += count * SOUL if item == gen_data.SOUL else 0
+                chest_great += count * GREAT if item == gen_data.GREAT else 0
+        shards = sum(1 for x, y, z in b.shards if any((x + dx, y, z + dz) in seen for dx in (-1, 0, 1) for dz in (-1, 0, 1)))
+        drops = withered * DROP * SOUL + knights * KNIGHT_GREAT * GREAT * 0.5
+        bt = tier_at[next((x, y, z) for k, x, y, z in b.marks if k == boss)]
+        boss_mob = dict(M[boss], health=M[boss]['health'] * TH[bt], damage=M[boss]['damage'] * TD[bt])
+        print()
+        print(f'before the {boss.capitalize()}: ' + ', '.join(f'{n} {k}' + (f' (tier {t})' if t else '') for (k, t), n in sorted(kinds.items())))
+        print(f'  one clearing: {souls:.0f} for kills, about {drops:.0f} in souls dropped, {chest_souls} in chests (+{chest_great} in great souls, if not kept for the anvil)')
+        spent = (350, 1500, 2500)[i]                          # arms and armour bought or forged on the way
+        for label, clears in (('one clearing', 1.0), ('one and a half', 1.5)):
+            have = total + (souls + drops) * clears + chest_souls + chest_great * 0.5 - spent
+            print(f'  {label}: {have:.0f} souls for levels after {spent} more spent on gear -> level {level_for(have)}')
+        lv = level_for(total + (souls + drops) * 1.25 + chest_souls + chest_great * 0.5 - spent)
+        vit, end, st = build_of(lv)
         health = 20 + VITALITY * vit
+        flask = gulps + shards
         gulp = max(10, health * 0.5)
-        line = []
-        for w in ('longsword', 'broadsword', 'rust_greatsword', 'great_key'):
-            n, blow = hits(WPN[w], st, 0, ch)
-            line.append(f'{w} {n} blows ({n / WPN[w]["speed"]:.0f} s)')
-        melee = after_armor(ch['damage'], 12)
-        print(f'  level {lv} (vitality {vit}, strength {st}): {health:.0f} health, wrath takes {WRATH / health * 100:.0f}% of it, the censer {melee:.1f} in mail; '
-              f'8 gulps of {gulp:.0f}; ' + ', '.join(line))
+        print(f'  the {boss.capitalize()} (tier {bt}: {boss_mob["health"]:.0f} health, armour {boss_mob["armor"]:.0f}, blow {boss_mob["damage"]:.1f}) '
+              f'against level {lv} (vitality {vit}, endurance {end}, strength {st}; {health:.0f} health, {flask} gulps of {gulp:.0f}):')
+        arms = (('broken_sword', 'club', 'pitchfork', 'hatchet'), ('club', 'shortsword', 'longsword', 'cleaver', 'grave_spade'), ('longsword', 'broadsword', 'rust_greatsword', 'great_key'))[i]
+        for wname in arms:
+            n, blow = hits(WPN[wname], st, 0, boss_mob)
+            print(f'    {wname}: {blow:.1f} a blow, {n} blows, {n / WPN[wname]["speed"]:.0f} s of pure striking')
+        for label, armor in (('rags (5)', 5), ('mail (12)', 12), ('plate (18)', 18))[:2 if i < 2 else 3]:
+            blow, heavy = after_armor(boss_mob['damage'], armor), after_armor(boss_mob['damage'] * 1.5, armor)
+            print(f'    in {label}: a blow takes {blow:.1f}, the heaviest {heavy:.1f}; that is {(health + flask * gulp) / heavy:.0f} of the heaviest before the end')
+        if boss == 'chaplain':
+            print(f'    his wrath takes {WRATH * TD[bt]:.0f} through armour: {WRATH * TD[bt] / health * 100:.0f}% of that health')
+        # the common dead of this part, for the feel of it
+        for (kind, t), n in sorted(kinds.items()):
+            mob = dict(M[kind], health=M[kind]['health'] * TH[t], damage=M[kind]['damage'] * TD[t])
+            wname = arms[1]
+            nh, blow = hits(WPN[wname], st, 0, mob)
+            print(f'    a {kind}: {mob["health"]:.0f} health, hits for {after_armor(mob["damage"], 5 if i == 0 else 12):.1f}; falls to {nh} blows of a {wname}')
+        total += (souls + drops) * 1.25 + chest_souls + chest_great * 0.5 - spent + M[boss]['souls'] * TS[bt]
+        gulps = flask + 1                                     # each lord leaves a shard

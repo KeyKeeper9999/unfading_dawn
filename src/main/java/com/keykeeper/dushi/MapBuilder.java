@@ -29,19 +29,20 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 /**
- * Only runs in the automated build, when DUSHI_BUILDMAP names a plan file (see tools/gen_map.py): sets the whole map down
- * in the empty world the server was started with, makes it an adventure world (rules, time, where a newcomer appears),
- * saves and stops. The world folder is then zipped by the workflow: that is the map players download.
+ * Only runs in the automated build, when DUSHI_BUILDMAP names a plan file (see tools/gen_world.py): sets the whole map down
+ * in the world the server was started with - flat land under forest, whose top layer is the floor of the map's gorge -
+ * makes it an adventure world (rules, time, where a newcomer appears), saves and stops. The world folder is then zipped
+ * by the workflow: that is the map players download.
  */
 @EventBusSubscriber(modid = Dushi.MODID)
 public final class MapBuilder {
     private static final String PLAN_FILE = System.getenv("DUSHI_BUILDMAP");
-    /** Where the plan's origin cell lands. High up: the clouds are below the walls. */
-    public static final BlockPos ORIGIN = new BlockPos(0, 200, 0);
+    /** Where the plan's origin cell lands: the place a newcomer wakes at, on the flat world's ground. */
+    public static final BlockPos ORIGIN = new BlockPos(0, 64, 0);
     /** The plan is drawn with the way forward to the north; turned, it leads west, into the sunset. */
     public static final Rotation ROTATION = Rotation.COUNTERCLOCKWISE_90;
-    /** The sun is half under the edge of the cloud, for ever: the sky burns orange in the west, the lamps already count. */
-    private static final int SUNSET = 12350;
+    /** The hour the map begins at: the dead of night, in the town. (Every place sets its own hour: see PlaceNameBlock.) */
+    private static final int MIDNIGHT = 18000;
 
     private static int ticks = -1;
     /** 0: the blocks are down; 1: the light engine is being told about every chunk; 2: light is being spread; 3: done. */
@@ -75,8 +76,8 @@ public final class MapBuilder {
         Plan plan = Plan.fromFile("map", Path.of(PLAN_FILE));
         PlanPiece piece = new PlanPiece("map", ORIGIN, ROTATION);
         BoundingBox box = piece.getBoundingBox();
-        say("plan " + plan.width + "x" + plan.height + "x" + plan.depth + ", box " + box + ", world is empty at the origin: "
-                + level.getBlockState(ORIGIN.below(40)).isAir());
+        say("plan " + plan.width + "x" + plan.height + "x" + plan.depth + ", box " + box + ", the world's ground under the origin is "
+                + level.getBlockState(ORIGIN.below()).getBlock() + ", over it " + level.getBlockState(ORIGIN).getBlock());
         long started = System.currentTimeMillis();
         for (int cx = (box.minX() >> 4) - 2; cx <= (box.maxX() >> 4) + 2; cx++) {
             for (int cz = (box.minZ() >> 4) - 2; cz <= (box.maxZ() >> 4) + 2; cz++) {
@@ -84,6 +85,21 @@ public final class MapBuilder {
                 CHUNKS.add(level.getChunk(cx, cz));
             }
         }
+        // The forest the world grew stands where the map goes: everything over the ground is taken away first.
+        int felled = 0;
+        BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
+        for (int x = box.minX(); x <= box.maxX(); x++) {
+            for (int z = box.minZ(); z <= box.maxZ(); z++) {
+                for (int y = ORIGIN.getY(); y < ORIGIN.getY() + 40; y++) {
+                    at.set(x, y, z);
+                    if (!level.getBlockState(at).isAir()) {
+                        level.setBlock(at, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2 | 16);
+                        felled++;
+                    }
+                }
+            }
+        }
+        say("cleared " + felled + " blocks of forest in " + (System.currentTimeMillis() - started) + " ms");
         piece.postProcess(level, level.structureManager(), level.getChunkSource().getGenerator(), level.getRandom(),
                 new BoundingBox(-30000000, -2048, -30000000, 30000000, 2048, 30000000), new ChunkPos(0, 0), ORIGIN);
         say("blocks set in " + (System.currentTimeMillis() - started) + " ms");
@@ -95,6 +111,7 @@ public final class MapBuilder {
         rules.set(GameRules.ADVANCE_WEATHER, false, server);
         rules.set(GameRules.NATURAL_HEALTH_REGENERATION, false, server);
         rules.set(GameRules.RESPAWN_RADIUS, 0, server);
+        rules.set(GameRules.SPAWN_MOBS, false, server);              // the dead of the map rise from their marks, nothing else walks it
         rules.set(GameRules.SPAWN_PHANTOMS, false, server);
         rules.set(GameRules.SPAWN_PATROLS, false, server);
         rules.set(GameRules.SPAWN_WANDERING_TRADERS, false, server);
@@ -104,7 +121,7 @@ public final class MapBuilder {
         rules.set(GameRules.SHOW_ADVANCEMENT_MESSAGES, false, server);
         server.setDefaultGameType(GameType.ADVENTURE);
         server.setDifficulty(Difficulty.NORMAL, true);
-        for (String command : new String[] {"time set " + SUNSET, "weather clear"}) {
+        for (String command : new String[] {"time set " + MIDNIGHT, "weather clear"}) {
             server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), command);
         }
         say("rules set: time " + level.getDefaultClockTime() + ", regeneration " + rules.get(GameRules.NATURAL_HEALTH_REGENERATION) + ", game type "

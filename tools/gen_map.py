@@ -28,7 +28,8 @@ GAL = L2 + 12                   # its galleries, and the covered walk that leads
 CLR = GAL + 7                   # the roof over the galleries
 VAULT = CLR + 7                 # the top of the nave's walls
 BELL = L2 + 24                  # the bell chamber
-SPAWN = (CX, L0 + 1, 263)
+GROUND = L0 - 8                 # the ground the fortress stands on: its lower ward is on a low crag, eight above it
+SPAWN = (CX, L0 + 1, 263)       # where the way in from the road ends (the newcomer wakes in the village: see gen_world.py)
 
 
 def hsh(x, y, z, s=0):
@@ -150,8 +151,10 @@ INWARD = {'n': 'south', 's': 'north', 'w': 'east', 'e': 'west'}
 
 
 class Map(Build):
-    def __init__(self):
-        super().__init__('high_stockade', W, H, D)
+    def __init__(self, name='high_stockade', w=W, h=H, d=D):
+        super().__init__(name, w, h, d)
+        self.spawn = SPAWN
+        self.shards = []               # where a flask shard glows in the ash
         self.bridge = set()            # columns that hang in the air: no rock under them
         self.hearths = []
         self.chests = []
@@ -310,6 +313,13 @@ class Map(Build):
         self.set(x, y, z, f'{MOD}:hearth[lit=false]')
         self.hearths.append((name, x, y, z))
 
+    def shard(self, x, y, z):
+        """A flask shard lying in a heap of ash, for whoever comes this far."""
+        if not self.free(x, y, z) or self.get(x, y - 1, z) in (None, AIR):
+            raise ValueError(f'no place for a shard at {(x, y, z)}: {self.get(x, y, z)} over {self.get(x, y - 1, z)}')
+        self.set(x, y, z, f'{MOD}:shard_heap')
+        self.shards.append((x, y, z))
+
     def loot(self, x, y, z, table, facing):
         self.chest(x, y, z, f'map/{table}', facing)
         self.chests.append((table, x, y, z))
@@ -460,30 +470,32 @@ class Map(Build):
 # ---------------------------------------------------------------------------------------------------- the lower fortress
 
 def arrival(b):
-    """The stub of a bridge that once came from somewhere: the player wakes on it, with the gate ahead."""
+    """The bridge the road comes in by: it leaves the gate level and is met, at its far end, by the causeway that
+    climbs from the valley (gen_world.py)."""
     b.zone = 'arrival'
     for z in range(250, 272):
         for x in range(60, 69):
-            broken = z >= 266 and hsh(x, 0, z, 30) < (z - 264) * 0.16
-            if broken:
-                continue
             b.set(x, L0, z, cobbles(x, L0, z) if 61 <= x <= 67 else grey(x, L0, z))
             b.set(x, L0 - 1, z, grey(x, L0 - 1, z))
-            if x in (60, 68) and hsh(x, 1, z, 31) < 0.8 and z < 268:
+            if x in (60, 68) and (hsh(x, 1, z, 31) < 0.86 or z % 7 == 3):
                 b.set(x, L0 + 1, z, grey(x, L0 + 1, z))
             b.bridge.add((x, z))
-    for z in (254, 262):                                     # two piers going down into the cloud
+    for z in (254, 262, 270):                                # piers down to the ground
         for x in range(60, 69):
-            for y in range(L0 - 16, L0 - 1):
+            for y in range(GROUND - 2, L0 - 1):
                 taper = (L0 - 2 - y) // 5
                 if 60 + taper <= x <= 68 - taper:
                     b.set(x, y, z, grey(x, y, z))
                     b.set(x, y, z + 1, grey(x, y, z + 1))
         for x in range(60, 69):                               # arches under the deck between the piers
             b.set(x, L0 - 2, z - 1, stairs('stone_brick', 'south', 'top'))
-            b.set(x, L0 - 2, z + 2, stairs('stone_brick', 'north', 'top'))
-    b.set(60, L0 + 2, 252, FLOOR_LANTERN)
-    b.set(68, L0 + 2, 258, FLOOR_LANTERN)
+            if z + 2 < 272:
+                b.set(x, L0 - 2, z + 2, stairs('stone_brick', 'north', 'top'))
+    for z in (252, 259, 266):
+        for x in (60, 68):
+            b.set(x, L0 + 1, z, grey(x, L0 + 1, z))
+            b.set(x, L0 + 2, z, 'minecraft:stone_brick_wall')
+            b.set(x, L0 + 3, z, FLOOR_LANTERN)
 
 
 def lower_walls(b):
@@ -523,8 +535,7 @@ def south_gate(b):
     b.fill(73, L0, 236, 82, L0, 243, flagstones)
     b.opening(72, L0 + 1, 237, 72, L0 + 3, 238)
     b.hearth(77, L0 + 1, 240, 'keeper')
-    b.mob('keykeeper', 81, L0 + 1, 242, 'west')
-    b.loot(74, L0 + 1, 243, 'start', 'north')
+    b.loot(74, L0 + 1, 243, 'gatehouse', 'north')
     b.set(77, L0 + 1, 236, f'{MOD}:forge')                   # an anvil by the first fire: scrap is of use from the first hour
     b.set(82, L0 + 1, 236, 'minecraft:hay_block[axis=y]')
     b.set(81, L0 + 1, 236, 'minecraft:hay_block[axis=x]')
@@ -634,6 +645,7 @@ def wall_walks(b):
     b.mob('guard', 108, L1 + 1, 232, 'north')
     b.mob('prisoner', 108, L1 + 1, 224, 'north')
     b.loot(110, L1 + 1, 248, 'far_tower', 'west')
+    b.shard(110, L1 + 1, 246)
     b.mob('archer', 40, L1 + 1, 246, 'east')
 
 
@@ -682,7 +694,7 @@ def great_bridge(b):
                     b.set(x, L1 + 3, z, FLOOR_LANTERN)
     for z in (160, 173):
         for x in range(59, 70):
-            for y in range(L1 - 22, L1 - 1):
+            for y in range(GROUND - 2, L1 - 1):
                 taper = (L1 - 2 - y) // 6
                 if 59 + taper <= x <= 69 - taper:
                     b.fill(x, y, z, x, y, z + 1, grey)
@@ -896,6 +908,7 @@ def bell_tower(b):
     b.set(101, BELL + 5, 91, 'minecraft:bell[attachment=ceiling,facing=north]')
     b.set(101, BELL + 5, 87, LANTERN)
     b.loot(105, BELL + 1, 93, 'belfry', 'west')
+    b.shard(105, BELL + 1, 85)
     b.mob('knight', 101, BELL + 1, 92, 'west')
     # lights and narrow windows on the way up
     for y in (L2 + 4, L2 + 10, L2 + 16, L2 + 22):
@@ -1137,6 +1150,7 @@ def cathedral(b):
     b.fog('chaplain', 88, LC + 1, 14, 88, LC + 3, 15, 'z', sealed=True)
     b.loot(100, LC + 1, 12, 'treasury', 'west')
     b.loot(100, LC + 1, 18, 'treasury_arms', 'west')
+    b.shard(99, LC + 1, 15)
     b.set(95, LC + 5, 15, LANTERN)
     b.fill(96, LC + 1, 20, 99, LC + 1, 20, 'minecraft:gold_block')
     b.gable(89, 104, 9, 22, LC + 8, 'x', end=white)
@@ -1467,8 +1481,8 @@ def thresholds(b):
     b.threshold('edge', 94, LC + 1, 6, 96, 7)
 
 
-def far_tower(b, x0, z0, size, top, spire, mat, base=18, salt=0):
-    """A tower of the city that nobody will ever reach: it rises out of the cloud beside the fortress."""
+def far_tower(b, x0, z0, size, top, spire, mat, base=GROUND - 2, salt=0):
+    """A tower of the city that nobody will ever enter: it stands on the ground beside the fortress."""
     x1, z1 = x0 + size - 1, z0 + size - 1
     b.shell(x0, z0, x1, z1, base, top, mat, 2)
     b.fill(x0, top, z0, x1, top, z1, TILES)
@@ -1489,7 +1503,7 @@ def far_tower(b, x0, z0, size, top, spire, mat, base=18, salt=0):
 
 
 def skyline(b):
-    """The rest of the city, seen and never walked: towers standing in the cloud round the two rocks."""
+    """The rest of the city, seen and never walked: towers standing round the two crags."""
     b.zone = 'backdrop'
     far_tower(b, 114, 18, 11, L2 + 62, 22, white, salt=1)
     far_tower(b, 10, 10, 11, L2 + 50, 18, pale, salt=2)
@@ -1549,6 +1563,7 @@ def crypt(b):
         b.set(x, CY + 2, 60, 'minecraft:candle[candles=3,lit=true]')
     b.loot(61, CY + 1, 64, 'crypt', 'north')
     b.loot(67, CY + 1, 64, 'crypt_side', 'north')
+    b.shard(64, CY + 1, 64)
     b.mob('gilded', 64, CY + 1, 56, 'north')
     b.mob('acolyte', 57, CY + 1, 50, 'east')
     b.mob('acolyte', 72, CY + 1, 44, 'west')
@@ -1581,8 +1596,8 @@ def crypt(b):
 # ---------------------------------------------------------------------------------------------------- the rock
 
 def bedrock(b):
-    """Rock under everything that stands (not under what hangs): deepest under the middle of a mass, tapering to its edges,
-    so that the fortress sits on two crags."""
+    """Rock under everything that stands (not under what hangs), straight down to the ground: the fortress sits on two
+    crags with sheer faces, the lower one eight blocks high, the upper one twenty-two. Nobody climbs them."""
     lowest = {}
     for (x, y, z), state in b.cells.items():
         if state != AIR and (x, z) not in b.bridge:
@@ -1592,27 +1607,10 @@ def bedrock(b):
     for (x, z), y in list(lowest.items()):
         if y > (L0 if z >= 156 else L2 + 1):
             del lowest[(x, z)]
-    # a pier's foot counts as hanging too; only wide masses get rock
-    dist = {}
-    queue = deque()
-    for (x, z) in lowest:
-        if any((x + dx, z + dz) not in lowest for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1))):
-            dist[(x, z)] = 1
-            queue.append((x, z))
-    while queue:
-        x, z = queue.popleft()
-        for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            n = (x + dx, z + dz)
-            if n in lowest and n not in dist:
-                dist[n] = dist[(x, z)] + 1
-                queue.append(n)
     count = 0
     for (x, z), y in lowest.items():
-        depth = int(min(36, 3 + dist[(x, z)] * 2.4 + hsh(x // 3, 0, z // 3, 60) * 6))
-        for i in range(1, depth + 1):
-            if y - i < 1:
-                break
-            b.set(x, y - i, z, rock(x, y - i, z, i))
+        for yy in range(GROUND - 2, y):
+            b.set(x, yy, z, rock(x, yy, z, y - yy))
             count += 1
     return count
 
@@ -1632,7 +1630,7 @@ def route(target):
 PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'skull', 'chain', 'banner', 'minecraft:light', 'place_name')
 
 
-def analyse(b, blocked=frozenset(), quiet=False):
+def analyse(b, blocked=frozenset(), quiet=False, stages=None):
     """Walks the map the way a player can: step, jump one block up, drop any distance, jump a gap of up to three. Reports
     what is reached at each stage of the game, and any place that can be reached but not left towards a hearth."""
     cells = b.cells
@@ -1672,7 +1670,7 @@ def analyse(b, blocked=frozenset(), quiet=False):
         for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             for reach in (1, 2, 3, 4):
                 nx, nz = x + dx * reach, z + dz * reach
-                if not (0 <= nx < W and 0 <= nz < D):
+                if not (0 <= nx < b.w and 0 <= nz < b.d):
                     break
                 # the cells flown through must be free at head height
                 if reach > 1 and any(solid((x + dx * r, y + h, z + dz * r), od, os_) for r in range(1, reach) for h in (0, 1, 2)):
@@ -1716,7 +1714,8 @@ def analyse(b, blocked=frozenset(), quiet=False):
 
     report = []
     od, os_ = set(), set()
-    stages = (('at the start', None), ('after the Overseer', 'overseer'), ('after the Chaplain', 'chaplain'))
+    if stages is None:
+        stages = [('at the start', None)] + [(f'after the {name.capitalize()}', name) for name in ('gravedigger', 'overseer', 'chaplain') if name in seals]
     marks = [(k, x, y, z) for k, x, y, z in b.marks]
     problems = []
     final = None
@@ -1725,7 +1724,7 @@ def analyse(b, blocked=frozenset(), quiet=False):
             os_ |= seals[opened]
         # throw every lever that can be reached, until no more doors open
         while True:
-            seen, edges = flood(SPAWN, od, os_)
+            seen, edges = flood(b.spawn, od, os_)
             newly = [door for door, lever in b.doors if door[0] not in od and near(seen, *lever, r=1)]
             if not newly:
                 break
@@ -1733,12 +1732,13 @@ def analyse(b, blocked=frozenset(), quiet=False):
                 od |= set(door)
         hearths = [n for n, x, y, z in b.hearths if near(seen, x, y, z)]
         chests = [n for n, x, y, z in b.chests if near(seen, x, y, z)]
+        shards = sum(1 for x, y, z in b.shards if near(seen, x, y, z, r=1))
         mobs = {}
         for k, x, y, z in marks:
             if (x, y, z) in seen:
                 mobs[k] = mobs.get(k, 0) + 1
         doors_open = sum(1 for door, lever in b.doors if door[0] in od)
-        report.append(f'{label}: {len(seen)} places, hearths {hearths}, chests {len(chests)}/{len(b.chests)}, doors opened {doors_open}/{len(b.doors)}, '
+        report.append(f'{label}: {len(seen)} places, hearths {hearths}, chests {len(chests)}/{len(b.chests)}, shards {shards}/{len(b.shards)}, doors opened {doors_open}/{len(b.doors)}, '
                       f'enemies in reach {dict(sorted(mobs.items()))}')
         final = (seen, edges, chests)
     seen, edges, chests = final
@@ -1748,6 +1748,9 @@ def analyse(b, blocked=frozenset(), quiet=False):
     for k, x, y, z in marks:
         if (x, y, z) not in seen:
             problems.append(f'{k} at {(x, y, z)} stands where no player comes')
+    for x, y, z in b.shards:
+        if not near(seen, x, y, z, r=1):
+            problems.append(f'the shard at {(x, y, z)} is never reached')
     # traps: places from which no hearth can be reached again
     home = set()
     queue = deque()
@@ -1779,10 +1782,10 @@ def analyse(b, blocked=frozenset(), quiet=False):
     if traps:
         sample = sorted(traps)[:: max(1, len(traps) // 12)][:12]
         problems.append(f'{len(traps)} places are traps (no way back to a hearth), e.g. {sample}')
-    # the edge: nobody should be able to stand on the bare rock
-    on_rock = [c for c in seen if isinstance(cells.get((c[0], c[1] - 1, c[2])), str) and cells[(c[0], c[1] - 1, c[2])] in ROCKS and c[1] < L0]
-    if on_rock:
-        problems.append(f'{len(on_rock)} places on the bare rock can be reached, e.g. {sorted(on_rock)[:6]}')
+    # the edge: nobody may get out of the valley
+    out_of_it = [c for c in seen if c[0] < 3 or c[2] < 3 or c[0] > b.w - 4 or c[2] > b.d - 4]
+    if out_of_it:
+        problems.append(f'{len(out_of_it)} places at the edge of the plan can be reached, e.g. {sorted(out_of_it)[:6]}')
     return report, problems, seen
 
 
@@ -2002,76 +2005,4 @@ EXTRA_COLOURS = [
 ]
 
 if __name__ == '__main__':
-    COLOURS[0:0] = EXTRA_COLOURS
-    b = build()
-    built = len([1 for s in b.cells.values() if s != AIR])
-    rocks = bedrock(b)
-    known = valid_blocks()
-    if known is not None:
-        used = {(s[2] if isinstance(s, tuple) else s).split('[')[0] for s in b.cells.values()}
-        unknown = sorted(n for n in used if n.startswith('minecraft:') and n.split(':')[1] not in known)
-        if unknown:
-            print('UNKNOWN BLOCKS:', unknown)
-    report, problems, seen = analyse(b)
-    states = b.save(SPAWN, OUT, skip_air=True)
-    with open('map/views.txt', 'w') as f:
-        for view in VIEWS:
-            if view[0] == 'time':
-                f.write(f'time {view[1]}\n')
-            else:
-                name, eye, look = view
-                f.write(name + ' ' + ' '.join(f'{v:.2f}' for v in world(*eye) + world(*look)) + '\n')
-        # after the pictures the test throws every lever and fells both lords, and says what the doors and the seals did
-        for door, lever in b.doors:
-            f.write('lever ' + ' '.join(f'{v:.2f}' for v in world(*lever) + world(*door[0])) + '\n')
-        for boss, eye, look in (('overseer', (64, L1 + 3, 146.5), (64, L1 + 4, 120)), ('chaplain', (64, LC + 3, 31), (64, LC + 10, 9))):
-            f.write(f'near_the_{boss} ' + ' '.join(f'{v:.2f}' for v in world(*eye) + world(*look)) + '\n')
-            f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v:.2f}' for v in world(*b.seals[boss][0])) + '\n')
-    with open('map/light.txt', 'w') as f:
-        for name, at in PROBES:
-            if b.get(*at) not in (None, AIR) and 'mob_mark' not in str(b.get(*at)):
-                print(f'  PROBLEM: the light probe {name} is inside {b.get(*at)}')
-            wx, wy, wz = world(*at)
-            f.write(f'{name} {math.floor(wx)} {wy} {math.floor(wz)}\n')
-    print(f'{b.name}: {b.w}x{b.h}x{b.d}, {built} blocks built, {rocks} of rock, {states} block states')
-    total = {}
-    for zone, kinds in b.census.items():
-        print(f'  {zone}: {kinds}')
-        for k, n in kinds.items():
-            total[k] = total.get(k, 0) + n
-    print('  all:', total)
-    for line in report:
-        print(' ', line)
-    for p in problems:
-        print('  PROBLEM:', p)
-    # the cathedral must be entered by the covered walk the first time: with the walk shut, nothing beyond it is reached
-    shut = frozenset((x, y, 76) for x in (96, 97) for y in range(GAL + 1, GAL + 4))
-    without, _, seen_shut = analyse(b, blocked=shut)
-    inside = (CX, LC + 1, 60) in seen_shut
-    # nothing built later may stand in a stair: three clear cells over every step (a corbel once shut the bridge tower's)
-    for (x, y, z) in b.flights:
-        if 'stairs' in str(b.get(x, y, z)):
-            for h in (1, 2, 3):
-                above = b.get(x, y + h, z)
-                if above not in (None, AIR) and not any(k in str(above) for k in PASSABLE):
-                    print(f'  PROBLEM: the stair at {(x, y, z)} is shut by {above} {h} above it')
-    dark, light_table = dark_places(b, seen)
-    groups = {}
-    for (x, y, z) in dark:
-        groups.setdefault((x // 10, y // 6, z // 10), []).append((x, y, z))
-    print(f'  dark places: {len(dark)} of {len(seen)}' + (': ' + ', '.join(f'{len(g)} near {sorted(g)[len(g) // 2]}' for g in sorted(groups.values(), key=len, reverse=True)[:24]) if dark else ''))
-    print('  with the covered walk shut the nave is ' + ('REACHED: there is another way in. PROBLEM' if inside else 'not reached: good'))
-    if len(sys.argv) > 1:
-        out = sys.argv[1]
-        os.makedirs(out, exist_ok=True)
-        b.iso(scale=5).save(f'{out}/map_iso.png')
-        from PIL import ImageDraw
-        for name, top, low in (('ward', L0 + 4, L0), ('walls', L1 + 4, L1), ('city', L2 + 4, L2), ('cathedral', LC + 6, LC), ('galleries', GAL + 4, GAL),
-                               ('belfry', BELL + 4, BELL - 8)):
-            img = b.top_down(top, scale=6)
-            draw = ImageDraw.Draw(img)
-            for (x, y, z) in seen:                         # a dot wherever a player can stand on this storey: red where it is dark
-                if low <= y <= top + 1:
-                    sk, bl = light_table[(x, y, z)]
-                    draw.rectangle([x * 6 + 2, z * 6 + 2, x * 6 + 3, z * 6 + 3], fill=(255, 40, 40) if bl < 4 and sk < 7 else (60, 255, 90))
-            img.save(f'{out}/map_{name}.png')
+    sys.exit('the fortress is one part of the world now: run tools/gen_world.py')

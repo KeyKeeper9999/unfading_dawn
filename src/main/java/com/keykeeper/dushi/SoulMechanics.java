@@ -245,6 +245,9 @@ public final class SoulMechanics {
             // Dying is a rest of a kind: the dead around the place the player comes back to rise again too.
             if (player.level() instanceof ServerLevel level) {
                 MobMarkBlockEntity.resetAround(level, player.blockPosition(), MobMarkBlockEntity.RESET_RADIUS);
+                // the player comes back to the hearth they rested at, and to its hour; a newcomer's first place is the world's own
+                hour(level, soul.hearthHour);
+                soul.place = -1;
             }
             if (soul.lostSouls > 0) {
                 player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.souls_left", soul.lostSouls));
@@ -315,17 +318,29 @@ public final class SoulMechanics {
                     PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("place.vsratie_dushi." + place.id, Net.Banner.PALE, "ui.place"));
                 }
                 // Every place has its hour; time stands still there, so the clock is simply set.
-                ServerLevel world = serverPlayer.level();
-                if (Math.floorMod(world.getDefaultClockTime(), 24000L) != place.hour) {
-                    world.getServer().getCommands().performPrefixedCommand(world.getServer().createCommandSourceStack().withSuppressedOutput(),
-                            "time set " + place.hour);
-                }
+                hour(serverPlayer.level(), place.hour);
             }
             // The client counts by itself between these corrections.
             if (player.tickCount % 40 == 0) {
                 serverPlayer.syncData(Dushi.PLAYER_SOUL);
             }
         }
+    }
+
+    /**
+     * Sets the hour of a world whose time stands still (an adventure map: there every place has its own hour, and the clock
+     * is turned in the passages between them, where no sky is seen). In a world where time moves nothing is touched.
+     */
+    public static void hour(ServerLevel level, int hour) {
+        if (hour < 0 || level.getGameRules().get(GameRules.ADVANCE_TIME) || Math.floorMod(level.getDefaultClockTime(), 24000L) == hour) {
+            return;
+        }
+        level.getServer().getCommands().performPrefixedCommand(level.getServer().createCommandSourceStack().withSuppressedOutput(), "time set " + hour);
+    }
+
+    /** The hour as a hearth remembers it; -1 where time moves. */
+    public static int hourNow(ServerLevel level) {
+        return level.getGameRules().get(GameRules.ADVANCE_TIME) ? -1 : (int) Math.floorMod(level.getDefaultClockTime(), 24000L);
     }
 
     /** A fall this long over nothing at all is not waited out to the bottom of the world. */

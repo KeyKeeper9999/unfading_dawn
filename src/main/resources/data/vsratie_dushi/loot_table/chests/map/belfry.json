@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "vsratie_dushi:flask_shard",
+          "name": "vsratie_dushi:great_soul",
           "weight": 1
         }
       ]
@@ -16,7 +16,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "vsratie_dushi:great_soul",
+          "name": "vsratie_dushi:return_ember",
           "weight": 1
         }
       ]

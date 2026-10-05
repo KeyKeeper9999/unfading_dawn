@@ -88,6 +88,7 @@ public class HearthBlock extends Block {
             }
         }
         FlaskShardItem.meltAll(level, player);
+        soul.hearthHour = SoulMechanics.hourNow(level);
         SoulMechanics.refill(player);
         MobMarkBlockEntity.resetAround(level, pos, MobMarkBlockEntity.RESET_RADIUS);
         // The player comes back to where they sat, not into the fire.

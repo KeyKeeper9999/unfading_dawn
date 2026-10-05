@@ -6,8 +6,18 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "vsratie_dushi:flask_shard",
-          "weight": 1
+          "name": "vsratie_dushi:nameless_soul",
+          "weight": 1,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 2,
+                "max": 2
+              }
+            }
+          ]
         }
       ]
     },
@@ -16,7 +26,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "vsratie_dushi:nameless_soul",
+          "name": "vsratie_dushi:rust_scrap",
           "weight": 1,
           "modifier": [
             {

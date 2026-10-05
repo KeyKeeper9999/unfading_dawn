@@ -52,8 +52,9 @@ public final class PlayerSoul {
             Codec.INT.fieldOf("stain").forGetter(soul -> soul.stainGeneration),
             Codec.INT.optionalFieldOf("lost", 0).forGetter(soul -> soul.lostSouls),
             Codec.BOOL.optionalFieldOf("flask", false).forGetter(soul -> soul.flaskGiven),
-            Codec.BOOL.optionalFieldOf("keykeeper", false).forGetter(soul -> soul.metKeykeeper))
-            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost, flask, keykeeper) -> {
+            Codec.BOOL.optionalFieldOf("keykeeper", false).forGetter(soul -> soul.metKeykeeper),
+            Codec.INT.optionalFieldOf("hour", -1).forGetter(soul -> soul.hearthHour))
+            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost, flask, keykeeper, hour) -> {
                 PlayerSoul soul = new PlayerSoul();
                 soul.souls = souls;
                 soul.stats[VITALITY] = vit;
@@ -66,6 +67,7 @@ public final class PlayerSoul {
                 soul.lostSouls = lost;
                 soul.flaskGiven = flask;
                 soul.metKeykeeper = keykeeper;
+                soul.hearthHour = hour;
                 soul.stamina = soul.maxStamina();
                 return soul;
             }));
@@ -121,6 +123,8 @@ public final class PlayerSoul {
 
     /** The place whose name was last shown to the player (see PlaceNameBlock), -1 for none yet. Not saved, server only. */
     public int place = -1;
+    /** The hour of the place where the player last rested, in a world whose time stands still (see {@link SoulMechanics#hour}); -1 if none. */
+    public int hearthHour = -1;
 
     /** Where the player last stood on something, for a stain left by a fall into nothing. Not saved, server only. */
     public double groundX;

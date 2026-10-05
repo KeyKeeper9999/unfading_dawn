@@ -6,16 +6,6 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "vsratie_dushi:flask_shard",
-          "weight": 1
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
-        {
-          "type": "minecraft:item",
           "name": "vsratie_dushi:great_soul",
           "weight": 1
         }

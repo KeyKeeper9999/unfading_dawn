@@ -69,9 +69,9 @@ public abstract class SoulsMob extends Monster {
     private int musicTicks;
 
     /** How much stronger the dead of a harder place are: health, the blows they deal, the souls they leave. */
-    public static final float[] TIER_HEALTH = {1.0F, 1.6F, 2.3F, 3.0F};
-    public static final float[] TIER_DAMAGE = {1.0F, 1.35F, 1.7F, 2.1F};
-    public static final float[] TIER_SOULS = {1.0F, 2.5F, 4.5F, 7.0F};
+    public static final float[] TIER_HEALTH = {1.0F, 1.35F, 1.45F, 2.0F};
+    public static final float[] TIER_DAMAGE = {1.0F, 1.4F, 1.45F, 1.8F};
+    public static final float[] TIER_SOULS = {1.0F, 1.25F, 1.3F, 2.0F};
     private static final Identifier TIER_MODIFIER = Dushi.id("tier");
     private int tier;
 

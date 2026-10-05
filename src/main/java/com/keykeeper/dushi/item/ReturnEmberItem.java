@@ -51,6 +51,7 @@ public class ReturnEmberItem extends Item {
             TeleportTransition home = player.findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING);
             player.teleport(home);
             player.resetFallDistance();
+            com.keykeeper.dushi.SoulMechanics.hour(home.newLevel(), com.keykeeper.dushi.PlayerSoul.of(player).hearthHour);
             home.newLevel().sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 1.0, player.getZ(), 30, 0.3, 0.8, 0.3, 0.03);
             home.newLevel().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.8F, 0.8F);
             player.awardStat(Stats.ITEM_USED.get(this));

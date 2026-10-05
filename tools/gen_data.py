@@ -123,21 +123,33 @@ CHESTS = {
 
 # The chests of the map "High Stockade" (tools/gen_map.py): each holds exactly what is listed, the same for everyone.
 MAP_CHESTS = {
-    'start': [(M + 'club', 1), (M + 'plank_shield', 1), (M + 'tar_pot', 2)],
+    # the Dead Borough: what a newcomer starts with is poor on purpose; the town's blind alleys make up for it
+    'start': [(M + 'broken_sword', 1), (M + 'plank_shield', 1), (M + 'tar_pot', 2)],
+    'borough_alley': [(M + 'club', 1), (CLOTH, 2)],
+    'borough_nook': [(SCRAP, 3), (CLOTH, 2)],
+    'borough_house': [(M + 'prisoner_rags', 1), (M + 'return_ember', 1), (SOUL, 1)],
+    'borough_yard': [(M + 'hatchet', 1), (M + 'tar_pot', 2)],
+    'tanners': [(M + 'prisoner_wraps', 1), (CLOTH, 4), (SCRAP, 2)],
+    'market': [(M + 'round_shield', 1), (SOUL, 1), (SCRAP, 2)],
+    'shambles_yard': [(M + 'dagger', 1), (SCRAP, 3)],
+    'butchers': [(SOUL, 1), (M + 'tar_pot', 3), (CLOTH, 2)],
+    'chapel': [(GREAT, 1), (SCRAP, 4), (M + 'return_ember', 2)],
+    # the High Stockade (flask shards are not in chests: they lie in the ash, see ShardBlock, or are left by the lords)
+    'gatehouse': [(SCRAP, 3), (M + 'tar_pot', 2), (SOUL, 1)],
     'cells': [(CLOTH, 3), (SOUL, 1), (M + 'shiv', 1)],
     'store': [(SCRAP, 4), (M + 'tar_pot', 3), (MC + 'arrow', 12)],
-    'far_tower': [(M + 'flask_shard', 1), (SOUL, 2)],
+    'far_tower': [(SOUL, 2), (SCRAP, 2)],
     'bridge_tower': [(M + 'short_bow', 1), (MC + 'arrow', 16), (M + 'return_ember', 1)],
     'smithy': [(SCRAP, 4), (CLOTH, 4), (SOUL, 1)],
     'chapter': [(M + 'rebuke', 1), (M + 'prayer_beads', 1), (GREAT, 1)],
     'chapter_arms': [(M + 'guard_hauberk', 1), (SOUL, 2), (SCRAP, 3)],
     'tower_nook': [(M + 'tar_pot', 4), (M + 'return_ember', 2)],
-    'belfry': [(M + 'flask_shard', 1), (GREAT, 1)],
+    'belfry': [(GREAT, 1), (M + 'return_ember', 1)],
     'west_gallery': [(M + 'guard_shield', 1), (GREAT, 1), (SCRAP, 4)],
     'sacristy': [(M + 'mend', 1), (M + 'return_ember', 2), (SOUL, 2)],
-    'crypt': [(M + 'flask_shard', 1), (GREAT, 1), (M + 'rust_cuirass', 1)],
+    'crypt': [(GREAT, 1), (M + 'rust_cuirass', 1)],
     'crypt_side': [(SCRAP, 6), (M + 'heavy_soul_shard', 1), (SOUL, 2)],
-    'treasury': [(GREAT, 3), (M + 'flask_shard', 1)],
+    'treasury': [(GREAT, 3)],
     'treasury_arms': [(M + 'chaplain_skirt', 1), (M + 'chaplain_shoes', 1), (M + 'tower_shield', 1)],
 }
 for _name, _items in MAP_CHESTS.items():
