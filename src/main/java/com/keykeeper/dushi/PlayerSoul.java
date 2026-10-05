@@ -1,5 +1,10 @@
 package com.keykeeper.dushi;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -54,8 +59,9 @@ public final class PlayerSoul {
             Codec.BOOL.optionalFieldOf("flask", false).forGetter(soul -> soul.flaskGiven),
             Codec.BOOL.optionalFieldOf("keykeeper", false).forGetter(soul -> soul.metKeykeeper),
             Codec.INT.optionalFieldOf("hour", -1).forGetter(soul -> soul.hearthHour),
-            Codec.LONG.optionalFieldOf("places", 0L).forGetter(soul -> soul.placesSeen))
-            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost, flask, keykeeper, hour, places) -> {
+            Codec.STRING.listOf().optionalFieldOf("places_seen", List.of()).forGetter(soul -> List.copyOf(soul.placesSeen)),
+            Rest.CODEC.listOf().optionalFieldOf("hearths", List.of()).forGetter(soul -> soul.rests))
+            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost, flask, keykeeper, hour, places, rests) -> {
                 PlayerSoul soul = new PlayerSoul();
                 soul.souls = souls;
                 soul.stats[VITALITY] = vit;
@@ -69,7 +75,8 @@ public final class PlayerSoul {
                 soul.flaskGiven = flask;
                 soul.metKeykeeper = keykeeper;
                 soul.hearthHour = hour;
-                soul.placesSeen = places;
+                soul.placesSeen.addAll(places);
+                soul.rests.addAll(rests);
                 soul.stamina = soul.maxStamina();
                 return soul;
             }));
@@ -123,17 +130,42 @@ public final class PlayerSoul {
     /** Whether the player stands by a hearth: the dead do not take notice of them there. Not saved, server only. */
     public boolean atHearth;
 
-    /** The places whose names the player has been shown (see PlaceNameBlock), a bit for each: a name is shown once, on finding the place. */
-    public long placesSeen;
+    /** The places whose names the player has been shown (see PlaceNameBlock): a name is shown once, on finding the place. */
+    public final Set<String> placesSeen = new LinkedHashSet<>();
 
     /** Marks the place as found; true if it was not known before. */
-    public boolean discover(int place) {
-        long bit = 1L << place;
-        if ((this.placesSeen & bit) != 0L) {
-            return false;
+    public boolean discover(String place) {
+        return this.placesSeen.add(place);
+    }
+
+    /**
+     * A hearth the player has rested at, and can come back to from any other: the world it is in, where it stands, where
+     * the player sat by it and which way they faced, what it is called (see HearthBlock.Site) and the hour that was there.
+     */
+    public record Rest(String dimension, long hearth, long seat, float yaw, String site, int hour) {
+        public static final Codec<Rest> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.STRING.fieldOf("dimension").forGetter(Rest::dimension),
+                Codec.LONG.fieldOf("hearth").forGetter(Rest::hearth),
+                Codec.LONG.fieldOf("seat").forGetter(Rest::seat),
+                Codec.FLOAT.fieldOf("yaw").forGetter(Rest::yaw),
+                Codec.STRING.fieldOf("site").forGetter(Rest::site),
+                Codec.INT.fieldOf("hour").forGetter(Rest::hour)).apply(instance, Rest::new));
+    }
+
+    /** The hearths rested at, in the order they were found. Server only: the client is told of them when the hearth's screen opens. */
+    public final List<Rest> rests = new ArrayList<>();
+
+    /** Remembers a rest at a hearth (or brings what is known of that hearth up to date); returns its place in the list. */
+    public int remember(Rest rest) {
+        for (int i = 0; i < this.rests.size(); i++) {
+            Rest known = this.rests.get(i);
+            if (known.hearth() == rest.hearth() && known.dimension().equals(rest.dimension())) {
+                this.rests.set(i, rest);
+                return i;
+            }
         }
-        this.placesSeen |= bit;
-        return true;
+        this.rests.add(rest);
+        return this.rests.size() - 1;
     }
     /** The hour of the place where the player last rested, in a world whose time stands still (see {@link SoulMechanics#hour}); -1 if none. */
     public int hearthHour = -1;

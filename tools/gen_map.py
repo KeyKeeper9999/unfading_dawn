@@ -310,7 +310,7 @@ class Map(Build):
         self.doors.append((((x, y, z), (x, y + 1, z)), lever))
 
     def hearth(self, x, y, z, name):
-        self.set(x, y, z, f'{MOD}:hearth[lit=false]')
+        self.set(x, y, z, f'{MOD}:hearth[lit=false,site={name}]')        # the name it goes by among the hearths one can travel to
         self.hearths.append((name, x, y, z))
 
     def shard(self, x, y, z):
@@ -1397,7 +1397,7 @@ def dress_cathedral(b):
     b.set(37, LC + 2, 41, 'minecraft:candle[candles=2,lit=true]')
     b.set(38, LC + 1, 42, stairs('spruce', 'north'))
     b.fill(32, LC + 1, 43, 36, LC + 1, 45, 'minecraft:red_carpet')
-    b.set(34, LC + 1, 44, f'{MOD}:hearth[lit=false]')
+    b.set(34, LC + 1, 44, f'{MOD}:hearth[lit=false,site=sacristy]')
 
 
 def lighting(b):

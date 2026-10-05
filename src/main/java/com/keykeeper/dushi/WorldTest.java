@@ -122,9 +122,9 @@ final class WorldTest {
         }
         level.setBlock(at, Blocks.AIR.defaultBlockState(), 3);
         level.setBlock(at.offset(7, 0, 0), Blocks.AIR.defaultBlockState(), 3);
-        boolean first = soul.discover(3);
-        boolean again = soul.discover(3);
-        boolean other = soul.discover(4);
+        boolean first = soul.discover("market");
+        boolean again = soul.discover("market");
+        boolean other = soul.discover("shambles");
         say("rules: the name of a place: shown on finding it=" + first + ", not again=" + !again + ", another place still=" + other + (first && !again && other ? "" : " FAILED"));
         // the hour of a place: only where time stands still
         long was = level.getDefaultClockTime();

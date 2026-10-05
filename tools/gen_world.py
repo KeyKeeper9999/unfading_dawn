@@ -507,6 +507,9 @@ if __name__ == '__main__':
             else:
                 name, eye, look = view
                 f.write(name + ' ' + ' '.join(f'{v:.2f}' for v in world(*eye, spawn) + world(*look, spawn)) + '\n')
+        # the hearths, by name: the test rests at two of them and travels from one to the other
+        for name, x, y, z in b.hearths:
+            f.write(f'hearth {name} ' + ' '.join(f'{v_:.2f}' for v_ in world(x, y, z, spawn)) + '\n')
         # after the pictures the test throws every lever and fells the lords, and says what the doors and the seals did
         for door, lever in b.doors:
             f.write('lever ' + ' '.join(f'{v:.2f}' for v in world(*lever, spawn) + world(*door[0], spawn)) + '\n')

@@ -47,6 +47,8 @@ public final class MapSelfTest {
     private static int waited;
     private static int next;
     private static final List<View> LIST = new ArrayList<>();
+    /** The hearths of the map, by name: the test rests at two of them and travels from one to the other. */
+    private static final java.util.Map<String, BlockPos> HEARTHS = new java.util.LinkedHashMap<>();
 
     private MapSelfTest() {}
 
@@ -84,6 +86,8 @@ public final class MapSelfTest {
                         String[] p = line.trim().split("\\s+");
                         if (p.length == 2 && p[0].equals("time")) {
                             LIST.add(new View("time", Double.parseDouble(p[1]), 0, 0, 0, 0, 0));
+                        } else if (p.length == 5 && p[0].equals("hearth")) {
+                            HEARTHS.put(p[1], BlockPos.containing(Double.parseDouble(p[2]), Double.parseDouble(p[3]), Double.parseDouble(p[4])));
                         } else if (p.length == 5 && p[0].equals("kill")) {
                             LIST.add(new View("kill " + p[1], Double.parseDouble(p[2]), Double.parseDouble(p[3]), Double.parseDouble(p[4]), 0, 0, 0));
                         } else if (p.length == 7) {
@@ -258,9 +262,58 @@ public final class MapSelfTest {
                 wait = 4;
             }
             case 5 -> {
+                // from hearth to hearth: a rest in the yard by night, a rest in the gatehouse by evening, and back
                 if (minecraft.gui.hud.isHidden()) {
                     minecraft.gui.hud.toggle();
                 }
+                if (!HEARTHS.containsKey("yard") || !HEARTHS.containsKey("keeper")) {
+                    stage = 56;
+                    return;
+                }
+                sit(minecraft.getSingleplayerServer(), "yard", 18000);
+                stage = 51;
+                wait = 40;
+            }
+            case 51 -> {
+                minecraft.gui.setScreen(null);
+                sit(minecraft.getSingleplayerServer(), "keeper", 12350);
+                stage = 52;
+                wait = 40;
+            }
+            case 52 -> {
+                say("travel: the client knows of " + HearthScreen.stops.size() + " hearths, screen is "
+                        + (screen == null ? "none" : screen.getClass().getSimpleName()));
+                minecraft.gui.setScreen(new TravelScreen());
+                stage = 53;
+                wait = 20;
+            }
+            case 53 -> {
+                shot(minecraft, "m97_travel_screen");
+                stage = 54;
+                wait = 8;
+            }
+            case 54 -> {
+                minecraft.gui.setScreen(null);
+                MinecraftServer server = minecraft.getSingleplayerServer();
+                server.execute(() -> {
+                    ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                    BlockPos before = player.blockPosition();
+                    boolean went = com.keykeeper.dushi.block.HearthBlock.travel(player, 0);
+                    say("travel: from " + before.toShortString() + ", went=" + went + ", now at " + player.blockPosition().toShortString() + ", "
+                            + Math.round(Math.sqrt(player.blockPosition().distSqr(HEARTHS.get("yard")))) + " from the yard's hearth, time "
+                            + Math.floorMod(server.overworld().getDefaultClockTime(), 24000L)
+                            + (went && player.blockPosition().distSqr(HEARTHS.get("yard")) < 9.0
+                            && Math.floorMod(server.overworld().getDefaultClockTime(), 24000L) == 18000L ? "" : " FAILED"));
+                });
+                stage = 55;
+                wait = 60;
+            }
+            case 55 -> {
+                shot(minecraft, "m98_after_travel");
+                stage = 56;
+                wait = 8;
+            }
+            case 56 -> {
                 minecraft.gui.setScreen(new ForgeScreen());
                 stage = 6;
                 wait = 20;
@@ -276,6 +329,28 @@ public final class MapSelfTest {
                 minecraft.stop();
             }
         }
+    }
+
+    /** Sets the hour, puts the player beside the hearth of that name and has them rest at it. */
+    private static void sit(MinecraftServer server, String name, int hour) {
+        BlockPos hearth = HEARTHS.get(name);
+        server.execute(() -> {
+            ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+            ServerLevel level = server.overworld();
+            server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "time set " + hour);
+            player.setGameMode(GameType.ADVENTURE);
+            BlockPos seat = hearth.east();
+            for (Direction side : Direction.Plane.HORIZONTAL) {
+                if (level.getBlockState(hearth.relative(side)).isAir() && level.getBlockState(hearth.relative(side).above()).isAir()) {
+                    seat = hearth.relative(side);
+                    break;
+                }
+            }
+            player.connection.teleport(seat.getX() + 0.5, seat.getY(), seat.getZ() + 0.5, 0.0F, 0.0F);
+            BlockState state = level.getBlockState(hearth);
+            Object result = state.useWithoutItem(level, player, new BlockHitResult(Vec3.atCenterOf(hearth), Direction.UP, hearth, false));
+            say("travel: rested at " + name + " " + hearth.toShortString() + " (" + state.getBlock() + "), seat " + seat.toShortString() + ": " + result);
+        });
     }
 
     private static void shot(Minecraft minecraft, String name) {

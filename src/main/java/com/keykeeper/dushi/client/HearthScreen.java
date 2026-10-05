@@ -4,6 +4,8 @@ import com.keykeeper.dushi.Gear;
 import com.keykeeper.dushi.Net;
 import com.keykeeper.dushi.PlayerSoul;
 
+import java.util.List;
+
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -23,6 +25,9 @@ public class HearthScreen extends Screen {
     private static final int DIM = 0xFF9A8F7C;
     private static final int SOULS = 0xFF9FE3FF;
     private static final int RED = 0xFFD06A5A;
+
+    /** The hearths the player has rested at, as the server told them when this one's screen was opened. */
+    public static List<Net.Stop> stops = List.of();
 
     private final Button[] plus = new Button[PlayerSoul.STAT_COUNT];
 
@@ -52,8 +57,12 @@ public class HearthScreen extends Screen {
                     button -> ClientPacketDistributor.sendToServer(new Net.LevelUp(index)))
                     .bounds(left + PANEL_WIDTH - 32, top + 80 + stat * ROW_HEIGHT, 20, 20).build());
         }
+        // from one hearth to another: only when there is another to go to
+        Button travel = this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.hearth.travel"),
+                button -> this.minecraft.gui.setScreen(new TravelScreen())).bounds(left + 12, top + PANEL_HEIGHT - 28, 108, 20).build());
+        travel.active = stops.size() > 1;
         this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.hearth.leave"), button -> this.onClose())
-                .bounds(left + PANEL_WIDTH / 2 - 60, top + PANEL_HEIGHT - 28, 120, 20).build());
+                .bounds(left + PANEL_WIDTH - 120, top + PANEL_HEIGHT - 28, 108, 20).build());
         this.updateButtons();
     }
 

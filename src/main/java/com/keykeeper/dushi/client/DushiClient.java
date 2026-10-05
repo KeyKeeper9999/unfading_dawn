@@ -72,7 +72,10 @@ public final class DushiClient {
 
     @SubscribeEvent
     static void registerPayloadHandlers(RegisterClientPayloadHandlersEvent event) {
-        event.register(Net.OpenHearth.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new HearthScreen()));
+        event.register(Net.OpenHearth.TYPE, (payload, context) -> {
+            HearthScreen.stops = payload.stops();
+            Minecraft.getInstance().gui.setScreen(new HearthScreen());
+        });
         event.register(Net.OpenShop.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new ShopScreen()));
         event.register(Net.OpenForge.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new ForgeScreen()));
         event.register(Net.Banner.TYPE, (payload, context) -> {

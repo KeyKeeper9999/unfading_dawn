@@ -61,9 +61,14 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `block/PlaceNameBlock` - a threshold nobody sees or feels: a player who steps through it is shown the name of the
   place (`place.vsratie_dushi.<id>` in the texts; the list of places is the enum in the block). Every place has its
   hour, and in a world whose time stands still the threshold sets the clock (`SoulMechanics.hour`); a name is shown
-  once, when the player first comes to the place (`PlayerSoul.placesSeen`, saved with the player); `to_night` and
+  once, when the player first comes to the place (`PlayerSoul.placesSeen`, by id, saved with the player); `to_night` and
   `to_dusk` have no name and only do that. No item: a map's builder sets it; with a mob mark in hand it can be seen
   and removed in creative. A hearth remembers the hour it was rested at, for those who come back to it by dying.
+- `block/HearthBlock` - rest, level up, and travel: a player can go from the hearth they sit by to any other they have
+  rested at (`HearthBlock.travel`, `client/TravelScreen`; the list is `PlayerSoul.rests`, saved with the player, and is
+  sent to the client when the hearth's screen opens). A map's hearth has a name, `site=` in its block state
+  (`HearthBlock.Site`, text `hearth.vsratie_dushi.<id>`): a new hearth of a map needs a new entry there and its text.
+  Arriving is resting: the hour of the place comes back with it.
 - `block/ShardBlock` (`shard_heap`) - a flask shard glowing in a heap of ash: taken with a click, once. Flask shards
   are not put in chests: they lie in such heaps or are left by the lords, about two to a part of a map.
 - `MapBuilder` (build only) and `client/MapSelfTest` (build only) - see "The map".

@@ -421,6 +421,7 @@ public class Dushi {
             var registrar = event.registrar("1");
             registrar.playToServer(Net.Roll.TYPE, Net.Roll.CODEC, Net.Roll::handle);
             registrar.playToServer(Net.LevelUp.TYPE, Net.LevelUp.CODEC, Net.LevelUp::handle);
+            registrar.playToServer(Net.Travel.TYPE, Net.Travel.CODEC, Net.Travel::handle);
             registrar.playToClient(Net.OpenHearth.TYPE, Net.OpenHearth.CODEC);
             registrar.playToClient(Net.Banner.TYPE, Net.Banner.CODEC);
             registrar.playToClient(Net.OpenShop.TYPE, Net.OpenShop.CODEC);

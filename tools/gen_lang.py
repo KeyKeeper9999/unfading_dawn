@@ -147,6 +147,18 @@ t(f'screen.{M}.forge', 'Старая наковальня', 'The Old Anvil')
 t(f'screen.{M}.forge.make', 'Ковать', 'Make')
 t(f'screen.{M}.hearth', 'Очаг', 'Hearth')
 t(f'screen.{M}.hearth.leave', 'Встать', 'Get up')
+t(f'screen.{M}.hearth.travel', 'Очаги…', 'Hearths…')
+t(f'screen.{M}.travel', 'От очага к очагу', 'From Hearth to Hearth')
+t(f'screen.{M}.travel.go', 'В путь', 'Go')
+t(f'screen.{M}.travel.here', 'ты здесь', 'you are here')
+t(f'screen.{M}.travel.back', 'Назад', 'Back')
+t(f'screen.{M}.travel.hint', 'Очаги, у которых ты отдыхал', 'The hearths you have rested at')
+t(f'message.{M}.hearth_gone', 'Того очага больше нет.', 'That hearth is no more.')
+for key, ru, en in (('none', 'Очаг (%s, %s, %s)', 'A hearth (%s, %s, %s)'), ('yard', 'Двор первого очага', 'The Yard of the First Hearth'),
+                    ('lodge', 'Сторожка у погоста', "The Sexton's Lodge"), ('keeper', 'Привратницкая Острога', 'The Stockade Gatehouse'),
+                    ('smithy', 'Кузня на площади', 'The Smithy on the Square'), ('sacristy', 'Ризница собора', 'The Cathedral Sacristy'),
+                    ('terrace', 'Терраса над долиной', 'The Terrace above the Vale')):
+    t(f'hearth.{M}.{key}', ru, en)
 t(f'screen.{M}.hearth.level', 'Уровень: %s', 'Level: %s')
 t(f'screen.{M}.hearth.souls', 'Души: %s', 'Souls: %s')
 t(f'screen.{M}.hearth.cost', 'Следующее очко стоит: %s', 'The next point costs: %s')

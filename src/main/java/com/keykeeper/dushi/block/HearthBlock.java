@@ -6,7 +6,17 @@ import com.keykeeper.dushi.PlayerSoul;
 import com.keykeeper.dushi.SoulMechanics;
 import com.keykeeper.dushi.item.FlaskShardItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -34,19 +44,39 @@ import net.neoforged.neoforge.network.PacketDistributor;
 /**
  * The hearth: an iron brazier on a ring of stones. The first touch lights it; every touch is a rest that heals, fills the flask,
  * restores the spells, makes this the place to come back to after death and opens the screen where souls are spent on stats.
+ * A player who has rested at a hearth can come back to it from any other (see {@link #travel}).
  */
 public class HearthBlock extends Block {
+    /** What a hearth of a map is called in the list of hearths to travel to (the text is hearth.vsratie_dushi.ID). */
+    public enum Site implements StringRepresentable {
+        /** A hearth somebody set down themselves: it is told from others by where it stands. */
+        NONE("none"),
+        YARD("yard"), LODGE("lodge"), KEEPER("keeper"), SMITHY("smithy"), SACRISTY("sacristy"), TERRACE("terrace");
+
+        public final String id;
+
+        Site(String id) {
+            this.id = id;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return this.id;
+        }
+    }
+
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    public static final EnumProperty<Site> SITE = EnumProperty.create("site", Site.class);
     private static final VoxelShape SHAPE = Block.box(1.0, 0.0, 1.0, 15.0, 11.0, 15.0);
 
     public HearthBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(LIT, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(LIT, false).setValue(SITE, Site.NONE));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(LIT);
+        builder.add(LIT, SITE);
     }
 
     @Override
@@ -63,12 +93,41 @@ public class HearthBlock extends Block {
                 serverLevel.sendParticles(ParticleTypes.LAVA, pos.getX() + 0.5, pos.getY() + 0.9, pos.getZ() + 0.5, 6, 0.2, 0.1, 0.2, 0.0);
                 PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("banner.vsratie_dushi.hearth_lit", Net.Banner.PALE, "ui.hearth_lit"));
             }
-            rest(serverLevel, pos, serverPlayer);
+            rest(serverLevel, pos, serverPlayer, true);
         }
         return InteractionResult.SUCCESS;
     }
 
-    private static void rest(ServerLevel level, BlockPos pos, ServerPlayer player) {
+    /**
+     * Carries the player from the hearth they sit by to another they have rested at: {@code index} is its place in
+     * {@link PlayerSoul#rests}. They arrive as if they had sat down there: it becomes the place they come back to, the
+     * dead round it rise, and the hour is the one they left it at. Returns whether they went.
+     */
+    public static boolean travel(ServerPlayer player, int index) {
+        PlayerSoul soul = PlayerSoul.of(player);
+        if (index < 0 || index >= soul.rests.size() || !SoulMechanics.nearHearth(player)) {
+            return false;
+        }
+        PlayerSoul.Rest rest = soul.rests.get(index);
+        ServerLevel to = player.level().getServer().getLevel(ResourceKey.create(Registries.DIMENSION, Identifier.parse(rest.dimension())));
+        BlockPos hearth = BlockPos.of(rest.hearth());
+        if (to == null || !to.getBlockState(hearth).is(Dushi.HEARTH.get())) {
+            soul.rests.remove(index);                      // somebody took it away
+            player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.hearth_gone"));
+            return false;
+        }
+        ServerLevel from = player.level();
+        from.sendParticles(ParticleTypes.LARGE_SMOKE, player.getX(), player.getY() + 1.0, player.getZ(), 30, 0.3, 0.8, 0.3, 0.02);
+        from.playSound(null, player.getX(), player.getY(), player.getZ(), Dushi.sound("block.fog_gate.pass"), SoundSource.PLAYERS, 0.9F, 0.8F);
+        player.teleport(new TeleportTransition(to, Vec3.atBottomCenterOf(BlockPos.of(rest.seat())), Vec3.ZERO, rest.yaw(), 0.0F, TeleportTransition.DO_NOTHING));
+        player.resetFallDistance();
+        SoulMechanics.hour(to, rest.hour());
+        to.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 1.0, player.getZ(), 30, 0.3, 0.8, 0.3, 0.03);
+        rest(to, hearth, player, false);
+        return true;
+    }
+
+    private static void rest(ServerLevel level, BlockPos pos, ServerPlayer player, boolean open) {
         PlayerSoul soul = PlayerSoul.of(player);
         player.setHealth(player.getMaxHealth());
         player.removeAllEffects();
@@ -96,7 +155,18 @@ public class HearthBlock extends Block {
                 LevelData.RespawnData.of(level.dimension(), player.blockPosition(), player.getYRot(), 0.0F), true), false);
         player.syncData(Dushi.PLAYER_SOUL);
         level.playSound(null, pos, Dushi.sound("block.hearth.rest"), SoundSource.BLOCKS, 1.0F, 1.0F);
-        PacketDistributor.sendToPlayer(player, new Net.OpenHearth(pos));
+        BlockState state = level.getBlockState(pos);
+        String site = state.is(Dushi.HEARTH.get()) ? state.getValue(SITE).id : Site.NONE.id;
+        int here = soul.remember(new PlayerSoul.Rest(level.dimension().identifier().toString(), pos.asLong(), player.blockPosition().asLong(), player.getYRot(),
+                site, soul.hearthHour));
+        if (open) {
+            List<Net.Stop> stops = new ArrayList<>();
+            for (int i = 0; i < soul.rests.size(); i++) {
+                PlayerSoul.Rest rest = soul.rests.get(i);
+                stops.add(new Net.Stop(rest.site(), BlockPos.of(rest.hearth()), i == here));
+            }
+            PacketDistributor.sendToPlayer(player, new Net.OpenHearth(pos, stops));
+        }
     }
 
     @Override

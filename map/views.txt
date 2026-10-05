@@ -50,6 +50,12 @@ lower_fortress_from_the_west -259.50 -19.00 102.50 -294.50 -39.00 40.50
 gorge_under_the_bridge -341.50 -44.40 40.50 -341.50 -31.00 16.50
 fortress_from_the_gorge -219.50 -44.40 -19.50 -269.50 -25.00 16.50
 valley_from_the_terrace -505.50 -19.40 -15.50 -539.50 -28.00 -69.50
+hearth yard -6.50 -46.00 0.50
+hearth lodge -101.50 -46.00 -10.50
+hearth keeper -269.50 -38.00 3.50
+hearth smithy -405.50 -24.00 -15.50
+hearth sacristy -465.50 -21.00 46.50
+hearth terrace -504.50 -21.00 -16.50
 lever -24.50 -45.00 -0.50 -23.50 -46.00 0.50
 lever -316.50 -37.00 15.50 -315.50 -38.00 16.50
 lever -433.50 -20.00 9.50 -432.50 -21.00 10.50

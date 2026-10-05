@@ -84,7 +84,7 @@ public final class SoulMechanics {
     }
 
     /** Whether a hearth stands within a few steps of the player: there the dead do not take notice of them. */
-    static boolean nearHearth(Player player) {
+    public static boolean nearHearth(Player player) {
         BlockPos centre = player.blockPosition();
         for (BlockPos pos : BlockPos.betweenClosed(centre.offset(-HEARTH_PEACE, -2, -HEARTH_PEACE), centre.offset(HEARTH_PEACE, 2, HEARTH_PEACE))) {
             if (player.level().getBlockState(pos).is(Dushi.HEARTH.get())) {
@@ -312,7 +312,7 @@ public final class SoulMechanics {
             BlockState at = serverPlayer.level().getBlockState(serverPlayer.blockPosition());
             if (at.getBlock() instanceof PlaceNameBlock) {
                 PlaceNameBlock.Place place = at.getValue(PlaceNameBlock.PLACE);
-                if (place.named && soul.discover(place.ordinal())) {
+                if (place.named && soul.discover(place.id)) {
                     PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("place.vsratie_dushi." + place.id, Net.Banner.PALE, "ui.place"));
                 }
                 // Every place has its hour; time stands still there, so the clock is simply set.

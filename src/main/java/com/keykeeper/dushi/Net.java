@@ -2,6 +2,8 @@ package com.keykeeper.dushi;
 
 import com.keykeeper.dushi.block.HearthBlock;
 
+import java.util.List;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -111,14 +113,38 @@ public final class Net {
         }
     }
 
-    /** Server to client: the player sat down at a hearth, show the level-up screen. */
-    public record OpenHearth(BlockPos pos) implements CustomPacketPayload {
+    /** A hearth the player may travel to: what it is called (HearthBlock.Site), where it stands, whether it is the one they sit by. */
+    public record Stop(String site, BlockPos pos, boolean here) {
+        public static final StreamCodec<ByteBuf, Stop> CODEC = StreamCodec.composite(ByteBufCodecs.STRING_UTF8, Stop::site, BlockPos.STREAM_CODEC, Stop::pos,
+                ByteBufCodecs.BOOL, Stop::here, Stop::new);
+    }
+
+    /** Server to client: the player sat down at a hearth, show the level-up screen; with it, every hearth they have rested at. */
+    public record OpenHearth(BlockPos pos, List<Stop> stops) implements CustomPacketPayload {
         public static final Type<OpenHearth> TYPE = new Type<>(Dushi.id("open_hearth"));
-        public static final StreamCodec<ByteBuf, OpenHearth> CODEC = StreamCodec.composite(BlockPos.STREAM_CODEC, OpenHearth::pos, OpenHearth::new);
+        public static final StreamCodec<ByteBuf, OpenHearth> CODEC = StreamCodec.composite(BlockPos.STREAM_CODEC, OpenHearth::pos,
+                Stop.CODEC.apply(ByteBufCodecs.list()), OpenHearth::stops, OpenHearth::new);
 
         @Override
         public Type<OpenHearth> type() {
             return TYPE;
+        }
+    }
+
+    /** Client to server: go from this hearth to another the player has rested at (its place in the list they were sent). */
+    public record Travel(int index) implements CustomPacketPayload {
+        public static final Type<Travel> TYPE = new Type<>(Dushi.id("travel"));
+        public static final StreamCodec<ByteBuf, Travel> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, Travel::index, Travel::new);
+
+        @Override
+        public Type<Travel> type() {
+            return TYPE;
+        }
+
+        public static void handle(Travel payload, IPayloadContext context) {
+            if (context.player() instanceof ServerPlayer player) {
+                HearthBlock.travel(player, payload.index());
+            }
         }
     }
 
