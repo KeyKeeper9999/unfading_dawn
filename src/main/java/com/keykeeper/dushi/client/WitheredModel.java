@@ -167,16 +167,16 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
             this.leftLeg.xRot += -0.25F * draw + 0.3F * cut;
         }
         if (state.attackId == WitheredEntity.THRUST) {
-            // A held thing points forward when the arm hangs, so a pitchfork is a pike carried at the hip. It is drawn back
-            // past the body, the other hand coming across to steady it, and then driven forward and up at the chest with
-            // a long step, the trunk going in behind it.
+            // A held thing points forward when the arm hangs, so a pitchfork is a pike carried at the hip. It is drawn
+            // straight back past the body, level, the other hand coming across to steady it, and then driven forward at
+            // the belly with a long step, the trunk going in behind it.
             float t = state.attackTime;
             float ready = Anim.pulse(t, 0.0F, 9.0F, 12.0F, 14.5F);
             float thrust = Anim.pulse(t, 12.0F, 14.5F, 19.0F, 27.0F);
             float held = Math.max(ready, thrust);
-            this.rightArm.xRot = Anim.lerp(held, this.rightArm.xRot, 0.0F) + 0.4F * ready - 0.5F * thrust;
+            this.rightArm.xRot = Anim.lerp(held, this.rightArm.xRot, -0.08F) + 0.16F * ready - 0.3F * thrust;
             this.rightArm.zRot = Anim.lerp(held, this.rightArm.zRot, 0.08F);
-            this.rightArm.z += 5.0F * ready - 7.5F * thrust;
+            this.rightArm.z += 6.5F * ready - 8.0F * thrust;
             this.rightArm.y += 1.0F * thrust;
             this.leftArm.xRot = Anim.lerp(held, this.leftArm.xRot, -0.75F) - 0.45F * thrust;
             this.leftArm.yRot += 0.55F * held;
