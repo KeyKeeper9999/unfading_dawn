@@ -84,7 +84,7 @@ public final class SoulMechanics {
     }
 
     /** Whether a hearth stands within a few steps of the player: there the dead do not take notice of them. */
-    private static boolean nearHearth(ServerPlayer player) {
+    static boolean nearHearth(Player player) {
         BlockPos centre = player.blockPosition();
         for (BlockPos pos : BlockPos.betweenClosed(centre.offset(-HEARTH_PEACE, -2, -HEARTH_PEACE), centre.offset(HEARTH_PEACE, 2, HEARTH_PEACE))) {
             if (player.level().getBlockState(pos).is(Dushi.HEARTH.get())) {

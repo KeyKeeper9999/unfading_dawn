@@ -37,8 +37,12 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 @EventBusSubscriber(modid = Dushi.MODID)
 public final class MapBuilder {
     private static final String PLAN_FILE = System.getenv("DUSHI_BUILDMAP");
-    /** Where the plan's origin cell lands: the place a newcomer wakes at, on the flat world's ground. */
-    public static final BlockPos ORIGIN = new BlockPos(0, 64, 0);
+    /**
+     * Where the plan's origin cell lands: the place a newcomer wakes at, on the flat world's ground. The ground is low on
+     * purpose: a flat world's sea is at -63, the game cools a biome with every block above its sea, and a forest of firs
+     * 126 blocks over it grows up under snow - which the map, set down later, would not have.
+     */
+    public static final BlockPos ORIGIN = new BlockPos(0, -46, 0);
     /** The plan is drawn with the way forward to the north; turned, it leads west, into the sunset. */
     public static final Rotation ROTATION = Rotation.COUNTERCLOCKWISE_90;
     /** The hour the map begins at: the dead of night, in the town. (Every place sets its own hour: see PlaceNameBlock.) */

@@ -115,8 +115,14 @@ def town_wall(x, y, z):
 
 
 def grave_earth(x, y, z):
+    """Old turf in broad patches, bare where it has been dug."""
     n = hsh(x, 0, z, 213)
-    return 'minecraft:podzol' if n < 0.34 else ('minecraft:coarse_dirt' if n < 0.6 else ('minecraft:grass_block' if n < 0.8 else ('minecraft:moss_block' if n < 0.9 else 'minecraft:rooted_dirt')))
+    patch = hsh(x // 3, 1, z // 3, 214) * 0.6 + hsh((x + 1) // 4, 2, (z + 2) // 4, 215) * 0.4
+    if patch < 0.4:
+        return 'minecraft:podzol' if n < 0.88 else 'minecraft:rooted_dirt'
+    if patch < 0.75:
+        return 'minecraft:grass_block' if n < 0.9 else 'minecraft:moss_block'
+    return 'minecraft:coarse_dirt' if n < 0.85 else 'minecraft:podzol'
 
 
 STYLES = (
@@ -128,7 +134,7 @@ STYLES = (
     ('spruce_log', 'stripped_spruce_log', 'minecraft:white_terracotta', 'minecraft:white_terracotta', 'deepslate_tile'),
     ('dark_oak_log', 'stripped_dark_oak_log', 'minecraft:light_gray_terracotta', 'minecraft:mud_bricks', 'dark_oak'),
 )
-WARM = ('minecraft:orange_stained_glass', 'minecraft:yellow_stained_glass')
+WARM = 'minecraft:orange_stained_glass'
 
 
 class Village:
@@ -285,7 +291,7 @@ class Village:
                         continue
                     if n < (0.10 if floor == 0 else 0.2):
                         for h in (0, 1):
-                            b.set(x, y + h, z, WARM[int(hsh(x, y + h, z, 228) * 2)])
+                            b.set(x, y + h, z, WARM)
                             b.set(x - ox, y + h, z - oz, 'minecraft:ochre_froglight[axis=y]')
                     elif n < 0.55:
                         for h in (0, 1):
@@ -509,6 +515,18 @@ class Village:
             lamp_post(b, x, gy + 1, z)
         b.cart(x0 + 3, gy + 1, z1 - 4, load=((0, 0, 'minecraft:hay_block[axis=x]'), (1, 1, 'minecraft:barrel[facing=up]')))
         dead_tree(b, x1 - 3, gy + 1, z1 - 3, 5, 3)
+        # lamps on the walls, bales and barrels along them: somebody held out here for a while
+        for z in range(z0 + 1, z1, 4):
+            wall_lamp(b, x0, gy, z, (-1, 0))
+            wall_lamp(b, x1, gy, z, (1, 0))
+        for x in (cx - 8, cx + 7):
+            wall_lamp(b, x, gy, z0, (0, -1))
+        for x, z, state in ((x0, z1, 'minecraft:hay_block[axis=x]'), (x0 + 1, z1, 'minecraft:hay_block[axis=z]'), (x0, z1 - 1, 'minecraft:hay_block[axis=y]'),
+                            (cx - 5, z0, 'minecraft:barrel[facing=up]'), (cx - 6, z0, 'minecraft:barrel[facing=up]'), (cx + 6, z0, 'minecraft:barrel[facing=up]'),
+                            (x1 - 6, z1, 'minecraft:barrel[facing=up]'), (x1 - 7, z1, 'minecraft:composter')):
+            if b.free(x, gy + 1, z):
+                b.set(x, gy + 1, z, state)
+        b.set(x0, gy + 2, z1, 'minecraft:hay_block[axis=x]')
 
     def market(self):
         b, gy = self.b, self.gy
@@ -576,8 +594,9 @@ class Village:
         cx, cz = (x0 + x1) // 2, (z0 + z1) // 2
         for x in range(x0, x1 + 1):
             for z in range(z0, z1 + 1):
-                worn = ((x - cx) / 13.0) ** 2 + ((z - cz) / 9.0) ** 2 < 1.0 or abs(x - cx - 1) <= 1
-                b.set(x, gy, z, ('minecraft:coarse_dirt' if hsh(x, 0, z, 270) < 0.6 else 'minecraft:gravel') if worn else grave_earth(x, gy, z))
+                edge = ((x - cx) / 13.0) ** 2 + ((z - cz) / 9.0) ** 2 + (hsh(x // 2, 0, z // 2, 269) - 0.5) * 0.5
+                worn = edge < 1.0 or abs(x - cx - 1) <= 1
+                b.set(x, gy, z, ('minecraft:coarse_dirt' if hsh(x, 0, z, 270) < 0.86 else 'minecraft:gravel') if worn else grave_earth(x, gy, z))
         # graves along the west, east and south walls: a mound, a stone at its head
         stones = ('minecraft:cobblestone_wall', 'minecraft:mossy_cobblestone_wall', 'minecraft:stone_brick_wall', 'minecraft:andesite_wall')
         k = 0
@@ -669,11 +688,14 @@ class Village:
             if x not in (x0 + 5, x0 + 6):
                 b.fill(x, gy + 1, mid, x, gy + 4, mid, 'minecraft:mud_bricks')
         # hooks from the beams, blocks, tubs
-        for x, z in ((x0 + 3, z0 + 3), (x0 + 7, z0 + 4), (x0 + 9, z0 + 2), (x0 + 3, mid + 3), (x0 + 8, mid + 2)):
+        for x, z in ((x0 + 3, z0 + 3), (x0 + 7, z0 + 4), (x0 + 9, z0 + 2), (x0 + 3, mid + 3), (x0 + 8, mid + 2), (x0 + 2, mid + 1), (x0 + 9, z0 + 6)):
             b.set(x, gy + 4, z, CHAIN)
-            b.set(x, gy + 3, z, 'minecraft:red_wool' if hsh(x, 0, z, 280) < 0.6 else CHAIN)
-        for x, z in ((x0 + 2, z0 + 6), (x0 + 6, z0 + 2), (x0 + 9, mid + 4)):
+            b.set(x, gy + 3, z, 'minecraft:hanging_roots' if hsh(x, 0, z, 280) < 0.6 else CHAIN)
+        for x, z in ((x0 + 2, z0 + 6), (x0 + 6, z0 + 2), (x0 + 9, mid + 4)):                    # the blocks, and what is on them
             b.set(x, gy + 1, z, 'minecraft:stripped_dark_oak_log[axis=y]')
+            b.set(x, gy + 2, z, 'minecraft:red_carpet')
+        for x, z in ((x0 + 4, z0 + 6), (x0 + 7, z0 + 2), (x0 + 8, mid + 5), (x0 + 5, mid + 2)):  # and what ran onto the floor
+            b.set(x, gy, z, 'minecraft:red_terracotta' if hsh(x, 1, z, 281) < 0.6 else 'minecraft:mangrove_planks')
         b.set(x0 + 1, gy + 1, z0 + 1, 'minecraft:cauldron')
         b.set(x0 + 1, gy + 1, mid + 5, 'minecraft:barrel[facing=up]')
         b.set(x0 + 5, gy + 4, z0 + 4, LANTERN)

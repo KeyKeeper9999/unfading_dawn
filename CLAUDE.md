@@ -30,7 +30,7 @@ flies to the nearest outpost and stockade and takes pictures from fixed places o
 `git fetch origin ci-out` and read the files; the commit message of `ci-out` names the commit of `main` it was built from.
 
 The map (see "The map" below) is built by the same workflow when `.ci/map` exists: a dedicated server is started in a
-flat world of forest (the `generator-settings` in the workflow: its top layer is at y = 63) with
+flat world of forest (the `generator-settings` in the workflow: its top layer is at y = -47) with
 `DUSHI_BUILDMAP=map/high_stockade.plan.txt`; `MapBuilder.java` fells the forest where the map goes, sets the plan down,
 works the light out again, sets the rules of the world, saves and stops; the world folder is zipped. `ci-out` then also has:
 
@@ -146,7 +146,7 @@ into it (`tools/gen_world.py`); the country outside the plan is the flat forest 
 
 `gen_world.py` writes `map/high_stockade.plan.txt` (the same format as the buildings; about 1.2 million blocks),
 `map/views.txt` and `map/light.txt`. The plan's origin is the place where the newcomer wakes; the game puts it at
-0, 64, 0 and turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the
+0, -46, 0 and turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the
 sunset. The dead of the town are of tier 0, of the lower fortress tier 1, of the upper city tier 2 (`World.tiers`).
 
 A new place is a new file like `gen_village.py`: it builds into the world's `Map` at an offset, and `gen_world.py` gives
@@ -177,6 +177,8 @@ Things learnt the hard way:
   `MapBuilder` therefore relights every chunk after building (`initializeLight`, then `lightChunk`).
 - Rock is put only under what stands on the ground (`bedrock`), straight down: corbels and other overhangs must not grow rock.
 - `chiseled_sandstone` has a creeper's face on it; the city's stone is smooth and cut sandstone.
+- A flat world's sea is at y = -63 and the game cools a biome with height above its sea: with the ground at y = 63 the
+  forest outside the plan grew up under snow, which the plan's own forest did not have. The ground is at y = -47.
 - With natural regeneration switched off (as the map does) hunger is held full. The game's own mobs do not spawn
   (`SPAWN_MOBS`): the night would fill with them.
 - A block with a direction of its own must turn with the plan (`rotate`): the fog gate did not, and stood edge-on in

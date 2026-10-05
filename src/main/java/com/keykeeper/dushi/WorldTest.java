@@ -64,6 +64,12 @@ final class WorldTest {
         built(level, "stockade", stockade, Rotation.NONE);
         marks(level, stockade);
         built(level, "outpost", new BlockPos(-22, 280, -22), Rotation.CLOCKWISE_90);
+        try {
+            rules(level);
+        } catch (RuntimeException e) {
+            say("rules: FAILED: " + e);
+            e.printStackTrace(System.out);
+        }
         for (String name : new String[] {"outpost", "stockade"}) {
             try {
                 found(level, name);
@@ -73,6 +79,62 @@ final class WorldTest {
             }
         }
         say("world done");
+    }
+
+    /** What a map leans on: the tier of a mark, the shard in the ash, peace at a hearth, the hour of a place. */
+    private static void rules(ServerLevel level) {
+        BlockPos at = new BlockPos(40, 240, 40);
+        for (BlockPos floor : BlockPos.betweenClosed(at.offset(-8, -1, -8), at.offset(8, -1, 8))) {
+            level.setBlock(floor, Blocks.STONE.defaultBlockState(), 3);
+        }
+        level.setBlock(at, Dushi.MOB_MARK.get().defaultBlockState().setValue(MobMarkBlock.MOB, MobMarkBlock.Kind.TOWNSMAN).setValue(MobMarkBlock.TIER, 2), 3);
+        SoulsMob risen = null;
+        if (level.getBlockEntity(at) instanceof MobMarkBlockEntity mark && mark.wake(level) && level.getEntity(mark.mob()) instanceof SoulsMob mob) {
+            risen = mob;
+            say("rules: a townsman of tier " + mob.tier() + " has " + mob.getMaxHealth() + " health, blows x" + mob.damageScale() + ", leaves " + mob.reward()
+                    + " souls (by birth " + mob.soulReward() + ")" + (mob.tier() == 2 && mob.getMaxHealth() > 13.0F ? "" : " FAILED"));
+        } else {
+            say("rules: the mark of tier 2 raised nothing FAILED");
+        }
+        FakePlayer player = FakePlayerFactory.getMinecraft(level);
+        player.setPos(at.getX() + 4.5, at.getY(), at.getZ() + 0.5);
+        PlayerSoul soul = PlayerSoul.of(player);
+        BlockPos heap = at.offset(4, 0, 2);
+        level.setBlock(heap, Dushi.SHARD_HEAP.get().defaultBlockState(), 3);
+        int before = Forge.count(player, Dushi.FLASK_SHARD.get());
+        level.getBlockState(heap).useWithoutItem(level, player, new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(heap),
+                net.minecraft.core.Direction.UP, heap, false));
+        boolean taken = Forge.count(player, Dushi.FLASK_SHARD.get()) == before + 1 && level.getBlockState(heap).isAir();
+        say("rules: the shard in the ash: taken=" + taken + (taken ? "" : " FAILED"));
+        player.getInventory().clearContent();
+        if (risen != null) {
+            boolean far = SoulMechanics.nearHearth(player);
+            level.setBlock(at.offset(7, 0, 0), Dushi.HEARTH.get().defaultBlockState(), 3);
+            soul.atHearth = SoulMechanics.nearHearth(player);
+            risen.setTarget(player);
+            boolean spared = risen.getTarget() == null;
+            soul.atHearth = false;
+            risen.setTarget(player);
+            boolean noticed = risen.getTarget() == player;
+            soul.atHearth = true;
+            risen.setTarget(player);
+            boolean kept = risen.getTarget() == player;
+            soul.atHearth = false;
+            say("rules: by a hearth: none near before=" + !far + ", not noticed there=" + spared + ", noticed away from it=" + noticed + ", not let off once fought=" + kept
+                    + (!far && spared && noticed && kept ? "" : " FAILED"));
+            risen.discard();
+        }
+        level.setBlock(at, Blocks.AIR.defaultBlockState(), 3);
+        level.setBlock(at.offset(7, 0, 0), Blocks.AIR.defaultBlockState(), 3);
+        // the hour of a place: only where time stands still
+        long was = level.getDefaultClockTime();
+        SoulMechanics.hour(level, 18000);
+        boolean untouched = level.getDefaultClockTime() == was;
+        level.getGameRules().set(net.minecraft.world.level.gamerules.GameRules.ADVANCE_TIME, false, level.getServer());
+        SoulMechanics.hour(level, 18000);
+        boolean set = Math.floorMod(level.getDefaultClockTime(), 24000L) == 18000L && SoulMechanics.hourNow(level) == 18000;
+        level.getGameRules().set(net.minecraft.world.level.gamerules.GameRules.ADVANCE_TIME, true, level.getServer());
+        say("rules: the hour of a place: left alone where time moves=" + untouched + ", set where it stands=" + set + (untouched && set ? "" : " FAILED"));
     }
 
     // ------------------------------------------------------------------ gear

@@ -101,7 +101,7 @@ if __name__ == '__main__':
     TH, TD, TS = tier_table('TIER_HEALTH'), tier_table('TIER_DAMAGE'), tier_table('TIER_SOULS')
     w = gen_world.World()
     b = w.build()
-    gen_map.PASSABLE = gen_map.PASSABLE + ('fern', 'short_grass')
+    gen_map.PASSABLE = gen_map.PASSABLE + ('fern', 'short_grass', 'hanging_roots')
     tier_at = {}
     for kind, x, y, z in b.marks:
         state = b.cells[(x, y, z)]

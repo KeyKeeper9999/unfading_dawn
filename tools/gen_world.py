@@ -28,7 +28,7 @@ AX = OX + castle.CX                 # the axis of the fortress: its bridge, the 
 TX = AX + 16                        # the tunnel comes out this much further east: the bend
 VX, VZ = TX - 62, 408               # the corner of the village's grid of tiles; its north gate is on the tunnel's line
 SPUR = (354, 402)                   # the spur of the plateau between the two halves of the gorge
-WORLD_GROUND = 63                   # the y of the flat world's top layer (see the workflow)
+WORLD_GROUND = -47                  # the y of the flat world's top layer (see the workflow; low, so that no snow lies on its forest)
 
 
 def C(x, y, z):
@@ -68,7 +68,13 @@ def cliff(x, y, z):
 
 def road(x, y, z):
     n = hsh(x, 0, z, 304)
-    return 'minecraft:cobblestone' if n < 0.4 else ('minecraft:gravel' if n < 0.62 else ('minecraft:mossy_cobblestone' if n < 0.78 else ('minecraft:coarse_dirt' if n < 0.92 else 'minecraft:dirt_path')))
+    return 'minecraft:cobblestone' if n < 0.42 else ('minecraft:gravel' if n < 0.66 else ('minecraft:mossy_cobblestone' if n < 0.84 else ('minecraft:coarse_dirt' if n < 0.94 else 'minecraft:dirt_path')))
+
+
+def paving(x, y, z):
+    """The floor of the tunnel: the same road, dry and whole."""
+    n = hsh(x, 0, z, 306)
+    return 'minecraft:cobblestone' if n < 0.5 else ('minecraft:stone_bricks' if n < 0.72 else ('minecraft:mossy_cobblestone' if n < 0.86 else 'minecraft:gravel'))
 
 
 def spruce(b, x, y, z, height, salt=0, foot=1):
@@ -273,7 +279,7 @@ class World:
             return 'minecraft:stone_bricks' if n < 0.45 else ('minecraft:cracked_stone_bricks' if n < 0.6 else ('minecraft:mossy_stone_bricks' if n < 0.78 else 'minecraft:cobblestone'))
         for (x, z) in cells:
             under = self.height.get((x, z), 0) > 0
-            b.set(x, GY, z, road(x, GY, z))
+            b.set(x, GY, z, paving(x, GY, z) if under else road(x, GY, z))
             self.keep.add((x, z))
             if not under:
                 continue
@@ -381,7 +387,7 @@ class World:
 
 def world(x, y, z, spawn):
     """Where a point of the plan is in the finished world (see MapBuilder.java: the plan's origin cell - the place where
-    the newcomer wakes - is put at 0, 64, 0 and the plan is turned a quarter counter-clockwise)."""
+    the newcomer wakes - is put at 0, -46, 0 and the plan is turned a quarter counter-clockwise)."""
     return (z - spawn[2] + 0.5, WORLD_GROUND + 1 + y - spawn[1], -(x - spawn[0]) + 0.5)
 
 
@@ -473,9 +479,9 @@ EXTRA_COLOURS = castle.EXTRA_COLOURS + [
 
 if __name__ == '__main__':
     COLOURS[0:0] = EXTRA_COLOURS
-    PASSABLE_MORE = ('fern', 'short_grass')
+    PASSABLE_MORE = ('fern', 'short_grass', 'hanging_roots')
     castle.PASSABLE = castle.PASSABLE + PASSABLE_MORE
-    castle.CLEAR = castle.CLEAR + ('fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water')
+    castle.CLEAR = castle.CLEAR + ('fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water', 'hanging_roots')
     w = World()
     b = w.build()
     built = len([1 for s in b.cells.values() if s != AIR])
