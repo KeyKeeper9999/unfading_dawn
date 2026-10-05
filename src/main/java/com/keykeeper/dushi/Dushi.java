@@ -327,7 +327,7 @@ public class Dushi {
     static {
         for (WitheredEntity.Kind kind : WitheredEntity.Kind.values()) {
             WITHERED.put(kind, ENTITIES.registerEntityType(kind.id, (type, level) -> new WitheredEntity(type, level, kind), MobCategory.MONSTER,
-                    b -> b.sized(0.6F, 1.95F).eyeHeight(1.74F).clientTrackingRange(8)));
+                    b -> (kind == WitheredEntity.Kind.BUTCHER ? b.sized(0.75F, 1.99F).eyeHeight(1.9F) : b.sized(0.6F, 1.95F).eyeHeight(1.74F)).clientTrackingRange(8)));
         }
     }
 

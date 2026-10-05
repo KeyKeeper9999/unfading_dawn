@@ -11,7 +11,7 @@ A = 'src/main/resources/assets/vsratie_dushi'
 JAVA = 'src/main/java/com/keykeeper/dushi/client/WitheredModel.java'
 
 # ---------------------------------------------------------------- mesh
-M = humanoid(96, slim_arms=True)
+M = humanoid(128, slim_arms=True)
 # prisoner: an iron collar and a shackle with a few links of chain still on the left wrist
 M.part('collar', 'body', (0, 0, 0), boxes=[Box(-4.5, -0.6, -2.5, 9, 2, 5, 'iron', 'collar')])
 M.part('shackle', 'left_arm', (0.5, 7, 0), boxes=[Box(-2, 0, -2.5, 4, 2, 5, 'iron', 'cuff'), Box(-0.5, 2, -3.3, 1, 6, 1, 'iron', 'chain')])
@@ -23,8 +23,13 @@ M.part('hood_tail', 'head', (0, -6.5, 4), (0.45, 0, 0), boxes=[Box(-2, -1, -1, 4
 M.part('quiver', 'body', (2.2, 1, 2), (0, 0, 0.32), boxes=[Box(-1.5, 0, 0, 3, 9, 2, 'leather', 'quiver'), Box(-1, -2, 0.5, 2, 2, 1, 'fletch', 'fletch')])
 # townsman: a flat felt cap pulled down on one side
 M.part('cap', 'head', (0, 0, 0), (0, 0, -0.07), boxes=[Box(-4.5, -9.4, -4.5, 9, 2, 9, 'felt', 'crown'), Box(-3.5, -8.0, -6.5, 7, 1, 2, 'felt', 'peak')])
-# butcher: the belly that the apron hangs over
-M.part('belly', 'body', (0, 0, 0), boxes=[Box(-3.5, 4, -3.6, 7, 7, 2, 'apron', 'belly')])
+# butcher: twice the man the others are - a barrel of a trunk over the thin one, a gut, the skirt of his apron hanging
+# from under it (it hangs straight though he stoops), and the shoulders of somebody who has swung a cleaver all his life
+M.part('bulk', 'body', (0, 0, 0), boxes=[Box(-5, 0, -3, 10, 12, 6, 'flesh', 'bulk', inflate=0.25)])
+M.part('belly', 'body', (0, 0, 0), boxes=[Box(-4, 4, -5, 8, 7, 2, 'apron', 'belly')])
+M.part('apron', 'body', (0, 11, -3.8), (-0.24, 0, 0), boxes=[Box(-4, 0, -0.5, 8, 7, 1, 'apron', 'skirt')])
+M.part('brawn_r', 'right_arm', (0, 0, 0), boxes=[Box(-3, -3, -3, 5, 8, 6, 'flesh', 'brawn')])
+M.part('brawn_l', 'left_arm', (0, 0, 0), boxes=[Box(-2, -3, -3, 5, 8, 6, 'flesh', 'brawn')])
 # watchman: the skirts of a long coat
 M.part('coat_tail', 'body', (0, 0, 0), boxes=[Box(-4, 12, -2, 8, 6, 4, 'coat', 'skirts', inflate=0.45)])
 M.pack(start_y=0)
@@ -66,8 +71,8 @@ WOOL = (84, 70, 58)
 WOOL_D = (62, 52, 44)
 FELT = (70, 56, 48)
 FELT_D = (50, 40, 36)
-APRON = (118, 92, 66)
-APRON_D = (88, 66, 48)
+APRON = (214, 206, 190)
+APRON_D = (176, 168, 152)
 GORE = (104, 26, 22)
 GORE_D = (70, 16, 16)
 COAT = (50, 56, 70)
@@ -333,40 +338,15 @@ def make(kind, seed):
             for z in range(4):
                 p.put(body, 'top', x, z, LINEN)
     elif kind == 'butcher':
-        # bare to the waist, a hide apron from the chest to the knees, black with old blood at the hem
-        cloth_rows(p, body, range(9, 12), WOOL, WOOL_D, rnd, ragged=False)
+        # bare to the waist under a white apron gone red; wool breeches, boots (the trunk itself is under the bulk)
         for b in (rl, ll):
             cloth_rows(p, b, range(0, 9), WOOL, WOOL_D, rnd)
             cloth_rows(p, b, range(8, 12), BOOT, shade(BOOT, 0.8), rnd, ragged=False)
-        for x in range(1, 7):
-            for y in range(2, 12):
-                c = APRON if (x * 2 + y) % 5 else APRON_D
-                if x in (1, 6):
-                    c = APRON_D
-                p.put(body, 'front', x, y, shade(c, 1.05 - 0.15 * y / 11))
-        for x, y in ((1, 1), (6, 1), (1, 0), (6, 0)):
-            p.put(body, 'front', x, y, LEATHER_D)       # the straps over the shoulders
-        for x in (1, 6):
-            for y in range(0, 9):
-                p.put(body, 'back', x if y < 5 else (2 if x == 1 else 5), y, LEATHER_D)
-        p.band(body, 9, LEATHER_D)
-        for b in (rl, ll):
-            for x in range(4):
-                for y in range(0, 6):
-                    if y == 5 and x % 2:
-                        continue
-                    p.put(b, 'front', x, y, shade(APRON if (x + y) % 3 else APRON_D, 0.9 - 0.04 * y))
-            for x in range(4):
-                for y in (3, 4, 5):
-                    if rnd.random() < 0.7:
-                        p.put(b, 'front', x, y, GORE_D if y == 5 else GORE)
-        for x, y in ((2, 8), (3, 9), (3, 10), (4, 10), (5, 11), (2, 11), (4, 6), (5, 7), (3, 4)):
-            p.put(body, 'front', x, y, GORE if (x + y) % 2 else GORE_D)
         # the working arm is red to the elbow
         for face in ('right', 'front', 'left', 'back'):
             for x in range(3):
-                for y in range(6, 12):
-                    if rnd.random() < 0.3 + 0.1 * (y - 6):
+                for y in range(5, 12):
+                    if rnd.random() < 0.35 + 0.1 * (y - 5):
                         p.put(ra, face, x, y, GORE if y < 10 else GORE_D)
         cloth_rows(p, la, range(7, 10), LEATHER, LEATHER_D, rnd, ragged=False)
     elif kind == 'watchman':
@@ -476,17 +456,74 @@ def make(kind, seed):
         return shade(c, {'top': 1.15, 'bottom': 0.7}.get(face, 1.0))
     p.fill_box(crown, felt_cap)
     p.fill_box(peak, lambda face, px, py, fw, fh, r: shade(FELT_D, 1.1 if face == 'top' else 0.85))
+    bulk = M.parts['bulk']['boxes'][0]
     belly = M.parts['belly']['boxes'][0]
+    flap = M.parts['apron']['boxes'][0]
 
-    def hide(face, px, py, fw, fh, r):
-        c = APRON if (px * 2 + py) % 5 else APRON_D
+    def linen(x, y, wide, high, r, low):
+        """The apron: off-white, darker in its folds; old blood thick at the hem and where the hands are wiped, spatter above."""
+        c = APRON if (x * 2 + y) % 5 else APRON_D
+        if x in (0, wide - 1):
+            c = APRON_D
+        blood = 0.04 + 0.6 * max(0.0, (y - high * low) / max(1.0, high * (1 - low))) ** 1.5
+        if abs(x - wide * 0.3) < 1.1 and abs(y - high * 0.45) < 1.6:
+            blood = 0.75                                          # where he wipes his hand
+        if r.random() < blood:
+            c = GORE if r.random() < 0.65 else GORE_D
+        return c
+
+    def bulk_paint(face, px, py, fw, fh, r):
+        if face in ('top', 'bottom'):
+            return shade(SKIN, 1.06 if face == 'top' else 0.7)
         if face == 'front':
-            if py >= fh - 2 and r.random() < 0.8 or r.random() < 0.18:
-                c = GORE if r.random() < 0.6 else GORE_D
-            if px in (0, fw - 1):
-                c = APRON_D
-        return shade(c, {'top': 1.1, 'bottom': 0.6}.get(face, 1.0 - 0.02 * py))
-    p.fill_box(belly, hide)
+            if py >= 2 and 1 <= px <= fw - 2:
+                return linen(px - 1, py - 2, fw - 2, fh - 2, r, 0.75)
+            if py < 2 and px in (2, fw - 3):
+                return LEATHER_D                                 # the straps
+        if face == 'back':
+            if px in (2, fw - 3) and py < 8 or py in (7, 8) and 2 <= px <= fw - 3:
+                return LEATHER_D
+        if py in (8, 9) and face in ('left', 'right'):
+            return APRON_D if py == 8 else shade(APRON_D, 0.85)   # the apron's string round his middle
+        c = flesh(face, px, py, fw, fh, r)
+        if (px + py * 2) % 9 == 0:
+            c = shade(SKIN_D, 1.0)
+        if py >= fh - 2:
+            c = shade(WOOL if (px + py) % 3 else WOOL_D, 1.0)   # the top of his breeches
+        return c
+    p.fill_box(bulk, bulk_paint)
+
+    def belly_paint(face, px, py, fw, fh, r):
+        if face == 'bottom':
+            return shade(APRON_D, 0.7)
+        if face == 'front':
+            return linen(px, py + 3, fw, fh + 6, r, 0.5)
+        return shade(APRON if (px + py) % 3 else APRON_D, {'top': 1.05}.get(face, 0.92))
+    p.fill_box(belly, belly_paint)
+
+    def flap_paint(face, px, py, fw, fh, r):
+        if face in ('top', 'bottom'):
+            return GORE_D
+        if py == fh - 1 and px % 3 == 1:
+            return None
+        if face in ('front', 'back'):
+            return linen(px, py + 7, fw, fh + 7, r, 0.4)
+        return GORE_D if py > 2 else APRON_D
+    p.fill_box(flap, flap_paint)
+    for name in ('brawn_r', 'brawn_l'):
+        box = M.parts[name]['boxes'][0]
+
+        def brawn(face, px, py, fw, fh, r, name=name):
+            c = flesh(face, px, py, fw, fh, r)
+            if face not in ('top', 'bottom'):
+                if py == fh - 1:
+                    c = shade(SKIN_D, 0.9)
+                if (px * 3 + py) % 7 == 0:
+                    c = shade(SKIN_D, 1.05)
+                if name == 'brawn_r' and py >= 4 and r.random() < 0.12 * (py - 3):
+                    c = GORE
+            return c
+        p.fill_box(box, brawn)
     skirts = M.parts['coat_tail']['boxes'][0]
 
     def skirt(face, px, py, fw, fh, r):
@@ -525,20 +562,25 @@ def make(kind, seed):
     return p.tex
 
 
-EXTRAS = ('collar', 'shackle', 'kettle_hat', 'pauldron', 'hood_tail', 'quiver', 'cap', 'belly', 'coat_tail')
+EXTRAS = ('collar', 'shackle', 'kettle_hat', 'pauldron', 'hood_tail', 'quiver', 'cap', 'bulk', 'belly', 'apron', 'brawn_r', 'brawn_l', 'coat_tail')
 KIND_SHOW = {
     'prisoner': ('collar', 'shackle'),
     'guard': ('kettle_hat', 'pauldron'),
     'archer': ('hood_tail', 'quiver'),
     'acolyte': ('hood_tail',),
     'townsman': ('cap',),
-    'butcher': ('belly',),
+    'butcher': ('bulk', 'belly', 'apron', 'brawn_r', 'brawn_l'),
     'watchman': ('kettle_hat', 'coat_tail'),
 }
 KIND_HIDE = {kind: tuple(e for e in EXTRAS if e not in shown) for kind, shown in KIND_SHOW.items()}
 STOOP = {'body': (0.24, 0, 0), 'right_leg': {'off': (0, -0.4, 2.9)}, 'left_leg': {'off': (0, -0.4, 2.9)}, 'head': (0.18, 0, 0),
          'right_arm': (-0.22, 0, 0.06), 'left_arm': (-0.22, 0, -0.06)}
 SWING = dict(STOOP, right_arm=(-2.75, 0, 0.4), body=(0.12, 0.35, 0), head=(-0.07, 0, 0))
+# the butcher carries himself straighter, his arms set wide of his bulk (see WitheredModel.setupAnim)
+BULKY = {'body': (0.12, 0, 0), 'right_leg': {'off': (0, -0.1, 1.45)}, 'left_leg': {'off': (0, -0.1, 1.45)}, 'head': (0.14, 0, 0),
+         'right_arm': {'rot': (-0.15, 0, 0.16), 'off': (-1.5, 0, 0)}, 'left_arm': {'rot': (-0.15, 0, -0.16), 'off': (1.5, 0, 0)}}
+CLEAVE_DRAW = dict(BULKY, right_arm={'rot': (-1.35, -1.2, 0), 'off': (-1.5, 0, 0)}, body=(0.06, -0.6, 0))
+CLEAVE_CUT = dict(BULKY, right_arm={'rot': (-1.35, 0.9, 0), 'off': (-1.5, 0, 0)}, body=(0.3, 0.6, 0))
 
 
 if __name__ == '__main__':
@@ -548,7 +590,8 @@ if __name__ == '__main__':
         tex = make(kind, 100 + i)
         tex.save(f'{A}/textures/entity/withered_{kind}.png')
         hidden = KIND_HIDE[kind]
-        for yaw, pose in ((-0.45, STOOP), (0.9, STOOP), (3.0, STOOP), (-0.6, SWING)):
+        poses = ((-0.45, BULKY), (0.9, BULKY), (3.0, BULKY), (-0.6, CLEAVE_DRAW)) if kind == 'butcher' else ((-0.45, STOOP), (0.9, STOOP), (3.0, STOOP), (-0.6, SWING))
+        for yaw, pose in poses:
             shots.append(M.render(tex, yaw=yaw, pose=pose, size=(230, 330), zoom=8.5, centre=(0, 8), hidden=hidden))
     if len(sys.argv) > 1:
         sheet(shots, 4).save(sys.argv[1])

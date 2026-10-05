@@ -279,16 +279,6 @@ sp.art([".gGg.",
 sp.px(12, 4, g)
 sp.outline()
 
-# pitchfork: a long shaft, a bar across its end and three tines
-sp = icon('pitchfork', handheld=True)
-for i in range(9):
-    sp.px(1 + i, 14 - i, W if i % 3 else w)
-    sp.px(2 + i, 14 - i, w)
-sp.pts([(8, 3), (9, 4), (10, 5), (11, 6), (12, 7)], d)
-sp.pts([(9, 2), (10, 1), (11, 4), (12, 3), (13, 2), (13, 6), (14, 5)], s)
-sp.pts([(11, 0), (14, 1), (15, 4)], S)
-sp.outline()
-
 # scholar's staff: a crooked stick with a pale crystal bound to its top
 sp = icon('scholar_staff', handheld=True)
 for i in range(10):
@@ -359,6 +349,26 @@ for (ox_, oy_, ww, hh) in ((23, 9, 6, 4), (20, 13, 4, 3)):
             sp.px(ox_ + i + j, oy_ + j + i // 3, KEYC if (i + j) % 3 else KEYD)
 sp.pts([(27, 12), (28, 13), (25, 11)], (34, 28, 24))
 sp.pts([(27, 2), (28, 1), (29, 1), (28, 2), (29, 2), (29, 3), (30, 2)], KEYL)
+sp.outline(0.45, inner=False)
+
+# the pitchfork: a shaft as long as a man, a bar across its end and three tines; held low like a pike
+sp = icon('pitchfork', 32, big=True)
+for i in range(20):
+    xx, yy = 2 + i, 29 - i
+    sp.px(xx, yy, W if i % 6 else w)
+    sp.px(xx + 1, yy, w)
+    sp.px(xx + 1, yy + 1, b)
+for kk in range(-4, 5):                                  # the bar, across the shaft
+    sp.px(22 + kk, 9 + kk, s if kk % 3 else S)
+    sp.px(22 + kk, 10 + kk, d)
+for off in (-4, 0, 4):                                   # the tines, along it
+    for i in range(1, 8 if off else 9):
+        xx, yy = 22 + off + i, 9 + off - i
+        if 0 <= xx < 32 and 0 <= yy < 32:
+            sp.px(xx, yy, S if i > 5 else s)
+            if xx + 1 < 32 and i < 6:
+                sp.px(xx + 1, yy, d)
+sp.pts([(21, 10), (22, 11), (20, 11)], R)
 sp.outline(0.45, inner=False)
 
 sp = icon('grave_spade', 32, big=True)
@@ -782,7 +792,7 @@ def big_display(grip):
     return out
 
 
-BIG_GRIP = {'rust_greatsword': 5.5, 'great_key': 10.5, 'grave_spade': 8.0}
+BIG_GRIP = {'rust_greatsword': 5.5, 'great_key': 10.5, 'grave_spade': 8.0, 'pitchfork': 10.0}
 
 if __name__ == '__main__':
     os.makedirs(f'{A}/textures/item', exist_ok=True)

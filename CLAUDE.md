@@ -60,7 +60,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   that room dies (`lift` clears the nearest fog and every seal within reach of the boss's mark).
 - `block/PlaceNameBlock` - a threshold nobody sees or feels: a player who steps through it is shown the name of the
   place (`place.vsratie_dushi.<id>` in the texts; the list of places is the enum in the block). Every place has its
-  hour, and in a world whose time stands still the threshold sets the clock (`SoulMechanics.hour`); `to_night` and
+  hour, and in a world whose time stands still the threshold sets the clock (`SoulMechanics.hour`); a name is shown
+  once, when the player first comes to the place (`PlayerSoul.placesSeen`, saved with the player); `to_night` and
   `to_dusk` have no name and only do that. No item: a map's builder sets it; with a mob mark in hand it can be seen
   and removed in creative. A hearth remembers the hour it was rested at, for those who come back to it by dying.
 - `block/ShardBlock` (`shard_heap`) - a flask shard glowing in a heap of ash: taken with a click, once. Flask shards
@@ -108,7 +109,12 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   transforms; `shields_held.png` in the preview directory shows the result on a dummy. The 32x32 weapons get their
   grip brought into the hand the same way (`big_display` in `gen_items.py`).
 - A held item always points at right angles to the arm, forward when the arm hangs. For a level thrust the arm is
-  raised sideways (zRot), not forwards (see the knight's lunge).
+  raised sideways (zRot), not forwards (see the knight's lunge); a long weapon carried at the hip is thrust by
+  drawing the hanging arm back and driving it forward (the pitchfork). A level cut is the arm raised forwards and
+  turned (yRot). A move with its own animation does not also call `swingArm`: the game's swing is laid over it and
+  all that is seen is a wave of the arm.
+- A mob that is meant to be feared looks it: the butcher has his own bulk on the withered's bones (parts shown only
+  on him), is drawn a tenth bigger and has a box to match; doorways he must pass are three high.
 - In this version a loot entry's functions are written under the key `modifier` and a pool's conditions under
   `condition` (see `gen_data.py`); `functions`/`conditions` are silently ignored.
 - The floor of a yard must not be dirt or grass: trees and flowers are planted after structures and grow through it.
@@ -173,6 +179,8 @@ Things learnt the hard way:
   and the low plinth of a wall let it walk over the corner. In the gorge trees stand clear of rock and walls and are
   bare to four blocks, barricades are three high with nothing beside them, walls have no ledges.
 - Nothing may be put in front of a door (`Village.kept`): a barrel there shut a house with a chest in it.
+- A gate's tiles are "built by hand" and get no wall from `walls`: whoever builds the gate builds the wall over it
+  (the yard's arch once hung in the air).
 - Blocks set one by one into an empty world leave the light wrong (whole storeys black, or everything fully lit).
   `MapBuilder` therefore relights every chunk after building (`initializeLight`, then `lightChunk`).
 - Rock is put only under what stands on the ground (`bedrock`), straight down: corbels and other overhangs must not grow rock.

@@ -189,7 +189,7 @@ class Village:
                         b.set(x, y, z, end(x, y, z))
         return top + (span + 1) // 2 - 1
 
-    def house(self, c0, r0, c1, r1, seed, hollow=False, doors=(), storeys=None, style=None):
+    def house(self, c0, r0, c1, r1, seed, hollow=False, doors=(), storeys=None, style=None, door_height=2):
         """A house on the lot: a stone foot, a frame of posts and beams filled in, one or two storeys, windows and a door
         on the sides that look onto a street. `doors` (side, block along that side) are open doorways of a house that can
         be entered; any other house gets a door that opens on boards."""
@@ -269,8 +269,7 @@ class Village:
                 b.set(x + ox, gy + 3, z + oz, LANTERN)
         for side, a in doors:
             x, z, (ox, oz) = wall_cell(side, a)
-            b.set(x, gy + 1, z, AIR)
-            b.set(x, gy + 2, z, AIR)
+            b.fill(x, gy + 1, z, x, gy + door_height, z, AIR)
             b.set(x, gy, z, 'minecraft:spruce_planks')
             for k in (1, 2):
                 for j in (-1, 0, 1):
@@ -464,8 +463,13 @@ class Village:
                     b.set(x, gy + 1, z, 'minecraft:cobblestone' if hsh(x, 1, z, 252) < 0.7 else 'minecraft:mossy_cobblestone')
                     b.set(x, gy + 2, z, 'minecraft:andesite')
         self.spawn = (cx, gy + 1, z1 - 2)
-        # the gate to the town, open: an arch four wide
+        # the gate to the town, open: an arch four wide through the wall
         gx0, gzn = self.at(20, 43, 1, 0)
+        for x in range(gx0 - 1, gx0 + 5):
+            for z in range(gzn, gzn + T):
+                b.fill(x, gy + 1, z, x, gy + 7, z, town_wall)
+                if (x + z) % 2 == 0 and z != gzn + 1:
+                    b.set(x, gy + 8, z, town_wall(x, gy + 8, z))
         for x in range(gx0, gx0 + 4):
             for z in range(gzn, gzn + T):
                 b.fill(x, gy + 1, z, x, gy + 4, z, AIR)
@@ -682,7 +686,7 @@ class Village:
         b, gy = self.b, self.gy
         b.zone = 'shambles'
         c0, r0, c1, r1 = SPECIAL['b']
-        x0, z0, x1, z1, top = self.house(c0, r0, c1, r1, 901, hollow=True, doors=(('e', 13), ('n', 4)), storeys=2, style=1)
+        x0, z0, x1, z1, top = self.house(c0, r0, c1, r1, 901, hollow=True, doors=(('e', 13), ('n', 4)), storeys=2, style=1, door_height=3)   # the butchers are big men
         mid = z0 + 8
         for x in range(x0 + 1, x1):                              # the wall between the rooms, with a way through
             if x not in (x0 + 5, x0 + 6):

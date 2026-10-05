@@ -11,10 +11,12 @@ import net.minecraft.world.entity.HumanoidArm;
 
 public class WitheredRenderer extends HumanoidMobRenderer<WitheredEntity, SoulsRenderState, WitheredModel> {
     private final Identifier texture;
+    private final float size;
 
     public WitheredRenderer(EntityRendererProvider.Context context, WitheredEntity.Kind kind) {
         super(context, new WitheredModel(context.bakeLayer(WitheredModel.LAYER), kind), 0.45F);
         this.texture = Dushi.id("textures/entity/" + kind.id + ".png");
+        this.size = kind == WitheredEntity.Kind.BUTCHER ? WitheredEntity.BUTCHER_SIZE : 1.0F;
     }
 
     @Override
@@ -28,6 +30,12 @@ public class WitheredRenderer extends HumanoidMobRenderer<WitheredEntity, SoulsR
         state.attackId = entity.attackId();
         state.attackTime = entity.attackTime + partialTicks;
         state.armed = !entity.getMainHandItem().isEmpty();
+    }
+
+    @Override
+    protected void scale(SoulsRenderState state, com.mojang.blaze3d.vertex.PoseStack poseStack) {
+        super.scale(state, poseStack);
+        poseStack.scale(this.size, this.size, this.size);
     }
 
     @Override

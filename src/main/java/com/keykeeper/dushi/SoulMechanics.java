@@ -247,7 +247,6 @@ public final class SoulMechanics {
                 MobMarkBlockEntity.resetAround(level, player.blockPosition(), MobMarkBlockEntity.RESET_RADIUS);
                 // the player comes back to the hearth they rested at, and to its hour; a newcomer's first place is the world's own
                 hour(level, soul.hearthHour);
-                soul.place = -1;
             }
             if (soul.lostSouls > 0) {
                 player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.souls_left", soul.lostSouls));
@@ -309,12 +308,11 @@ public final class SoulMechanics {
             if (player.tickCount % 10 == 0) {
                 soul.atHearth = nearHearth(serverPlayer);
             }
-            // A threshold crossed: the name of the place, once, until another place has been named.
+            // A threshold crossed: the name of the place, the first time the player comes to it and never again.
             BlockState at = serverPlayer.level().getBlockState(serverPlayer.blockPosition());
             if (at.getBlock() instanceof PlaceNameBlock) {
                 PlaceNameBlock.Place place = at.getValue(PlaceNameBlock.PLACE);
-                if (place.named && soul.place != place.ordinal()) {
-                    soul.place = place.ordinal();
+                if (place.named && soul.discover(place.ordinal())) {
                     PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("place.vsratie_dushi." + place.id, Net.Banner.PALE, "ui.place"));
                 }
                 // Every place has its hour; time stands still there, so the clock is simply set.

@@ -48,7 +48,7 @@ public class WitheredEntity extends SoulsMob {
         ACOLYTE("withered_acolyte", 20.0, 2.0, 0.25, 0.0, 90),
         /** One of the townsfolk of the borough: bare hands, a broken blade or a pitchfork. */
         TOWNSMAN("withered_townsman", 12.0, 3.0, 0.26, 0.0, 15),
-        /** A butcher of the shambles: slow to come, quick with the cleaver - two chops, one after the other. */
+        /** A butcher of the shambles: a big man, slow to come, whose cleaver goes round level and clears the lane before him. */
         BUTCHER("withered_butcher", 28.0, 4.0, 0.24, 2.0, 70),
         /** The night watch: a lantern, a pitchfork held like a pike, and a rattle that brings the street down on whoever he sees. */
         WATCHMAN("withered_watchman", 20.0, 4.0, 0.25, 2.0, 55);
@@ -82,15 +82,16 @@ public class WitheredEntity extends SoulsMob {
     public static final int CAST = 3;
     public static final int CAST_DURATION = 44;
     private static final int CAST_RELEASE = 26;
-    /** The butcher's two chops. */
-    public static final int CHOP = 4;
-    public static final int CHOP_DURATION = 36;
-    private static final int CHOP_FIRST = 10;
-    private static final int CHOP_SECOND = 22;
+    /** The butcher's cut: drawn far back, then round level - wide, heavy, and a long time coming and going. */
+    public static final int CLEAVE = 4;
+    public static final int CLEAVE_DURATION = 38;
+    public static final int CLEAVE_IMPACT = 16;
     /** A thrust with a pitchfork: longer than an arm, narrow, easy to step round. */
     public static final int THRUST = 5;
     public static final int THRUST_DURATION = 28;
-    private static final int THRUST_IMPACT = 15;
+    public static final int THRUST_IMPACT = 15;
+    /** How much bigger than the others the butcher is drawn (his box is made to match where it is registered). */
+    public static final float BUTCHER_SIZE = 1.1F;
     /** The watchman's rattle: everyone of the dead within earshot comes. */
     public static final int ALARM = 6;
     public static final int ALARM_DURATION = 34;
@@ -176,7 +177,7 @@ public class WitheredEntity extends SoulsMob {
         return switch (id) {
             case SHOOT -> SHOOT_DURATION;
             case CAST -> CAST_DURATION;
-            case CHOP -> CHOP_DURATION;
+            case CLEAVE -> CLEAVE_DURATION;
             case THRUST -> THRUST_DURATION;
             case ALARM -> ALARM_DURATION;
             default -> SWING_DURATION;
@@ -188,7 +189,7 @@ public class WitheredEntity extends SoulsMob {
         return switch (id) {
             case SHOOT -> SHOOT_RELEASE;
             case CAST -> CAST_RELEASE;
-            case CHOP -> CHOP_SECOND - 3;
+            case CLEAVE -> CLEAVE_IMPACT - 6;
             case THRUST -> THRUST_IMPACT - 5;
             case ALARM -> ALARM_DURATION;
             default -> SWING_IMPACT - 3;
@@ -197,6 +198,9 @@ public class WitheredEntity extends SoulsMob {
 
     @Override
     protected int attackPause(int finishedId) {
+        if (finishedId == CLEAVE) {
+            return 22 + this.random.nextInt(10);             // he has to gather himself after it
+        }
         return finishedId == SHOOT || finishedId == CAST ? 25 + this.random.nextInt(20) : 14 + this.random.nextInt(10);
     }
 
@@ -229,7 +233,7 @@ public class WitheredEntity extends SoulsMob {
             return ALARM;
         }
         if (this.kind == Kind.BUTCHER) {
-            return distance < 2.3 ? (this.random.nextInt(10) < 7 ? CHOP : SWING) : 0;
+            return distance < 2.5 ? (this.random.nextInt(10) < 7 ? CLEAVE : SWING) : 0;
         }
         if (this.hasPike()) {
             return distance < 3.1 ? THRUST : 0;
@@ -241,7 +245,7 @@ public class WitheredEntity extends SoulsMob {
     public void startAttack(int id) {
         super.startAttack(id);
         this.stopUsingItem();
-        if (id == SWING || id == CHOP || id == THRUST) {
+        if (id == SWING || id == CLEAVE || id == THRUST) {
             this.playSound(Dushi.sound("entity.withered.ambient"), 0.8F, this.kind == Kind.BUTCHER ? 0.8F : 1.3F);
         }
         if (id == SHOOT) {
@@ -258,19 +262,26 @@ public class WitheredEntity extends SoulsMob {
             this.swingArm();
             this.hitArc(level, 2.4, 55.0, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE)
                     + (this.getMainHandItem().isEmpty() ? 0.0F : 2.0F), 0.4);
-        } else if (id == CHOP) {
-            if (time == CHOP_FIRST || time == CHOP_SECOND) {
-                this.swingArm();
-                this.hitArc(level, 2.5, 50.0, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) + 2.0F, 0.3);
-            }
-            if (time == CHOP_FIRST + 4) {
-                // he comes on between the two
-                Vec3 step = this.facing().scale(0.42);
+        } else if (id == CLEAVE) {
+            // (no swing of the game's own here or in the thrust: it would be laid over the move and blur it)
+            if (time == CLEAVE_IMPACT - 2) {
+                Vec3 step = this.facing().scale(0.3);
                 this.setDeltaMovement(step.x, this.getDeltaMovement().y, step.z);
+                this.playSound(Dushi.sound("player.weapon_swing_heavy"), 0.9F, 1.15F);
             }
-        } else if (id == THRUST && time == THRUST_IMPACT) {
-            this.swingArm();
-            this.hitArc(level, 3.8, 17.0, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) + 2.0F, 0.6);
+            if (time == CLEAVE_IMPACT) {
+                this.hitArc(level, 2.8, 85.0, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) + 4.0F, 1.0);
+            }
+        } else if (id == THRUST) {
+            if (time == THRUST_IMPACT - 2) {
+                // the step that carries the thrust
+                Vec3 step = this.facing().scale(0.45);
+                this.setDeltaMovement(step.x, this.getDeltaMovement().y, step.z);
+                this.playSound(Dushi.sound("player.weapon_swing_heavy"), 0.6F, 1.7F);
+            }
+            if (time == THRUST_IMPACT) {
+                this.hitArc(level, 3.8, 17.0, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) + 2.0F, 0.6);
+            }
         } else if (id == ALARM && time == ALARM_SOUND) {
             this.playSound(Dushi.sound("entity.watchman.alarm"), 3.0F, 1.0F);
             level.sendParticles(ParticleTypes.NOTE, this.getX(), this.getY() + this.getBbHeight() + 0.6, this.getZ(), 4, 0.3, 0.2, 0.3, 0.0);

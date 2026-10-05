@@ -53,8 +53,9 @@ public final class PlayerSoul {
             Codec.INT.optionalFieldOf("lost", 0).forGetter(soul -> soul.lostSouls),
             Codec.BOOL.optionalFieldOf("flask", false).forGetter(soul -> soul.flaskGiven),
             Codec.BOOL.optionalFieldOf("keykeeper", false).forGetter(soul -> soul.metKeykeeper),
-            Codec.INT.optionalFieldOf("hour", -1).forGetter(soul -> soul.hearthHour))
-            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost, flask, keykeeper, hour) -> {
+            Codec.INT.optionalFieldOf("hour", -1).forGetter(soul -> soul.hearthHour),
+            Codec.LONG.optionalFieldOf("places", 0L).forGetter(soul -> soul.placesSeen))
+            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost, flask, keykeeper, hour, places) -> {
                 PlayerSoul soul = new PlayerSoul();
                 soul.souls = souls;
                 soul.stats[VITALITY] = vit;
@@ -68,6 +69,7 @@ public final class PlayerSoul {
                 soul.flaskGiven = flask;
                 soul.metKeykeeper = keykeeper;
                 soul.hearthHour = hour;
+                soul.placesSeen = places;
                 soul.stamina = soul.maxStamina();
                 return soul;
             }));
@@ -121,8 +123,18 @@ public final class PlayerSoul {
     /** Whether the player stands by a hearth: the dead do not take notice of them there. Not saved, server only. */
     public boolean atHearth;
 
-    /** The place whose name was last shown to the player (see PlaceNameBlock), -1 for none yet. Not saved, server only. */
-    public int place = -1;
+    /** The places whose names the player has been shown (see PlaceNameBlock), a bit for each: a name is shown once, on finding the place. */
+    public long placesSeen;
+
+    /** Marks the place as found; true if it was not known before. */
+    public boolean discover(int place) {
+        long bit = 1L << place;
+        if ((this.placesSeen & bit) != 0L) {
+            return false;
+        }
+        this.placesSeen |= bit;
+        return true;
+    }
     /** The hour of the place where the player last rested, in a world whose time stands still (see {@link SoulMechanics#hour}); -1 if none. */
     public int hearthHour = -1;
 
