@@ -26,10 +26,11 @@ public class PlaceNameBlock extends Block {
     /** Midnight under a full moon: the hour of the town below. */
     public static final int NIGHT = 18000;
     /**
-     * The sun gone and the light going: the hour of the Mire. Its green is the biome's (worldgen/biome/mire.json): the
-     * game darkens a biome's fog and sky by the hour, and at this one about two fifths of them is left.
+     * The hour of the Mire: late in a day that never gets as far as its sunset. Its green and its gloom are the biome's
+     * (worldgen/biome/mire.json). The hour is one of full day because the game darkens a biome's fog and sky by the
+     * hour and paints them orange towards a low sun: by day it leaves them as the biome names them.
      */
-    public static final int MURK = 13000;
+    public static final int MURK = 11200;
 
     public enum Place implements StringRepresentable {
         STOCKADE("stockade", DUSK, true),

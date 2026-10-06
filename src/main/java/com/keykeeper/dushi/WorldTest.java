@@ -175,6 +175,73 @@ final class WorldTest {
         statue.discard();
         say("rules: the unhewn: a statue until touched=" + asleep + ", wakes when struck=" + woken + ", stone again after a rest=" + again
                 + (asleep && woken && again ? "" : " FAILED"));
+        mire(level, at, player);
+    }
+
+    /**
+     * What the Mire leans on: a film of water that is a floor and not water, sludge that lies on it and on bare floor and
+     * goes again, a mark that stands in water, a grate that wants the Mire's key, and a tree that does not move.
+     */
+    private static void mire(ServerLevel level, BlockPos at, FakePlayer player) {
+        BlockPos film = at.offset(-6, 0, 2);
+        for (BlockPos pos : BlockPos.betweenClosed(film.offset(-1, 0, -1), film.offset(1, 0, 1))) {
+            level.setBlock(pos, Dushi.SHALLOWS.get().defaultBlockState(), 3);
+        }
+        boolean dry = level.getFluidState(film).isEmpty() && level.getBlockState(film).getCollisionShape(level, film).isEmpty();
+        int pools = com.keykeeper.dushi.block.SludgeBlock.spill(level, net.minecraft.world.phys.Vec3.atBottomCenterOf(film.offset(2, 0, 0)), 2.4);
+        BlockState onFilm = level.getBlockState(film);
+        BlockState onFloor = level.getBlockState(film.offset(3, 0, 0));
+        boolean lies = onFilm.is(Dushi.SLUDGE.get()) && onFilm.getValue(com.keykeeper.dushi.block.SludgeBlock.WET)
+                && onFloor.is(Dushi.SLUDGE.get()) && !onFloor.getValue(com.keykeeper.dushi.block.SludgeBlock.WET);
+        onFilm.tick(level, film, level.getRandom());
+        onFloor.tick(level, film.offset(3, 0, 0), level.getRandom());
+        boolean gone = level.getBlockState(film).is(Dushi.SHALLOWS.get()) && level.getBlockState(film.offset(3, 0, 0)).isAir();
+        say("rules: the shallows and the sludge: the film is a floor and no water=" + dry + ", " + pools + " pools from one clot, wet on the film and dry beside it=" + lies
+                + ", gone again and the film back=" + gone + (dry && pools >= 12 && lies && gone ? "" : " FAILED"));
+        for (BlockPos pos : BlockPos.betweenClosed(film.offset(-3, 0, -3), film.offset(5, 0, 3))) {
+            if (level.getBlockState(pos).is(Dushi.SHALLOWS.get()) || level.getBlockState(pos).is(Dushi.SLUDGE.get())) {
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+            }
+        }
+
+        BlockPos pond = at.offset(4, 0, -5);
+        level.setBlock(pond, Dushi.MOB_MARK.get().defaultBlockState().setValue(MobMarkBlock.MOB, MobMarkBlock.Kind.PIKE).setValue(MobMarkBlock.WATERLOGGED, true), 3);
+        boolean wet = level.getFluidState(pond).getType() == net.minecraft.world.level.material.Fluids.WATER;
+        boolean fish = level.getBlockEntity(pond) instanceof MobMarkBlockEntity mark && mark.wake(level)
+                && level.getEntity(mark.mob()) instanceof com.keykeeper.dushi.entity.BonePikeEntity;
+        say("rules: a mark in water: holds water=" + wet + ", raises a pike=" + fish + (wet && fish ? "" : " FAILED"));
+        if (level.getBlockEntity(pond) instanceof MobMarkBlockEntity mark && level.getEntity(mark.mob()) != null) {
+            level.getEntity(mark.mob()).discard();
+        }
+        level.setBlock(pond, Blocks.AIR.defaultBlockState(), 3);
+
+        BlockPos gate = at.offset(-5, 0, -7);
+        BlockState grate = Dushi.LOCKED_GATE.get().defaultBlockState().setValue(com.keykeeper.dushi.block.LockedGateBlock.LOCK, com.keykeeper.dushi.block.LockedGateBlock.Lock.MIRE);
+        for (BlockPos pos : BlockPos.betweenClosed(gate, gate.offset(2, 2, 0))) {
+            level.setBlock(pos, grate, 3);
+        }
+        net.minecraft.world.phys.BlockHitResult hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(gate),
+                net.minecraft.core.Direction.SOUTH, gate, false);
+        player.getInventory().clearContent();
+        player.getInventory().add(new ItemStack(Dushi.QUARRY_KEY.get()));
+        level.getBlockState(gate).useWithoutItem(level, player, hit);
+        boolean held = level.getBlockState(gate.offset(2, 2, 0)).is(Dushi.LOCKED_GATE.get());
+        player.getInventory().add(new ItemStack(Dushi.MIRE_KEY.get()));
+        level.getBlockState(gate).useWithoutItem(level, player, hit);
+        boolean opened = level.getBlockState(gate).isAir() && level.getBlockState(gate.offset(2, 2, 0)).isAir();
+        player.getInventory().clearContent();
+        say("rules: the Mire Gate: holds against the quarry's key=" + held + ", opens to its own=" + opened + (held && opened ? "" : " FAILED"));
+
+        com.keykeeper.dushi.entity.WeepingMotherEntity tree = Dushi.WEEPING_MOTHER.get().spawn(level, at.offset(0, 0, 5), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        if (tree == null) {
+            say("rules: the Weeping Mother did not spawn FAILED");
+            return;
+        }
+        tree.knockback(3.0, 1.0, 0.0, level.damageSources().generic(), 1.0F);
+        boolean rooted = tree.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED) == 0.0 && !tree.isPushable()
+                && tree.getDeltaMovement().horizontalDistanceSqr() < 1.0E-6;
+        tree.discard();
+        say("rules: the Weeping Mother: neither walks nor is pushed nor knocked back=" + rooted + (rooted ? "" : " FAILED"));
     }
 
     // ------------------------------------------------------------------ gear

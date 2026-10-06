@@ -49,7 +49,7 @@ public final class SelfTest {
     /** For every mob, how many times each of its moves was started. */
     private static final Map<String, Map<Integer, Integer>> MOVES = new LinkedHashMap<>();
     private static final Map<String, Integer> LAST_MOVE = new LinkedHashMap<>();
-    private static final int DRILL_TICKS = 520;
+    private static final int DRILL_TICKS = 600;
     private static final List<Drill> DRILL = new ArrayList<>();
     private static int ticks = -1;
 
@@ -99,13 +99,18 @@ public final class SelfTest {
         types.add(Dushi.UNHEWN.get());
         types.add(Dushi.TASKMASTER.get());
         types.add(Dushi.STONE_EATER.get());
+        types.add(Dushi.BONE_PIKE.get());
+        types.add(Dushi.LANKY.get());
+        types.add(Dushi.WISP.get());
+        types.add(Dushi.WALLOWER.get());
+        types.add(Dushi.WEEPING_MOTHER.get());
         types.add(Dushi.KEYKEEPER.get());
         types.add(Dushi.OVERSEER.get());
         types.add(Dushi.CHAPLAIN.get());
         int index = 0;
         for (EntityType<? extends Mob> type : types) {
-            int x = -20 + (index % 5) * 10;
-            int z = -18 + (index / 5) * 13;
+            int x = -20 + (index % 6) * 8;
+            int z = -20 + (index / 6) * 10;
             BlockPos at = new BlockPos(x, FLOOR_Y + 1, z);
             Mob mob = type.spawn(level, at, EntitySpawnReason.COMMAND);
             String name = EntityType.getKey(type).getPath();
@@ -288,7 +293,7 @@ public final class SelfTest {
         }
         int index = 0;
         for (Map.Entry<EntityType<? extends SoulsMob>, int[]> entry : drillPlan().entrySet()) {
-            BlockPos at = new BlockPos(-18 + (index % 5) * 9, FLOOR_Y + 1, -21 + (index / 5) * 13);
+            BlockPos at = new BlockPos(-18 + (index % 5) * 9, FLOOR_Y + 1, -21 + (index / 5) * 12);
             SoulsMob mob = entry.getKey().spawn(level, at, EntitySpawnReason.COMMAND);
             Mob dummy = EntityTypes.IRON_GOLEM.spawn(level, at.offset(0, 0, 7), EntitySpawnReason.COMMAND);
             if (mob == null || dummy == null) {
@@ -323,6 +328,12 @@ public final class SelfTest {
         plan.put(Dushi.UNHEWN.get(), new int[] {1, 2, 3});
         plan.put(Dushi.TASKMASTER.get(), new int[] {1, 2, 3, 4, 5});
         plan.put(Dushi.STONE_EATER.get(), new int[] {1, 2, 3, 4, 5});
+        // the Mire (the Weeping Mother's whirl is hers only when she is hurt, but the move itself can be asked for)
+        plan.put(Dushi.BONE_PIKE.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.LANKY.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.WISP.get(), new int[] {1});
+        plan.put(Dushi.WALLOWER.get(), new int[] {1, 2, 3, 4, 5});
+        plan.put(Dushi.WEEPING_MOTHER.get(), new int[] {1, 2, 3, 4, 5, 6});
         return plan;
     }
 

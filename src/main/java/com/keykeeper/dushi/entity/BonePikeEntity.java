@@ -55,7 +55,7 @@ public class BonePikeEntity extends SoulsMob {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 85.0).add(Attributes.ATTACK_DAMAGE, 15.0)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 70.0).add(Attributes.ATTACK_DAMAGE, 15.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.3).add(Attributes.ARMOR, 4.0).add(Attributes.KNOCKBACK_RESISTANCE, 0.3)
                 .add(Attributes.FOLLOW_RANGE, 16.0);
     }

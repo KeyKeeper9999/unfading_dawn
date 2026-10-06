@@ -497,8 +497,8 @@ def views(w):
     return out
 
 
-MURK = 13000                        # the hour of the Mire: see PlaceNameBlock.MURK
-MURK_TRIED = (12700, 13300, 13700, 18000, 23000)
+MURK = 11200                        # the hour of the Mire: see PlaceNameBlock.MURK
+MURK_TRIED = (6000, 9000, 12000)
 
 
 # the pictures of the fortress that are still taken (it was looked at room by room when it was built)
@@ -545,7 +545,9 @@ if __name__ == '__main__':
     report, problems, seen = analyse(b)
     spawn = b.spawn
     for kind, x, y, z in b.marks:
-        for h in (0, 1) if kind not in ('gravedigger', 'overseer', 'chaplain', 'knight', 'gilded', 'unhewn', 'taskmaster', 'stone_eater') else (0, 1, 2):
+        tall = 6 if kind == 'weeping_mother' else 4 if kind == 'lanky' else 3 if kind in (
+            'gravedigger', 'overseer', 'chaplain', 'knight', 'gilded', 'unhewn', 'taskmaster', 'stone_eater') else 2
+        for h in range(tall):
             above = b.get(x, y + h, z)
             if h and above not in (None, AIR) and not any(k in str(above) for k in castle.PASSABLE) and not castle.is_water(above):
                 problems.append(f'the {kind} at {(x, y, z)} has {above} over its head')
@@ -568,11 +570,14 @@ if __name__ == '__main__':
         for boss, eye, look in (('gravedigger', (gx + 1.5, GY + 3, v.at(20, 10)[1]), (gx + 1.5, GY + 3, v.at(20, 3)[1])),
                                 ('overseer', C(64, L1 + 3, 146.5), C(64, L1 + 4, 120)), ('chaplain', C(64, LC + 3, 31), C(64, LC + 10, 9)),
                                 ('taskmaster', (55, GY - 10, 525), (43, GY - 10, 535)),
-                                ('stone_eater', (31, GY - 10, 488), (39, GY - 10, 477))):
+                                ('stone_eater', (31, GY - 10, 488), (39, GY - 10, 477)),
+                                ('wallower', (gen_swamp.WEIR[0] - 9, GY + 4, gen_swamp.WEIR[1] + 3), (gen_swamp.WEIR[0], GY + 2, gen_swamp.WEIR[1])),
+                                ('weeping_mother', (gen_swamp.ISLE[0] + 2, GY + 5, gen_swamp.ISLE[1] - 10), (gen_swamp.ISLE[0], GY + 4, gen_swamp.ISLE[1]))):
             f.write(f'near_the_{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')
         # and tries the locked gate without its key and with it
-        f.write('gate ' + ' '.join(f'{v_:.2f}' for v_ in world(*sorted(b.seals['quarry_key'])[0], spawn)) + '\n')
+        for key in ('quarry_key', 'mire_key'):
+            f.write('gate ' + ' '.join(f'{v_:.2f}' for v_ in world(*sorted(b.seals[key])[0], spawn)) + '\n')
     # the columns that get a biome of their own (MapBuilder lays it): boxes of the world, four blocks wide - the game
     # keeps a biome for every four blocks each way - a line each
     quarts = {}

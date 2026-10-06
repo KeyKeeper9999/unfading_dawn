@@ -109,7 +109,7 @@ class Swamp:
         self.level = {}
         self.taken = set()               # columns something is built on: nothing is planted there
         self.trees = []
-        self.mobs = False                # (until the game knows the dead of the place)
+        self.mobs = True
 
     # ------------------------------------------------------------------ the shape of it
 

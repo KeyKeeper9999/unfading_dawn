@@ -62,7 +62,7 @@ public class WitheredEntity extends SoulsMob {
          * One of the drowned of the Mire: he walks the bottom as he walked the street, the water neither slows nor
          * lifts him, and he has no need of air. A boat hook, held like a pike, or his hands.
          */
-        DROWNED("withered_drowned", 115.0, 14.0, 0.25, 2.0, 420);
+        DROWNED("withered_drowned", 95.0, 14.0, 0.25, 2.0, 420);
 
         public final String id;
         final double health;

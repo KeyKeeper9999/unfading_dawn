@@ -559,16 +559,126 @@ public final class ClientSelfTest {
         rest();
         command(gone);
 
+        // the Mire: its common dead in a row, then each of them from the side through its moves
+        command(look(0.5, 0.5, 0, 0), summon("withered_drowned", 3.2, 5.0, held("boat_hook", null)), summon("bone_pike", 1.2, 4.5, ""),
+                summon("lanky", -1.2, 5.5, ""), summon("wisp", -3.2, 5.0, ""), "time set 18000");
+        shot("s1_mire_dead_night", 30);
+        command("time set 6000");
+        shot("s1_mire_dead", 20);
+        command(gone, look(-3.5, 4.5, -90, 12), summon("bone_pike", 0.0, 4.5, ""));
+        shot("s2_pike_side", 20);
+        attack(com.keykeeper.dushi.entity.BonePikeEntity.class, com.keykeeper.dushi.entity.BonePikeEntity.BITE, 6);
+        shot("s2_pike_bite_open");
+        attack(com.keykeeper.dushi.entity.BonePikeEntity.class, com.keykeeper.dushi.entity.BonePikeEntity.BITE, 10);
+        shot("s2_pike_bite_shut");
+        attack(com.keykeeper.dushi.entity.BonePikeEntity.class, com.keykeeper.dushi.entity.BonePikeEntity.LEAP, 8);
+        shot("s2_pike_leap_coiled");
+        attack(com.keykeeper.dushi.entity.BonePikeEntity.class, com.keykeeper.dushi.entity.BonePikeEntity.LEAP, 18);
+        shot("s2_pike_leap");
+        attack(com.keykeeper.dushi.entity.BonePikeEntity.class, com.keykeeper.dushi.entity.BonePikeEntity.FLOUNDER, 20);
+        shot("s2_pike_flounder");
+        rest();
+        command(gone, look(-6.5, 4.5, -90, -8), summon("lanky", 0.0, 4.5, ""));
+        shot("s3_lanky_side", 20);
+        attack(com.keykeeper.dushi.entity.LankyEntity.class, com.keykeeper.dushi.entity.LankyEntity.REACH, 9);
+        shot("s3_lanky_reach_drawn");
+        attack(com.keykeeper.dushi.entity.LankyEntity.class, com.keykeeper.dushi.entity.LankyEntity.REACH, 16);
+        shot("s3_lanky_reach");
+        attack(com.keykeeper.dushi.entity.LankyEntity.class, com.keykeeper.dushi.entity.LankyEntity.SWEEP, 10);
+        shot("s3_lanky_sweep_drawn");
+        attack(com.keykeeper.dushi.entity.LankyEntity.class, com.keykeeper.dushi.entity.LankyEntity.SWEEP, 18);
+        shot("s3_lanky_sweep");
+        attack(com.keykeeper.dushi.entity.LankyEntity.class, com.keykeeper.dushi.entity.LankyEntity.SLAM, 14);
+        shot("s3_lanky_slam_raised");
+        attack(com.keykeeper.dushi.entity.LankyEntity.class, com.keykeeper.dushi.entity.LankyEntity.SLAM, 23);
+        shot("s3_lanky_slam");
+        rest();
+        command(look(2.5, 0.5, 25, -10));
+        shot("s3_lanky_front_quarter");
+        command(gone, look(0.5, 1.5, 0, 5), summon("wisp", 0.5, 4.5, ""), "time set 18000");
+        shot("s4_wisp_night", 20);
+        attack(com.keykeeper.dushi.entity.WispEntity.class, com.keykeeper.dushi.entity.WispEntity.BOLT, 20);
+        shot("s4_wisp_flame_up");
+        rest();
+        command("time set 6000", gone);
+
+        // the Wallower on a floor under the film; a clot of its sludge beside it
+        command("fill -8 " + GROUND + " -3 9 " + GROUND + " 14 vsratie_dushi:shallows", look(0.5, -1.5, 0, 8), summon("wallower", 0.5, 6.0, ""), "time set 18000");
+        shot("s5_wallower_night", 30);
+        command("time set 6000");
+        server(level -> say("sludge: " + com.keykeeper.dushi.block.SludgeBlock.spill(level, new Vec3(4.5, GROUND, 2.5), 2.4) + " pools"));
+        shot("s5_wallower", 20);
+        attack(com.keykeeper.dushi.entity.WallowerEntity.class, com.keykeeper.dushi.entity.WallowerEntity.SNAP, 8);
+        shot("s5_snap_drawn");
+        attack(com.keykeeper.dushi.entity.WallowerEntity.class, com.keykeeper.dushi.entity.WallowerEntity.SNAP, 13);
+        shot("s5_snap");
+        attack(com.keykeeper.dushi.entity.WallowerEntity.class, com.keykeeper.dushi.entity.WallowerEntity.GULP, 40);
+        shot("s5_gulp");
+        command(look(-9.0, 6.5, -92, 6));
+        shot("s6_side_gulp");
+        attack(com.keykeeper.dushi.entity.WallowerEntity.class, com.keykeeper.dushi.entity.WallowerEntity.GULP, 57);
+        shot("s6_side_gulp_bite");
+        attack(com.keykeeper.dushi.entity.WallowerEntity.class, com.keykeeper.dushi.entity.WallowerEntity.SPIT, 20);
+        shot("s6_side_spit");
+        attack(com.keykeeper.dushi.entity.WallowerEntity.class, com.keykeeper.dushi.entity.WallowerEntity.TAIL, 11);
+        shot("s6_side_tail_drawn");
+        attack(com.keykeeper.dushi.entity.WallowerEntity.class, com.keykeeper.dushi.entity.WallowerEntity.TAIL, 16);
+        shot("s6_side_tail");
+        attack(com.keykeeper.dushi.entity.WallowerEntity.class, com.keykeeper.dushi.entity.WallowerEntity.DIVE, 12);
+        shot("s6_side_dive_going");
+        attack(com.keykeeper.dushi.entity.WallowerEntity.class, com.keykeeper.dushi.entity.WallowerEntity.DIVE, 50);
+        shot("s6_side_dive_under");
+        attack(com.keykeeper.dushi.entity.WallowerEntity.class, com.keykeeper.dushi.entity.WallowerEntity.DIVE, 95);
+        shot("s6_side_dive_breach");
+        attack(com.keykeeper.dushi.entity.WallowerEntity.class, com.keykeeper.dushi.entity.WallowerEntity.DIVE, 104);
+        shot("s6_side_dive_fall");
+        rest();
+        command(look(6.5, 12.5, 135, 10));
+        shot("s6_wallower_back");
+        command(gone, "fill -8 " + GROUND + " -3 9 " + GROUND + " 14 minecraft:air");
+
+        // the Weeping Mother
+        command(look(0.5, -4.5, 0, -14), summon("weeping_mother", 0.5, 7.0, ""), "time set 18000");
+        shot("s7_mother_night", 30);
+        command("time set 6000");
+        shot("s7_mother", 20);
+        attack(com.keykeeper.dushi.entity.WeepingMotherEntity.class, com.keykeeper.dushi.entity.WeepingMotherEntity.LASH_RIGHT, 9);
+        shot("s7_lash_drawn");
+        attack(com.keykeeper.dushi.entity.WeepingMotherEntity.class, com.keykeeper.dushi.entity.WeepingMotherEntity.LASH_RIGHT, 17);
+        shot("s7_lash");
+        attack(com.keykeeper.dushi.entity.WeepingMotherEntity.class, com.keykeeper.dushi.entity.WeepingMotherEntity.LASH_LEFT, 21);
+        shot("s7_lash_left_through");
+        attack(com.keykeeper.dushi.entity.WeepingMotherEntity.class, com.keykeeper.dushi.entity.WeepingMotherEntity.WAIL, 26);
+        shot("s7_wail");
+        attack(com.keykeeper.dushi.entity.WeepingMotherEntity.class, com.keykeeper.dushi.entity.WeepingMotherEntity.WHIRL, 22);
+        shot("s7_whirl");
+        command(look(-12.0, 7.5, -92, -6));
+        shot("s8_side_whirl");
+        attack(com.keykeeper.dushi.entity.WeepingMotherEntity.class, com.keykeeper.dushi.entity.WeepingMotherEntity.WHIRL, 30);
+        shot("s8_side_whirl_on");
+        attack(com.keykeeper.dushi.entity.WeepingMotherEntity.class, com.keykeeper.dushi.entity.WeepingMotherEntity.SLAM, 16);
+        shot("s8_side_slam_raised");
+        attack(com.keykeeper.dushi.entity.WeepingMotherEntity.class, com.keykeeper.dushi.entity.WeepingMotherEntity.SLAM, 25);
+        shot("s8_side_slam");
+        attack(com.keykeeper.dushi.entity.WeepingMotherEntity.class, com.keykeeper.dushi.entity.WeepingMotherEntity.ROOTS, 30);
+        shot("s8_side_roots");
+        attack(com.keykeeper.dushi.entity.WeepingMotherEntity.class, com.keykeeper.dushi.entity.WeepingMotherEntity.LASH_RIGHT, 17);
+        shot("s8_side_lash");
+        rest();
+        command(look(6.5, 13.5, 135, -8));
+        shot("s8_mother_back");
+        command(gone);
+
         // 5. every item of the mod as a picture in the air
         List<String> items = new ArrayList<>();
         Dushi.ITEMS.getEntries().forEach(entry -> items.add(entry.getId().toString()));
         List<String> displays = new ArrayList<>();
-        int columns = 13;
+        int columns = 15;
         for (int i = 0; i < items.size(); i++) {
-            double x = 0.5 + 4.8 - (i % columns) * 0.8;
-            double y = GROUND + 5.4 - (i / columns) * 0.8;
+            double x = 0.5 + 4.9 - (i % columns) * 0.7;
+            double y = GROUND + 5.4 - (i / columns) * 0.7;
             displays.add("summon minecraft:item_display " + x + " " + y + " 5 {item:{id:\"" + items.get(i) + "\"},item_display:\"gui\",billboard:\"center\","
-                    + "transformation:{translation:[0f,0f,0f],left_rotation:[0f,0f,0f,1f],scale:[0.7f,0.7f,0.7f],right_rotation:[0f,0f,0f,1f]}}");
+                    + "transformation:{translation:[0f,0f,0f],left_rotation:[0f,0f,0f,1f],scale:[0.62f,0.62f,0.62f],right_rotation:[0f,0f,0f,1f]}}");
         }
         command(gone, clear, look(0.5, 0.5, 0, -12));
         command(displays.toArray(String[]::new));

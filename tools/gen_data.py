@@ -162,13 +162,13 @@ MAP_CHESTS = {
     'quarry_breach': [(GREAT, 4), (M + 'return_ember', 3), (M + 'iron_wedge', 4), (M + 'mire_key', 1)],      # the key of the Mire Gate
     # the Mire (tools/gen_swamp.py)
     'mire_end': [(GREAT, 1), (M + 'tar_pot', 4), (CLOTH, 4)],
-    'mire_loft': [(GREAT, 2), (M + 'return_ember', 2)],
-    'mire_gallows': [(GREAT, 2), (SCRAP, 6)],
-    'mire_stage': [(GREAT, 1), (M + 'powder_pot', 4), (M + 'return_ember', 1)],
-    'mire_cove': [(GREAT, 3), (M + 'heavy_soul_shard', 1)],
+    'mire_loft': [(GREAT, 2), (M + 'return_ember', 2), (M + 'withe', 2)],
+    'mire_gallows': [(GREAT, 2), (SCRAP, 6), (M + 'withe', 3)],
+    'mire_stage': [(M + 'boat_hook', 1), (M + 'bone_scale', 3), (M + 'return_ember', 1)],      # the fishers' stage: what they fished with
+    'mire_cove': [(GREAT, 3), (M + 'heavy_soul_shard', 1), (M + 'bone_scale', 2)],
     'mire_mill': [(GREAT, 2), (M + 'return_ember', 3), (SCRAP, 6)],
-    'mire_hollow': [(GREAT, 3), (M + 'tar_pot', 4)],
-    'mire_grove': [(GREAT, 5), (M + 'return_ember', 3)],
+    'mire_hollow': [(GREAT, 3), (M + 'tar_pot', 4), (M + 'withe', 3)],
+    'mire_grove': [(GREAT, 5), (M + 'return_ember', 3), (M + 'bone_scale', 4)],
 }
 for _name, _items in MAP_CHESTS.items():
     CHESTS['map/' + _name] = [pool(item(_id, count=(_n, _n)) if _n > 1 else item(_id)) for _id, _n in _items]
@@ -203,15 +203,20 @@ STRUCTURE_SETS = {
 }
 
 # The Mire's own biome. A map's builder lays it over the place (MapBuilder, map/biomes.txt); the game never generates it.
-# The game darkens whatever fog and sky a biome names by the hour (data/minecraft/timeline/day.json: at dusk to about
-# two fifths), so these are much lighter than what is seen at the Mire's hour (PlaceNameBlock.MURK).
+# The game darkens whatever fog and sky a biome names by the hour (data/minecraft/timeline/day.json), and towards
+# the setting or the risen sun it paints both orange, which no biome can take away: so the Mire's hour is one of full
+# day (PlaceNameBlock.MURK), when the game leaves them as they are named here, and its gloom is its own - the fog and
+# the sky dark, and what light the sky gives cut to less than half and turned green.
 MIRE = {
     'attributes': {
-        'minecraft:visual/fog_color': '#7dba69',
-        'minecraft:visual/sky_color': '#6aa85e',
+        'minecraft:visual/fog_color': '#46603c',
+        'minecraft:visual/sky_color': '#3a5433',
         'minecraft:visual/fog_start_distance': 0.0,
-        'minecraft:visual/fog_end_distance': 80.0,
+        'minecraft:visual/fog_end_distance': 72.0,
         'minecraft:visual/sky_fog_end_distance': 64.0,
+        'minecraft:visual/sky_light_factor': 0.42,
+        'minecraft:visual/sky_light_color': '#b4e09c',
+        'minecraft:visual/ambient_light_color': '#0a140a',
         'minecraft:visual/water_fog_color': '#1e2a16',
         'minecraft:visual/water_fog_end_distance': {'argument': 0.6, 'modifier': 'multiply'},
         'minecraft:visual/ambient_particles': {'argument': [{'particle': {'type': 'minecraft:spore_blossom_air'}, 'probability': 0.006}], 'modifier': 'append'},

@@ -91,7 +91,7 @@ public class WeepingMotherEntity extends SoulsMob {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1700.0).add(Attributes.ATTACK_DAMAGE, 20.0)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1550.0).add(Attributes.ATTACK_DAMAGE, 20.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.0).add(Attributes.ARMOR, 6.0).add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(Attributes.FOLLOW_RANGE, 30.0);
     }
@@ -201,6 +201,10 @@ public class WeepingMotherEntity extends SoulsMob {
         this.whirlCooldown = Math.max(0, this.whirlCooldown - 1);
         this.slamCooldown = Math.max(0, this.slamCooldown - 1);
         this.age++;
+        Vec3 motion = this.getDeltaMovement();
+        if (motion.x != 0.0 || motion.z != 0.0) {
+            this.setDeltaMovement(0.0, motion.y, 0.0);           // a blast moves what knockback does not: not her
+        }
         if (!this.roots.isEmpty()) {
             this.rootsTick(level);
         }

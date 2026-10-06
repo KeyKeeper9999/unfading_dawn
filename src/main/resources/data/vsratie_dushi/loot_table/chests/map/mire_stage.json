@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "vsratie_dushi:great_soul",
+          "name": "vsratie_dushi:boat_hook",
           "weight": 1
         }
       ]
@@ -16,15 +16,15 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "vsratie_dushi:powder_pot",
+          "name": "vsratie_dushi:bone_scale",
           "weight": 1,
           "modifier": [
             {
               "type": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 4,
-                "max": 4
+                "min": 3,
+                "max": 3
               }
             }
           ]
