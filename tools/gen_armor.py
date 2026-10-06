@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The five suits of armour: the textures worn on the body (in the layout the game's own armour uses), the icons,
+"""The seven suits of armour: the textures worn on the body (in the layout the game's own armour uses), the icons,
 the item models and the equipment definitions. Run from the repo root; pass a file name for a preview sheet."""
 import json
 import math
@@ -22,6 +22,8 @@ SUITS = {
     'rust': ('rust_helm', 'rust_cuirass', 'rust_tassets', 'rust_sabatons'),
     'chaplain': ('chaplain_mitre', 'chaplain_cassock', 'chaplain_skirt', 'chaplain_shoes'),
     'vigil': ('vigil_cowl', 'vigil_shift', 'vigil_skirt', 'vigil_wraps'),
+    'mason': ('mason_cap', 'mason_apron', 'mason_breeches', 'mason_boots'),
+    'scale': ('scale_hood', 'scale_coat', 'scale_leggings', 'scale_waders'),
 }
 
 # ---------------------------------------------------------------------------------------------------- the worn textures
@@ -158,6 +160,20 @@ LINEN_D = (184, 176, 158)
 LINEN_L = (244, 240, 228)
 THREAD = (150, 40, 36)
 THREAD_D = (108, 30, 30)
+FELT = (124, 120, 112)
+FELT_D = (90, 86, 82)
+FELT_L = (152, 148, 138)
+APRON = (120, 84, 54)
+APRON_D = (84, 58, 40)
+APRON_L = (150, 110, 72)
+DUST = (208, 202, 188)
+BONE = (198, 192, 166)
+BONE_D = (140, 134, 112)
+BONE_L = (230, 226, 204)
+HIDE = (72, 80, 62)
+HIDE_D = (48, 56, 44)
+HIDE_L = (94, 104, 78)
+WITHE = (118, 128, 72)
 
 
 def prisoner():
@@ -391,7 +407,147 @@ def vigil():
     return one, two
 
 
-WORN = {'prisoner': prisoner, 'guard': guard, 'rust': rust, 'chaplain': chaplain, 'vigil': vigil}
+def dusty(fn, seed, amount=0.16):
+    """Stone dust settled on whatever `fn` paints: more of it on what faces up."""
+    def out(face, px, py, w, h):
+        c = fn(face, px, py, w, h)
+        if c is not None and blotch(f'dust{seed}{face}', px, py, 1.3) < (amount * 2.2 if face == 'top' else amount):
+            c = mix(c, DUST, 0.55)
+        return c
+    return out
+
+
+def mason():
+    """A stonecutter's working gear: quilted felt against the chips, and over it the leather a man splits rock in - a
+    cap with a flap down the neck, an apron to the knee, cuffs, knee-pads, nailed boots. All of it grey with the pit's dust."""
+    one, two = Worn(), Worn()
+    felt = dusty(weave(FELT, FELT_D, 'mason', 2.0, 0.6), 'felt')
+    hide = dusty(lambda face, px, py, w, h: shade(APRON if blotch('apron' + face, px, py, 2.4) < 0.66 else APRON_D, light(face, py, h) + 0.04), 'hide', 0.12)
+    # the cap: felt to the brow, a leather band, and a flap of leather over the neck and ears
+    one.fill('head', felt, faces=('top',))
+    one.fill('head', felt, faces=SIDES, rows=(0, 2))
+    for face in SIDES:
+        for px in range(8):
+            one.put('head', face, px, 2, shade(APRON_D if px % 3 else APRON, 1.0))
+    one.fill('head', hide, faces=('right', 'left', 'back'), rows=(3, 7))
+    one.fill('hat', felt, faces=('top',))
+    one.fill('hat', felt, faces=SIDES, rows=(0, 1))
+    # the apron: a quilted coat to the wrists; over the front of it leather from the breast down, on two straps
+    one.fill('body', felt)
+    for py in range(0, 12):                                 # the quilting: seams down the coat
+        for face, w in (('back', 8), ('right', 4), ('left', 4)):
+            for px in range(w):
+                if px % 3 == 1:
+                    one.put('body', face, px, py, shade(FELT_D, 0.92 - 0.01 * py))
+    for py in range(2, 12):
+        for px in range(1, 7):
+            one.put('body', 'front', px, py, hide('front', px, py, 8, 12))
+    for px in (1, 6):                                       # the straps
+        for py in (0, 1):
+            one.put('body', 'front', px, py, APRON_D)
+        for py in range(0, 5):
+            one.put('body', 'back', px, py, APRON_D)
+    for face, w in (('back', 8), ('right', 4), ('left', 4)):   # the apron's string, round the waist
+        for px in range(w):
+            one.put('body', face, px, 7, shade(APRON_D, 0.95 if px % 2 else 0.8))
+    for px in range(1, 7):                                  # worn pale where the stone rests against it
+        if px in (2, 3, 4):
+            one.put('body', 'front', px, 6, APRON_L)
+        one.put('body', 'front', px, 11, shade(APRON_D, 0.8))
+    one.put('body', 'front', 5, 4, shade(APRON_D, 0.7))      # a pocket for the wedges
+    one.put('body', 'front', 5, 5, shade(APRON_D, 0.7))
+    one.put('body', 'front', 4, 4, shade(APRON_D, 0.7))
+    one.fill('arm', felt, faces=('top',) + SIDES, rows=(0, 7))
+    one.fill('arm', hide, faces=SIDES + ('bottom',), rows=(8, 11))     # cuffs to the knuckles
+    for face in SIDES:
+        for px in range(4):
+            one.put('arm', face, px, 8, shade(APRON_D, 0.8))
+            if px % 3 == 1:
+                for py in range(0, 8):
+                    one.put('arm', face, px, py, shade(FELT_D, 0.92))
+    # the boots: leather to the shin, an iron cap on the toe, nails in the sole
+    one.fill('leg', hide, faces=SIDES, rows=(6, 11))
+    one.fill('leg', lambda face, px, py, w, h: STEEL_D if (px + py) % 2 else shade(APRON_D, 0.7), faces=('bottom',))
+    for face in SIDES:
+        for px in range(4):
+            one.put('leg', face, px, 6, shade(APRON_D, 0.8))
+            one.put('leg', face, px, 11, shade(APRON_D, 0.62))
+    for px in range(4):
+        one.put('leg', 'front', px, 10, STEEL if px in (1, 2) else STEEL_D)
+    # the breeches: quilted to below the knee, a pad of leather on each knee
+    two.fill('body', felt, faces=SIDES, rows=(8, 11))
+    two.fill('leg', felt, faces=SIDES, rows=(0, 7))
+    for px in range(4):
+        for py in (4, 5):
+            two.put('leg', 'front', px, py, shade(APRON if px in (1, 2) else APRON_D, 1.0 if py == 4 else 0.85))
+    for face in SIDES:
+        for px in range(4):
+            two.put('leg', face, px, 7, shade(FELT_D, 0.8))
+    return one, two
+
+
+def scaled(seed):
+    """Scales of bone sewn in rows, each row lapping the next: lit on its upper edge, dark where it laps."""
+    def fn(face, px, py, w, h):
+        row = py // 2
+        if py % 2 == 0:                                      # the upper edge of a row of scales, lit
+            c = BONE_L
+        else:                                                # their lower ends, round, with the dark of the lap between them
+            c = BONE if (px + row) % 2 == 0 else BONE_D
+        if blotch(f'{seed}{face}', px, py, 1.5) > 0.86:
+            c = shade(c, 0.86)
+        return shade(c, light(face, py, h))
+    return fn
+
+
+def scale():
+    """What the Mire's fishers wore, as far as the pike let them: a coat of the fish's own hide with its bone scales sewn
+    on in rows, a hood of the same, and waders to the thigh bound with withe."""
+    one, two = Worn(), Worn()
+    hide = lambda face, px, py, w, h: shade(HIDE if blotch('fish' + face, px, py, 2.2) < 0.68 else HIDE_D, light(face, py, h) + 0.03)
+    # the hood: hide over the head and neck, the face open, a row of scales over the brow and down the crown
+    one.fill('head', hide)
+    for py in range(2, 7):
+        for px in range(1, 7):
+            one.clear('head', 'front', px, py)
+    one.fill('head', scaled('crown'), faces=('top',))
+    for face in SIDES:
+        for px in range(8):
+            for py in (0, 1):
+                one.put('head', face, px, py, scaled('brow')(face, px, py, 8, 8))
+    one.fill('hat', hide, faces=('right', 'left', 'back'), rows=(4, 7))
+    for py in range(2, 8):
+        one.put('hat', 'front', 0, py, HIDE_D)
+        one.put('hat', 'front', 7, py, HIDE_D)
+    # the coat: scales over the breast, the back and the shoulders; bare hide at the sides, where the arms rub
+    one.fill('body', hide)
+    one.fill('body', scaled('coat'), faces=('front', 'back'), rows=(0, 8))
+    one.fill('body', hide, faces=('right', 'left'))
+    for face, w in (('front', 8), ('back', 8), ('right', 4), ('left', 4)):
+        for px in range(w):
+            one.put('body', face, px, 9, shade(WITHE, 0.95 if px % 2 else 0.75))    # a belt plaited of withe
+    one.fill('arm', scaled('shoulder'), faces=('top',) + SIDES, rows=(0, 3))
+    one.fill('arm', hide, faces=SIDES, rows=(4, 8))
+    for face in SIDES:
+        for px in range(4):
+            one.put('arm', face, px, 8, shade(WITHE, 0.9 if px % 2 else 0.72))
+    # the waders: hide to the knee, bound twice with withe, the foot stiff with pitch
+    one.fill('leg', hide, faces=SIDES, rows=(4, 11))
+    one.fill('leg', lambda face, px, py, w, h: (30, 30, 28), faces=('bottom',))
+    for face in SIDES:
+        for px in range(4):
+            one.put('leg', face, px, 4, shade(WITHE, 0.9 if px % 2 else 0.72))
+            one.put('leg', face, px, 8, shade(WITHE, 0.85 if px % 2 else 0.68))
+            one.put('leg', face, px, 11, (36, 36, 32))
+            one.put('leg', face, px, 10, shade(HIDE_D, 0.8))
+    # the leggings: hide, a skirt of scales over the hips and the thighs
+    two.fill('body', scaled('skirt'), faces=SIDES, rows=(8, 11))
+    two.fill('leg', hide, faces=SIDES, rows=(0, 9))
+    two.fill('leg', scaled('thigh'), faces=('front', 'right', 'left'), rows=(0, 3))
+    return one, two
+
+
+WORN = {'prisoner': prisoner, 'guard': guard, 'rust': rust, 'chaplain': chaplain, 'vigil': vigil, 'mason': mason, 'scale': scale}
 
 # ---------------------------------------------------------------------------------------------------- the icons
 
@@ -483,6 +639,40 @@ HELMETS = {
         "..oooo....oooo..",
         "................",
         "................"], dict(L=LINEN_L, B=LINEN, D=LINEN_D, N=THREAD, n=THREAD_D)),
+    'mason': ([
+        "................",
+        "................",
+        "................",
+        ".....oooooo.....",
+        "....oAAABBBo....",
+        "...oAAWBBBBCo...",
+        "...oABBBWBBCo...",
+        "..oABBBBBBBBCo..",
+        "..olLlLlLlLlLo..",
+        "..oLlo....oLlo..",
+        "..oLlo....oLlo..",
+        "..oLlo....ollo..",
+        "...oo......oo...",
+        "................",
+        "................",
+        "................"], dict(A=FELT_L, B=FELT, C=FELT_D, L=APRON, l=APRON_D, W=DUST)),
+    'scale': ([
+        "................",
+        "................",
+        "....oooooooo....",
+        "...oLLLLLLLLo...",
+        "..oBDBDBDBDBDo..",
+        "..oLLLLLLLLLLo..",
+        "..oHHooooooHho..",
+        "..oHHo....oHho..",
+        "..oHHo....oHho..",
+        "..oHho....oHho..",
+        "..oHhho..oHhho..",
+        ".oHHhhhoohHhhho.",
+        ".oHhhho..ohhhho.",
+        "..oooo....oooo..",
+        "................",
+        "................"], dict(L=BONE_L, B=BONE, D=BONE_D, H=HIDE, h=HIDE_D)),
 }
 
 CHEST = [
@@ -554,6 +744,14 @@ OVER = {
     'vigil_shift': [(7, 4, ["N", "N", ".", "N", "N", ".", "N", "N"]), (3, 9, ["CRCRCRCRC"]), (5, 10, ["R"]), (2, 5, ["N"]), (13, 5, ["N"])],
     'vigil_skirt': [(4, 11, ["Nn"]), (10, 11, ["nN"]), (4, 2, ["CRCRCRCR"])],
     'vigil_wraps': [(3, 6, ["CC"]), (11, 6, ["CC"]), (2, 10, ["CAC"]), (10, 10, ["ACA"]), (3, 8, ["CC"]), (11, 8, ["CC"])],
+    'mason_apron': [(5, 5, ["LLLLLL", "LLLLLL", "LLPPLL", "LLLLLL", "LLLLlL", "lLLLLl", "LLLLLL"]), (5, 12, ["llllll"]), (5, 3, ["l"]), (10, 3, ["l"]),
+                    (5, 4, ["l"]), (10, 4, ["l"]), (3, 10, ["W"]), (12, 8, ["W"]), (2, 3, ["W"])],
+    'mason_breeches': [(4, 2, ["lLlLlLl"]), (4, 8, ["LL"]), (10, 8, ["LL"]), (4, 9, ["ll"]), (10, 9, ["ll"]), (5, 5, ["W"]), (10, 11, ["W"])],
+    'mason_boots': [(2, 11, ["SS"]), (11, 11, ["SS"]), (3, 5, ["C"]), (11, 5, ["C"]), (3, 8, ["W"]), (12, 9, ["W"])],
+    'scale_coat': [(4, 5, ["LLLLLLL", "EDEDEDE", "LLLLLLL", "DEDEDED", "LLLLLLL", "EDEDEDE"]), (4, 11, ["VvVvVvV"]),
+                   (2, 3, ["LL"]), (12, 3, ["LL"]), (2, 4, ["ED"]), (12, 4, ["DE"])],
+    'scale_leggings': [(4, 2, ["LLLLLLL", "EDEDEDE", "LLLLLLL", "DED.DED"]), (4, 6, ["LL"]), (10, 6, ["LL"]), (4, 7, ["ED"]), (10, 7, ["DE"])],
+    'scale_waders': [(3, 5, ["VV"]), (11, 5, ["VV"]), (3, 8, ["Vv"]), (11, 8, ["vV"]), (2, 11, ["PPP"]), (10, 11, ["PPP"])],
 }
 
 PALETTES = {
@@ -562,6 +760,8 @@ PALETTES = {
     'rust': dict(A=(128, 120, 120), B=(96, 88, 88), C=(62, 56, 58), R=(140, 84, 50), L=(150, 148, 150), D=(62, 56, 58)),
     'chaplain': dict(A=ROBE_L, B=ROBE, C=ROBE_D, G=GOLD, g=GOLD_D, W=(172, 164, 150)),
     'vigil': dict(A=LINEN_L, B=LINEN, C=LINEN_D, N=THREAD, n=THREAD_D, R=shade(LINEN_D, 0.78)),
+    'mason': dict(A=FELT_L, B=FELT, C=FELT_D, L=APRON, l=APRON_D, P=APRON_L, W=DUST, S=STEEL),
+    'scale': dict(A=HIDE_L, B=HIDE, C=HIDE_D, L=BONE_L, E=BONE, D=BONE_D, V=WITHE, v=shade(WITHE, 0.72), P=(36, 36, 32)),
 }
 # pieces whose base colours differ from the suit's
 PIECE_PALETTE = {
@@ -569,6 +769,7 @@ PIECE_PALETTE = {
     'guard_leggings': dict(A=shade(HOSE, 1.15), B=HOSE, C=HOSE_D),
     'guard_boots': dict(A=shade(LEATHER, 1.25), B=LEATHER, C=LEATHER_D),
     'chaplain_shoes': dict(A=(64, 56, 62), B=BLACK, C=(22, 18, 22)),
+    'mason_boots': dict(A=APRON_L, B=APRON, C=APRON_D),
 }
 
 
@@ -710,7 +911,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         sheet(shots, 6).save(sys.argv[1])
         cell = 104
-        out = Image.new('RGB', (4 * cell + 8, 6 * cell + 8), (198, 198, 198))
+        out = Image.new('RGB', (4 * cell + 8, ((len(made) + 3) // 4) * cell + 8), (198, 198, 198))
         for i, name in enumerate(made):
             tile = Image.new('RGBA', (96, 96), (139, 139, 139, 255))
             tile.alpha_composite(made[name].img.resize((96, 96), 0))

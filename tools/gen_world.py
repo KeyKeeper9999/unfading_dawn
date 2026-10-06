@@ -510,7 +510,7 @@ def views(w):
 
 
 FOREDAWN = 22600                    # the hour of the Firwood: see PlaceNameBlock.FOREDAWN
-FOREDAWN_TRIED = (22200, 22900, 23300)
+FOREDAWN_TRIED = ()                 # (22200: no glow at all; 22900: the sun is on the horizon - that is the shore's hour, not this one's)
 MURK = 6000                         # the hour of the Mire: see PlaceNameBlock.MURK
 MURK_TRIED = ()
 
@@ -591,7 +591,7 @@ if __name__ == '__main__':
                                 ('stone_eater', (31, GY - 10, 488), (39, GY - 10, 477)),
                                 ('wallower', (gen_swamp.WEIR[0] - 9, GY + 4, gen_swamp.WEIR[1] + 3), (gen_swamp.WEIR[0], GY + 2, gen_swamp.WEIR[1])),
                                 ('weeping_mother', (gen_swamp.ISLE[0] + 2, GY + 5, gen_swamp.ISLE[1] - 10), (gen_swamp.ISLE[0], GY + 4, gen_swamp.ISLE[1])),
-                                ('shatun', (gen_skete.DEN[0] + 2, GY + 4, gen_skete.DEN[1] + 11), (gen_skete.DEN[0], GY + 2, gen_skete.DEN[1] - 6)),
+                                ('shatun', (gen_skete.DEN[0] - 3, GY + 4, gen_skete.DEN[1] + 11), (gen_skete.DEN[0], GY + 2, gen_skete.DEN[1] - 6)),
                                 ('elder', (gen_skete.TENT[0] + 1, GY + 4, gen_skete.TENT[1] - 9), (gen_skete.TENT[0], GY + 3, gen_skete.TENT[1] + 4))):
             f.write(f'near_the_{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')

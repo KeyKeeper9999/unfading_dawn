@@ -63,6 +63,8 @@ public final class SoulMechanics {
     /** Bosses reward every player this close. */
     private static final double BOSS_REWARD_RANGE = 48.0;
     private static final Identifier OVERBURDENED = Dushi.id("overburdened");
+    /** One for every number of pieces of the scale coat that can be worn: at most one of them is on a player. */
+    private static final Identifier[] WADING = {Dushi.id("wading_1"), Dushi.id("wading_2"), Dushi.id("wading_3"), Dushi.id("wading_4")};
 
     private SoulMechanics() {}
 
@@ -303,6 +305,7 @@ public final class SoulMechanics {
         if (player instanceof ServerPlayer serverPlayer) {
             if (player.tickCount % 10 == 0) {
                 weighDown(serverPlayer);
+                wade(serverPlayer);
             }
             ground(serverPlayer, soul);
             if (player.tickCount % 10 == 0) {
@@ -390,6 +393,24 @@ public final class SoulMechanics {
         }
     }
 
+    /** The scales of the Mire's pike: with every piece worn, water holds the legs less. */
+    static void wade(ServerPlayer player) {
+        AttributeInstance water = player.getAttribute(Attributes.WATER_MOVEMENT_EFFICIENCY);
+        if (water == null) {
+            return;
+        }
+        int worn = plays(player) ? Gear.worn(player, ArmorSet.SCALE) : 0;
+        for (int pieces = 1; pieces <= WADING.length; pieces++) {
+            Identifier id = WADING[pieces - 1];
+            if ((pieces == worn) != water.hasModifier(id)) {
+                water.removeModifier(id);
+                if (pieces == worn) {
+                    water.addTransientModifier(new AttributeModifier(id, ArmorSet.SCALE.bonus * pieces, AttributeModifier.Operation.ADD_VALUE));
+                }
+            }
+        }
+    }
+
     /** Every swing at something costs stamina; a swing without any is feeble. */
     @SubscribeEvent
     static void onAttack(AttackEntityEvent event) {
@@ -421,6 +442,10 @@ public final class SoulMechanics {
         // The dead of a harder place hit harder, whatever they hit with.
         if (event.getSource().getEntity() instanceof SoulsMob attacker && attacker.tier() > 0) {
             event.setAmount(event.getAmount() * attacker.damageScale());
+        }
+        // A stonecutter's felt and leather take the worst out of a blast and of rock coming down.
+        if (victim instanceof Player player && (event.getSource().is(DamageTypeTags.IS_EXPLOSION) || SoulsMob.rockfall)) {
+            event.setAmount(event.getAmount() * Gear.blastShare(player));
         }
         // Rolling through a blow.
         if (victim instanceof Player player && PlayerSoul.of(player).rollTicks > Net.ROLL_TICKS - Gear.burden(player).safeTicks

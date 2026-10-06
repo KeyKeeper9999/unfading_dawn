@@ -260,6 +260,42 @@ WEAPON_ART = {
         "..oLlo..........",
         ".oMlo...........",
         ".ooo............"],
+    # a stonecutter's hammer: a square head of iron, one face flat for the chisel, the other drawn to an edge
+    'stone_hammer': [
+        "......ooo.......",
+        ".....oSSso......",
+        "....oSSssdo.....",
+        "....oSssddDo....",
+        ".....osssddDo...",
+        "......osMddDDo..",
+        ".......oWdddDDo.",
+        "......oWwodDDo..",
+        ".....oWwo.oDo...",
+        "....oWwo...o....",
+        "...oWwo.........",
+        "..oWwo..........",
+        ".oLwo...........",
+        "oLlo............",
+        ".oo.............",
+        "................"],
+    # a fisher's knife: a long narrow blade ground thin, a grip of bone with a ring for the cord
+    'fish_knife': [
+        "................",
+        "................",
+        "............oo..",
+        "...........oSo..",
+        "..........oSso..",
+        ".........oSsdo..",
+        "........oSsdo...",
+        ".......oSsdo....",
+        "......oSsdo.....",
+        ".....oosdo......",
+        "....oCcoo.......",
+        "...oCcko........",
+        "..oCcko.........",
+        ".oMcko..........",
+        ".oMoo...........",
+        "..o............."],
 }
 for weapon_name, weapon_rows in WEAPON_ART.items():
     ascii_icon(weapon_name, weapon_rows, handheld=True)

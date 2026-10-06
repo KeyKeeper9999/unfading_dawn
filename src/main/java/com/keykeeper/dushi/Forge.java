@@ -78,9 +78,11 @@ public final class Forge {
             add(list, Dushi.CENSER_FLAIL, 0, new Part(Dushi.CHAPLAIN_SOUL, 1), scrap(6));
             // the quarry's iron
             add(list, Dushi.QUARRY_PICK, 600, new Part(Dushi.IRON_WEDGE, 3), scrap(3));
+            add(list, Dushi.STONE_HAMMER, 600, new Part(Dushi.IRON_WEDGE, 2), scrap(4));
             add(list, Dushi.GREAT_MAUL, 0, new Part(Dushi.TASKMASTER_SOUL, 1), new Part(Dushi.IRON_WEDGE, 6));
             add(list, Dushi.EATER_CLAW, 0, new Part(Dushi.STONE_EATER_SOUL, 1), new Part(Dushi.IRON_WEDGE, 2));
             // what the Mire grows
+            add(list, Dushi.FISH_KNIFE, 600, new Part(Dushi.BONE_SCALE, 2), scrap(2));
             add(list, Dushi.BOAT_HOOK, 700, new Part(Dushi.WITHE, 3), scrap(3));
             add(list, Dushi.WALLOWER_FANG, 0, new Part(Dushi.WALLOWER_SOUL, 1), new Part(Dushi.BONE_SCALE, 4));
             add(list, Dushi.WITHE_SCOURGE, 0, new Part(Dushi.MOTHER_SOUL, 1), new Part(Dushi.WITHE, 6));
@@ -110,6 +112,14 @@ public final class Forge {
             }
             for (int piece = 0; piece < 4; piece++) {
                 add(list, ArmorSet.CHAPLAIN.pieces().get(piece), 150 * shape[piece], cloth(shape[piece] + 2), new Part(Dushi.NAMELESS_SOUL, 1));
+            }
+            // a stonecutter's felt and leather: cloth, and the iron of his trade for the caps and the nails
+            for (int piece = 0; piece < 4; piece++) {
+                add(list, ArmorSet.MASON.pieces().get(piece), 200 * shape[piece], cloth(shape[piece] + 2), new Part(Dushi.IRON_WEDGE, 1));
+            }
+            // the fishers' coat: the pike's scales, bound with withe
+            for (int piece = 0; piece < 4; piece++) {
+                add(list, ArmorSet.SCALE.pieces().get(piece), 220 * shape[piece], new Part(Dushi.BONE_SCALE, shape[piece] + 1), new Part(Dushi.WITHE, 1));
             }
             // the white linen of the Unsleeping, stiffened with their wax
             for (int piece = 0; piece < 4; piece++) {

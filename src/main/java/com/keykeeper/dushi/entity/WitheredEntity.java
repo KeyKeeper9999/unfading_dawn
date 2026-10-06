@@ -608,16 +608,21 @@ public class WitheredEntity extends SoulsMob {
                 this.leave(level, Dushi.RUST_SCRAP.get(), 0, 2);
                 this.leaveMaybe(level, Dushi.IRON_WEDGE.get(), 0.3F);
                 this.leaveMaybe(level, Dushi.NAMELESS_SOUL.get(), 0.1F);
+                this.leavePiece(level, ArmorSet.MASON, 0.06F);
+                this.leaveMaybe(level, Dushi.STONE_HAMMER.get(), 0.03F);
             }
             case BARROWMAN -> {
                 this.leave(level, Dushi.RUST_SCRAP.get(), 1, 2);
                 this.leaveMaybe(level, Dushi.IRON_WEDGE.get(), 0.35F);
                 this.leaveMaybe(level, Dushi.GREAT_SOUL.get(), 0.06F);
+                this.leavePiece(level, ArmorSet.MASON, 0.06F);
             }
             case DROWNED -> {
                 this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 2);
                 this.leaveMaybe(level, Dushi.NAMELESS_SOUL.get(), 0.15F);
                 this.leaveMaybe(level, Dushi.GREAT_SOUL.get(), 0.04F);
+                this.leavePiece(level, ArmorSet.SCALE, 0.06F);
+                this.leaveMaybe(level, Dushi.FISH_KNIFE.get(), 0.04F);
             }
             case SAPPER -> {
                 this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 2);

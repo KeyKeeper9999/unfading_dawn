@@ -439,9 +439,17 @@ public abstract class SoulsMob extends Monster {
         return this.clock;
     }
 
+    /** True while rock that came down from above is hurting whoever stood under it: a stonecutter's gear knows it (see SoulMechanics). */
+    public static boolean rockfall;
+
     /** A place marked by {@link #strikeLater} is struck: the hurt, and what is seen and heard of it. Rock, unless a kind says otherwise. */
     protected void strikeLands(ServerLevel level, Vec3 at, double radius, float damage, boolean fromAbove) {
-        this.hitAround(level, at, radius, damage, 0.4, this.damageSources().mobAttack(this));
+        rockfall = fromAbove;
+        try {
+            this.hitAround(level, at, radius, damage, 0.4, this.damageSources().mobAttack(this));
+        } finally {
+            rockfall = false;
+        }
         this.rubble(level, at, fromAbove ? 36 : 14, radius * 0.5);
         if (fromAbove) {
             level.playSound(null, at.x, at.y, at.z, Dushi.sound("entity.quarry.rockfall"), this.getSoundSource(), 1.6F, 0.85F + this.random.nextFloat() * 0.3F);

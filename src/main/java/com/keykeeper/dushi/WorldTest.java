@@ -385,6 +385,25 @@ final class WorldTest {
         say(line.toString());
         say("gear: regen in rags x" + rounded(regenIn(player, ArmorSet.PRISONER)) + ", spells in vestments x" + rounded(spellsIn(player))
                 + ", block cost in mail x" + rounded(blockIn(player)));
+        // the stonecutter's gear against a blast, the scale coat against water
+        ArmorSet mason = ArmorSet.MASON;
+        wear(player, mason.piece(0), mason.piece(1), mason.piece(2), mason.piece(3), null, null);
+        float blast = Gear.blastShare(player);
+        ArmorSet scale = ArmorSet.SCALE;
+        var water = net.minecraft.world.entity.ai.attributes.Attributes.WATER_MOVEMENT_EFFICIENCY;
+        wear(player, scale.piece(0), scale.piece(1), null, null, null, null);
+        SoulMechanics.wade(player);
+        double two = player.getAttributeValue(water);
+        wear(player, scale.piece(0), scale.piece(1), scale.piece(2), scale.piece(3), null, null);
+        SoulMechanics.wade(player);
+        double four = player.getAttributeValue(water);
+        wear(player, null, null, null, null, null, null);
+        SoulMechanics.wade(player);
+        double none = player.getAttributeValue(water);
+        boolean gifts = Math.abs(blast - (1.0F - 4 * mason.bonus)) < 1.0E-4 && Gear.blastShare(player) == 1.0F
+                && Math.abs(two - 2 * scale.bonus) < 1.0E-4 && Math.abs(four - 4 * scale.bonus) < 1.0E-4 && none == 0.0;
+        say("gear: of a blast the stonecutter's gear lets through x" + rounded(blast) + "; the water's hold taken off by two pieces of the scale coat "
+                + two + ", by four " + four + ", by none " + none + (gifts ? "" : " FAILED"));
         StringBuilder weapons = new StringBuilder("gear: weapons");
         for (Item item : new Item[] {Items.WOODEN_SWORD, Items.DIAMOND_AXE, Items.IRON_PICKAXE, Items.IRON_SPEAR, Items.MACE, Items.TRIDENT,
                 Dushi.LONGSWORD.get(), Items.STICK}) {

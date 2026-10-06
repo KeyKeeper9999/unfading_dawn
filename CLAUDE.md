@@ -83,7 +83,15 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `MapBuilder` (build only) and `client/MapSelfTest` (build only) - see "The map".
 - `Gear` - what the rules know about any piece of gear, the game's own included: stamina cost, scaling and backstab of
   a weapon (by item tag for vanilla ones), stability of a shield, weight of everything worn or held, and the burden that
-  follows from the weight (it decides the roll). `ArmorSet` - the mod's four suits and the gift of each.
+  follows from the weight (it decides the roll). `ArmorSet` - the mod's seven suits and the gift of each (the prisoner's,
+  the guard's, the rusted plate, the chaplain's, the linen of the Unsleeping, a stonecutter's felt and leather, the
+  Mire's coat of scales). A gift is a function of `Gear` asked where the thing happens (`staminaRegen`, `blockCost`,
+  `drowse`, `blastShare`, `wading`); a blow that must be known for what it is says so while it lands (`SoulsMob.rockfall`).
+- `Charm` + `item/CharmItem` - the charms: nine small things, one to a place, one worn at a time (`PlayerSoul.charm`,
+  kept through death). A charm is put on by using it and the one worn before comes back into the hand; it is taken off at
+  a hearth (`HearthScreen`) and shown beside the flask (`SoulsHud`). What each gives is asked of the enum where the thing
+  happens (`Charm.X.more(player)`, `.less(player)`, `.on(player)`). A new charm is an entry there, an icon, its two texts
+  and a source: a chest of its place (`gen_data.py`), a lord's drop, or the keykeeper.
 - `block/MobMarkBlock` + `MobMarkBlockEntity` - a ring of ash where a mob of a building rises: when a player comes near,
   and again after any rest at a hearth or death within 96 blocks. A slain boss stays slain; a living one goes back and heals.
   A mark has a `tier` (0-3): the same mob with more health, harder blows and more souls (`SoulsMob.TIER_*`), so that a
@@ -113,6 +121,26 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   pushed, and keeps her own list of roots coming up) are the lords. The drowned are a kind of the withered that
   walks the bottom. A mob that lives in water has no `FloatGoal`, is not `isAffectedByFluids` and has the path
   malus of water at 0: it then walks the bottom at its own pace. These share `client/QuarryRenderer` too.
+- `entity/RootEntity` (+ `client/RootModel`, `RootRenderer`, `tools/gen_root.py`) - a root of the Weeping Mother: a thing
+  in the world, not a puff of particles. It is set on the ground under whoever she is after (`RootEntity.ground` looks
+  down for a floor: nothing comes up in the air or over nothing), shows its tips through broken earth for the length of
+  the warning, comes up, strikes once whoever is in its ring and no higher than it reaches, and sinks. She sends them one
+  after another (`ROOTS_EVERY`) and whoever one has thrown is let alone by the next for `ROOT_GRACE` ticks.
+- The Firwood's own (`tools/gen_sect.py`, `gen_waxen.py`, `gen_moth.py`, `gen_shatun.py`, `gen_elder.py`; they share
+  `client/QuarryRenderer`): `UnsleepingEntity` is what the people of the skete have in common. `WakefulEntity` kneels
+  (phase 1) facing the way its mark faces and does not look about: `sees` is the whole rule of its eyes (a cone of 55
+  degrees to ten blocks, five for whoever creeps; it feels a walker within 2.2 at its back), and one struck on his knees
+  wakes those kneeling within `BESIDE` of him. `WakerEntity` looks about like anybody; what he sees he beats his board
+  for (`KNOCK`), and at the third stroke everything of the skete within `HEARD` blocks is up. `SleeperEntity` knows of
+  nobody until they are near, and one leap in a few ends flat on its face (`LUNGE_FALL`, a move of its own). `WaxenEntity`
+  holds a rope of hot wax on its prey and bursts when killed; `SleepMothEntity` lies on the ground like a rag until
+  somebody comes near, then hangs over them and sheds dust (`Gear.drowse`: darkness and slowness, shortened by the
+  linen of the Unsleeping). The lords: `ShatunEntity`, a bear (its charge cannot turn and ends in `CRASH` against
+  anything that does not give - for as long as that lasts its hide lets everything through), and `ElderEntity`, who
+  calls the kneeling round his tent's wall and, hurt enough, falls asleep on his feet (phase 2: other moves, and
+  `DREAM`, which is rolled through like a blow). `SoulsMob.struck` is what a blow does besides hurting (setting alight,
+  slowing); `strikeLands`/`strikeComing` are how a marked place is struck and shown, for a kind that drops something
+  other than rock.
 - `block/ShallowsBlock` (`shallows`) - a hand's depth of water over a floor, which is a floor: no fluid in it, so
   nobody is slowed and the roll works. `block/SludgeBlock` (`sludge`) lies some seconds where a clot burst, slows
   whoever is not of the dead (`makeStuckInBlock`: the roll too), and leaves the shallows again if it lay in them.
@@ -124,8 +152,9 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   - `gen_withered.py` (ten kinds on one model: prisoner, guard, archer, acolyte, the town's townsman, butcher and
     watchman, the quarry's digger, barrowman and sapper), `gen_knight.py`, `gen_keykeeper.py`, `gen_overseer.py`,
     `gen_chaplain.py`, `gen_hound.py`, `gen_gravedigger.py`, `gen_crawler.py`, `gen_unhewn.py`, `gen_taskmaster.py`,
-    `gen_stone_eater.py`, `gen_pike.py`, `gen_lanky.py`, `gen_wisp.py`, `gen_wallower.py`, `gen_mother.py` - the mobs
-    (the withered are eleven kinds now: the Mire's drowned too);
+    `gen_stone_eater.py`, `gen_pike.py`, `gen_lanky.py`, `gen_wisp.py`, `gen_wallower.py`, `gen_mother.py`, `gen_root.py`,
+    `gen_sect.py` (the wakeful, the waker and the sleeper on one model), `gen_waxen.py`, `gen_moth.py`, `gen_shatun.py`,
+    `gen_elder.py` - the mobs (the withered are eleven kinds now: the Mire's drowned too);
   - `gen_items.py` (icons), `gen_shields.py` and `gen_blocks.py` (box models), `gen_sounds.py`, `gen_lang.py` (all texts);
   - `gen_armor.py` - worn textures (64x32, the game's armour layout), icons and equipment definitions of the suits;
   - `gen_structures.py` - the buildings, block by block, with top-down and isometric previews; bars, fences and walls
@@ -134,7 +163,7 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   - `check_assets.py` - checks that everything registered has its files and names;
   - `gen_world.py` - the map (not run by `build_assets.sh`: `PYTHONPATH=tools python3 tools/gen_world.py [preview dir]`);
     it puts together the land, `gen_village.py` (the Dead Borough), `gen_map.py` (the High Stockade),
-    `gen_quarry.py` (the White Pit) and `gen_swamp.py` (the Mire);
+    `gen_quarry.py` (the White Pit), `gen_swamp.py` (the Mire) and `gen_skete.py` (the Black Firwood);
   - `balance.py` - the sums of the map's progression (`PYTHONPATH=tools python3 tools/balance.py`).
 
   Never edit generated textures, models, `sounds.json` or the lang files by hand: change the generator and run it.
@@ -233,7 +262,20 @@ into it (`tools/gen_world.py`); the country outside the plan is the flat forest 
   Water to the knee slows and stops the roll, deep water is swum: the roads are what a player keeps to, and what
   lives in the water waits beside them. Left for later: a barred way out of the grove.
 
-`gen_world.py` writes `map/high_stockade.plan.txt` (the same format as the buildings; about 2.3 million blocks),
+- The Black Firwood (`tools/gen_skete.py`), a hollow of the plateau north-east of the town full of old firs, at an hour
+  of its own: the one before a dawn that does not come (`PlaceNameBlock.FOREDAWN`: the sky has begun to pale over the
+  trees and there is no sun). No fog and no biome of its own: its dark is the firs'. It is entered by the Wood Wicket, a
+  grate in the cliff of the yard between the road tunnel and the town's north gate (`locked_gate[lock=firwood]`); its
+  key lies in the grove behind the Weeping Mother. Wicket -> a passage that turns twice (the clock is turned in the leg
+  from which neither mouth is seen) -> the old fir (hearth) -> the track through the wood (moths, sleepers, a glade of
+  stakes to the west, a wayside shrine to the east) -> the Shatun's Hollow (the Shatun, and dead firs to put between him
+  and oneself; a seal behind him) -> the skete's edge (hearth, anvil) -> the skete: white tents round the Vigil, three
+  rows of the wakeful on their knees with their backs to the way in and their faces to the east, wakers on their rounds,
+  the wax yard -> the White Tent (the Elder; a seal behind him) -> the candle store (hearth, anvil). The skete is gone
+  round behind the tents, or crept through, or fought all at once. Left for later: a barred way east out of the
+  court behind the White Tent.
+
+`gen_world.py` writes `map/high_stockade.plan.txt` (the same format as the buildings; about 3.7 million blocks),
 `map/views.txt`, `map/light.txt` and `map/biomes.txt` (the boxes of the world that get the Mire's biome:
 `MapBuilder.biomes` fills them, and says in `map.log` how many cells it changed). The plan's origin is the place where the newcomer wakes; the game puts it at
 0, -46, 0 and turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the
@@ -299,12 +341,18 @@ Things learnt the hard way:
   1024). A lord who needs more has a hide (`HIDE` in the entity: the share of a blow that gets through), and
   `balance.py` counts it.
 - A willow is a stair too: nothing of one that can be stood on is lower than five blocks over the ground.
-- Time does not move; the hours (`PlaceNameBlock.DUSK`, `NIGHT`, `MURK`) were chosen by looking at pictures. `time set` is
-  for the whole world: with several players in different places the last threshold crossed wins.
+- Time does not move; the hours (`PlaceNameBlock.DUSK`, `NIGHT`, `MURK`, `FOREDAWN`) were chosen by looking at pictures
+  (`*_TRIED` in `gen_world.py` takes the same views at other hours). `time set` is for the whole world: with several
+  players in different places the last threshold crossed wins. Before sunrise the game lights the edge of the sky from
+  about 22500 and shows the sun itself from about 22900: 22600 is a glow with no sun in it, 22200 is plain night.
+- A camera set down in a wood looks at bark, a lamp or the back of a tent: the views of such a place stand on its ways
+  (the cells a place keeps free), and a lord is not looked at across the post in the middle of his hollow.
+- A lord whose charge ends against what does not give needs something in his arena that does not give: the Shatun's
+  hollow was a bare ring, with nothing but its walls to lead him into.
 
 Balance (see `tools/balance.py`): one clearing of the town brings a player to about level 10-12 before the Gravedigger;
 the lower fortress to about 18 before the Overseer; the upper city to about 29 before the Chaplain; the quarry to
 about 35 before the Taskmaster and 38 before the Stone-Eater; the Mire to about 44 before the Wallower and 47 before
-the Weeping Mother. The fortress was
+the Weeping Mother; the Firwood to about 51 before the Shatun and 54 before the Elder. The fortress was
 first tuned for a newcomer; its tiers make up for the levels a player now brings to it. When mobs, weapons, tiers or
 the map change, run it again.

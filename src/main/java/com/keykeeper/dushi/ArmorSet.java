@@ -22,7 +22,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * The five suits of armour of the mod. Besides protection every suit has a weight (see {@link Gear}) and a small gift of its
+ * The seven suits of armour of the mod. Besides protection every suit has a weight (see {@link Gear}) and a small gift of its
  * own that grows with every piece worn.
  */
 public enum ArmorSet {
@@ -40,7 +40,19 @@ public enum ArmorSet {
             12, new int[] {1, 3, 2, 1}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_LEATHER, "repairs_cloth", Rarity.UNCOMMON),
     /** The white linen of the Unsleeping: light, a little better than rags; sleep and murk let go of the wearer sooner. */
     VIGIL("vigil", new String[] {"vigil_cowl", "vigil_shift", "vigil_skirt", "vigil_wraps"}, 11.0F, 0.2F,
-            14, new int[] {2, 4, 3, 1}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_LEATHER, "repairs_cloth", Rarity.UNCOMMON);
+            14, new int[] {2, 4, 3, 1}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_LEATHER, "repairs_cloth", Rarity.UNCOMMON),
+    /**
+     * A stonecutter's working gear, quilted felt under leather: nearly as much protection as mail and heavier than it; a
+     * blast, or rock coming down, does less to the wearer.
+     */
+    MASON("mason", new String[] {"mason_cap", "mason_apron", "mason_breeches", "mason_boots"}, 32.0F, 0.12F,
+            15, new int[] {2, 6, 4, 2}, 0.0F, 0.05F, SoundEvents.ARMOR_EQUIP_LEATHER, "repairs_cloth", Rarity.UNCOMMON),
+    /**
+     * The Mire's fishers' coat of pike hide with the bone scales sewn on: as much protection as mail at two thirds of the
+     * weight; water holds the wearer's legs less.
+     */
+    SCALE("scale", new String[] {"scale_hood", "scale_coat", "scale_leggings", "scale_waders"}, 17.0F, 0.25F,
+            15, new int[] {2, 5, 3, 2}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_CHAIN, "repairs_scrap", Rarity.UNCOMMON);
 
     public static final EquipmentSlot[] SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
     private static final ArmorType[] TYPES = {ArmorType.HELMET, ArmorType.CHESTPLATE, ArmorType.LEGGINGS, ArmorType.BOOTS};

@@ -264,11 +264,15 @@ public class Dushi {
     public static final DeferredItem<WeaponItem> QUARRY_PICK = weapon("quarry_pick", 9.0F, 1.1F, 0.25F, 22.0F, 0.9F, 0.2F, 1.5F, 500, Rarity.UNCOMMON);
     public static final DeferredItem<WeaponItem> GREAT_MAUL = weapon("great_maul", 16.0F, 0.65F, 1.0F, 42.0F, 1.0F, 0.0F, 1.5F, 900, Rarity.EPIC);
     public static final DeferredItem<WeaponItem> EATER_CLAW = weapon("eater_claw", 9.5F, 1.9F, 0.0F, 14.0F, 0.2F, 0.9F, 2.0F, 800, Rarity.EPIC);
+    /** A stonecutter's own hammer, for one hand: what the heads of the Founder were roughed out with. */
+    public static final DeferredItem<WeaponItem> STONE_HAMMER = weapon("stone_hammer", 9.5F, 1.15F, 0.0F, 20.0F, 1.0F, 0.0F, 1.5F, 500, Rarity.UNCOMMON);
 
     /** The Mire: a ferryman's boat hook, a tooth of the Wallower on a grip of its hide, and a scourge plaited of the Weeping Mother's withes. */
     public static final DeferredItem<WeaponItem> BOAT_HOOK = weapon("boat_hook", 8.0F, 1.4F, 1.0F, 18.0F, 0.4F, 0.7F, 1.4F, 400, Rarity.UNCOMMON);
     public static final DeferredItem<WeaponItem> WALLOWER_FANG = weapon("wallower_fang", 11.0F, 1.7F, 0.0F, 16.0F, 0.5F, 0.8F, 2.0F, 800, Rarity.EPIC);
     public static final DeferredItem<WeaponItem> WITHE_SCOURGE = weapon("withe_scourge", 9.5F, 1.5F, 1.75F, 20.0F, 0.1F, 1.0F, 1.5F, 800, Rarity.EPIC);
+    /** A fisher's knife, long and narrow, for opening what was caught: quick, and at its best in a back. */
+    public static final DeferredItem<WeaponItem> FISH_KNIFE = weapon("fish_knife", 6.5F, 2.5F, -0.5F, 8.0F, 0.1F, 0.9F, 3.0F, 400, Rarity.UNCOMMON);
 
     /**
      * The Black Firwood: the staff a wakeful one holds his candle on, the mallet a waker beats his board with, the spear

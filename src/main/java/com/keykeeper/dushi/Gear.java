@@ -227,6 +227,19 @@ public final class Gear {
         return (1.0F - ArmorSet.GUARD.bonus * worn(player, ArmorSet.GUARD)) * Charm.WEDGE_CORD.less(player);
     }
 
+    /** The share of a blast, or of rock coming down, that reaches somebody in a stonecutter's felt and leather. */
+    public static float blastShare(Player player) {
+        return 1.0F - ArmorSet.MASON.bonus * worn(player, ArmorSet.MASON);
+    }
+
+    /**
+     * How much of the water's hold the scales of the Mire's pike take off the wearer's legs (the game's own measure: at 1
+     * water is walked through as if it were not there).
+     */
+    public static float wading(Player player) {
+        return ArmorSet.SCALE.bonus * worn(player, ArmorSet.SCALE);
+    }
+
     /** For how many seconds the Elder's great candle sets alight what it strikes. */
     public static final float CANDLE_BURNS = 4.0F;
 

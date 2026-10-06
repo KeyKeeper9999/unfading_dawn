@@ -19,7 +19,7 @@ kinds = re.findall(r'^\s+[A-Z_]+\("(withered_\w+)"', open(f'{J}/entity/WitheredE
 mobs = kinds + ['rust_knight', 'gilded_knight', 'keykeeper', 'overseer', 'chaplain', 'carrion_hound', 'gravedigger', 'blind_crawler', 'unhewn', 'taskmaster',
                'stone_eater', 'bone_pike', 'lanky', 'wisp', 'wallower', 'weeping_mother', 'wakeful', 'waker', 'sleeper', 'waxen', 'sleep_moth', 'shatun', 'elder']
 charms = re.findall(r'^\s+[A-Z_]+\("(\w+)", \d+\)', open(f'{J}/Charm.java').read(), re.M)
-armour = re.findall(r'"((?:prisoner|guard|rust|chaplain|vigil)_\w+)"', open(f'{J}/ArmorSet.java').read())
+armour = re.findall(r'"((?:prisoner|guard|rust|chaplain|vigil|mason|scale)_\w+)"', open(f'{J}/ArmorSet.java').read())
 items |= set(armour)
 items |= set(charms) | set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate', 'mob_mark', 'forge'}
 blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name', 'shard_heap', 'locked_gate', 'shallows', 'sludge'}

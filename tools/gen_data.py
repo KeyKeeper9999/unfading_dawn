@@ -153,17 +153,17 @@ MAP_CHESTS = {
     'treasury': [(GREAT, 3), (M + 'quarry_key', 1)],          # the key of the Quarrymen's Gate: the way to the White Pit
     'treasury_arms': [(M + 'chaplain_skirt', 1), (M + 'chaplain_shoes', 1), (M + 'tower_shield', 1)],
     # the White Pit (tools/gen_quarry.py)
-    'quarry_shed': [(M + 'powder_pot', 4), (M + 'iron_wedge', 2), (SCRAP, 3)],
+    'quarry_shed': [(M + 'powder_pot', 4), (M + 'iron_wedge', 2), (SCRAP, 3), (M + 'stone_hammer', 1)],
     'quarry_field': [(M + 'iron_wedge', 3), (SOUL, 2), (M + 'return_ember', 1)],
     'quarry_shop': [(GREAT, 1), (M + 'iron_wedge', 2), (CLOTH, 4), (M + 'wedge_cord', 1)],
     'quarry_eyes': [(GREAT, 2), (M + 'powder_pot', 3)],
     'quarry_rim': [(M + 'powder_pot', 4), (M + 'return_ember', 2), (SOUL, 2)],
     'quarry_workings': [(GREAT, 2), (M + 'iron_wedge', 3)],
-    'quarry_stall': [(GREAT, 1), (M + 'rust_helm', 1), (SCRAP, 6)],
+    'quarry_stall': [(GREAT, 1), (M + 'rust_helm', 1), (SCRAP, 6), (M + 'mason_apron', 1)],                # a stonecutter's peg: what hung on it
     'quarry_breach': [(GREAT, 4), (M + 'return_ember', 3), (M + 'iron_wedge', 4), (M + 'mire_key', 1)],      # the key of the Mire Gate
     # the Mire (tools/gen_swamp.py)
-    'mire_end': [(GREAT, 1), (M + 'tar_pot', 4), (CLOTH, 4)],
-    'mire_loft': [(GREAT, 2), (M + 'return_ember', 2), (M + 'withe', 2)],
+    'mire_end': [(GREAT, 1), (M + 'tar_pot', 4), (CLOTH, 4), (M + 'fish_knife', 1)],
+    'mire_loft': [(GREAT, 2), (M + 'return_ember', 2), (M + 'withe', 2), (M + 'scale_coat', 1)],
     'mire_gallows': [(GREAT, 2), (SCRAP, 6), (M + 'withe', 3)],
     'mire_stage': [(M + 'boat_hook', 1), (M + 'bone_scale', 3), (M + 'return_ember', 1), (M + 'pike_tooth', 1)],      # the fishers' stage: what they fished with
     'mire_cove': [(GREAT, 3), (M + 'heavy_soul_shard', 1), (M + 'bone_scale', 2)],
@@ -189,10 +189,10 @@ TAGS = {
     f'{MOD}/tags/item/repairs_scrap': [SCRAP],
     # where the buildings may stand: any land of the overworld (water and cliffs are ruled out by the structure itself)
     f'{MOD}/tags/worldgen/biome/has_structure': ['#minecraft:is_overworld'],
-    'minecraft/tags/item/head_armor': [M + n for n in ('prisoner_hood', 'guard_hat', 'rust_helm', 'chaplain_mitre', 'vigil_cowl')],
-    'minecraft/tags/item/chest_armor': [M + n for n in ('prisoner_rags', 'guard_hauberk', 'rust_cuirass', 'chaplain_cassock', 'vigil_shift')],
-    'minecraft/tags/item/leg_armor': [M + n for n in ('prisoner_breeches', 'guard_leggings', 'rust_tassets', 'chaplain_skirt', 'vigil_skirt')],
-    'minecraft/tags/item/foot_armor': [M + n for n in ('prisoner_wraps', 'guard_boots', 'rust_sabatons', 'chaplain_shoes', 'vigil_wraps')],
+    'minecraft/tags/item/head_armor': [M + n for n in ('prisoner_hood', 'guard_hat', 'rust_helm', 'chaplain_mitre', 'vigil_cowl', 'mason_cap', 'scale_hood')],
+    'minecraft/tags/item/chest_armor': [M + n for n in ('prisoner_rags', 'guard_hauberk', 'rust_cuirass', 'chaplain_cassock', 'vigil_shift', 'mason_apron', 'scale_coat')],
+    'minecraft/tags/item/leg_armor': [M + n for n in ('prisoner_breeches', 'guard_leggings', 'rust_tassets', 'chaplain_skirt', 'vigil_skirt', 'mason_breeches', 'scale_leggings')],
+    'minecraft/tags/item/foot_armor': [M + n for n in ('prisoner_wraps', 'guard_boots', 'rust_sabatons', 'chaplain_shoes', 'vigil_wraps', 'mason_boots', 'scale_waders')],
 }
 
 

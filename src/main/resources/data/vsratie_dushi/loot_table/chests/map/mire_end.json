@@ -50,6 +50,16 @@
           ]
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:fish_knife",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

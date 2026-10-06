@@ -68,6 +68,11 @@ for key, ru, en in (
         ('shatun_soul', 'Душа Шатуна', 'Soul of the Shatun'), ('elder_soul', 'Душа Старца', 'Soul of the Elder'),
         ('vigil_cowl', 'Куколь неусыпающего', 'Cowl of the Unsleeping'), ('vigil_shift', 'Рубаха неусыпающего', 'Shift of the Unsleeping'),
         ('vigil_skirt', 'Подол неусыпающего', 'Skirt of the Unsleeping'), ('vigil_wraps', 'Онучи неусыпающего', 'Footwraps of the Unsleeping'),
+        ('stone_hammer', 'Молот каменотёса', "Stonecutter's Hammer"), ('fish_knife', 'Рыбацкий нож', "Fisher's Knife"),
+        ('mason_cap', 'Шапка каменотёса', "Stonecutter's Cap"), ('mason_apron', 'Фартук каменотёса', "Stonecutter's Apron"),
+        ('mason_breeches', 'Порты каменотёса', "Stonecutter's Breeches"), ('mason_boots', 'Сапоги каменотёса', "Stonecutter's Boots"),
+        ('scale_hood', 'Чешуйчатый куколь', 'Scale Hood'), ('scale_coat', 'Чешуйчатая рубаха', 'Scale Coat'),
+        ('scale_leggings', 'Чешуйчатые порты', 'Scale Leggings'), ('scale_waders', 'Бродни', 'Waders'),
         ('tattered_cloth', 'Ветошь', 'Tattered Cloth'), ('rust_scrap', 'Ржавый лом', 'Rust Scrap')):
     t(f'item.{M}.{key}', ru, en)
 
@@ -142,6 +147,8 @@ t(f'tooltip.{M}.set.prisoner', 'Силы восстанавливаются бы
 t(f'tooltip.{M}.set.guard', 'Блок щитом стоит меньше сил: −%s%% за вещь', 'Blocking costs less stamina: −%s%% per piece')
 t(f'tooltip.{M}.set.chaplain', 'Заклинания сильнее: +%s%% за вещь', 'Spells are stronger: +%s%% per piece')
 t(f'tooltip.{M}.set.vigil', 'Сон и морок отпускают раньше: −%s%% за вещь', 'Sleep and murk let go sooner: −%s%% per piece')
+t(f'tooltip.{M}.set.mason', 'Взрыв и падающий камень бьют слабее: −%s%% за вещь', 'Blasts and falling rock hurt less: −%s%% per piece')
+t(f'tooltip.{M}.set.scale', 'Вода меньше держит ноги: −%s%% за вещь', 'Water holds the legs less: −%s%% per piece')
 t(f'tooltip.{M}.great_candle', 'Горит: кого ударит, тот в огне %s с', 'It is alight: what it strikes burns for %s s')
 
 t(f'spell.{M}.soul_shard.desc', 'Быстрый сгусток бледного света', 'A quick bolt of pale light')

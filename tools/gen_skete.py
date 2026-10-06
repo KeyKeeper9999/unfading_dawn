@@ -207,8 +207,7 @@ class Skete:
         b, g = self.b, self.g
         if (x, z) not in self.mask or not all(b.free(x, g + h, z) for h in (1, 2, 3, 4)):
             return
-        b.set(x, g + 1, z, BARE % 'y')
-        b.fill(x, g + 2, z, x, g + 3, z, POLE)
+        b.fill(x, g + 1, z, x, g + 3, z, POLE)
         b.set(x, g + 4, z, FLOOR_LANTERN)
         self.keep(x - 1, z - 1, x + 1, z + 1)
         self.lamps.append((x, z))
@@ -425,6 +424,20 @@ class Skete:
 
     # ------------------------------------------------------------------ the Shatun's hollow
 
+    def snag(self, x, z, height, bough=None):
+        """A dead fir with nothing left on it: clawed white as high as he reaches, broken off above. It is what a charge
+        of his ends against - and nothing of it can be climbed."""
+        b, g = self.b, self.g
+        if (x, z) not in self.mask or not all(b.free(x, g + h, z) for h in range(1, height + 2)):
+            raise ValueError(f'no room for a snag at {(x, z)}')
+        for h in range(1, height + 1):
+            b.set(x, g + h, z, (BARE if h <= 3 else LOG) % 'y')
+        if bough:                                                # the stub of a bough, out of anybody's reach
+            dx, dz = bough
+            if b.free(x + dx, g + height - 1, z + dz):
+                b.set(x + dx, g + height - 1, z + dz, LOG % ('x' if dx else 'z'))
+        self.keep(x - 1, z - 1, x + 1, z + 1)
+
     def den(self):
         """A round hollow shut in by the cliff: the post he was chained to in the middle of it, the chain lying where
         it broke; behind, a nook under a fir that fell across the cleft. In from the south, out to the east."""
@@ -454,6 +467,9 @@ class Skete:
         for i in range(1, 6):
             if hsh(i, 0, 0, 850) < 0.8:
                 b.set(cx - 1 - i, g + 1, cz + 2 + (i // 3), CHAIN % 'x')
+        # dead firs he has clawed bare, standing where they died: to be put between him and oneself
+        for (dx, dz), tall, bough in (((5, 7), 7, (1, 0)), ((-5, 7), 9, (0, -1)), ((-8, -3), 6, None), ((7, -4), 8, (-1, 0))):
+            self.snag(cx + dx, cz + dz, tall, bough)
         # what he has left lying
         for x, z in ((cx - 9, cz - 6), (cx + 8, cz + 7), (cx + 10, cz - 5), (cx - 6, cz + 9)):
             b.set(x, g + 1, z, 'minecraft:bone_block[axis=%s]' % ('x' if (x + z) % 2 else 'z'))
@@ -852,16 +868,16 @@ class Skete:
             ('firwood_track', (ox + 6, g + 2.6, oz - 4), (306, g + 3, 374)),
             ('firwood_under_the_firs', (312, g + 2.6, 366), (324, g + 5, 352)),
             ('firwood_stakes', (316, g + 2.6, 356), (STAKES[0], g + 2.6, STAKES[1])),
-            ('firwood_shrine', (SHRINE[0] - 2, g + 2.6, SHRINE[1] - 9), (SHRINE[0] + 0.5, g + 2, SHRINE[1] + 2)),
+            ('firwood_shrine', (SHRINE[0] - 2.5, g + 2.6, SHRINE[1] - 4.5), (SHRINE[0] + 1, g + 2, SHRINE[1] + 2)),
             ('firwood_from_above', (296, g + 46, 396), (326, g + 2, 352)),
             ('firwood_den_door', (dx + 0.5, g + 2.6, dz + DEN_R + 12), (dx + 0.5, g + 3, dz + DEN_R)),
-            ('firwood_den', (dx + 0.5, g + 2.6, dz + DEN_R - 3), (dx + 0.5, g + 3, dz - 8)),
+            ('firwood_den', (dx - 2.5, g + 2.6, dz + DEN_R - 3), (dx + 0.5, g + 2.5, dz - 6)),
             ('firwood_den_from_above', (dx - 16, g + 24, dz + 18), (dx, g + 1, dz)),
-            ('skete_edge', (EDGE[0] + 5, g + 2.6, EDGE[1] - 8), (EDGE[0] - 4, g + 2, EDGE[1] - 1)),
-            ('skete_vigil_from_behind', (CAMP[0] - 8, g + 2.6, 333), (CAMP[0], g + 2, FIELD_Z[1])),
+            ('skete_edge', (BEYOND[1][0][0] + 0.5, g + 2.6, BEYOND[1][0][1] + 0.5), (EDGE[0] - 4, g + 2, EDGE[1] - 1)),
+            ('skete_vigil_from_behind', (CAMP[0] + 0.5, g + 2.6, 342.5), (CAMP[0] + 0.5, g + 1.5, FIELD_Z[2])),
             ('skete_vigil_from_the_side', (FIELD_X[0] - 9, g + 2.6, FIELD_Z[1] + 2), (FIELD_X[-1], g + 2, FIELD_Z[1])),
             ('skete_vigil_faces', (ALTAR[0] + 0.5, g + 2.6, ALTAR[1] + 5), (ALTAR[0] + 0.5, g + 2, FIELD_Z[0])),
-            ('skete_west_lane', (396, g + 2.6, 340), (397, g + 3, 388)),
+            ('skete_west_lane', (398.5, g + 2.6, 345.5), (397.5, g + 3, 388)),
             ('skete_wax_yard', (YARD[0] - 9, g + 2.6, YARD[1] - 1), (YARD[0] + 4, g + 2, YARD[1])),
             ('skete_from_above', (CAMP[0] - 34, g + 40, 326), (CAMP[0], g + 1, 372)),
             ('skete_white_tent', (cx + 0.5, g + 2.6, ALTAR[1] + 6), (cx + 0.5, g + 9, cz - TENT_R)),
