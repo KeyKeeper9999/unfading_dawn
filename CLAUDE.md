@@ -1,6 +1,8 @@
-# Всратые души (vsratie_dushi)
+# The Unfading Dawn (vsratie_dushi)
 
-A souls-like inside Minecraft: NeoForge mod for Minecraft 26.3. The owner writes in Russian; texts exist in Russian and English.
+A souls-like inside Minecraft: NeoForge mod for Minecraft 26.3. The mod is shown as "The Unfading Dawn" (in Russian «Немеркнущий
+рассвет»); `vsratie_dushi` - its first, working name - stays as the mod id, the package and the repository, because every block
+of the saved map is written with it. The owner writes in Russian; texts exist in Russian and English.
 
 The mod is a souls-like "in the spirit of", with its own world, names and designs: it does not copy the characters, bosses,
 items or names of any existing game, and every sound is synthesised from scratch. Keep it that way when adding content.

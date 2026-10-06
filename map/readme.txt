@@ -1,4 +1,4 @@
-ВЫШНИЙ ОСТРОГ - карта для мода «Всратые души» (vsratie_dushi), Minecraft 26.3, NeoForge.
+ВЫШНИЙ ОСТРОГ - карта для мода The Unfading Dawn («Немеркнущий рассвет»; файл vsratie_dushi.jar), Minecraft 26.3, NeoForge.
 
 Как поставить:
   1. Положи vsratie_dushi.jar в папку mods (нужен только NeoForge, других модов не надо).
@@ -20,7 +20,7 @@
 Осколки фляги тлеют в золе там, куда ещё надо дойти, и остаются от хозяев мест.
 Умирая, теряешь только души: вернись за ними.
 
-THE HIGH STOCKADE - a map for the mod "Vsratie Dushi" (vsratie_dushi), Minecraft 26.3, NeoForge.
+THE HIGH STOCKADE - a map for the mod The Unfading Dawn (the file is vsratie_dushi.jar), Minecraft 26.3, NeoForge.
 Put vsratie_dushi.jar into mods, unpack this archive into saves (saves/High_Stockade/level.dat), play in singleplayer.
 The game begins at night in the Dead Borough; the road from it leads through the churchyard to the High Stockade.
 The locked gate at the west end of Low Street leads to the White Pit, the quarry; its key lies at the end of the Stockade.

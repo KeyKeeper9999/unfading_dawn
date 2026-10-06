@@ -432,6 +432,10 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.MudGlobEntity>> MUD_GLOB_ENTITY = ENTITIES.registerEntityType(
             "mud_glob", com.keykeeper.dushi.entity.MudGlobEntity::new, MobCategory.MISC, b -> b.sized(0.4F, 0.4F).clientTrackingRange(6).updateInterval(5));
 
+    /** A root of the Weeping Mother, out of the ground: see {@link com.keykeeper.dushi.entity.RootEntity}. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.RootEntity>> ROOT = ENTITIES.registerEntityType(
+            "root", com.keykeeper.dushi.entity.RootEntity::new, MobCategory.MISC, b -> b.sized(1.2F, 2.6F).clientTrackingRange(8).updateInterval(20).fireImmune());
+
     public static final List<DeferredItem<SpawnEggItem>> SPAWN_EGGS = new ArrayList<>();
 
     private static void egg(String name, Supplier<? extends EntityType<? extends Mob>> type) {

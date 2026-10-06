@@ -12,8 +12,8 @@ def t(key, ru, en):
     T[key] = (ru, en)
 
 
-t(f'itemGroup.{M}', 'Всратые души', 'Vsratie Dushi')
-t(f'key.category.{M}.main', 'Всратые души', 'Vsratie Dushi')
+t(f'itemGroup.{M}', 'Немеркнущий рассвет', 'The Unfading Dawn')
+t(f'key.category.{M}.main', 'Немеркнущий рассвет', 'The Unfading Dawn')
 t(f'key.{M}.roll', 'Перекат', 'Roll')
 
 t(f'block.{M}.hearth', 'Очаг', 'Hearth')
@@ -137,7 +137,8 @@ t(f'place.{M}.stockade', 'ВЫШНИЙ ОСТРОГ', 'THE HIGH STOCKADE')
 t(f'place.{M}.ward', 'НИЖНИЙ ДВОР', 'THE LOWER WARD')
 t(f'place.{M}.bridge', 'ДОЛГИЙ МОСТ', 'THE LONG BRIDGE')
 t(f'place.{M}.hall', 'ПАЛАТА НАДЗИРАТЕЛЯ', "THE OVERSEER'S HALL")
-t(f'place.{M}.city', 'ЗАКАТНЫЙ ГОРОД', 'THE SUNSET CITY')
+# (the Founder's word for it: whoever walks in under this name sees the sun going down)
+t(f'place.{M}.city', 'РАССВЕТНЫЙ ГОРОД', 'THE DAWN CITY')
 t(f'place.{M}.garden', 'МЁРТВЫЙ САД', 'THE DEAD GARDEN')
 t(f'place.{M}.belfry', 'ЗВОННИЦА', 'THE BELFRY')
 t(f'place.{M}.cathedral', 'СОБОР ПОСЛЕДНЕГО СВЕТА', 'CATHEDRAL OF THE LAST LIGHT')
@@ -168,6 +169,7 @@ t(f'place.{M}.isle', 'ОСТРОВ ПЛАКУЧЕЙ', 'THE ISLE OF THE WEEPING O
 t(f'block.{M}.shallows', 'Мелкая вода', 'Shallows')
 t(f'block.{M}.sludge', 'Тина', 'Sludge')
 t(f'entity.{M}.mud_glob', 'Ком тины', 'Clot of Sludge')
+t(f'entity.{M}.root', 'Корень Плакучей', 'Root of the Weeping Mother')
 t(f'message.{M}.gate_locked.none', 'Заперто. Ключа от этого замка здесь нет.', 'Locked. The key to this lock is not in these parts.')
 t(f'message.{M}.gate_opened.none', 'Решётка поддалась', 'The grate gives way')
 t(f'block.{M}.shard_heap', 'Тлеющий осколок', 'Glowing Shard')

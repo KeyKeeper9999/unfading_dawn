@@ -240,8 +240,39 @@ final class WorldTest {
         tree.knockback(3.0, 1.0, 0.0, level.damageSources().generic(), 1.0F);
         boolean rooted = tree.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED) == 0.0 && !tree.isPushable()
                 && tree.getDeltaMovement().horizontalDistanceSqr() < 1.0E-6;
-        tree.discard();
         say("rules: the Weeping Mother: neither walks nor is pushed nor knocked back=" + rooted + (rooted ? "" : " FAILED"));
+        // her roots: out of the ground only, straight under whoever is over it; one blow, and no second while they are still
+        // in the air from the first; nothing for whoever is higher than a root reaches
+        net.minecraft.world.phys.Vec3 under = com.keykeeper.dushi.entity.RootEntity.ground(level, at.getX() + 2.5, at.getY() + 3.0, at.getZ() + 0.5);
+        net.minecraft.world.phys.Vec3 nowhere = com.keykeeper.dushi.entity.RootEntity.ground(level, at.getX() + 30.5, at.getY() + 3.0, at.getZ() + 0.5);
+        boolean grounded = under != null && under.y == at.getY() && nowhere == null;
+        var struck = net.minecraft.world.entity.EntityTypes.IRON_GOLEM.spawn(level, at.offset(2, 0, 0), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        var high = net.minecraft.world.entity.EntityTypes.IRON_GOLEM.spawn(level, at.offset(-3, 4, 0), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        if (struck == null || high == null || under == null) {
+            say("rules: the roots: grounded=" + grounded + ", nothing to strike FAILED");
+            tree.discard();
+            return;
+        }
+        struck.setNoAi(true);
+        high.setNoAi(true);
+        float whole = struck.getHealth();
+        tree.rootStrikes(level, under);
+        float once = struck.getHealth();
+        struck.setInvulnerableTime(0);
+        tree.rootStrikes(level, under);
+        float twice = struck.getHealth();
+        float above = high.getHealth();
+        tree.rootStrikes(level, new net.minecraft.world.phys.Vec3(high.getX(), at.getY(), high.getZ()));
+        boolean spared = high.getHealth() == above;
+        com.keykeeper.dushi.entity.RootEntity root = com.keykeeper.dushi.entity.RootEntity.rise(level, tree, under, 19);
+        boolean risen = root.isAlive() && tree.rootsWaiting() == 0 && root.warning() == 19;
+        say("rules: the roots: come up from the ground under one in the air and nowhere over nothing=" + grounded + ", strike once (" + whole + " -> " + once + " -> " + twice
+                + ")=" + (once < whole && twice == once) + ", not one who is over their reach=" + spared + ", a root is a thing in the world=" + risen
+                + (grounded && once < whole && twice == once && spared && risen ? "" : " FAILED"));
+        root.discard();
+        struck.discard();
+        high.discard();
+        tree.discard();
     }
 
     // ------------------------------------------------------------------ gear

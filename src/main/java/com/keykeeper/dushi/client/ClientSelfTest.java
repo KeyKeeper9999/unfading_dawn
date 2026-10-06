@@ -668,6 +668,14 @@ public final class ClientSelfTest {
         command(look(6.5, 13.5, 135, -8));
         shot("s8_mother_back");
         command(gone);
+        // one of her roots: the earth broken and the ends showing, then out (a root summoned by hand stands to be looked at)
+        command(look(0.5, 0.5, 0, 12), "summon vsratie_dushi:root 0.5 " + GROUND + " 4.5", "summon vsratie_dushi:withered_townsman 2.5 " + GROUND
+                + " 4.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]}");
+        shot("s9_root_warning", 9);
+        shot("s9_root_up", 34);
+        command(look(-3.0, 4.5, -90, 6));
+        shot("s9_root_side");
+        command(gone, clear);
 
         // 5. every item of the mod as a picture in the air
         List<String> items = new ArrayList<>();

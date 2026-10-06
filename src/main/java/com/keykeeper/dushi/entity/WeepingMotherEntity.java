@@ -1,7 +1,6 @@
 package com.keykeeper.dushi.entity;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.keykeeper.dushi.Dushi;
@@ -39,10 +38,12 @@ import net.minecraft.world.phys.Vec3;
  * <p>
  * She does not leave her roots: the whole fight is fought round one tree. What she has instead of legs is reach. An arm
  * as long as the rest of her comes round level, a hand's breadth over the ground; both come down together on one place
- * and go through a shield. Whoever stands off out of their reach has her roots come up under them - the ground lifts
- * and smokes green first, wherever they stood a breath ago. She wails, and the lights of the marsh come to her. Hurt,
+ * and go through a shield. Whoever stands off out of their reach has her roots come up under them - the earth breaks
+ * and the ends of them show first, wherever they stood a breath ago. She wails, and the lights of the marsh come to her. Hurt,
  * she turns about on her bole with both arms out, twice round: there is no standing clear of that except far off, or
  * right against her, under the arms.
+ * <p>
+ * A root is a thing of its own (see {@link RootEntity}): it stands on the ground, is seen coming, and strikes once.
  */
 public class WeepingMotherEntity extends SoulsMob {
     public static final int LASH_RIGHT = 1;
@@ -53,14 +54,19 @@ public class WeepingMotherEntity extends SoulsMob {
     public static final int SLAM_DURATION = 52;
     public static final int SLAM_IMPACT = 24;
     public static final int ROOTS = 4;
-    public static final int ROOTS_DURATION = 62;
+    public static final int ROOTS_DURATION = 72;
     /** Hurt, she sends more of them, and for longer. */
-    public static final int ROOTS_DURATION_MANY = 78;
+    public static final int ROOTS_DURATION_MANY = 106;
     public static final int ROOTS_FIRST = 14;
-    public static final int ROOTS_EVERY = 11;
-    /** How long the ground smokes before a root comes up through it. */
+    /** One root after another, with time between them to get up from the last and see where the next is coming. */
+    public static final int ROOTS_EVERY = 18;
+    /** How long the earth jumps before a root comes up through it. */
     public static final int ROOT_WARNING = 19;
-    public static final double ROOT_RADIUS = 1.5;
+    public static final double ROOT_RADIUS = 1.4;
+    /** How high over the ground a root reaches: whoever is higher than that over it is not struck. */
+    public static final double ROOT_HEIGHT = 2.6;
+    /** Whoever a root has struck is not struck by another for this many ticks: they are in the air, and cannot step away. */
+    public static final int ROOT_GRACE = 28;
     public static final int WAIL = 5;
     public static final int WAIL_DURATION = 56;
     public static final int WAIL_CRY = 20;
@@ -79,9 +85,10 @@ public class WeepingMotherEntity extends SoulsMob {
     /** What gets through her bark of every blow: the game lets nothing have more than 1024 health (see the Wallower). */
     public static final float HIDE = 0.65F;
 
-    private record Root(Vec3 at, int due) {}
-
-    private final List<Root> roots = new ArrayList<>();
+    /** The roots she has sent that are not back in the ground yet. */
+    private final List<RootEntity> roots = new ArrayList<>();
+    /** Whom a root struck last, and when (by her own clock). */
+    private final java.util.Map<java.util.UUID, Integer> rootStruck = new java.util.HashMap<>();
     private final List<WispEntity> lights = new ArrayList<>();
     private int rootsCooldown = 70;
     private int wailCooldown = 140;
@@ -120,6 +127,7 @@ public class WeepingMotherEntity extends SoulsMob {
     }
 
     public int rootsWaiting() {
+        this.roots.removeIf(root -> !root.isAlive());
         return this.roots.size();
     }
 
@@ -213,9 +221,6 @@ public class WeepingMotherEntity extends SoulsMob {
         if (motion.x != 0.0 || motion.z != 0.0) {
             this.setDeltaMovement(0.0, motion.y, 0.0);           // a blast moves what knockback does not: not her
         }
-        if (!this.roots.isEmpty()) {
-            this.rootsTick(level);
-        }
         // she turns on her bole after whoever she is watching, about as fast as a man runs round her at arm's length
         LivingEntity target = this.getTarget();
         if (target != null && this.attackId() == 0) {
@@ -228,45 +233,44 @@ public class WeepingMotherEntity extends SoulsMob {
 
     // ------------------------------------------------------------------ the roots
 
-    /** The ground at {@code at} smokes green, and a root comes up through it after the warning. */
-    private void root(Vec3 at, int delay) {
-        this.roots.add(new Root(at, this.age + delay));
+    /**
+     * A root comes up for whoever stands at {@code at}: out of the ground under them, wherever they are over it - and
+     * not at all where there is no ground, or no room over it.
+     */
+    private void root(ServerLevel level, Vec3 at, int delay) {
+        Vec3 ground = RootEntity.ground(level, at.x, at.y, at.z);
+        if (ground != null) {
+            this.roots.removeIf(root -> !root.isAlive());
+            this.roots.add(RootEntity.rise(level, this, ground, delay));
+        }
     }
 
-    private void rootsTick(ServerLevel level) {
+    /** A root of hers has come up at {@code at}: whoever stands in its ring, no higher than it reaches, is struck and thrown. */
+    public void rootStrikes(ServerLevel level, Vec3 at) {
         float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        Iterator<Root> all = this.roots.iterator();
-        while (all.hasNext()) {
-            Root root = all.next();
-            Vec3 at = root.at();
-            if (this.age < root.due()) {
-                // the place is drawn on the ground: a ring of green, and earth jumping inside it
-                if (this.age % 2 == 0) {
-                    for (int i = 0; i < 10; i++) {
-                        double angle = i * Math.PI / 5.0 + this.age * 0.12;
-                        level.sendParticles(ParticleTypes.HAPPY_VILLAGER, at.x + Math.cos(angle) * ROOT_RADIUS, at.y + 0.15, at.z + Math.sin(angle) * ROOT_RADIUS,
-                                1, 0.0, 0.0, 0.0, 0.0);
-                    }
-                    level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MUD.defaultBlockState()), at.x, at.y + 0.1, at.z, 3,
-                            ROOT_RADIUS * 0.4, 0.05, ROOT_RADIUS * 0.4, 0.0);
-                }
+        for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class,
+                new net.minecraft.world.phys.AABB(at, at).inflate(ROOT_RADIUS + 1.0, ROOT_HEIGHT + 1.0, ROOT_RADIUS + 1.0), this::isFoe)) {
+            double distance = Math.sqrt(victim.distanceToSqr(at.x, victim.getY(), at.z)) - victim.getBbWidth() * 0.5;
+            if (distance > ROOT_RADIUS || victim.getY() < at.y - 1.0 || victim.getY() > at.y + ROOT_HEIGHT) {
                 continue;
             }
-            all.remove();
-            for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class,
-                    new net.minecraft.world.phys.AABB(at, at).inflate(ROOT_RADIUS + 1.0, 3.0, ROOT_RADIUS + 1.0), this::isFoe)) {
-                double distance = Math.sqrt(victim.distanceToSqr(at.x, victim.getY(), at.z)) - victim.getBbWidth() * 0.5;
-                if (distance <= ROOT_RADIUS && victim.hurtServer(level, this.damageSources().mobAttack(this), damage * 0.9F)) {
-                    shove(victim, new Vec3(0.0, 0.62, 0.0));
-                }
+            Integer last = this.rootStruck.get(victim.getUUID());
+            if (last != null && this.age - last < ROOT_GRACE) {
+                continue;
             }
-            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MANGROVE_ROOTS.defaultBlockState()), at.x, at.y + 0.8, at.z, 46,
-                    ROOT_RADIUS * 0.35, 0.9, ROOT_RADIUS * 0.35, 0.1);
-            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MUD.defaultBlockState()), at.x, at.y + 0.2, at.z, 20,
-                    ROOT_RADIUS * 0.5, 0.2, ROOT_RADIUS * 0.5, 0.1);
-            level.sendParticles(ParticleTypes.COMPOSTER, at.x, at.y + 1.2, at.z, 8, 0.4, 0.8, 0.4, 0.0);
-            level.playSound(null, at.x, at.y, at.z, Dushi.sound("entity.weeping_mother.root"), this.getSoundSource(), 1.5F, 0.85F + this.random.nextFloat() * 0.3F);
+            if (victim.hurtServer(level, this.damageSources().mobAttack(this), damage * 0.9F)) {
+                this.rootStruck.put(victim.getUUID(), this.age);
+                shove(victim, new Vec3(0.0, 0.62, 0.0));
+            }
         }
+    }
+
+    private void rootsGone() {
+        for (RootEntity root : this.roots) {
+            root.discard();
+        }
+        this.roots.clear();
+        this.rootStruck.clear();
     }
 
     // ------------------------------------------------------------------ the moves
@@ -307,10 +311,10 @@ public class WeepingMotherEntity extends SoulsMob {
                         // under where they stand - and, every other one, under where they are making for
                         Vec3 going = target.getKnownMovement().multiply(1.0, 0.0, 1.0);
                         Vec3 at = target.position().add(i % 2 == 1 ? going.scale(ROOT_WARNING * 0.8) : Vec3.ZERO);
-                        this.root(new Vec3(at.x, target.getY(), at.z), ROOT_WARNING);
+                        this.root(level, new Vec3(at.x, target.getY(), at.z), ROOT_WARNING);
                         if (this.phase() >= 2 && i % 2 == 0) {
                             double angle = this.random.nextDouble() * Math.PI * 2.0;
-                            this.root(new Vec3(at.x + Math.cos(angle) * 3.4, target.getY(), at.z + Math.sin(angle) * 3.4), ROOT_WARNING + 4);
+                            this.root(level, new Vec3(at.x + Math.cos(angle) * 3.4, target.getY(), at.z + Math.sin(angle) * 3.4), ROOT_WARNING + 6);
                         }
                     }
                 }
@@ -447,7 +451,7 @@ public class WeepingMotherEntity extends SoulsMob {
     @Override
     protected void onReset() {
         super.onReset();
-        this.roots.clear();
+        this.rootsGone();
         this.lightsOut();
         this.rootsCooldown = 70;
         this.wailCooldown = 140;
@@ -455,6 +459,7 @@ public class WeepingMotherEntity extends SoulsMob {
 
     @Override
     public void remove(RemovalReason reason) {
+        this.rootsGone();
         this.lightsOut();
         super.remove(reason);
     }
@@ -471,7 +476,7 @@ public class WeepingMotherEntity extends SoulsMob {
     @Override
     public void die(DamageSource source) {
         super.die(source);
-        this.roots.clear();
+        this.rootsGone();
         this.lightsOut();
         if (this.level() instanceof ServerLevel level) {
             BlockPos home = MobMarkBlockEntity.homeOf(this);

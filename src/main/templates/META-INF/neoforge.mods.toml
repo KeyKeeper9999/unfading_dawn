@@ -6,7 +6,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="KeyKeeper"
 description='''
-Всратые души: соулслайк внутри Minecraft. Души, костры, выносливость, перекаты, фляга, магия и боссы.
+The Unfading Dawn (Немеркнущий рассвет): соулслайк внутри Minecraft. Души, костры, выносливость, перекаты, фляга, магия и боссы.
 '''
 
 [[dependencies.${mod_id}]]

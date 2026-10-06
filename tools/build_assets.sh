@@ -22,6 +22,7 @@ python3 tools/gen_lanky.py ${P:+$P/lanky.png}
 python3 tools/gen_wisp.py ${P:+$P/wisp.png}
 python3 tools/gen_wallower.py ${P:+$P/wallower.png}
 python3 tools/gen_mother.py ${P:+$P/mother.png}
+python3 tools/gen_root.py ${P:+$P/root.png}
 python3 tools/gen_items.py ${P:+$P/items.png}
 python3 tools/gen_shields.py ${P:+$P/shields.png}
 python3 tools/gen_armor.py ${P:+$P/armor.png}

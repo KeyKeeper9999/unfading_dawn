@@ -60,6 +60,7 @@ public final class DushiClient {
         event.registerEntityRenderer(Dushi.STONE_EATER.get(),
                 context -> new QuarryRenderer<>(context, new StoneEaterModel(context.bakeLayer(StoneEaterModel.LAYER)), "stone_eater", 2.0F, true, true));
         event.registerEntityRenderer(Dushi.MUD_GLOB_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.8F, false));
+        event.registerEntityRenderer(Dushi.ROOT.get(), RootRenderer::new);
         event.registerEntityRenderer(Dushi.BONE_PIKE.get(),
                 context -> new QuarryRenderer<>(context, new BonePikeModel(context.bakeLayer(BonePikeModel.LAYER)), "bone_pike", 0.5F, true, true));
         event.registerEntityRenderer(Dushi.LANKY.get(),
@@ -95,6 +96,7 @@ public final class DushiClient {
         event.registerLayerDefinition(WispModel.LAYER, WispModel::createLayer);
         event.registerLayerDefinition(WallowerModel.LAYER, WallowerModel::createLayer);
         event.registerLayerDefinition(WeepingMotherModel.LAYER, WeepingMotherModel::createLayer);
+        event.registerLayerDefinition(RootModel.LAYER, RootModel::createLayer);
         event.registerLayerDefinition(KeykeeperModel.LAYER, KeykeeperModel::createLayer);
         event.registerLayerDefinition(OverseerModel.LAYER, OverseerModel::createLayer);
         event.registerLayerDefinition(ChaplainModel.LAYER, ChaplainModel::createLayer);
