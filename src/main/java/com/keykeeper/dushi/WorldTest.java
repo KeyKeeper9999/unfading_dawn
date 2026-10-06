@@ -59,6 +59,12 @@ final class WorldTest {
 
     static void run(ServerLevel level) {
         gear(level);
+        try {
+            charms(level);
+        } catch (RuntimeException e) {
+            say("charms: FAILED: " + e);
+            e.printStackTrace(System.out);
+        }
         data(level);
         BlockPos stockade = new BlockPos(0, 240, 8);
         built(level, "stockade", stockade, Rotation.NONE);
@@ -319,6 +325,55 @@ final class WorldTest {
         weapons.append(" bow w").append(Gear.weight(new ItemStack(Items.BOW))).append(" shield stability ").append(Gear.stability(new ItemStack(Items.SHIELD)));
         say(weapons.toString());
         wear(player, null, null, null, null, null, null);
+    }
+
+    /** The charms: one is worn, by using it; the next takes its place and gives the first back; each gives what it says. */
+    private static void charms(ServerLevel level) {
+        FakePlayer player = FakePlayerFactory.getMinecraft(level);
+        PlayerSoul soul = PlayerSoul.of(player);
+        wear(player, null, null, null, null, null, null);
+        player.getInventory().clearContent();
+        soul.charm = "";
+        soul.applyAttributes(player);
+        float load = Gear.maxLoad(soul);
+        float health = player.getMaxHealth();
+        Item link = Dushi.CHARMS.get(Charm.FETTER_LINK).get();
+        Item claw = Dushi.CHARMS.get(Charm.SHATUN_CLAW).get();
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(link));
+        player.getMainHandItem().use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        boolean on = Charm.worn(player) == Charm.FETTER_LINK && player.getMainHandItem().isEmpty() && Gear.maxLoad(soul) == load + Charm.FETTER_LINK.amount;
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(claw));
+        player.getMainHandItem().use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        boolean swapped = Charm.worn(player) == Charm.SHATUN_CLAW && player.getMainHandItem().is(link) && Gear.maxLoad(soul) == load
+                && player.getMaxHealth() == health + 2.0F * Charm.SHATUN_CLAW.amount;
+        boolean off = com.keykeeper.dushi.item.CharmItem.takeOff(player) && Charm.worn(player) == null && player.getMaxHealth() == health
+                && Forge.count(player, claw) == 1 && !com.keykeeper.dushi.item.CharmItem.takeOff(player);
+        say("charms: " + Dushi.CHARMS.size() + " of them; put on by using it=" + on + ", the next takes its place and the first comes back=" + swapped
+                + ", taken off and given back=" + off + (on && swapped && off ? "" : " FAILED"));
+        player.getInventory().clearContent();
+        Gear.Weapon sword = Gear.weapon(new ItemStack(Dushi.LONGSWORD.get()));
+        float[] bare = {Gear.staminaRegen(player), Gear.spellBonus(player), Gear.blockCost(player), Gear.rollCost(player, Gear.Burden.MEDIUM), Gear.backstab(player, sword)};
+        StringBuilder gifts = new StringBuilder("charms:");
+        boolean each = true;
+        for (Charm charm : Charm.values()) {
+            soul.charm = charm.id;
+            float[] with = {Gear.staminaRegen(player), Gear.spellBonus(player), Gear.blockCost(player), Gear.rollCost(player, Gear.Burden.MEDIUM), Gear.backstab(player, sword)};
+            int changed = 0;
+            for (int i = 0; i < bare.length; i++) {
+                if (with[i] != bare[i]) {
+                    changed++;
+                    gifts.append(' ').append(charm.id).append('=').append(new String[] {"regen x", "spells x", "block x", "roll ", "backstab x"}[i]).append(rounded(with[i]));
+                }
+            }
+            boolean other = charm == Charm.COFFIN_NAIL || charm == Charm.ASH_KNOT || charm == Charm.FETTER_LINK || charm == Charm.SHATUN_CLAW;
+            each &= changed == (other ? 0 : 1);
+        }
+        soul.charm = Charm.COFFIN_NAIL.id;
+        gifts.append(" coffin_nail=souls x").append(rounded(Charm.COFFIN_NAIL.more(player))).append(" ash_knot=flask x");
+        soul.charm = Charm.ASH_KNOT.id;
+        gifts.append(rounded(Charm.ASH_KNOT.more(player)));
+        soul.charm = "";
+        say(gifts + (each ? "" : " FAILED"));
     }
 
     private static float regenIn(FakePlayer player, ArmorSet set) {

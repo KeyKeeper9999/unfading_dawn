@@ -150,7 +150,7 @@ public final class DushiClient {
                 rollVelocity = direction.normalize().scale(ROLL_SPEED * burden.rollSpeed);
             }
             if (!player.isCreative()) {
-                soul.spend(burden.rollCost);
+                soul.spend(Gear.rollCost(player, burden));
             }
             soul.rollTicks = Net.ROLL_TICKS;
             soul.rollCooldown = burden.rollCooldown;

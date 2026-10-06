@@ -39,7 +39,7 @@ public class RootRenderer extends EntityRenderer<RootEntity, RootRenderState> {
     @Override
     public void submit(RootRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - state.yRot));
+        poseStack.rotateDegrees(Axis.YP, 180.0F - state.yRot);
         // (a model's own space has y pointing down and the ground at 24 sixteenths: the same turn the game gives its mobs)
         poseStack.scale(-1.0F, -1.0F, 1.0F);
         poseStack.translate(0.0F, -1.501F, 0.0F);

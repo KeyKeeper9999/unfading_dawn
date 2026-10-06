@@ -74,7 +74,8 @@ public class FlaskItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (level instanceof ServerLevel serverLevel && charges(stack) > 0) {
             // A gulp restores half of the health, but never less than five hearts.
-            entity.heal(Math.max(10.0F, entity.getMaxHealth() * 0.5F));
+            float gulp = Math.max(10.0F, entity.getMaxHealth() * 0.5F);
+            entity.heal(entity instanceof Player drinker ? gulp * com.keykeeper.dushi.Charm.ASH_KNOT.more(drinker) : gulp);
             serverLevel.sendParticles(ParticleTypes.FLAME, entity.getX(), entity.getY() + 1.0, entity.getZ(), 14, 0.3, 0.5, 0.3, 0.01);
             if (!(entity instanceof Player player) || !player.getAbilities().instabuild) {
                 stack.setDamageValue(stack.getDamageValue() + 1);

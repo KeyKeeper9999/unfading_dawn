@@ -122,6 +122,7 @@ CHESTS = {
 }
 
 # The chests of the map "High Stockade" (tools/gen_map.py): each holds exactly what is listed, the same for everyone.
+# The charms lie in them one to a place (the knot of ash is the keykeeper's: see Shop.java).
 MAP_CHESTS = {
     # the Dead Borough: what a newcomer starts with is poor on purpose; the town's blind alleys make up for it
     'start': [(M + 'broken_sword', 1), (M + 'plank_shield', 1), (M + 'tar_pot', 2)],
@@ -133,10 +134,10 @@ MAP_CHESTS = {
     'market': [(M + 'round_shield', 1), (SOUL, 1), (SCRAP, 2)],
     'shambles_yard': [(M + 'dagger', 1), (SCRAP, 3)],
     'butchers': [(SOUL, 1), (M + 'tar_pot', 3), (CLOTH, 2)],
-    'chapel': [(GREAT, 1), (SCRAP, 4), (M + 'return_ember', 2)],
+    'chapel': [(GREAT, 1), (SCRAP, 4), (M + 'return_ember', 2), (M + 'coffin_nail', 1)],
     # the High Stockade (flask shards are not in chests: they lie in the ash, see ShardBlock, or are left by the lords)
     'gatehouse': [(SCRAP, 3), (M + 'tar_pot', 2), (SOUL, 1)],
-    'cells': [(CLOTH, 3), (SOUL, 1), (M + 'shiv', 1)],
+    'cells': [(CLOTH, 3), (SOUL, 1), (M + 'shiv', 1), (M + 'fetter_link', 1)],
     'store': [(SCRAP, 4), (M + 'tar_pot', 3), (MC + 'arrow', 12)],
     'far_tower': [(SOUL, 2), (SCRAP, 2)],
     'bridge_tower': [(M + 'short_bow', 1), (MC + 'arrow', 16), (M + 'return_ember', 1)],
@@ -146,7 +147,7 @@ MAP_CHESTS = {
     'tower_nook': [(M + 'tar_pot', 4), (M + 'return_ember', 2)],
     'belfry': [(GREAT, 1), (M + 'return_ember', 1)],
     'west_gallery': [(M + 'guard_shield', 1), (GREAT, 1), (SCRAP, 4)],
-    'sacristy': [(M + 'mend', 1), (M + 'return_ember', 2), (SOUL, 2)],
+    'sacristy': [(M + 'mend', 1), (M + 'return_ember', 2), (SOUL, 2), (M + 'candle_stub', 1)],
     'crypt': [(GREAT, 1), (M + 'rust_cuirass', 1)],
     'crypt_side': [(SCRAP, 6), (M + 'heavy_soul_shard', 1), (SOUL, 2)],
     'treasury': [(GREAT, 3), (M + 'quarry_key', 1)],          # the key of the Quarrymen's Gate: the way to the White Pit
@@ -154,7 +155,7 @@ MAP_CHESTS = {
     # the White Pit (tools/gen_quarry.py)
     'quarry_shed': [(M + 'powder_pot', 4), (M + 'iron_wedge', 2), (SCRAP, 3)],
     'quarry_field': [(M + 'iron_wedge', 3), (SOUL, 2), (M + 'return_ember', 1)],
-    'quarry_shop': [(GREAT, 1), (M + 'iron_wedge', 2), (CLOTH, 4)],
+    'quarry_shop': [(GREAT, 1), (M + 'iron_wedge', 2), (CLOTH, 4), (M + 'wedge_cord', 1)],
     'quarry_eyes': [(GREAT, 2), (M + 'powder_pot', 3)],
     'quarry_rim': [(M + 'powder_pot', 4), (M + 'return_ember', 2), (SOUL, 2)],
     'quarry_workings': [(GREAT, 2), (M + 'iron_wedge', 3)],
@@ -164,11 +165,11 @@ MAP_CHESTS = {
     'mire_end': [(GREAT, 1), (M + 'tar_pot', 4), (CLOTH, 4)],
     'mire_loft': [(GREAT, 2), (M + 'return_ember', 2), (M + 'withe', 2)],
     'mire_gallows': [(GREAT, 2), (SCRAP, 6), (M + 'withe', 3)],
-    'mire_stage': [(M + 'boat_hook', 1), (M + 'bone_scale', 3), (M + 'return_ember', 1)],      # the fishers' stage: what they fished with
+    'mire_stage': [(M + 'boat_hook', 1), (M + 'bone_scale', 3), (M + 'return_ember', 1), (M + 'pike_tooth', 1)],      # the fishers' stage: what they fished with
     'mire_cove': [(GREAT, 3), (M + 'heavy_soul_shard', 1), (M + 'bone_scale', 2)],
     'mire_mill': [(GREAT, 2), (M + 'return_ember', 3), (SCRAP, 6)],
     'mire_hollow': [(GREAT, 3), (M + 'tar_pot', 4), (M + 'withe', 3)],
-    'mire_grove': [(GREAT, 5), (M + 'return_ember', 3), (M + 'bone_scale', 4)],
+    'mire_grove': [(GREAT, 5), (M + 'return_ember', 3), (M + 'bone_scale', 4), (M + 'weeping_herb', 1)],
 }
 for _name, _items in MAP_CHESTS.items():
     CHESTS['map/' + _name] = [pool(item(_id, count=(_n, _n)) if _n > 1 else item(_id)) for _id, _n in _items]

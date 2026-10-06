@@ -38,6 +38,7 @@ public final class Shop {
             add(list, Dushi.SPELLS.get(Spell.FLARE), 1, 700);
             add(list, Dushi.TAR_POT, 3, 150);
             add(list, Dushi.RETURN_EMBER, 1, 200);
+            add(list, Dushi.CHARMS.get(Charm.ASH_KNOT), 1, 800);
             add(list, Dushi.TATTERED_CLOTH, 2, 120);
             add(list, Dushi.RUST_SCRAP, 2, 200);
             wares = List.copyOf(list);

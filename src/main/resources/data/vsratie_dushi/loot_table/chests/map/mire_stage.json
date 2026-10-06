@@ -40,6 +40,16 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:pike_tooth",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

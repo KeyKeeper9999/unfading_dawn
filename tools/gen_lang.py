@@ -63,6 +63,26 @@ for key, ru, en in (
         ('tattered_cloth', 'Ветошь', 'Tattered Cloth'), ('rust_scrap', 'Ржавый лом', 'Rust Scrap')):
     t(f'item.{M}.{key}', ru, en)
 
+# the charms: one is worn at a time (Charm.java); the number in the line is the charm's own
+CHARMS = (('coffin_nail', 'Гробовой гвоздь', 'Coffin Nail', 'Мёртвые оставляют на %s%% больше душ', 'The dead leave %s%% more souls'),
+          ('ash_knot', 'Узелок золы', 'Knot of Ash', 'Глоток из фляги лечит на %s%% больше', 'A gulp of the flask heals %s%% more'),
+          ('fetter_link', 'Кандальное звено', 'Fetter Link', 'Посильная ноша больше на %s', 'You can carry %s more'),
+          ('candle_stub', 'Соборный огарок', 'Cathedral Candle Stub', 'Заклинания сильнее на %s%%', 'Spells are %s%% stronger'),
+          ('wedge_cord', 'Клин на гайтане', 'Wedge on a Cord', 'Блок щитом стоит на %s%% меньше сил', 'Blocking costs %s%% less stamina'),
+          ('pike_tooth', 'Щучий зуб', "Pike's Tooth", 'Удар в спину сильнее на %s%%', 'A blow in the back is %s%% harder'),
+          ('weeping_herb', 'Плакун-трава', 'Weeping Herb', 'Силы возвращаются на %s%% быстрее', 'Stamina comes back %s%% faster'),
+          ('vigil_wax', 'Воск бдения', 'Wax of the Vigil', 'Перекат стоит на %s%% меньше сил', 'A roll costs %s%% less stamina'),
+          ('shatun_claw', 'Коготь шатуна', "Shatun's Claw", 'Здоровья больше на %s сердца', '%s hearts more'))
+for key, ru, en, ru_d, en_d in CHARMS:
+    t(f'item.{M}.{key}', ru, en)
+    t(f'tooltip.{M}.charm.{key}', ru_d, en_d)
+t(f'tooltip.{M}.charm_use', 'Оберег. Правая кнопка — надеть; носят один', 'A charm. Right click to put it on; one is worn at a time')
+t(f'message.{M}.charm_on', 'Надет оберег: %s', 'Charm put on: %s')
+t(f'message.{M}.charm_off', 'Оберег снят: %s', 'Charm taken off: %s')
+t(f'screen.{M}.hearth.charm.none', 'Оберег не надет', 'No charm is worn')
+t(f'screen.{M}.hearth.charm.hint', 'Возьми оберег в руку и нажми правую кнопку', 'Take a charm in your hand and right click')
+t(f'screen.{M}.hearth.charm.off', 'Снять', 'Take off')
+
 MOBS = (('withered_prisoner', 'Истлевший узник', 'Withered Prisoner'), ('withered_guard', 'Истлевший стражник', 'Withered Guard'),
         ('withered_archer', 'Истлевший лучник', 'Withered Archer'), ('withered_acolyte', 'Истлевший послушник', 'Withered Acolyte'),
         ('withered_townsman', 'Истлевший посадский', 'Withered Townsman'), ('withered_butcher', 'Истлевший мясник', 'Withered Butcher'),

@@ -47,7 +47,7 @@ public final class Net {
                 return;
             }
             if (!player.isCreative()) {
-                soul.spend(burden.rollCost);
+                soul.spend(Gear.rollCost(player, burden));
             }
             soul.rollTicks = ROLL_TICKS;
             soul.rollCooldown = burden.rollCooldown;
@@ -144,6 +144,23 @@ public final class Net {
         public static void handle(Travel payload, IPayloadContext context) {
             if (context.player() instanceof ServerPlayer player) {
                 HearthBlock.travel(player, payload.index());
+            }
+        }
+    }
+
+    /** Client to server: take off the charm worn; it comes back as a thing. */
+    public record Unwear() implements CustomPacketPayload {
+        public static final Type<Unwear> TYPE = new Type<>(Dushi.id("unwear"));
+        public static final StreamCodec<ByteBuf, Unwear> CODEC = StreamCodec.unit(new Unwear());
+
+        @Override
+        public Type<Unwear> type() {
+            return TYPE;
+        }
+
+        public static void handle(Unwear payload, IPayloadContext context) {
+            if (context.player() instanceof ServerPlayer player && player.isAlive()) {
+                com.keykeeper.dushi.item.CharmItem.takeOff(player);
             }
         }
     }

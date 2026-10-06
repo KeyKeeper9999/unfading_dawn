@@ -45,6 +45,7 @@ public final class PlayerSoul {
     /** Extra damage per point of strength or dexterity, for a weapon that scales fully with it. */
     public static final float WEAPON_BONUS = 0.05F;
     private static final Identifier VITALITY_MODIFIER = Identifier.fromNamespaceAndPath(Dushi.MODID, "vitality");
+    private static final Identifier CHARM_MODIFIER = Identifier.fromNamespaceAndPath(Dushi.MODID, "charm");
 
     public static final MapCodec<PlayerSoul> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.INT.fieldOf("souls").forGetter(soul -> soul.souls),
@@ -60,8 +61,9 @@ public final class PlayerSoul {
             Codec.BOOL.optionalFieldOf("keykeeper", false).forGetter(soul -> soul.metKeykeeper),
             Codec.INT.optionalFieldOf("hour", -1).forGetter(soul -> soul.hearthHour),
             Codec.STRING.listOf().optionalFieldOf("places_seen", List.of()).forGetter(soul -> List.copyOf(soul.placesSeen)),
-            Rest.CODEC.listOf().optionalFieldOf("hearths", List.of()).forGetter(soul -> soul.rests))
-            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost, flask, keykeeper, hour, places, rests) -> {
+            Rest.CODEC.listOf().optionalFieldOf("hearths", List.of()).forGetter(soul -> soul.rests),
+            Codec.STRING.optionalFieldOf("charm", "").forGetter(soul -> soul.charm))
+            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost, flask, keykeeper, hour, places, rests, charm) -> {
                 PlayerSoul soul = new PlayerSoul();
                 soul.souls = souls;
                 soul.stats[VITALITY] = vit;
@@ -77,6 +79,7 @@ public final class PlayerSoul {
                 soul.hearthHour = hour;
                 soul.placesSeen.addAll(places);
                 soul.rests.addAll(rests);
+                soul.charm = charm;
                 soul.stamina = soul.maxStamina();
                 return soul;
             }));
@@ -95,6 +98,7 @@ public final class PlayerSoul {
             // The roll travels too: the copy that arrives replaces the client's own, and must not cut its roll short.
             soul.rollTicks = ByteBufCodecs.VAR_INT.decode(buffer);
             soul.rollCooldown = ByteBufCodecs.VAR_INT.decode(buffer);
+            soul.charm = ByteBufCodecs.STRING_UTF8.decode(buffer);
             return soul;
         }
 
@@ -109,6 +113,7 @@ public final class PlayerSoul {
             ByteBufCodecs.VAR_INT.encode(buffer, soul.lostSouls);
             ByteBufCodecs.VAR_INT.encode(buffer, soul.rollTicks);
             ByteBufCodecs.VAR_INT.encode(buffer, soul.rollCooldown);
+            ByteBufCodecs.STRING_UTF8.encode(buffer, soul.charm);
         }
     };
 
@@ -121,6 +126,9 @@ public final class PlayerSoul {
     public int stainGeneration;
     /** Souls lying in the player's current stain (0 if there is none); only for the hint on the screen. */
     public int lostSouls;
+
+    /** The charm worn (the id of a {@link Charm}), or nothing. One is worn at a time. */
+    public String charm = "";
 
     /** Whether a hearth has already given this player their flask. */
     public boolean flaskGiven;
@@ -254,14 +262,21 @@ public final class PlayerSoul {
         return 1.0F + 0.05F * stat;
     }
 
-    /** Makes the player's maximum health match their vitality. */
+    /** Makes the player's maximum health match their vitality, and the charm they wear if it is one of hearts. */
     public void applyAttributes(Player player) {
         AttributeInstance health = player.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
             health.removeModifier(VITALITY_MODIFIER);
+            health.removeModifier(CHARM_MODIFIER);
             if (this.stats[VITALITY] > 0) {
                 health.addPermanentModifier(new AttributeModifier(VITALITY_MODIFIER, HEALTH_PER_VITALITY * this.stats[VITALITY],
                         AttributeModifier.Operation.ADD_VALUE));
+            }
+            if (Charm.SHATUN_CLAW.id.equals(this.charm)) {
+                health.addPermanentModifier(new AttributeModifier(CHARM_MODIFIER, 2.0 * Charm.SHATUN_CLAW.amount, AttributeModifier.Operation.ADD_VALUE));
+            }
+            if (player.getHealth() > player.getMaxHealth()) {
+                player.setHealth(player.getMaxHealth());
             }
         }
     }

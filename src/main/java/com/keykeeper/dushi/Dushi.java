@@ -326,6 +326,15 @@ public class Dushi {
         }
     }
 
+    /** The charms: one is worn at a time (see {@link Charm}). */
+    public static final Map<Charm, DeferredItem<com.keykeeper.dushi.item.CharmItem>> CHARMS = new LinkedHashMap<>();
+
+    static {
+        for (Charm charm : Charm.values()) {
+            CHARMS.put(charm, ITEMS.registerItem(charm.id, props -> new com.keykeeper.dushi.item.CharmItem(props.stacksTo(1).rarity(Rarity.UNCOMMON), charm)));
+        }
+    }
+
     /** Only the pictures of flying spells; not in the creative tab. */
     public static final Map<SpellBoltEntity.Kind, DeferredItem<Item>> BOLT_ITEMS = new LinkedHashMap<>();
 
@@ -503,6 +512,7 @@ public class Dushi {
                 output.accept(PRAYER_BEADS.get());
                 output.accept(EMBER_GLOVE.get());
                 SPELLS.values().forEach(item -> output.accept(item.get()));
+                CHARMS.values().forEach(item -> output.accept(item.get()));
                 SPAWN_EGGS.forEach(item -> output.accept(item.get()));
             }).build());
 
@@ -546,6 +556,7 @@ public class Dushi {
             registrar.playToServer(Net.Buy.TYPE, Net.Buy.CODEC, Net.Buy::handle);
             registrar.playToClient(Net.OpenForge.TYPE, Net.OpenForge.CODEC);
             registrar.playToServer(Net.Make.TYPE, Net.Make.CODEC, Net.Make::handle);
+            registrar.playToServer(Net.Unwear.TYPE, Net.Unwear.CODEC, Net.Unwear::handle);
         });
     }
 }

@@ -710,6 +710,7 @@ public final class ClientSelfTest {
             soul.souls = 1234;
             soul.stamina = 55.0F;
             soul.regenPause = 400;
+            soul.charm = com.keykeeper.dushi.Charm.ASH_KNOT.id;
             player.syncData(Dushi.PLAYER_SOUL);
         });
         client(() -> SoulsHud.showBanner("banner.vsratie_dushi.hearth_lit", 1));

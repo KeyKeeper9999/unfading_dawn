@@ -125,12 +125,12 @@ public final class SoulMechanics {
         if (victim instanceof SoulsMob mob && mob.isBoss()) {
             for (ServerPlayer player : level.players()) {
                 if (player.isAlive() && player.distanceToSqr(victim) <= BOSS_REWARD_RANGE * BOSS_REWARD_RANGE) {
-                    giveSouls(player, souls);
+                    giveSouls(player, Math.round(souls * Charm.COFFIN_NAIL.more(player)));
                     PacketDistributor.sendToPlayer(player, new Net.Banner("banner.vsratie_dushi.boss_defeated", Net.Banner.GOLD, "ui.boss_defeated"));
                 }
             }
         } else if (victim.getKillCredit() instanceof ServerPlayer player) {
-            giveSouls(player, souls);
+            giveSouls(player, Math.round(souls * Charm.COFFIN_NAIL.more(player)));
             level.sendParticles(ParticleTypes.SOUL, victim.getX(), victim.getY() + victim.getBbHeight() * 0.5, victim.getZ(), 5, 0.2, 0.3, 0.2, 0.02);
         }
     }
@@ -436,7 +436,7 @@ public final class SoulMechanics {
             if (weapon != null) {
                 amount *= soul.weaponBonus(weapon.strength(), weapon.dexterity());
                 if (isBehind(attacker, victim) && victim instanceof Mob) {
-                    amount *= weapon.backstab();
+                    amount *= Gear.backstab(attacker, weapon);
                     level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), Dushi.sound("player.backstab"), SoundSource.PLAYERS, 1.0F, 1.0F);
                     level.sendParticles(ParticleTypes.CRIT, victim.getX(), victim.getY() + victim.getBbHeight() * 0.6, victim.getZ(), 14, 0.3, 0.3, 0.3, 0.3);
                 }

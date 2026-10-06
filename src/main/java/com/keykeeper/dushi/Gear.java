@@ -153,7 +153,7 @@ public final class Gear {
     }
 
     public static float maxLoad(PlayerSoul soul) {
-        return 70.0F + 2.5F * soul.stats[PlayerSoul.ENDURANCE];
+        return 70.0F + 2.5F * soul.stats[PlayerSoul.ENDURANCE] + (Charm.FETTER_LINK.id.equals(soul.charm) ? Charm.FETTER_LINK.amount : 0.0F);
     }
 
     /** How the load carried changes the roll and the recovery of stamina. */
@@ -211,18 +211,28 @@ public final class Gear {
         return count;
     }
 
-    /** Stamina recovery: the burden, and the prisoner's rags that weigh next to nothing. */
+    /** Stamina recovery: the burden, the prisoner's rags that weigh next to nothing, and the weeping herb. */
     public static float staminaRegen(Player player) {
-        return burden(player).staminaRegen * (1.0F + ArmorSet.PRISONER.bonus * worn(player, ArmorSet.PRISONER));
+        return burden(player).staminaRegen * (1.0F + ArmorSet.PRISONER.bonus * worn(player, ArmorSet.PRISONER)) * Charm.WEEPING_HERB.more(player);
     }
 
-    /** The chaplain's vestments strengthen every spell. */
+    /** The chaplain's vestments strengthen every spell; so does the stub of a candle from his cathedral. */
     public static float spellBonus(Player player) {
-        return 1.0F + ArmorSet.CHAPLAIN.bonus * worn(player, ArmorSet.CHAPLAIN);
+        return (1.0F + ArmorSet.CHAPLAIN.bonus * worn(player, ArmorSet.CHAPLAIN)) * Charm.CANDLE_STUB.more(player);
     }
 
-    /** The guard's armour makes a blocked blow cheaper. */
+    /** The guard's armour makes a blocked blow cheaper; so does a quarryman's wedge on a cord. */
     public static float blockCost(Player player) {
-        return 1.0F - ArmorSet.GUARD.bonus * worn(player, ArmorSet.GUARD);
+        return (1.0F - ArmorSet.GUARD.bonus * worn(player, ArmorSet.GUARD)) * Charm.WEDGE_CORD.less(player);
+    }
+
+    /** What a roll costs: the burden decides, and the wax of the vigil takes a share off. */
+    public static float rollCost(Player player, Burden burden) {
+        return burden.rollCost * Charm.VIGIL_WAX.less(player);
+    }
+
+    /** A blow in the back, as the weapon makes it and a pike's tooth sharpens it. */
+    public static float backstab(Player player, Weapon weapon) {
+        return weapon.backstab() * Charm.PIKE_TOOTH.more(player);
     }
 }

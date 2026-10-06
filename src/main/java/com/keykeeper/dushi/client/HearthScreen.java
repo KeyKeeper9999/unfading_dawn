@@ -16,7 +16,9 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 public class HearthScreen extends Screen {
     private static final int PANEL_WIDTH = 248;
     private static final int ROW_HEIGHT = 22;
-    private static final int PANEL_HEIGHT = 88 + PlayerSoul.STAT_COUNT * ROW_HEIGHT + 34;
+    /** The line of the charm worn, under the stats. */
+    private static final int CHARM_ROW = 38;
+    private static final int PANEL_HEIGHT = 88 + PlayerSoul.STAT_COUNT * ROW_HEIGHT + CHARM_ROW + 34;
     private static final int FRAME = 0xFF16120E;
     private static final int FRAME_LIGHT = 0xFF6B5A40;
     private static final int BACK = 0xE61A1510;
@@ -30,6 +32,7 @@ public class HearthScreen extends Screen {
     public static List<Net.Stop> stops = List.of();
 
     private final Button[] plus = new Button[PlayerSoul.STAT_COUNT];
+    private Button charmOff;
 
     public HearthScreen() {
         super(Component.translatable("screen.vsratie_dushi.hearth"));
@@ -47,6 +50,10 @@ public class HearthScreen extends Screen {
         return PlayerSoul.of(this.minecraft.player);
     }
 
+    private int charmY() {
+        return this.top() + 80 + PlayerSoul.STAT_COUNT * ROW_HEIGHT + 16;
+    }
+
     @Override
     protected void init() {
         int left = this.left();
@@ -57,6 +64,8 @@ public class HearthScreen extends Screen {
                     button -> ClientPacketDistributor.sendToServer(new Net.LevelUp(index)))
                     .bounds(left + PANEL_WIDTH - 32, top + 80 + stat * ROW_HEIGHT, 20, 20).build());
         }
+        this.charmOff = this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.hearth.charm.off"),
+                button -> ClientPacketDistributor.sendToServer(new Net.Unwear())).bounds(left + PANEL_WIDTH - 62, this.charmY() - 1, 50, 18).build());
         // from one hearth to another: only when there is another to go to
         Button travel = this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.hearth.travel"),
                 button -> this.minecraft.gui.setScreen(new TravelScreen())).bounds(left + 12, top + PANEL_HEIGHT - 28, 108, 20).build());
@@ -76,6 +85,9 @@ public class HearthScreen extends Screen {
             if (this.plus[stat] != null) {
                 this.plus[stat].active = enough && soul.stats[stat] < PlayerSoul.STAT_CAP;
             }
+        }
+        if (this.charmOff != null) {
+            this.charmOff.visible = com.keykeeper.dushi.Charm.byId(soul.charm) != null;
         }
     }
 
@@ -129,6 +141,19 @@ public class HearthScreen extends Screen {
         // What the stat under the cursor does, in the space above the button.
         String key = hovered >= 0 ? "stat.vsratie_dushi." + PlayerSoul.STAT_KEYS[hovered] + ".desc" : "screen.vsratie_dushi.hearth.hint";
         graphics.centeredText(this.font, Component.translatable(key), this.width / 2, top + 80 + PlayerSoul.STAT_COUNT * ROW_HEIGHT + 2, DIM);
+        // The charm worn: its picture, its name and what it gives; one is worn at a time, and here it can be taken off.
+        int charmY = this.charmY();
+        graphics.fill(left + 10, charmY - 3, right - 10, charmY - 2, FRAME_LIGHT);
+        com.keykeeper.dushi.Charm charm = com.keykeeper.dushi.Charm.byId(soul.charm);
+        if (charm == null) {
+            graphics.text(this.font, Component.translatable("screen.vsratie_dushi.hearth.charm.none"), left + 12, charmY + 4, DIM);
+            graphics.text(this.font, Component.translatable("screen.vsratie_dushi.hearth.charm.hint"), left + 12, charmY + 21, DIM);
+        } else {
+            net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(com.keykeeper.dushi.Dushi.CHARMS.get(charm).get());
+            graphics.fakeItem(stack, left + 10, charmY);
+            graphics.text(this.font, stack.getHoverName(), left + 30, charmY + 4, GOLD);
+            graphics.text(this.font, Component.translatable("tooltip.vsratie_dushi.charm." + charm.id, charm.amount), left + 12, charmY + 21, DIM);
+        }
     }
 
     @Override

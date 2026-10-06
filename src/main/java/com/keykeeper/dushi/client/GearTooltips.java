@@ -54,7 +54,7 @@ public final class GearTooltips {
             double base = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY)
                     .compute(Attributes.ATTACK_DAMAGE, 1.0, EquipmentSlot.MAINHAND);
             double mine = base * PlayerSoul.of(player).weaponBonus(weapon.strength(), weapon.dexterity());
-            lines.add(Component.translatable("tooltip.vsratie_dushi.damage", number(base), number(mine), number(mine * weapon.backstab()))
+            lines.add(Component.translatable("tooltip.vsratie_dushi.damage", number(base), number(mine), number(mine * Gear.backstab(player, weapon)))
                     .withStyle(ChatFormatting.GOLD));
         }
         if (Gear.isBow(stack)) {

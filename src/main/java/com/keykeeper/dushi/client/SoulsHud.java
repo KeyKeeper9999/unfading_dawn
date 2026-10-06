@@ -158,6 +158,14 @@ public final class SoulsHud {
                 graphics.text(font, plus, right - 4 - font.width(plus), top - 11, (alpha << 24) | 0x9FE3FF, true);
             }
         }
+        // The charm worn, to the left of where the flask is.
+        com.keykeeper.dushi.Charm charm = com.keykeeper.dushi.Charm.byId(soul.charm);
+        if (charm != null) {
+            int x = left - 44;
+            graphics.fill(x - 2, top - 1, x + 18, bottom + 1, FRAME);
+            graphics.fill(x - 1, top, x + 17, bottom, 0xB0100C08);
+            graphics.fakeItem(new ItemStack(Dushi.CHARMS.get(charm).get()), x, top);
+        }
         // The flask and its gulps, to the left of the souls.
         for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
             ItemStack stack = player.getInventory().getItem(slot);
