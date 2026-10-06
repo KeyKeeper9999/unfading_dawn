@@ -747,6 +747,229 @@ def boss_music():
     return loop
 
 
+# ============================================================== the Mire: water, wet wood, and what the water keeps
+def splash(d, size=1.0, bright=5000):
+    """Something going into water or coming out of it: the slap, the spray falling back, and the hollow under it."""
+    body = bandpass(noise(d), 500, bright) * env(d, 0.004, d * 0.8) * decay(d, d * 0.22)
+    spray = highpass(noise(d), 3000) * decay(d, d * 0.35) * 0.35 * np.clip(lowpass(noise(d), 30) * 6 + 0.6, 0, 1)
+    low = thump(d, 120 / size, 45 / size, 0.07 * size) * 0.9 * size
+    return body + spray + low
+
+
+def bubbles(d, count, lo=300, hi=1100):
+    out = np.zeros(int(SR * d))
+    for _ in range(count):
+        n = rng.uniform(0.03, 0.09)
+        f0 = rng.uniform(lo, hi)
+        b = tone(sweep(f0, f0 * rng.uniform(1.25, 1.7), n), n) * env(n, 0.004, n * 0.6) * rng.uniform(0.3, 1.0)
+        i = rng.integers(0, max(1, len(out) - len(b)))
+        out[i:i + len(b)] += b
+    return out
+
+
+def creak(d, f0, f1, body=(420, 900, 1700)):
+    """Wood under strain: a slow stick and slip, every slip ringing the timber."""
+    n = int(SR * d)
+    wob = lowpass(rng.standard_normal(n), 5)
+    rate = contour(d, (0, f0), (0.5, (f0 + f1) * 0.5), (1, f1)) * (1 + 0.22 * wob / (np.max(np.abs(wob)) + 1e-9))
+    slips = highpass(saw(rate, d), 220)
+    out = np.zeros(n)
+    for i, centre in enumerate(body):
+        out += bandpass(slips, centre * 0.86, centre * 1.14) / (1 + i * 0.5)
+    hold = np.clip(lowpass(rng.standard_normal(n), 7) * 7 + 0.7, 0.1, 1.5)
+    return out * hold
+
+
+def squelch(d, f=260):
+    return lowpass(noise(d), f * 3) * env(d, d * 0.3, d * 0.5) * np.clip(lowpass(noise(d), 25) * 5 + 0.5, 0, 1.2) + thump(d, f * 0.5, f * 0.22, d * 0.3) * 0.8
+
+
+# the bone pike: jaws that are all bone, in water
+def pike_ambient(k):
+    d = 1.5
+    clicks = np.zeros(int(SR * d))
+    for i in range(3 + k * 2):
+        c = highpass(noise(0.03), 1800) * decay(0.03, 0.004) + tone(1900 + 300 * rng.random(), 0.03) * decay(0.03, 0.006) * 0.5
+        a = int((0.15 + 0.11 * i + 0.03 * rng.random()) * SR)
+        clicks[a:a + len(c)] += c * (0.6 + 0.4 * rng.random())
+    return reverb(clicks * 0.8 + bubbles(d, 9 + 4 * k, 260, 900) * 0.5 + lowpass(noise(d), 300) * env(d, 0.4, 0.6) * 0.5, 0.6, 0.25, 0.4)
+
+
+S['pike/ambient1'] = pike_ambient(0)
+S['pike/ambient2'] = pike_ambient(1)
+d = 0.45
+S['pike/hurt'] = reverb(voice(contour(d, (0, 520), (0.3, 640), (1, 330)), d, THIN, breath=0.7, jitter=0.1, rough=0.8) * env(d, 0.005, 0.3) * 0.7
+                        + place(d, (0.0, splash(0.4, 0.6) * 0.5)), 0.5, 0.25, 0.3)
+d = 1.5
+S['pike/death'] = reverb(place(d, (0.0, voice(contour(0.7, (0, 560), (1, 190)), 0.7, THIN, breath=0.8, jitter=0.1, rough=0.9) * env(0.7, 0.005, 0.5) * 0.7),
+                               (0.25, rattle(0.6, 14, 1400, 3200, 31) * 0.5), (0.5, splash(0.8, 0.9) * 0.8), (0.6, bubbles(0.9, 16, 240, 800) * 0.5)), 0.8, 0.3, 0.5)
+d = 0.35
+S['pike/bite'] = reverb(place(d, (0.0, stone_hit(0.2, 1500, 260, 0.2) * 0.9), (0.03, stone_hit(0.2, 1150, 220, 0.2) * 0.7), (0.0, splash(0.3, 0.5) * 0.3)), 0.4, 0.2, 0.3)
+d = 0.9
+S['pike/leap'] = reverb(place(d, (0.0, splash(0.6, 0.8) * 1.0), (0.05, whoosh(0.5, 500, 2600, 0.4) * 0.6), (0.35, bubbles(0.5, 8, 300, 900) * 0.3)), 0.6, 0.25, 0.4)
+d = 0.8
+S['pike/flop'] = reverb(place(d, (0.0, squelch(0.16, 420) * 1.0), (0.0, lowpass(noise(0.08), 2400) * decay(0.08, 0.012) * 1.0), (0.22, squelch(0.14, 500) * 0.8),
+                              (0.22, lowpass(noise(0.07), 2600) * decay(0.07, 0.01) * 0.8), (0.47, squelch(0.14, 380) * 0.7),
+                              (0.47, lowpass(noise(0.07), 2200) * decay(0.07, 0.01) * 0.7)), 0.4, 0.2, 0.3)
+
+# the lanky: a chest like a hollow log
+LOG = ((210, 80, 1.0), (520, 120, 0.7), (1250, 220, 0.25))
+
+
+def lanky_ambient(k):
+    d = 2.6
+    v = voice(contour(d, (0, 62 + 5 * k), (0.4, 54), (1, 47 + 4 * k)), d, LOG, breath=0.7, jitter=0.07, rough=0.6) * env(d, 0.7, 1.0)
+    return reverb(v * 1.0 + place(d, (0.2 + 0.5 * k, creak(1.3, 22, 34 + 8 * k) * env(1.3, 0.3, 0.5) * 0.35)) + lowpass(noise(d), 400) * env(d, 0.9, 0.9) * 0.3,
+                  1.3, 0.35, 0.8)
+
+
+S['lanky/ambient1'] = lanky_ambient(0)
+S['lanky/ambient2'] = lanky_ambient(1)
+d = 0.7
+S['lanky/hurt'] = reverb(voice(contour(d, (0, 118), (0.2, 134), (1, 70)), d, LOG, breath=0.6, jitter=0.08, rough=0.8) * env(d, 0.01, 0.45)
+                         + place(d, (0.0, creak(0.4, 60, 30) * env(0.4, 0.01, 0.3) * 0.5)), 0.8, 0.3, 0.5)
+d = 3.0
+S['lanky/death'] = reverb(place(d, (0.0, voice(contour(2.2, (0, 128), (0.15, 110), (1, 38)), 2.2, LOG, breath=0.8, jitter=0.09, rough=0.9) * env(2.2, 0.03, 1.6)),
+                                (0.6, creak(1.6, 46, 14) * env(1.6, 0.2, 0.5) * 0.6), (2.0, splash(0.9, 1.2) * 0.9), (2.0, crackle(0.8, 60, 1500) * decay(0.8, 0.2) * 0.6),
+                                (2.1, bubbles(0.8, 12, 220, 700) * 0.4)), 1.3, 0.35, 0.9)
+d = 1.0
+S['lanky/slam'] = reverb(place(d, (0.0, thump(0.8, 100, 34, 0.16) * 2.0), (0.0, splash(0.7, 1.1) * 0.8), (0.0, crackle(0.4, 80, 1800) * decay(0.4, 0.08) * 0.8),
+                               (0.1, squelch(0.5, 300) * 0.6)), 0.9, 0.3, 0.7)
+d = 0.4
+S['lanky/step'] = reverb(place(d, (0.0, squelch(0.3, 340) * 1.0), (0.12, bubbles(0.25, 3, 300, 700) * 0.3)), 0.4, 0.2, 0.3)
+
+
+# the wisp: a small cold light, and the breath of whoever it was
+def wisp_ambient(k):
+    d = 2.4
+    sigh = voice(contour(d, (0, 430 + 40 * k), (0.5, 400), (1, 340 + 30 * k)), d, ((900, 160, 1.0), (1700, 220, 0.5), (3200, 400, 0.3)), breath=1.2, jitter=0.03) \
+        * env(d, 0.9, 1.1) * 0.18
+    return reverb(shimmer(d, 1700 + 300 * k, 3400, 6) * 0.5 + sigh, 1.6, 0.45, 1.0)
+
+
+S['wisp/ambient1'] = wisp_ambient(0)
+S['wisp/ambient2'] = wisp_ambient(1)
+d = 0.5
+S['wisp/hurt'] = reverb(place(d, (0.0, chime(2400, 0.45, 1.3) * 0.8), (0.03, chime(1800, 0.4, 1.0) * 0.5), (0.0, highpass(noise(0.25), 3500) * decay(0.25, 0.05) * 0.4)),
+                        0.8, 0.35, 0.5)
+d = 1.5
+S['wisp/death'] = reverb(place(d, (0.0, chime(2200, 0.9, 1.3) * 0.8), (0.08, chime(1650, 0.9) * 0.7), (0.18, chime(1240, 1.0) * 0.6), (0.3, chime(930, 1.1) * 0.5),
+                               (0.0, moving_bandpass(noise(1.2), sweep(3600, 500, 1.2, 0.6), 0.4) * env(1.2, 0.02, 0.9) * 0.5)), 1.4, 0.45, 0.9)
+d = 1.2
+S['wisp/cast'] = reverb(place(d, (0.0, moving_bandpass(noise(1.0), sweep(600, 3600, 1.0, 1.6), 0.35) * env(1.0, 0.6, 0.08) * 0.8),
+                              (0.0, tone(sweep(700, 2100, 1.0, 1.6), 1.0) * env(1.0, 0.7, 0.05) * 0.25), (0.95, chime(2600, 0.25, 1.4) * 0.8),
+                              (0.95, highpass(noise(0.2), 2500) * decay(0.2, 0.04) * 0.5)), 0.9, 0.35, 0.6)
+
+# the Wallower: a throat as wide as a cart, half under water
+WET = ((190, 90, 1.0), (460, 130, 0.9), (1050, 220, 0.35))
+
+
+def wallower_ambient(k):
+    d = 2.8
+    f = contour(d, (0, 44 + 4 * k), (0.25, 52), (1, 36 + 5 * k)) * (1 + 0.06 * np.sin(2 * np.pi * (1.6 + 0.5 * k) * t(d)))
+    croak = voice(f, d, WET, breath=0.4, jitter=0.07, rough=1.0) * env(d, 0.4, 1.2)
+    return reverb(croak * 1.2 + bubbles(d, 20, 180, 600) * env(d, 0.5, 0.8) * 0.6 + lowpass(noise(d), 260) * env(d, 0.8, 1.0) * 0.6, 1.4, 0.35, 0.9)
+
+
+S['wallower/ambient1'] = wallower_ambient(0)
+S['wallower/ambient2'] = wallower_ambient(1)
+d = 0.9
+S['wallower/hurt'] = reverb(voice(contour(d, (0, 104), (0.2, 122), (1, 56)), d, WET, breath=0.5, jitter=0.08, rough=1.0) * env(d, 0.01, 0.55)
+                            + place(d, (0.0, splash(0.6, 1.2) * 0.5)), 1.0, 0.3, 0.7)
+d = 4.0
+S['wallower/death'] = reverb(place(d, (0.0, voice(contour(3.0, (0, 112), (0.15, 96), (1, 28)), 3.0, WET, breath=0.6, jitter=0.09, rough=1.0) * env(3.0, 0.03, 2.2) * 1.2),
+                                   (0.5, bubbles(3.0, 60, 150, 600) * env(3.0, 0.5, 1.0) * 0.6), (2.3, splash(1.5, 2.0) * 1.3),
+                                   (2.4, lowpass(noise(1.4), 180, 3) * decay(1.4, 0.4) * 2.0)), 1.8, 0.4, 1.2)
+d = 2.4
+S['wallower/roar'] = reverb(voice(contour(d, (0, 52), (0.2, 104), (0.6, 92), (1, 40)), d, ((210, 100, 1.0), (520, 150, 1.0), (1150, 260, 0.6), (2300, 400, 0.2)),
+                                  breath=0.5, jitter=0.08, rough=1.0) * env(d, 0.08, 0.9) * 1.3
+                            + bubbles(d, 40, 160, 700) * env(d, 0.3, 0.8) * 0.5 + lowpass(noise(d), 130, 3) * env(d, 0.3, 1.0) * 1.8, 2.0, 0.4, 1.5)
+d = 0.6
+S['wallower/bite'] = reverb(place(d, (0.0, thump(0.4, 130, 44, 0.08) * 1.8), (0.0, lowpass(noise(0.12), 2200) * decay(0.12, 0.02) * 1.4), (0.02, splash(0.5, 0.9) * 0.7),
+                                  (0.0, voice(contour(0.4, (0, 84), (1, 56)), 0.4, WET, breath=0.5, jitter=0.08, rough=1.0) * env(0.4, 0.01, 0.25) * 0.6)), 0.7, 0.3, 0.5)
+d = 1.2
+S['wallower/slap'] = reverb(place(d, (0.0, splash(1.1, 1.8, 4200) * 1.3), (0.0, lowpass(noise(0.1), 1500) * decay(0.1, 0.015) * 1.6), (0.0, thump(0.7, 90, 30, 0.14) * 1.6),
+                                  (0.3, bubbles(0.8, 14, 200, 800) * 0.4)), 1.0, 0.3, 0.7)
+d = 1.1
+S['wallower/spit'] = reverb(place(d, (0.0, voice(contour(0.8, (0, 60), (0.8, 130), (1, 150)), 0.8, WET, breath=0.6, jitter=0.1, rough=1.0) * env(0.8, 0.25, 0.05) * 0.9),
+                                  (0.0, bubbles(0.8, 26, 200, 900) * env(0.8, 0.4, 0.1) * 0.6), (0.8, lowpass(noise(0.2), 1800) * decay(0.2, 0.035) * 1.5),
+                                  (0.8, thump(0.25, 190, 70, 0.05) * 1.0)), 0.8, 0.3, 0.5)
+d = 0.6
+S['wallower/plop'] = reverb(place(d, (0.0, thump(0.4, 150, 55, 0.07) * 1.4), (0.0, squelch(0.45, 380) * 1.0), (0.03, splash(0.4, 0.7, 3000) * 0.5),
+                                  (0.2, bubbles(0.35, 6, 220, 700) * 0.4)), 0.5, 0.25, 0.4)
+d = 1.8
+S['wallower/dive'] = reverb(place(d, (0.0, splash(1.2, 2.0) * 1.2), (0.0, whoosh(0.9, 200, 1400, 0.3) * 0.7), (0.4, bubbles(1.4, 50, 160, 700) * env(1.4, 0.1, 1.0) * 0.8),
+                                  (0.2, lowpass(noise(1.5), 200, 3) * decay(1.5, 0.4) * 1.8)), 1.2, 0.35, 0.9)
+d = 1.0
+S['wallower/wake'] = reverb(moving_bandpass(noise(d), contour(d, (0, 500), (0.5, 1300), (1, 600)), 0.5) * env(d, 0.4, 0.5) * 0.7
+                            + bubbles(d, 12, 240, 800) * env(d, 0.3, 0.4) * 0.5 + lowpass(noise(d), 180) * env(d, 0.4, 0.5) * 0.8, 0.7, 0.25, 0.5)
+d = 2.2
+S['wallower/breach'] = reverb(place(d, (0.0, splash(1.8, 2.6) * 1.6), (0.0, thump(1.4, 100, 24, 0.3) * 2.2), (0.0, lowpass(noise(0.5), 1100) * decay(0.5, 0.1) * 1.6),
+                                    (0.05, voice(contour(1.3, (0, 70), (0.2, 124), (1, 60)), 1.3, WET, breath=0.5, jitter=0.08, rough=1.0) * env(1.3, 0.04, 0.8) * 1.1),
+                                    (0.5, highpass(noise(1.5), 2600) * env(1.5, 0.3, 1.1) * 0.3)), 1.6, 0.4, 1.1)
+d = 3.6
+S['wallower/gulp'] = reverb(place(d, (0.0, moving_bandpass(noise(2.9), sweep(180, 1500, 2.9, 1.8), 0.5) * env(2.9, 1.9, 0.06) * 1.3),
+                                  (0.0, voice(contour(2.9, (0, 46), (1, 96)), 2.9, WET, breath=0.9, jitter=0.06, rough=0.7) * env(2.9, 1.2, 0.05) * 0.6),
+                                  (0.3, bubbles(2.5, 40, 180, 800) * env(2.5, 1.2, 0.3) * 0.4), (2.9, thump(0.5, 130, 44, 0.09) * 2.0),
+                                  (2.9, lowpass(noise(0.12), 2200) * decay(0.12, 0.02) * 1.5), (2.92, splash(0.6, 1.0) * 0.6)), 1.2, 0.35, 0.8)
+
+# the Weeping Mother: a woman's voice out of a tree, and the tree
+WOMAN = ((760, 130, 1.0), (1280, 170, 0.6), (2850, 320, 0.3))
+
+
+def mother_ambient(k):
+    """Weeping: three or four short sobs going down, and the long shaken breath after them; the bole creaks under it."""
+    d = 3.4
+    out = np.zeros(int(SR * d))
+    at, pitch = 0.15, 300 - 20 * k
+    for i in range(3 + k):
+        n = 0.2 + 0.03 * i
+        s = voice(contour(n, (0, pitch), (0.3, pitch * 1.08), (1, pitch * 0.82)), n, WOMAN, breath=0.5, jitter=0.05) * env(n, 0.03, n * 0.6)
+        a = int(at * SR)
+        out[a:a + len(s)] += s * (0.9 - 0.12 * i)
+        at += n + 0.09
+        pitch *= 0.93
+    n = d - at - 0.1
+    wob = 1 + 0.05 * np.sin(2 * np.pi * 6.5 * t(n))
+    breath = voice(contour(n, (0, pitch), (1, pitch * 0.72)) * wob, n, WOMAN, breath=1.1, jitter=0.06) * env(n, 0.2, n * 0.7) * (0.75 + 0.25 * np.sin(2 * np.pi * 6.5 * t(n)))
+    a = int(at * SR)
+    out[a:a + len(breath)] += breath * 0.6
+    return reverb(out + place(d, (0.6 + 0.4 * k, creak(1.8, 16, 26) * env(1.8, 0.5, 0.7) * 0.22)), 2.0, 0.45, 1.3)
+
+
+S['weeping_mother/ambient1'] = mother_ambient(0)
+S['weeping_mother/ambient2'] = mother_ambient(1)
+d = 0.8
+S['weeping_mother/hurt'] = reverb(voice(contour(d, (0, 420), (0.15, 520), (1, 260)), d, WOMAN, breath=0.5, jitter=0.07, rough=0.3) * env(d, 0.01, 0.5)
+                                  + place(d, (0.0, crackle(0.3, 90, 1500) * decay(0.3, 0.06) * 0.8), (0.0, creak(0.5, 70, 30) * env(0.5, 0.01, 0.35) * 0.4)),
+                                  1.2, 0.35, 0.8)
+d = 5.0
+fall = contour(3.6, (0, 560), (0.1, 620), (0.5, 380), (1, 120)) * (1 + 0.03 * np.sin(2 * np.pi * 5.5 * t(3.6)))
+S['weeping_mother/death'] = reverb(place(d, (0.0, voice(fall, 3.6, WOMAN, breath=0.6, jitter=0.07, rough=0.4) * env(3.6, 0.03, 2.4) * 1.1),
+                                         (0.0, voice(fall * 0.5, 3.6, LOG, breath=0.5, jitter=0.08, rough=0.9) * env(3.6, 0.3, 2.0) * 0.7),
+                                         (1.4, creak(2.2, 50, 9) * env(2.2, 0.3, 0.3) * 0.8), (3.3, crackle(1.0, 120, 1400) * decay(1.0, 0.3) * 1.0),
+                                         (3.5, thump(1.3, 80, 24, 0.3) * 2.4), (3.5, lowpass(noise(0.8), 600) * decay(0.8, 0.15) * 1.2),
+                                         (3.6, highpass(noise(1.2), 2000) * env(1.2, 0.05, 1.0) * 0.25)), 2.2, 0.45, 1.5)
+d = 2.8
+rise = contour(d, (0, 310), (0.14, 560), (0.55, 610), (0.8, 520), (1, 300)) * (1 + 0.035 * np.sin(2 * np.pi * 6.2 * t(d)) * np.clip(t(d) / 0.8, 0, 1))
+S['weeping_mother/wail'] = reverb(voice(rise, d, ((950, 160, 1.0), (1550, 220, 0.8), (3100, 380, 0.45)), breath=0.35, jitter=0.05, rough=0.15) * env(d, 0.12, 1.1) * 1.2
+                                  + voice(rise * 1.005, d, WOMAN, breath=0.2, jitter=0.06) * env(d, 0.3, 1.2) * 0.6
+                                  + voice(rise * 0.5, d, LOG, breath=0.4, jitter=0.08, rough=0.9) * env(d, 0.4, 1.0) * 0.5, 2.6, 0.5, 2.0)
+d = 0.7
+S['weeping_mother/lash'] = reverb(place(d, (0.0, whoosh(0.5, 500, 4200, 0.75, 0.45) * 1.0), (0.0, whoosh(0.5, 200, 1200, 0.7, 0.5) * 0.7),
+                                        (0.37, highpass(noise(0.06), 2200) * decay(0.06, 0.006) * 1.4), (0.37, thump(0.1, 400, 160, 0.02) * 0.6)), 0.6, 0.25, 0.4)
+d = 1.3
+S['weeping_mother/slam'] = reverb(place(d, (0.0, thump(1.0, 96, 26, 0.2) * 2.4), (0.0, crackle(0.5, 110, 1500) * decay(0.5, 0.1) * 1.0),
+                                        (0.0, lowpass(noise(0.4), 900) * decay(0.4, 0.07) * 1.4), (0.03, splash(0.7, 1.2, 3000) * 0.6),
+                                        (0.15, creak(0.7, 60, 22) * env(0.7, 0.02, 0.5) * 0.4)), 1.1, 0.35, 0.9)
+d = 2.0
+S['weeping_mother/creak'] = reverb(creak(d, 14, 44) * env(d, 0.3, 0.5) * 0.9 + creak(d, 9, 20, (240, 610, 1180)) * env(d, 0.5, 0.5) * 0.7
+                                   + lowpass(noise(d), 160, 3) * env(d, 0.5, 0.6) * 1.4 + place(d, (1.3, crackle(0.5, 50, 1300) * decay(0.5, 0.15) * 0.5)), 1.4, 0.35, 1.0)
+d = 0.9
+S['weeping_mother/root'] = reverb(place(d, (0.0, thump(0.7, 120, 34, 0.14) * 2.0), (0.0, lowpass(noise(0.4), 1000) * decay(0.4, 0.08) * 1.4),
+                                        (0.0, crackle(0.6, 100, 1300) * decay(0.6, 0.15) * 0.9), (0.05, creak(0.5, 80, 30) * env(0.5, 0.01, 0.35) * 0.5),
+                                        (0.1, squelch(0.4, 300) * 0.5)), 0.8, 0.3, 0.6)
+
 S['music/boss'] = boss_music()
 
 # ============================================================== events -> files
@@ -793,6 +1016,21 @@ EVENTS = {
     'entity.stone_eater.ambient': ['stone_eater/ambient1', 'stone_eater/ambient2'], 'entity.stone_eater.hurt': ['stone_eater/hurt'],
     'entity.stone_eater.death': ['stone_eater/death'], 'entity.stone_eater.roar': ['stone_eater/roar'], 'entity.stone_eater.burrow': ['stone_eater/burrow'],
     'entity.stone_eater.erupt': ['stone_eater/erupt'], 'entity.stone_eater.bite': ['stone_eater/bite'],
+    'entity.pike.ambient': ['pike/ambient1', 'pike/ambient2'], 'entity.pike.hurt': ['pike/hurt'], 'entity.pike.death': ['pike/death'],
+    'entity.pike.bite': ['pike/bite'], 'entity.pike.leap': ['pike/leap'], 'entity.pike.flop': ['pike/flop'],
+    'entity.lanky.ambient': ['lanky/ambient1', 'lanky/ambient2'], 'entity.lanky.hurt': ['lanky/hurt'], 'entity.lanky.death': ['lanky/death'],
+    'entity.lanky.slam': ['lanky/slam'], 'entity.lanky.step': ['lanky/step'],
+    'entity.wisp.ambient': ['wisp/ambient1', 'wisp/ambient2'], 'entity.wisp.hurt': ['wisp/hurt'], 'entity.wisp.death': ['wisp/death'],
+    'entity.wisp.cast': ['wisp/cast'],
+    'entity.wallower.ambient': ['wallower/ambient1', 'wallower/ambient2'], 'entity.wallower.hurt': ['wallower/hurt'],
+    'entity.wallower.death': ['wallower/death'], 'entity.wallower.roar': ['wallower/roar'], 'entity.wallower.bite': ['wallower/bite'],
+    'entity.wallower.slap': ['wallower/slap'], 'entity.wallower.spit': ['wallower/spit'], 'entity.wallower.plop': ['wallower/plop'],
+    'entity.wallower.dive': ['wallower/dive'], 'entity.wallower.wake': ['wallower/wake'], 'entity.wallower.breach': ['wallower/breach'],
+    'entity.wallower.gulp': ['wallower/gulp'],
+    'entity.weeping_mother.ambient': ['weeping_mother/ambient1', 'weeping_mother/ambient2'], 'entity.weeping_mother.hurt': ['weeping_mother/hurt'],
+    'entity.weeping_mother.death': ['weeping_mother/death'], 'entity.weeping_mother.wail': ['weeping_mother/wail'],
+    'entity.weeping_mother.lash': ['weeping_mother/lash'], 'entity.weeping_mother.slam': ['weeping_mother/slam'],
+    'entity.weeping_mother.creak': ['weeping_mother/creak'], 'entity.weeping_mother.root': ['weeping_mother/root'],
     'entity.keykeeper.ambient': ['keykeeper/ambient1', 'keykeeper/ambient2'],
     'entity.keykeeper.give': ['keykeeper/give'],
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],
@@ -843,7 +1081,7 @@ if __name__ == '__main__':
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
         names = [n for n in S if n != 'music/boss']
-        fig, axes = plt.subplots(12, 9, figsize=(36, 36))
+        fig, axes = plt.subplots(17, 9, figsize=(36, 51))
         axes = axes.ravel()
         for ax, name in zip(axes, names):
             x = np.asarray(S[name], float)

@@ -17,12 +17,12 @@ spells = re.findall(r'^\s+[A-Z_]+\("(\w+)", SpellSchool', open(f'{J}/Spell.java'
 bolts = re.findall(r'^\s+[A-Z_]+\("(\w+)", [\d.]+, [\d.]+\)', open(f'{J}/entity/SpellBoltEntity.java').read(), re.M)
 kinds = re.findall(r'^\s+[A-Z_]+\("(withered_\w+)"', open(f'{J}/entity/WitheredEntity.java').read(), re.M)
 mobs = kinds + ['rust_knight', 'gilded_knight', 'keykeeper', 'overseer', 'chaplain', 'carrion_hound', 'gravedigger', 'blind_crawler', 'unhewn', 'taskmaster',
-               'stone_eater']
+               'stone_eater', 'bone_pike', 'lanky', 'wisp', 'wallower', 'weeping_mother']
 armour = re.findall(r'"((?:prisoner|guard|rust|chaplain)_\w+)"', open(f'{J}/ArmorSet.java').read())
 items |= set(armour)
 items |= set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate', 'mob_mark', 'forge'}
-blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name', 'shard_heap', 'locked_gate', 'shallows'}
-entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot', 'powder_pot', 'thrown_wedge'}
+blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name', 'shard_heap', 'locked_gate', 'shallows', 'sludge'}
+entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot', 'powder_pot', 'thrown_wedge', 'mud_glob'}
 lang = {l: json.load(open(f'{A}/lang/{l}.json', encoding='utf-8')) for l in ('ru_ru', 'en_us')}
 
 
@@ -76,7 +76,8 @@ for name in entities:
             problems.append(f'{l}: no name for entity {name}')
 for tex in re.findall(r'"(textures/entity/[\w/]+\.png)"', ''.join(open(f).read() for f in glob.glob(f'{J}/client/*.java'))):
     need(f'{A}/{tex}', 'entity texture')
-for kind in kinds + ['blind_crawler', 'unhewn', 'unhewn_glow', 'taskmaster', 'taskmaster_glow', 'stone_eater', 'stone_eater_glow']:
+for kind in kinds + ['blind_crawler', 'unhewn', 'unhewn_glow', 'taskmaster', 'taskmaster_glow', 'stone_eater', 'stone_eater_glow', 'bone_pike',
+                     'bone_pike_glow', 'lanky', 'lanky_glow', 'wisp', 'wisp_glow', 'wallower', 'wallower_glow', 'weeping_mother', 'weeping_mother_glow']:
     need(f'{A}/textures/entity/{kind}.png', 'entity texture')
 sounds = json.load(open(f'{A}/sounds.json'))
 registered = set(re.findall(r'"((?:entity|ui|block|item|player|music)\.[\w.]+)"', main[main.index('SOUND_NAMES'):main.index('static {', main.index('SOUND_NAMES'))]))

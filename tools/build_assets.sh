@@ -17,6 +17,11 @@ python3 tools/gen_crawler.py ${P:+$P/crawler.png}
 python3 tools/gen_unhewn.py ${P:+$P/unhewn.png}
 python3 tools/gen_taskmaster.py ${P:+$P/taskmaster.png}
 python3 tools/gen_stone_eater.py ${P:+$P/stone_eater.png}
+python3 tools/gen_pike.py ${P:+$P/pike.png}
+python3 tools/gen_lanky.py ${P:+$P/lanky.png}
+python3 tools/gen_wisp.py ${P:+$P/wisp.png}
+python3 tools/gen_wallower.py ${P:+$P/wallower.png}
+python3 tools/gen_mother.py ${P:+$P/mother.png}
 python3 tools/gen_items.py ${P:+$P/items.png}
 python3 tools/gen_shields.py ${P:+$P/shields.png}
 python3 tools/gen_armor.py ${P:+$P/armor.png}

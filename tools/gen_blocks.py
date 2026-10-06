@@ -228,6 +228,34 @@ def shallows_texture(frames=16):
     return img
 
 
+def sludge_texture(frames=8):
+    """The bog's own sludge: nearly black, a green skin on it, bubbles coming up through it and bursting."""
+    size = 16
+    img = Image.new('RGBA', (size, size * frames), (0, 0, 0, 0))
+    rnd = random.Random(77)
+    bubbles = [(rnd.randrange(size), rnd.randrange(size), rnd.randrange(frames)) for _ in range(7)]
+    for f in range(frames):
+        for x in range(size):
+            for y in range(size):
+                n = 0.6 * blotch('sludge1', x, y, 3.0) + 0.4 * blotch('sludge2', x, y, 1.6)
+                c = mix((30, 34, 24), (66, 74, 44), n)
+                if n > 0.62:
+                    c = mix(c, (96, 112, 58), (n - 0.62) * 2.2)
+                edge = min(x, y, size - 1 - x, size - 1 - y)
+                alpha = 255 if edge > 0 or blotch('sludge3', x, y, 1.2) > 0.4 else 0
+                img.putpixel((x, f * size + y), c + (alpha,))
+        for bx, by, at in bubbles:
+            age = (f - at) % frames
+            if age == 0:
+                img.putpixel((bx, f * size + by), (120, 138, 76, 255))
+            elif age == 1:
+                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    if 0 <= bx + dx < size and 0 <= by + dy < size:
+                        img.putpixel((bx + dx, f * size + by + dy), (104, 120, 66, 255))
+                img.putpixel((bx, f * size + by), (22, 26, 18, 255))
+    return img
+
+
 def locked_gate_texture():
     """A grate of square iron bars riveted to two flat bands; see-through between them."""
     size = 16
@@ -326,6 +354,20 @@ if __name__ == '__main__':
                                 'west': {'uv': [0, 0, 16, 1.6], 'texture': '#t', 'cullface': 'west'},
                                 'east': {'uv': [0, 0, 16, 1.6], 'texture': '#t', 'cullface': 'east'}}}]})
     write_json(f'{A}/blockstates/shallows.json', {'variants': {'': {'model': f'{MOD}:block/shallows'}}})
+
+    # a pool of sludge (SludgeBlock): thicker than the film it may lie in, so that it shows over it
+    sludge = sludge_texture()
+    sludge.save(f'{A}/textures/block/sludge.png')
+    write_json(f'{A}/textures/block/sludge.png.mcmeta', {'animation': {'frametime': 6}})
+    write_json(f'{A}/models/block/sludge.json', {
+        'textures': {'t': f'{MOD}:block/sludge', 'particle': f'{MOD}:block/sludge'},
+        'elements': [{'from': [0, 0, 0], 'to': [16, 2.6, 16], 'shade': False,
+                      'faces': {'up': {'uv': [0, 0, 16, 16], 'texture': '#t'},
+                                'north': {'uv': [0, 0, 16, 2.6], 'texture': '#t', 'cullface': 'north'},
+                                'south': {'uv': [0, 0, 16, 2.6], 'texture': '#t', 'cullface': 'south'},
+                                'west': {'uv': [0, 0, 16, 2.6], 'texture': '#t', 'cullface': 'west'},
+                                'east': {'uv': [0, 0, 16, 2.6], 'texture': '#t', 'cullface': 'east'}}}]})
+    write_json(f'{A}/blockstates/sludge.json', {'variants': {f'wet={wet}': {'model': f'{MOD}:block/sludge'} for wet in ('true', 'false')}})
 
     # a threshold that names a place: nothing is drawn, the game only needs to be told so
     write_json(f'{A}/models/block/place_name.json', {'textures': {'particle': 'minecraft:block/stone'}})

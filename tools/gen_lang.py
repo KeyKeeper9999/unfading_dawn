@@ -56,6 +56,10 @@ for key, ru, en in (
         ('powder_pot', 'Пороховой горшок', 'Powder Pot'), ('quarry_key', 'Ключ от Ломовых ворот', "Key to the Quarrymen's Gate"),
         ('taskmaster_soul', 'Душа Десятника', 'Soul of the Taskmaster'), ('stone_eater_soul', 'Душа Камнееда', 'Soul of the Stone-Eater'),
         ('mire_key', 'Ключ от Топких ворот', 'Key to the Mire Gate'),
+        ('boat_hook', 'Багор перевозчика', "Ferryman's Boat Hook"), ('wallower_fang', 'Зуб Омутника', "Wallower's Fang"),
+        ('withe_scourge', 'Плакучая плеть', 'Weeping Scourge'), ('bone_scale', 'Костяная чешуя', 'Bone Scale'), ('withe', 'Ивовая лоза', 'Withe'),
+        ('mud_glob', 'Ком тины', 'Clot of Sludge'), ('wisp_flame_bolt', 'Болотный огонь', 'Marsh Fire'),
+        ('wallower_soul', 'Душа Омутника', 'Soul of the Wallower'), ('mother_soul', 'Душа Плакучей', 'Soul of the Weeping Mother'),
         ('tattered_cloth', 'Ветошь', 'Tattered Cloth'), ('rust_scrap', 'Ржавый лом', 'Rust Scrap')):
     t(f'item.{M}.{key}', ru, en)
 
@@ -67,6 +71,8 @@ MOBS = (('withered_prisoner', 'Истлевший узник', 'Withered Prisone
         ('withered_digger', 'Истлевший ломщик', 'Withered Digger'), ('withered_barrowman', 'Истлевший тачечник', 'Withered Barrowman'),
         ('withered_sapper', 'Истлевший подрывник', 'Withered Sapper'), ('blind_crawler', 'Слепыш', 'Blind Crawler'), ('unhewn', 'Недотёс', 'The Unhewn'),
         ('taskmaster', 'Десятник Каменоломни', 'Taskmaster of the Quarry'), ('stone_eater', 'Камнеед', 'The Stone-Eater'),
+        ('withered_drowned', 'Утопленник', 'The Drowned'), ('bone_pike', 'Костяная щука', 'Bone Pike'), ('lanky', 'Жердяй', 'The Lanky One'),
+        ('wisp', 'Болотный огонёк', 'Marsh Wisp'), ('wallower', 'Омутник', 'The Wallower'), ('weeping_mother', 'Плакучая', 'The Weeping Mother'),
         ('gilded_knight', 'Золочёный рыцарь', 'Gilded Knight'), ('rust_knight', 'Ржавый рыцарь', 'Rust Knight'),
         ('keykeeper', 'Слепой ключник', 'Blind Keykeeper'), ('overseer', 'Надзиратель Острога', 'Overseer of the Stockade'),
         ('chaplain', 'Капеллан Острога', 'Chaplain of the Stockade'))
@@ -160,6 +166,8 @@ t(f'place.{M}.weir', 'ЗАПРУДА', 'THE WEIR')
 t(f'place.{M}.withy', 'ИВНЯК', 'THE WITHY WOOD')
 t(f'place.{M}.isle', 'ОСТРОВ ПЛАКУЧЕЙ', 'THE ISLE OF THE WEEPING ONE')
 t(f'block.{M}.shallows', 'Мелкая вода', 'Shallows')
+t(f'block.{M}.sludge', 'Тина', 'Sludge')
+t(f'entity.{M}.mud_glob', 'Ком тины', 'Clot of Sludge')
 t(f'message.{M}.gate_locked.none', 'Заперто. Ключа от этого замка здесь нет.', 'Locked. The key to this lock is not in these parts.')
 t(f'message.{M}.gate_opened.none', 'Решётка поддалась', 'The grate gives way')
 t(f'block.{M}.shard_heap', 'Тлеющий осколок', 'Glowing Shard')
@@ -275,6 +283,24 @@ SUBTITLES = {
     'entity.stone_eater.death': ('Камнеед издыхает', 'Stone-Eater dies'), 'entity.stone_eater.roar': ('Камнеед ревёт', 'Stone-Eater roars'),
     'entity.stone_eater.burrow': ('Что-то роет камень', 'Something digs through rock'), 'entity.stone_eater.erupt': ('Пол взрывается', 'The floor bursts'),
     'entity.stone_eater.bite': ('Лязгают челюсти', 'Jaws clash'),
+    'entity.pike.ambient': ('Щёлкают костяные челюсти', 'Bone jaws click'), 'entity.pike.hurt': ('Щука бьётся', 'Pike thrashes'),
+    'entity.pike.death': ('Щука всплывает брюхом', 'Pike goes belly up'), 'entity.pike.bite': ('Щука хватает', 'Pike snaps'),
+    'entity.pike.leap': ('Щука прыгает из воды', 'Pike leaps from the water'), 'entity.pike.flop': ('Рыба бьётся о доски', 'A fish flops on the boards'),
+    'entity.lanky.ambient': ('Жердяй скрипит', 'Lanky One creaks'), 'entity.lanky.hurt': ('Жердяй стонет', 'Lanky One groans'),
+    'entity.lanky.death': ('Жердяй валится в воду', 'Lanky One topples into the water'), 'entity.lanky.slam': ('Длинная рука бьёт по воде', 'A long arm strikes the water'),
+    'entity.lanky.step': ('Чавкает трясина', 'The mire squelches'),
+    'entity.wisp.ambient': ('Огонёк вздыхает', 'Wisp sighs'), 'entity.wisp.hurt': ('Огонёк мечется', 'Wisp darts'),
+    'entity.wisp.death': ('Огонёк гаснет', 'Wisp goes out'), 'entity.wisp.cast': ('Огонёк разгорается', 'Wisp flares'),
+    'entity.wallower.ambient': ('Омутник булькает', 'Wallower gurgles'), 'entity.wallower.hurt': ('Омутник ревёт от боли', 'Wallower bellows in pain'),
+    'entity.wallower.death': ('Омутник идёт ко дну', 'Wallower sinks'), 'entity.wallower.roar': ('Омутник ревёт', 'Wallower roars'),
+    'entity.wallower.bite': ('Захлопывается пасть', 'A maw snaps shut'), 'entity.wallower.slap': ('Хвост бьёт по воде', 'A tail slaps the water'),
+    'entity.wallower.spit': ('Омутник харкает', 'Wallower hawks'), 'entity.wallower.plop': ('Шлёпается тина', 'Sludge splatters'),
+    'entity.wallower.dive': ('Омутник уходит под воду', 'Wallower goes under'), 'entity.wallower.wake': ('Рябь идёт по воде', 'A ripple crosses the water'),
+    'entity.wallower.breach': ('Омутник вырывается из воды', 'Wallower bursts from the water'), 'entity.wallower.gulp': ('Омутник втягивает воздух', 'Wallower draws breath'),
+    'entity.weeping_mother.ambient': ('Плакучая плачет', 'Weeping Mother weeps'), 'entity.weeping_mother.hurt': ('Плакучая вскрикивает', 'Weeping Mother cries out'),
+    'entity.weeping_mother.death': ('Плакучая падает', 'Weeping Mother falls'), 'entity.weeping_mother.wail': ('Плакучая воет', 'Weeping Mother wails'),
+    'entity.weeping_mother.lash': ('Свистит ветвь', 'A bough whistles'), 'entity.weeping_mother.slam': ('Ветви бьют в землю', 'Boughs strike the ground'),
+    'entity.weeping_mother.creak': ('Скрипит ствол', 'A bole creaks'), 'entity.weeping_mother.root': ('Корень рвёт землю', 'A root tears the ground'),
     'entity.keykeeper.ambient': ('Ключник кашляет', 'Keykeeper coughs'), 'entity.keykeeper.give': ('Звенят ключи', 'Keys jingle'),
     'ui.death': ('Ты помер', 'You croaked'), 'ui.boss_defeated': ('Гад повержен', 'Fiend felled'), 'ui.hearth_lit': ('Очаг разгорается', 'Hearth flares up'),
     'ui.level_up': ('Сила прибывает', 'Strength grows'), 'ui.souls_gain': ('Души стекаются', 'Souls gather'),

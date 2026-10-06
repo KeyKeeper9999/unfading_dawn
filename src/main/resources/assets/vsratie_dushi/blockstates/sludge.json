@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "wet=true": {
+      "model": "vsratie_dushi:block/sludge"
+    },
+    "wet=false": {
+      "model": "vsratie_dushi:block/sludge"
+    }
+  }
+}
