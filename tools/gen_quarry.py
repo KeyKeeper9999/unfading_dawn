@@ -47,9 +47,10 @@ def smooth(x, z, scale, salt):
 def hill(x, z):
     """How high the white hill stands over the ground here (0 far from it): a table with broken sides."""
     x0, x1, z0, z1 = HILL
-    d = max(x0 - x, x - x1, z0 - z, z - z1, 0)
-    if d > 22:
+    d = math.hypot(max(x0 - x, x - x1, 0), max(z0 - z, z - z1, 0))
+    if d > 34:
         return 0
+    d = max(0.0, d - smooth(x, z, 14, 414) * 12)             # its foot runs out further in some places than in others
     return HILL_HEIGHT + smooth(x, z, 9, 412) * 4 - d * 1.35 - (smooth(x, z, 4, 413) * 3 if d else 0)
 
 
@@ -259,7 +260,7 @@ class Quarry:
                 for y in range(mid + 4, mid + 7):
                     b.set(x, y, z, worked(x, y, z) if y == mid + 6 else chalk(x, y, z))
         # the derrick: a mast, a jib, a block of stone still in the air
-        mx, mz = 119, zc + 9
+        mx, mz = 128, zc + 11                                    # (south of the lane's line: the head must be seen whole from the lane)
         b.fill(mx, mid + 1, mz, mx, mid + 11, mz, LOG % 'y')
         b.fill(mx - 1, mid + 11, mz, mx - 6, mid + 11, mz, LOG % 'x')
         for i in range(1, 4):
@@ -270,7 +271,7 @@ class Quarry:
             b.set(mx + dx, mid + 1, mz + dz, LOG % 'y')
         # cut stone on the floor, well clear of every face
         self.blocks(110, mid + 1, zc - 7, ((0, 0, 2), (1, 0, 2), (0, 1, 1), (1, 1, 2), (2, 0, 1)), 1)
-        self.blocks(126, mid + 1, zc + 5, ((0, 0, 1), (1, 0, 2), (0, 1, 2), (1, 1, 1)), 2)
+        self.blocks(125, mid + 1, zc + 4, ((0, 0, 1), (1, 0, 2), (0, 1, 2), (1, 1, 1)), 2)
         self.blocks(114, mid + 1, zc + 2, ((0, 0, 1), (0, 1, 1)), 3)
         self.blocks(131, mid + 1, zc - 9, ((0, 0, 2), (1, 0, 1), (0, 1, 1)), 4)
         self.blocks(106, mid + 1, zc + 10, ((0, 0, 1), (1, 0, 1), (2, 0, 2), (2, 1, 1)), 5)
@@ -290,7 +291,7 @@ class Quarry:
         b.barrels(((x1, mid + 1, sz + 1), (x1, mid + 1, sz + 3), (x1, mid + 2, sz + 3), (x1 - 1, mid + 1, sz + 1)))
         b.set(sx + 2, mid + 3, sz + 2, LANTERN)
         # lamps
-        for x, z in ((104, zc - 13), (104, zc + 13), (124, zc + 13), (130, zc - 3), (116, zc - 4), (134, zc + 6)):
+        for x, z in ((104, zc - 13), (104, zc + 13), (116, zc + 13), (130, zc - 3), (116, zc - 4), (134, zc + 6)):
             gen_village.lamp_post(b, x, mid + 1, z)
         for x in (108, 122):
             self.lamp(x, mid + 4, z0 + 3)
@@ -344,7 +345,8 @@ class Quarry:
         # the teeth, hanging from the upper lip; the corners of the mouth
         for dz in range(-4, 5):
             if dz % 2 == 0:
-                b.set(100, base + 5, zc + dz, 'minecraft:pointed_dripstone[thickness=tip,vertical_direction=down]')
+                b.set(100, base + 5, zc + dz, 'minecraft:pointed_dripstone[thickness=frustum,vertical_direction=down]')
+                b.set(100, base + 4, zc + dz, 'minecraft:pointed_dripstone[thickness=tip,vertical_direction=down]')
                 b.set(100, base + 6, zc + dz, worked(100, base + 6, zc + dz))
         # the pupils: a lamp hung deep in either socket
         for dz in (-6, 6):
@@ -803,7 +805,7 @@ class Quarry:
             ('quarry_gallery', (88, top + 2.6, zc + 0.5), (60, top + 2.4, zc + 0.5)),
             ('quarry_eyes', (91, top + 2.6, zc + 0.5), (98, top + 3, zc - 6)),
             ('quarry_from_the_eye', (95.5, top + 3.6, zc - 5.5), (130, mid + 2, zc + 4)),
-            ('quarry_hall_from_the_gallery', (56.5, top + 2.6, zc + 0.5), (40, low + 4, zc + 0.5)),
+            ('quarry_hall_from_the_gallery', (55.6, top + 3.4, zc + 0.5), (42, low + 3, zc + 0.5)),
             ('quarry_wheel', (55, top + 2.6, zc + 8), (43, top + 2, zc - 14)),
             ('quarry_shaft_down', (62.5, top + 2.6, zc - 6.5), (62.5, low + 2, zc - 13)),
             ('quarry_shaft_foot', (63.5, low + 2.6, zc - 7.5), (59, low + 2.5, zc - 11)),

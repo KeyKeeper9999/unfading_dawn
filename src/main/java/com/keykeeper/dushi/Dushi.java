@@ -385,7 +385,7 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.TaskmasterEntity>> TASKMASTER = ENTITIES.registerEntityType(
             "taskmaster", com.keykeeper.dushi.entity.TaskmasterEntity::new, MobCategory.MONSTER, b -> b.sized(1.5F, 3.4F).eyeHeight(2.9F).clientTrackingRange(12));
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.StoneEaterEntity>> STONE_EATER = ENTITIES.registerEntityType(
-            "stone_eater", com.keykeeper.dushi.entity.StoneEaterEntity::new, MobCategory.MONSTER, b -> b.sized(2.4F, 2.1F).eyeHeight(1.5F).clientTrackingRange(12).fireImmune());
+            "stone_eater", com.keykeeper.dushi.entity.StoneEaterEntity::new, MobCategory.MONSTER, b -> b.sized(3.0F, 2.7F).eyeHeight(1.9F).clientTrackingRange(12).fireImmune());
 
     public static final List<DeferredItem<SpawnEggItem>> SPAWN_EGGS = new ArrayList<>();
 

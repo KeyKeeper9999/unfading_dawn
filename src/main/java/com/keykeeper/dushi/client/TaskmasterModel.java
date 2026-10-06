@@ -27,6 +27,8 @@ public class TaskmasterModel extends EntityModel<BossRenderState> {
     /** Must match SCALE in tools/gen_taskmaster.py. */
     private static final float MODEL_SCALE = 1.25F;
     private static final float DEG = (float) (Math.PI / 180.0);
+    /** The pitch the maul is set at in the hand (its part's own rotation in the mesh). */
+    private static final float HELD = 1.5F;
 
     private final ModelPart body;
     private final ModelPart apron;
@@ -165,7 +167,7 @@ public class TaskmasterModel extends EntityModel<BossRenderState> {
                 float out = Math.max(draw, sweep);
                 this.rightArm.xRot = Anim.lerp(out, this.rightArm.xRot, -1.35F);
                 this.rightForearm.xRot = Anim.lerp(out, this.rightForearm.xRot, -0.15F);
-                this.maul.xRot = Anim.lerp(out, this.maul.xRot, 1.1F);
+                this.maul.xRot = Anim.lerp(out, this.maul.xRot, HELD + 1.1F);
                 this.rightArm.yRot += -1.1F * draw + 0.9F * sweep;
                 this.chest.yRot += -0.7F * draw + 0.75F * sweep;
                 this.chest.xRot += -0.2F * out;
@@ -195,10 +197,10 @@ public class TaskmasterModel extends EntityModel<BossRenderState> {
                 this.leftForearm.xRot = Anim.lerp(set, this.leftForearm.xRot, -0.5F);
                 this.rightArm.xRot = Anim.lerp(raise, this.rightArm.xRot, -2.3F);
                 this.rightForearm.xRot = Anim.lerp(raise, this.rightForearm.xRot, -0.6F);
-                this.maul.xRot = Anim.lerp(raise, this.maul.xRot, 0.2F);
+                this.maul.xRot = Anim.lerp(raise, this.maul.xRot, HELD + 0.2F);
                 this.rightArm.xRot = Anim.lerp(strike, this.rightArm.xRot, -0.75F);
                 this.rightForearm.xRot = Anim.lerp(strike, this.rightForearm.xRot, -0.3F);
-                this.maul.xRot = Anim.lerp(strike, this.maul.xRot, 1.05F);
+                this.maul.xRot = Anim.lerp(strike, this.maul.xRot, HELD + 1.05F);
             }
             case TaskmasterEntity.THROW -> {
                 // The left hand takes a wedge from the belt, goes back over the shoulder and whips forward.
@@ -246,8 +248,8 @@ public class TaskmasterModel extends EntityModel<BossRenderState> {
         this.leftArm.xRot = Anim.lerp(strike, this.leftArm.xRot, -0.9F);
         this.leftArm.zRot -= 0.25F * Math.max(raise, strike);
         this.leftForearm.xRot = Anim.lerp(Math.max(raise, strike), this.leftForearm.xRot, -0.35F);
-        this.maul.xRot = Anim.lerp(raise, this.maul.xRot, 0.0F);
-        this.maul.xRot = Anim.lerp(strike, this.maul.xRot, 0.75F);
+        this.maul.xRot = Anim.lerp(raise, this.maul.xRot, HELD);
+        this.maul.xRot = Anim.lerp(strike, this.maul.xRot, HELD + 0.75F);
         this.chest.xRot += -0.28F * raise + 0.55F * strike + Mth.sin(t * 0.9F) * 0.04F * stuck;
         this.chest.yRot += turn * raise - turn * strike;
         this.head.xRot += -0.2F * raise + 0.2F * strike;

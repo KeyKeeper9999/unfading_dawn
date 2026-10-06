@@ -69,7 +69,7 @@ quarry_shop_row -4.50 -36.40 146.00 13.50 -36.60 146.00
 quarry_gallery -16.00 -36.40 130.50 -16.00 -36.60 158.50
 quarry_eyes -16.00 -36.40 127.50 -22.50 -36.00 120.50
 quarry_from_the_eye -22.00 -35.40 123.00 -12.50 -51.00 88.50
-quarry_hall_from_the_gallery -16.00 -36.40 162.00 -16.00 -56.00 178.50
+quarry_hall_from_the_gallery -16.00 -35.60 162.90 -16.00 -57.00 176.50
 quarry_wheel -8.50 -36.40 163.50 -30.50 -37.00 175.50
 quarry_shaft_down -23.00 -36.40 156.00 -29.50 -58.00 156.00
 quarry_shaft_foot -24.00 -57.40 155.00 -27.50 -57.50 159.50
@@ -106,3 +106,4 @@ near_the_taskmaster -26.50 -57.00 163.50 -16.50 -57.00 175.50
 kill vsratie_dushi:taskmaster -17.50 -59.00 189.50
 near_the_stone_eater -63.50 -57.00 187.50 -74.50 -57.00 179.50
 kill vsratie_dushi:stone_eater -91.50 -59.00 180.50
+gate -17.50 -46.00 55.50

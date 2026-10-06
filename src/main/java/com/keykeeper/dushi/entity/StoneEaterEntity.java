@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * The Stone-Eater: what the lowest drift broke into. A beast the size of a wagon that lived in the rock before there was
+ * The Stone-Eater: what the lowest drift broke into. A beast the size of a loaded wagon that lived in the rock before there was
  * a quarry - eyeless, plated with stone that pale lichen grows on, with two digging claws as long as a man and a tail
  * that ends in a knot of rock. The boss of the Breach.
  * <p>
@@ -154,7 +154,7 @@ public class StoneEaterEntity extends SoulsMob {
             this.lungeCooldown = 130 + this.random.nextInt(60);
             return LUNGE;
         }
-        return distance < 3.6 ? CLAW : 0;
+        return distance < 3.0 ? CLAW : 0;
     }
 
     @Override
@@ -196,7 +196,7 @@ public class StoneEaterEntity extends SoulsMob {
                     this.setDeltaMovement(step.x, this.getDeltaMovement().y, step.z);
                 }
                 if (time == CLAW_IMPACT || this.phase() >= 2 && time == CLAW_SECOND) {
-                    this.hitArc(level, 4.2, 72.0, damage * 0.9F, 0.7);
+                    this.hitArc(level, 3.4, 72.0, damage * 0.9F, 0.7);
                     this.rubble(level, this.position().add(this.facing().scale(2.6)), 14, 0.7);
                 }
             }
@@ -241,7 +241,7 @@ public class StoneEaterEntity extends SoulsMob {
                 }
                 if (time == TAIL_IMPACT) {
                     Vec3 back = this.facing().scale(-1.0);
-                    this.hitArc(level, back, 4.6, 80.0, damage, 1.9, false);
+                    this.hitArc(level, back, 4.2, 80.0, damage, 1.9, false);
                     this.rubble(level, this.position().add(back.scale(3.2)), 24, 0.8);
                 }
             }
@@ -277,9 +277,9 @@ public class StoneEaterEntity extends SoulsMob {
             this.rubble(level, this.position(), 8 + (time - BURROW_STOP) * 2, 1.4);
         } else if (time == BURROW_ERUPT) {
             Vec3 at = this.position();
-            for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(3.0, 1.5, 3.0), this::isFoe)) {
+            for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(3.5, 1.5, 3.5), this::isFoe)) {
                 double distance = Math.sqrt(victim.distanceToSqr(at.x, victim.getY(), at.z)) - victim.getBbWidth() * 0.5;
-                if (distance <= 3.4 && victim.hurtServer(level, this.damageSources().mobAttack(this), damage * 1.5F)) {
+                if (distance <= 4.4 && victim.hurtServer(level, this.damageSources().mobAttack(this), damage * 1.5F)) {
                     Vec3 away = new Vec3(victim.getX() - at.x, 0.0, victim.getZ() - at.z);
                     away = away.lengthSqr() < 1.0E-4 ? Vec3.ZERO : away.normalize().scale(0.5);
                     shove(victim, new Vec3(away.x, 0.85, away.z));

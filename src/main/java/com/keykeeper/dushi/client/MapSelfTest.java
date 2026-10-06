@@ -88,6 +88,8 @@ public final class MapSelfTest {
                             LIST.add(new View("time", Double.parseDouble(p[1]), 0, 0, 0, 0, 0));
                         } else if (p.length == 5 && p[0].equals("hearth")) {
                             HEARTHS.put(p[1], BlockPos.containing(Double.parseDouble(p[2]), Double.parseDouble(p[3]), Double.parseDouble(p[4])));
+                        } else if (p.length == 4 && p[0].equals("gate")) {
+                            LIST.add(new View("gate", Double.parseDouble(p[1]), Double.parseDouble(p[2]), Double.parseDouble(p[3]), 0, 0, 0));
                         } else if (p.length == 5 && p[0].equals("kill")) {
                             LIST.add(new View("kill " + p[1], Double.parseDouble(p[2]), Double.parseDouble(p[3]), Double.parseDouble(p[4]), 0, 0, 0));
                         } else if (p.length == 7) {
@@ -201,6 +203,34 @@ public final class MapSelfTest {
                     });
                     next++;
                     wait = 20;
+                    return;
+                }
+                if (view.name.equals("gate")) {
+                    // a locked gate of the map: shut to one who has not its key, open - all of it - to one who has
+                    BlockPos gate = BlockPos.containing(view.x, view.y, view.z);
+                    server.execute(() -> {
+                        ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+                        ServerLevel level = server.overworld();
+                        BlockState state = level.getBlockState(gate);
+                        if (!(state.getBlock() instanceof com.keykeeper.dushi.block.LockedGateBlock)) {
+                            say("gate at " + gate.toShortString() + " is " + state + " FAILED");
+                            return;
+                        }
+                        net.minecraft.world.level.GameType was = player.gameMode.getGameModeForPlayer();
+                        player.setGameMode(net.minecraft.world.level.GameType.ADVENTURE);
+                        net.minecraft.world.item.Item key = state.getValue(com.keykeeper.dushi.block.LockedGateBlock.LOCK).key();
+                        player.getInventory().clearContent();
+                        BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(gate), Direction.EAST, gate, false);
+                        state.useWithoutItem(level, player, hit);
+                        boolean held = level.getBlockState(gate).getBlock() instanceof com.keykeeper.dushi.block.LockedGateBlock;
+                        player.getInventory().add(new net.minecraft.world.item.ItemStack(key));
+                        state.useWithoutItem(level, player, hit);
+                        boolean open = level.getBlockState(gate).isAir() && level.getBlockState(gate.above(2)).isAir();
+                        player.setGameMode(was);
+                        say("gate at " + gate.toShortString() + ": holds without its key=" + held + ", opens with it=" + open + (held && open ? "" : " FAILED"));
+                    });
+                    next++;
+                    wait = 10;
                     return;
                 }
                 if (view.name.equals("lever")) {

@@ -162,6 +162,8 @@ class World:
             if d <= 2:
                 h = max(h, 6)
             white = gen_quarry.hill(x, z)                         # the hill over the quarry, west of the town
+            if border < 13:
+                white = min(white, border * 0.85)
             if white > h:
                 h = white
                 self.white.add((x, z))
@@ -552,6 +554,8 @@ if __name__ == '__main__':
                                 ('stone_eater', (31, GY - 10, 488), (39, GY - 10, 477))):
             f.write(f'near_the_{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')
+        # and tries the locked gate without its key and with it
+        f.write('gate ' + ' '.join(f'{v_:.2f}' for v_ in world(*sorted(b.seals['quarry_key'])[0], spawn)) + '\n')
     with open('map/light.txt', 'w') as f:
         for name, at in probes(w):
             if b.get(*at) not in (None, AIR) and not any(k in str(b.get(*at)) for k in castle.PASSABLE):

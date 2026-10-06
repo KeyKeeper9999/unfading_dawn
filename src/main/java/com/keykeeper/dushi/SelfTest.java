@@ -296,6 +296,9 @@ public final class SelfTest {
                 continue;
             }
             dummy.setNoAi(true);
+            if (mob instanceof com.keykeeper.dushi.entity.UnhewnEntity statue) {
+                statue.rouse();                                  // (it would stand through the whole drill otherwise)
+            }
             mob.setTarget(dummy);
             DRILL.add(new Drill(EntityType.getKey(entry.getKey()).getPath(), mob, dummy, entry.getValue()));
             index++;

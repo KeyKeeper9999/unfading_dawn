@@ -58,7 +58,7 @@ public final class DushiClient {
         event.registerEntityRenderer(Dushi.TASKMASTER.get(),
                 context -> new QuarryRenderer<>(context, new TaskmasterModel(context.bakeLayer(TaskmasterModel.LAYER)), "taskmaster", 1.0F, true, true));
         event.registerEntityRenderer(Dushi.STONE_EATER.get(),
-                context -> new QuarryRenderer<>(context, new StoneEaterModel(context.bakeLayer(StoneEaterModel.LAYER)), "stone_eater", 1.6F, true, true));
+                context -> new QuarryRenderer<>(context, new StoneEaterModel(context.bakeLayer(StoneEaterModel.LAYER)), "stone_eater", 2.0F, true, true));
         Dushi.WITHERED.forEach((kind, type) -> event.registerEntityRenderer(type.get(), context -> new WitheredRenderer(context, kind)));
         event.registerEntityRenderer(Dushi.RUST_KNIGHT.get(), context -> new RustKnightRenderer(context, "rust_knight"));
         event.registerEntityRenderer(Dushi.GILDED_KNIGHT.get(), context -> new RustKnightRenderer(context, "gilded_knight"));

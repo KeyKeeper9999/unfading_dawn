@@ -7,7 +7,7 @@ from modelkit import Box, Model, Painter, blotch, mix, shade, sheet
 
 A = 'src/main/resources/assets/vsratie_dushi'
 JAVA = 'src/main/java/com/keykeeper/dushi/client/StoneEaterModel.java'
-SCALE = 1.4           # must match MODEL_SCALE in StoneEaterModel.java
+SCALE = 1.9           # must match MODEL_SCALE in StoneEaterModel.java
 
 M = Model(128, 128, SCALE)
 # a burrower the size of a wagon: a low heavy trunk under plates of stone, a blunt eyeless head that is mostly jaw, two
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     tex.save(f'{A}/textures/entity/stone_eater.png')
     glow.save(f'{A}/textures/entity/stone_eater_glow.png')
     if len(sys.argv) > 1:
-        shots = [M.render(tex, yaw=yaw, pose=pose, size=(420, 330), zoom=5.0, centre=(0, 6), glow=glow)
+        shots = [M.render(tex, yaw=yaw, pose=pose, size=(420, 330), zoom=3.7, centre=(0, 2), glow=glow)
                  for yaw, pose in ((-0.6, STAND), (0.0, STAND), (1.5, STAND), (2.7, STAND), (-0.7, CLAW_UP), (-0.7, CLAW_DOWN), (-0.9, ROAR), (-1.2, LUNGE),
                                    (2.4, TAIL), (-0.6, SINK))]
         sheet(shots, 4).save(sys.argv[1])

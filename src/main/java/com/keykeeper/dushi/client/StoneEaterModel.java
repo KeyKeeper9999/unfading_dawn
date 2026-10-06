@@ -22,10 +22,10 @@ import net.minecraft.util.Mth;
 public class StoneEaterModel extends EntityModel<BossRenderState> {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(Dushi.id("stone_eater"), "main");
     /** Must match SCALE in tools/gen_stone_eater.py. */
-    private static final float MODEL_SCALE = 1.4F;
+    private static final float MODEL_SCALE = 1.9F;
     private static final float DEG = (float) (Math.PI / 180.0);
     /** How far down the whole of it goes when it is under the floor, in model units. */
-    private static final float DEPTH = 46.0F;
+    private static final float DEPTH = 30.0F;
 
     private final ModelPart all;
     private final ModelPart body;

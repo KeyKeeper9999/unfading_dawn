@@ -223,7 +223,11 @@ for i, (ru, en) in enumerate((
          'The road past the churchyard leads to the Stockade. Up there the sun will not set, and down here it will not rise.'),
         ('Видишь, тлеет в золе? Это осколок фляги. Подбери — глотком больше будет.',
          'See it glowing in the ash? That is a flask shard. Pick it up: one more gulp for you.'),
-        ('Потратил бы ты души у очага. Мёртвым они ни к чему.', 'Spend your souls at a hearth. The dead have no use for them.'))):
+        ('Потратил бы ты души у очага. Мёртвым они ни к чему.', 'Spend your souls at a hearth. The dead have no use for them.'),
+        ('Ломовые ворота, что в конце Нижней улицы? Заперты с тех пор, как камень возить перестали. Ключ ушёл в Острог с последним возом. Не мой это ключ.',
+         "The Quarrymen's Gate, at the end of Low Street? Shut since the stone stopped coming. Its key went up to the Stockade with the last load. Not one of mine."),
+        ('В каменоломне, говорят, есть такие, что глаз не имеют. Те слушают. Мимо них — крадучись.',
+         'They say there are some in the quarry that have no eyes. Those listen. Go past them creeping.'))):
     t(f'dialogue.{M}.keykeeper.idle.{i}', ru, en)
 
 # ---- subtitles of the sounds (the events themselves are listed in tools/gen_sounds.py)
