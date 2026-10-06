@@ -39,8 +39,8 @@ def tiles():
         rect(c0, r0, c1, r1, ',')
     for ch, (c0, r0, c1, r1) in SPECIAL.items():
         rect(c0, r0, c1, r1, ch)
-    for c, r in ((20, 0), (21, 0), (20, 11), (21, 11), (20, 43), (21, 43), QUARRY_GATE):
-        g[r][c] = ':'                         # the three gates, and the fourth that is locked
+    for c, r in ((20, 0), (21, 0), (20, 11), (21, 11), (20, 43), (21, 43), QUARRY_GATE, MIRE_GATE):
+        g[r][c] = ':'                         # the three gates, and the two that are locked
     for c, r in BARRICADES:
         g[r][c] = '%'
     return g
@@ -66,8 +66,9 @@ SPECIAL = {
     'p': (10, 38, 12, 40),        # a house in the borough
     'q': (32, 39, 34, 40),        # a house with a back door to a yard
 }
-BARRICADES = ((20, 15), (21, 15), (29, 14), (38, 42))
+BARRICADES = ((20, 15), (21, 15), (29, 14))
 QUARRY_GATE = (2, 42)                                          # the Quarrymen's Gate, at the west end of Low Street
+MIRE_GATE = (39, 42)                                           # the Mire Gate, at its east end
 
 
 def lots(g):
@@ -550,6 +551,8 @@ class Village:
                 else:
                     b.set(cx, gy, cz, 'minecraft:water')
                     b.set(cx, gy - 1, cz, 'minecraft:stone_bricks')
+                    # a grate over its mouth: whoever climbed in could not climb out (the rim is a block over the water)
+                    b.set(cx, gy + 1, cz, 'minecraft:iron_bars')
         for dx, dz in ((-1, -1), (1, 1), (-1, 1), (1, -1)):
             b.fill(cx + dx, gy + 2, cz + dz, cx + dx, gy + 3, cz + dz, 'minecraft:spruce_fence')
         for dx in range(-1, 2):
@@ -796,6 +799,39 @@ class Village:
             b.set(sx + 2, gy + 1, sz, 'minecraft:polished_diorite')
             self.kept.add((sx, sz))
 
+    def mire_gate(self):
+        """The Mire Gate at the east end of Low Street: the same low arch and the same kind of grate as the Quarrymen's,
+        with its own key (which the Stone-Eater keeps). The street beyond it went under the bog long ago; the wall
+        here is green to twice a man's height, and the water has been through the arch more than once."""
+        b, gy = self.b, self.gy
+        x0, z0 = self.at(*MIRE_GATE, 0, 0)
+        for x in range(x0, x0 + T):
+            for z in range(z0, z0 + T):
+                b.set(x, gy, z, 'minecraft:mossy_cobblestone' if hsh(x, 0, z, 291) < 0.7 else 'minecraft:mud')
+                b.fill(x, gy + 1, z, x, gy + 4, z, 'minecraft:air')
+                b.fill(x, gy + 5, z, x, gy + 7, z, town_wall)
+                if (x + z) % 2 == 0 and x != x0 + 1:
+                    b.set(x, gy + 8, z, town_wall(x, gy + 8, z))
+        for x in range(x0, x0 + T):
+            b.set(x, gy + 4, z0, 'minecraft:stone_brick_stairs[facing=north,half=top]')
+            b.set(x, gy + 4, z0 + 2, 'minecraft:stone_brick_stairs[facing=south,half=top]')
+        cells = [(x0 + 1, y, z) for z in range(z0, z0 + T) for y in range(gy + 1, gy + 5)]
+        for cell in cells:
+            b.set(*cell, 'vsratie_dushi:locked_gate[axis=z,lock=mire]')
+        b.set(x0 + 1, gy + 4, z0, 'minecraft:stone_brick_stairs[facing=north,half=top]')
+        b.set(x0 + 1, gy + 4, z0 + 2, 'minecraft:stone_brick_stairs[facing=south,half=top]')
+        cells = [c for c in cells if 'locked_gate' in b.get(*c)]
+        b.seals['mire_key'] = cells
+        # the last lamp of the town, on the town's face of the wall; moss on the stones before the arch
+        for z in (z0 - 1, z0 + T):
+            b.set(x0 - 1, gy + 4, z, 'minecraft:spruce_fence')
+            b.set(x0 - 1, gy + 3, z, LANTERN)
+        for x in range(x0 - 4, x0):
+            for z in range(z0, z0 + T):
+                if hsh(x, 1, z, 292) < 0.2 + 0.15 * (x - x0 + 4):
+                    b.set(x, gy, z, 'minecraft:mossy_cobblestone' if hsh(x, 2, z, 293) < 0.75 else 'minecraft:mud')
+                self.kept.add((x, z))
+
     def people(self):
         """Who walks the lanes. (tile column, tile row, kind, facing)"""
         b, gy = self.b, self.gy
@@ -871,6 +907,7 @@ class Village:
         self.homes()
         self.high_gate()
         self.quarry_gate()
+        self.mire_gate()
         self.barricades()
         self.street_dressing()
         self.people()

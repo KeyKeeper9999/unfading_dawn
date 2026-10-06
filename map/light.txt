@@ -44,3 +44,7 @@ quarry_shop 3 -38 146
 quarry_hall -12 -59 174
 quarry_workings -47 -59 201
 quarry_breach -72 -59 176
+mire_street -27 -46 -82
+mire_marsh -38 -46 -144
+mire_weir -52 -46 -189
+mire_isle 29 -46 -225

@@ -51,7 +51,8 @@ public class HearthBlock extends Block {
     public enum Site implements StringRepresentable {
         /** A hearth somebody set down themselves: it is told from others by where it stands. */
         NONE("none"),
-        YARD("yard"), LODGE("lodge"), KEEPER("keeper"), SMITHY("smithy"), SACRISTY("sacristy"), TERRACE("terrace"), MAW("maw"), SUMP("sump");
+        YARD("yard"), LODGE("lodge"), KEEPER("keeper"), SMITHY("smithy"), SACRISTY("sacristy"), TERRACE("terrace"), MAW("maw"), SUMP("sump"),
+        FERRY("ferry"), MILL("mill");
 
         public final String id;
 

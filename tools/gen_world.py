@@ -16,6 +16,7 @@ from collections import deque
 
 import gen_map as castle
 import gen_quarry
+import gen_swamp
 import gen_village
 from gen_map import (BARS, BELL, CY, FLOOR_LANTERN, GAL, L0, L1, L2, LANTERN, LC, PASSABLE, VAULT, Map, analyse, cobbles, dark_places, hsh, stairs, valid_blocks)
 from gen_structures import AIR, COLOURS, MOD
@@ -25,7 +26,7 @@ GY = 16                             # the ground block of the valley; the flat w
                                     # under it: the quarry goes down thirteen)
 OX, OZ = 138, 42                    # where the fortress's own plan lies in this one
 DY = GY - castle.GROUND             # and how much lower: its ground is the valley's
-W, H, D = 308, 138, 606
+W, H, D = 492, 138, 640                 # (grown east and a little south for the Mire; the origin is the place of waking, so nothing moved)
 AX = OX + castle.CX                 # the axis of the fortress: its bridge, the causeway, the road
 TX = AX + 16                        # the tunnel comes out this much further east: the bend
 VX, VZ = TX - 62, 408               # the corner of the village's grid of tiles; its north gate is on the tunnel's line
@@ -115,13 +116,14 @@ class World:
         self.b = Map('high_stockade', W, H, D)
         self.village = gen_village.Village(self.b, VX, VZ, GY)
         self.quarry = gen_quarry.Quarry(self.b, GY, self.village)
+        self.swamp = gen_swamp.Swamp(self.b, GY, self.village)
         self.keep = set()                # columns of the valley where nothing may grow: roads, the feet of walls
 
     # ------------------------------------------------------------------ the shape of the gorge
 
     def in_gorge(self, x, z):
         """The floor of the gorge: round the fortress, the yard before the tunnel, and the town."""
-        if self.village.inside(x, z):
+        if self.village.inside(x, z) or self.swamp.inside(x, z):
             return True
         wob = (smooth(x, z, 13, 310) - 0.5) * 8
         if OX - 15 + wob <= x <= OX + 128 + 15 - wob and OZ - 15 + wob <= z <= SPUR[0] - wob * 0.5:
@@ -191,8 +193,8 @@ class World:
         far = {}
         queue = deque()
         for (x, z) in self.inside:
-            if self.village.inside(x, z):
-                continue
+            if self.village.inside(x, z) or self.swamp.inside(x, z):
+                continue                                         # (the Mire plants its own)
             hard = (x, z) in self.keep or any(self.height.get((x + dx, z + dz), 1) > 0 for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)))
             if hard:
                 far[(x, z)] = 0
@@ -202,7 +204,7 @@ class World:
             for dx in (-1, 0, 1):
                 for dz in (-1, 0, 1):
                     n = (x + dx, z + dz)
-                    if n in self.inside and n not in far and not self.village.inside(*n):
+                    if n in self.inside and n not in far and not self.village.inside(*n) and not self.swamp.inside(*n):
                         far[n] = far[(x, z)] + 1
                         queue.append(n)
         trees = []
@@ -409,6 +411,8 @@ class World:
         self.quarry.build()
         for column in self.quarry.open_sky:                      # nothing grows in the air over the pit
             self.height[column] = 0
+        b.zone = 'mire'
+        self.swamp.build()
         self.woods()
         self.tiers()
         return b
@@ -482,7 +486,19 @@ def views(w):
     out.append(('valley_from_the_terrace', C(96, LC + 2.6, 4), C(150, LC - 6, -30)))
     out.append(('time', 18000))
     out += w.quarry.views()
+    mire = w.swamp.views()
+    out += mire[:1]                                              # the gate, from the town's side, in the town's night
+    out.append(('time', MURK))
+    out += mire[1:]
+    for hour in MURK_TRIED:                                      # the same two places at other hours, to choose by
+        out.append(('time', hour))
+        out += [(f'{name}_at_{hour}', eye, look) for name, eye, look in mire if name in ('mire_drowned_end', 'mire_log_road_north')]
+    out.append(('time', 18000))
     return out
+
+
+MURK = 13000                        # the hour of the Mire: see PlaceNameBlock.MURK
+MURK_TRIED = (12700, 13300, 13700, 18000, 23000)
 
 
 # the pictures of the fortress that are still taken (it was looked at room by room when it was built)
@@ -500,6 +516,7 @@ def probes(w):
            ('road', (AX, GY + 1, OZ + 300))]
     out += [(name, C(*at)) for name, at in castle.PROBES]
     out += w.quarry.probes()
+    out += w.swamp.probes()
     return out
 
 
@@ -515,7 +532,7 @@ if __name__ == '__main__':
     COLOURS[0:0] = EXTRA_COLOURS
     PASSABLE_MORE = ('fern', 'short_grass', 'hanging_roots')
     castle.PASSABLE = castle.PASSABLE + PASSABLE_MORE
-    castle.CLEAR = castle.CLEAR + ('fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water', 'hanging_roots')
+    castle.CLEAR = castle.CLEAR + ('fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water', 'hanging_roots', 'waterlogged=true')
     w = World()
     b = w.build()
     built = len([1 for s in b.cells.values() if s != AIR])
@@ -530,7 +547,7 @@ if __name__ == '__main__':
     for kind, x, y, z in b.marks:
         for h in (0, 1) if kind not in ('gravedigger', 'overseer', 'chaplain', 'knight', 'gilded', 'unhewn', 'taskmaster', 'stone_eater') else (0, 1, 2):
             above = b.get(x, y + h, z)
-            if h and above not in (None, AIR) and not any(k in str(above) for k in castle.PASSABLE):
+            if h and above not in (None, AIR) and not any(k in str(above) for k in castle.PASSABLE) and not castle.is_water(above):
                 problems.append(f'the {kind} at {(x, y, z)} has {above} over its head')
     states = b.save(spawn, OUT, skip_air=False)
     with open('map/views.txt', 'w') as f:
@@ -556,6 +573,21 @@ if __name__ == '__main__':
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')
         # and tries the locked gate without its key and with it
         f.write('gate ' + ' '.join(f'{v_:.2f}' for v_ in world(*sorted(b.seals['quarry_key'])[0], spawn)) + '\n')
+    # the columns that get a biome of their own (MapBuilder lays it): boxes of the world, four blocks wide - the game
+    # keeps a biome for every four blocks each way - a line each
+    quarts = {}
+    for (x, z) in w.swamp.biome_columns():
+        wx, _, wz = world(x, GY, z, spawn)
+        quarts.setdefault(math.floor(wx) >> 2, set()).add(math.floor(wz) >> 2)
+    with open('map/biomes.txt', 'w') as f:
+        for qx in sorted(quarts):
+            run = sorted(quarts[qx])
+            start = prev = run[0]
+            for qz in run[1:] + [None]:
+                if qz is None or qz != prev + 1:
+                    f.write(f'{MOD}:mire {qx * 4} {start * 4} {qx * 4 + 3} {prev * 4 + 3}\n')
+                    start = qz
+                prev = qz
     with open('map/light.txt', 'w') as f:
         for name, at in probes(w):
             if b.get(*at) not in (None, AIR) and not any(k in str(b.get(*at)) for k in castle.PASSABLE):
@@ -657,3 +689,14 @@ if __name__ == '__main__':
         sub = Map('part', W, H, D)
         sub.cells = {c: s for c, s in b.cells.items() if vx0 <= c[0] < vx1 and VZ - 4 <= c[2] < vz1 and c[1] >= GY}
         sub.iso(scale=5).save(f'{out}/town_iso.png')
+        # the Mire: its ground with a dot on every place a player can be (blue in the water), and from above
+        mx0, mx1, mz0, mz1 = 266, W - 8, 462, D - 8
+        for name, top in (('mire_ground', GY + 3), ('mire_roofs', H - 1)):
+            img = b.top_down(top, scale=6).crop((mx0 * 6, mz0 * 6, mx1 * 6, mz1 * 6))
+            if name == 'mire_ground':
+                draw = ImageDraw.Draw(img)
+                for (x, y, z) in seen:
+                    if mx0 <= x < mx1 and mz0 <= z < mz1 and GY - 1 <= y <= GY + 3:
+                        px, pz = (x - mx0) * 6 + 2, (z - mz0) * 6 + 2
+                        draw.rectangle([px, pz, px + 1, pz + 1], fill=(120, 200, 255) if castle.is_water(b.get(x, y, z)) else (255, 235, 90))
+            img.save(f'{out}/{name}.png')

@@ -159,7 +159,16 @@ MAP_CHESTS = {
     'quarry_rim': [(M + 'powder_pot', 4), (M + 'return_ember', 2), (SOUL, 2)],
     'quarry_workings': [(GREAT, 2), (M + 'iron_wedge', 3)],
     'quarry_stall': [(GREAT, 1), (M + 'rust_helm', 1), (SCRAP, 6)],
-    'quarry_breach': [(GREAT, 4), (M + 'return_ember', 3), (M + 'iron_wedge', 4)],
+    'quarry_breach': [(GREAT, 4), (M + 'return_ember', 3), (M + 'iron_wedge', 4), (M + 'mire_key', 1)],      # the key of the Mire Gate
+    # the Mire (tools/gen_swamp.py)
+    'mire_end': [(GREAT, 1), (M + 'tar_pot', 4), (CLOTH, 4)],
+    'mire_loft': [(GREAT, 2), (M + 'return_ember', 2)],
+    'mire_gallows': [(GREAT, 2), (SCRAP, 6)],
+    'mire_stage': [(GREAT, 1), (M + 'powder_pot', 4), (M + 'return_ember', 1)],
+    'mire_cove': [(GREAT, 3), (M + 'heavy_soul_shard', 1)],
+    'mire_mill': [(GREAT, 2), (M + 'return_ember', 3), (SCRAP, 6)],
+    'mire_hollow': [(GREAT, 3), (M + 'tar_pot', 4)],
+    'mire_grove': [(GREAT, 5), (M + 'return_ember', 3)],
 }
 for _name, _items in MAP_CHESTS.items():
     CHESTS['map/' + _name] = [pool(item(_id, count=(_n, _n)) if _n > 1 else item(_id)) for _id, _n in _items]
@@ -193,7 +202,30 @@ STRUCTURE_SETS = {
                  'structures': [{'structure': f'{MOD}:outpost', 'weight': 1}]},
 }
 
+# The Mire's own biome. A map's builder lays it over the place (MapBuilder, map/biomes.txt); the game never generates it.
+# The game darkens whatever fog and sky a biome names by the hour (data/minecraft/timeline/day.json: at dusk to about
+# two fifths), so these are much lighter than what is seen at the Mire's hour (PlaceNameBlock.MURK).
+MIRE = {
+    'attributes': {
+        'minecraft:visual/fog_color': '#7dba69',
+        'minecraft:visual/sky_color': '#6aa85e',
+        'minecraft:visual/fog_start_distance': 0.0,
+        'minecraft:visual/fog_end_distance': 80.0,
+        'minecraft:visual/sky_fog_end_distance': 64.0,
+        'minecraft:visual/water_fog_color': '#1e2a16',
+        'minecraft:visual/water_fog_end_distance': {'argument': 0.6, 'modifier': 'multiply'},
+        'minecraft:visual/ambient_particles': {'argument': [{'particle': {'type': 'minecraft:spore_blossom_air'}, 'probability': 0.006}], 'modifier': 'append'},
+    },
+    'carvers': [],
+    'downfall': 0.9,
+    'effects': {'dry_foliage_color': '#6b5a34', 'foliage_color': '#5a7436', 'grass_color': '#57703a', 'water_color': '#4f6f4a'},
+    'features': [],
+    'has_precipitation': True,
+    'temperature': 0.8,
+}
+
 if __name__ == '__main__':
+    write_json(f'{DATA}/{MOD}/worldgen/biome/mire.json', MIRE)
     for old in glob.glob(f'{DATA}/{MOD}/recipe/*.json'):
         os.remove(old)
     for name, recipe in RECIPES.items():

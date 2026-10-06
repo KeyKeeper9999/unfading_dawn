@@ -55,6 +55,7 @@ for key, ru, en in (
         ('eater_claw', 'Коготь Камнееда', "Stone-Eater's Claw"), ('iron_wedge', 'Железный клин', 'Iron Wedge'),
         ('powder_pot', 'Пороховой горшок', 'Powder Pot'), ('quarry_key', 'Ключ от Ломовых ворот', "Key to the Quarrymen's Gate"),
         ('taskmaster_soul', 'Душа Десятника', 'Soul of the Taskmaster'), ('stone_eater_soul', 'Душа Камнееда', 'Soul of the Stone-Eater'),
+        ('mire_key', 'Ключ от Топких ворот', 'Key to the Mire Gate'),
         ('tattered_cloth', 'Ветошь', 'Tattered Cloth'), ('rust_scrap', 'Ржавый лом', 'Rust Scrap')):
     t(f'item.{M}.{key}', ru, en)
 
@@ -150,6 +151,15 @@ t(f'place.{M}.workings', 'НИЖНИЕ ВЫРАБОТКИ', 'THE LOWER WORKINGS'
 t(f'place.{M}.breach', 'ПРОЛОМ', 'THE BREACH')
 t(f'message.{M}.gate_locked.quarry', 'Заперто. Камень отсюда возили в Острог — там и ключ.', 'Locked. The stone from here went to the Stockade; so did the key.')
 t(f'message.{M}.gate_opened.quarry', 'Ломовые ворота отперты', "The Quarrymen's Gate is unlocked")
+t(f'message.{M}.gate_locked.mire', 'Заперто. Из-под решётки тянет тиной. Ключ унесло туда, где глубже некуда.',
+  'Locked. It smells of the bog under the grate. The key went where nothing lies deeper.')
+t(f'message.{M}.gate_opened.mire', 'Топкие ворота отперты', 'The Mire Gate is unlocked')
+t(f'place.{M}.mire', 'ТОПЬ', 'THE MIRE')
+t(f'place.{M}.log_roads', 'ГАТИ', 'THE LOG ROADS')
+t(f'place.{M}.weir', 'ЗАПРУДА', 'THE WEIR')
+t(f'place.{M}.withy', 'ИВНЯК', 'THE WITHY WOOD')
+t(f'place.{M}.isle', 'ОСТРОВ ПЛАКУЧЕЙ', 'THE ISLE OF THE WEEPING ONE')
+t(f'block.{M}.shallows', 'Мелкая вода', 'Shallows')
 t(f'message.{M}.gate_locked.none', 'Заперто. Ключа от этого замка здесь нет.', 'Locked. The key to this lock is not in these parts.')
 t(f'message.{M}.gate_opened.none', 'Решётка поддалась', 'The grate gives way')
 t(f'block.{M}.shard_heap', 'Тлеющий осколок', 'Glowing Shard')
@@ -178,7 +188,7 @@ for key, ru, en in (('none', 'Очаг (%s, %s, %s)', 'A hearth (%s, %s, %s)'), 
                     ('lodge', 'Сторожка у погоста', "The Sexton's Lodge"), ('keeper', 'Привратницкая Острога', 'The Stockade Gate'),
                     ('smithy', 'Кузня на площади', 'The Smithy on the Square'), ('sacristy', 'Ризница собора', 'The Cathedral Sacristy'),
                     ('terrace', 'Терраса над долиной', 'The Terrace above the Vale'), ('maw', 'Под Зевом', 'Under the Maw'),
-                    ('sump', 'Зумпф', 'The Sump')):
+                    ('sump', 'Зумпф', 'The Sump'), ('ferry', 'Изба перевозчика', "The Ferryman's Hut"), ('mill', 'Мельница на запруде', 'The Mill on the Weir')):
     t(f'hearth.{M}.{key}', ru, en)
 t(f'screen.{M}.hearth.level', 'Уровень: %s', 'Level: %s')
 t(f'screen.{M}.hearth.souls', 'Души: %s', 'Souls: %s')

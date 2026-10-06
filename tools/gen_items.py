@@ -786,6 +786,24 @@ ascii_icon('quarry_key', [
     ".osdo.oo........",
     "..oo............",
     "................"])
+# the key of the Mire Gate: the same make, gone green in the water, a thread of weed still on it
+ascii_icon('mire_key', [
+    "................",
+    "..........ooo...",
+    ".........oSsdo..",
+    "........oSo.odo.",
+    "........oso.odo.",
+    "........oSdodo..",
+    ".......oSsddo...",
+    "......oSsdoo....",
+    ".....oSsdo......",
+    "....oSsdo.wo....",
+    "...oSsdoo.wo....",
+    "..oSsdosowo.....",
+    ".oSsdosdowo.....",
+    ".osdo.oo.o......",
+    "..oo............",
+    "................"], extra={'S': (126, 168, 120), 's': (88, 128, 92), 'd': (56, 86, 66), 'w': (66, 110, 52)})
 ascii_icon('taskmaster_soul', [
     ".......C........",
     "......cCc..c....",

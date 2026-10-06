@@ -107,6 +107,7 @@ public final class MapBuilder {
         piece.postProcess(level, level.structureManager(), level.getChunkSource().getGenerator(), level.getRandom(),
                 new BoundingBox(-30000000, -2048, -30000000, 30000000, 2048, 30000000), new ChunkPos(0, 0), ORIGIN);
         say("blocks set in " + (System.currentTimeMillis() - started) + " ms");
+        biomes(server, level);
 
         // Where a newcomer appears: the plan's origin cell, looking the way the map leads.
         level.setRespawnData(LevelData.RespawnData.of(level.dimension(), ORIGIN, ROTATION.rotate(net.minecraft.core.Direction.NORTH).toYRot(), 0.0F));
@@ -130,6 +131,50 @@ public final class MapBuilder {
         }
         say("rules set: time " + level.getDefaultClockTime() + ", regeneration " + rules.get(GameRules.NATURAL_HEALTH_REGENERATION) + ", game type "
                 + server.getDefaultGameType() + ", spawn " + level.getRespawnData());
+    }
+
+    /**
+     * A place of the map may have a biome of its own - its water, its leaves, its fog and sky (the Mire). The file
+     * beside the plan lists boxes of the world, a line each: the biome, then x and z of two corners. Every box is filled
+     * from the bottom of the world to its top.
+     */
+    private static void biomes(MinecraftServer server, ServerLevel level) {
+        Path file = Path.of(PLAN_FILE).resolveSibling("biomes.txt");
+        if (!Files.exists(file)) {
+            return;
+        }
+        GameRules rules = level.getGameRules();
+        int limit = rules.get(GameRules.MAX_BLOCK_MODIFICATIONS);
+        rules.set(GameRules.MAX_BLOCK_MODIFICATIONS, Integer.MAX_VALUE, server);
+        int boxes = 0;
+        int cells = 0;
+        int failed = 0;
+        String why = "";
+        try {
+            for (String line : Files.readAllLines(file)) {
+                String[] p = line.trim().split("\\s+");
+                if (p.length != 5) {
+                    continue;
+                }
+                var biome = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.BIOME).getOrThrow(
+                        net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.BIOME, net.minecraft.resources.Identifier.parse(p[0])));
+                var result = net.minecraft.server.commands.FillBiomeCommand.fill(level,
+                        new BlockPos(Integer.parseInt(p[1]), level.getMinY(), Integer.parseInt(p[2])),
+                        new BlockPos(Integer.parseInt(p[3]), level.getMaxY(), Integer.parseInt(p[4])), biome);
+                boxes++;
+                if (result.left().isPresent()) {
+                    cells += result.left().get();
+                } else {
+                    failed++;
+                    why = result.right().map(Throwable::getMessage).orElse("?");
+                }
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        } finally {
+            rules.set(GameRules.MAX_BLOCK_MODIFICATIONS, limit, server);
+        }
+        say("biomes: " + boxes + " boxes, " + cells + " cells changed, " + failed + " failed" + (failed > 0 ? " (" + why + ")" : ""));
     }
 
     @SubscribeEvent

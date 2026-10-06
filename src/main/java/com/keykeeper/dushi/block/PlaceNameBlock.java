@@ -25,6 +25,11 @@ public class PlaceNameBlock extends Block {
     public static final int DUSK = 12350;
     /** Midnight under a full moon: the hour of the town below. */
     public static final int NIGHT = 18000;
+    /**
+     * The sun gone and the light going: the hour of the Mire. Its green is the biome's (worldgen/biome/mire.json): the
+     * game darkens a biome's fog and sky by the hour, and at this one about two fifths of them is left.
+     */
+    public static final int MURK = 13000;
 
     public enum Place implements StringRepresentable {
         STOCKADE("stockade", DUSK, true),
@@ -49,9 +54,16 @@ public class PlaceNameBlock extends Block {
         WHEEL("wheel", NIGHT, true),
         WORKINGS("workings", NIGHT, true),
         BREACH("breach", NIGHT, true),
+        /** The bog east of the borough, and what it took of the town. */
+        MIRE("mire", MURK, true),
+        LOG_ROADS("log_roads", MURK, true),
+        WEIR("weir", MURK, true),
+        WITHY("withy", MURK, true),
+        ISLE("isle", MURK, true),
         /** Says nothing: only turns the hour, in a bend of a passage from which no sky is seen. */
         TO_NIGHT("to_night", NIGHT, false),
-        TO_DUSK("to_dusk", DUSK, false);
+        TO_DUSK("to_dusk", DUSK, false),
+        TO_MURK("to_murk", MURK, false);
 
         public final String id;
         /** The hour of the day at this place; the world's clock is set to it when a player comes. */

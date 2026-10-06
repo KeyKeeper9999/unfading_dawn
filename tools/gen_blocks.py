@@ -206,6 +206,28 @@ def fog_texture(frames=16, tint=(1.0, 1.0, 1.0), thick=0):
     return img
 
 
+def shallows_texture(frames=16):
+    """Still water with something growing in it: dark green, lighter where the light catches a ripple, the ripples
+    drifting. It tiles and its animation closes on itself."""
+    size = 16
+    img = Image.new('RGBA', (size, size * frames), (0, 0, 0, 0))
+    for f in range(frames):
+        phase = f / frames
+        for x in range(size):
+            for y in range(size):
+                def wrapped(seed, sx, sy, cell):
+                    xs, ys = (x + sx * size) % size, (y + sy * size) % size
+                    tx, ty = xs / size, ys / size
+                    a = blotch(seed, xs, ys, cell) * (1 - tx) + blotch(seed, xs - size, ys, cell) * tx
+                    b = blotch(seed, xs, ys - size, cell) * (1 - tx) + blotch(seed, xs - size, ys - size, cell) * tx
+                    return a * (1 - ty) + b * ty
+                n = 0.55 * wrapped('film1', phase, 0.0, 4.0) + 0.45 * wrapped('film2', 0.0, 1 - phase, 2.6)
+                ripple = max(0.0, n - 0.58) * 3.2
+                c = (int(58 + 70 * ripple), int(92 + 80 * ripple), int(66 + 60 * ripple))
+                img.putpixel((x, f * size + y), c + (int(150 + 60 * ripple),))
+    return img
+
+
 def locked_gate_texture():
     """A grate of square iron bars riveted to two flat bands; see-through between them."""
     size = 16
@@ -288,7 +310,22 @@ if __name__ == '__main__':
                                 'down': {'uv': [0, 12, 16, 14], 'texture': '#t'}}}]})
     write_json(f'{A}/blockstates/locked_gate.json', {'variants': {
         f'axis={axis},lock={lock}': ({'model': f'{MOD}:block/locked_gate'} if axis == 'x' else {'model': f'{MOD}:block/locked_gate', 'y': 90})
-        for axis in 'xz' for lock in ('quarry', 'none')}})
+        for axis in 'xz' for lock in ('quarry', 'mire', 'none')}})
+
+    # a hand's depth of water over a floor (ShallowsBlock): a film as thick as two of a block's sixteen parts, murky
+    # green, moving slowly. Its picture has see-through parts, which is what makes the game draw it like water.
+    film = shallows_texture()
+    film.save(f'{A}/textures/block/shallows.png')
+    write_json(f'{A}/textures/block/shallows.png.mcmeta', {'animation': {'frametime': 5, 'interpolate': True}})
+    write_json(f'{A}/models/block/shallows.json', {
+        'textures': {'t': f'{MOD}:block/shallows', 'particle': f'{MOD}:block/shallows'},
+        'elements': [{'from': [0, 0, 0], 'to': [16, 1.6, 16], 'shade': False,
+                      'faces': {'up': {'uv': [0, 0, 16, 16], 'texture': '#t'},
+                                'north': {'uv': [0, 0, 16, 1.6], 'texture': '#t', 'cullface': 'north'},
+                                'south': {'uv': [0, 0, 16, 1.6], 'texture': '#t', 'cullface': 'south'},
+                                'west': {'uv': [0, 0, 16, 1.6], 'texture': '#t', 'cullface': 'west'},
+                                'east': {'uv': [0, 0, 16, 1.6], 'texture': '#t', 'cullface': 'east'}}}]})
+    write_json(f'{A}/blockstates/shallows.json', {'variants': {'': {'model': f'{MOD}:block/shallows'}}})
 
     # a threshold that names a place: nothing is drawn, the game only needs to be told so
     write_json(f'{A}/models/block/place_name.json', {'textures': {'particle': 'minecraft:block/stone'}})

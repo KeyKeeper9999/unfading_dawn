@@ -44,6 +44,8 @@ public class LockedGateBlock extends Block {
     public enum Lock implements StringRepresentable {
         /** The Quarrymen's Gate at the west end of Low Street; its key lies in the treasury of the High Stockade. */
         QUARRY("quarry", () -> Dushi.QUARRY_KEY.get()),
+        /** The Mire Gate at the east end of the same street; its key lies in the crack behind the Stone-Eater. */
+        MIRE("mire", () -> Dushi.MIRE_KEY.get()),
         /** A gate whose key is not in the map yet: a way that is being kept for a place still to come. Nothing opens it. */
         NONE("none", () -> null);
 

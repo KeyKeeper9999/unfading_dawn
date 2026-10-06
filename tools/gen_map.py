@@ -1630,15 +1630,30 @@ def route(target):
 
 
 PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'skull', 'chain', 'banner', 'minecraft:light', 'place_name',
-            'ladder', 'rail', 'glow_lichen', 'torch')
+            'ladder', 'rail', 'glow_lichen', 'torch', 'lily_pad', 'shallows', 'sludge', 'sugar_cane', 'hanging_moss', 'firefly_bush', 'mushroom')
+# what one cannot stand on: thin things, and things one stands in rather than on
+NO_FOOTING = ('mob_mark', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'chain', 'fog_gate', 'iron_bars', 'ladder', 'campfire', 'banner',
+              'carpet', 'place_name', 'minecraft:light', 'minecraft:water', 'waterlogged=true', 'lily_pad', 'shallows', 'sludge', 'sugar_cane', 'hanging_moss',
+              'firefly_bush', 'short_grass', 'fern', 'seagrass')
 # what is opened, in this order, and what the report calls the game from then on (a lord's name: his seals lift)
 STAGES = (('gravedigger', 'after the Gravedigger'), ('overseer', 'after the Overseer'), ('chaplain', 'after the Chaplain'),
-          ('quarry_key', "with the key of the Quarrymen's Gate"), ('taskmaster', 'after the Taskmaster'), ('stone_eater', 'after the Stone-Eater'))
+          ('quarry_key', "with the key of the Quarrymen's Gate"), ('taskmaster', 'after the Taskmaster'), ('stone_eater', 'after the Stone-Eater'),
+          ('mire_key', 'with the key of the Mire Gate'), ('wallower', 'after the Wallower'), ('weeping_mother', 'after the Weeping Mother'))
+
+
+def is_water(state):
+    """Water, or something that stands in water and lets it through: one swims in it."""
+    if state is None or state == AIR:
+        return False
+    name = state[2] if isinstance(state, tuple) else state
+    return 'minecraft:water' in name or 'waterlogged=true' in name or 'seagrass' in name
 
 
 def analyse(b, blocked=frozenset(), quiet=False, stages=None):
     """Walks the map the way a player can: step, jump one block up, drop any distance, jump a gap of up to three, climb a
-    ladder. A locked gate is a seal that its key lifts (the seal named after the key). Reports
+    ladder, swim. Water is like a ladder that fills its cell: one is in it wherever it is, goes up and down in it, and
+    climbs out of it onto whatever is level with its top - not higher - and jumps no gaps from it. The leaf of a lily
+    is stood on in its own cell. A locked gate is a seal that its key lifts (the seal named after the key). Reports
     what is reached at each stage of the game, and any place that can be reached but not left towards a hearth."""
     cells = b.cells
     doors = {c for door, lever in b.doors for c in door}
@@ -1658,7 +1673,12 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
             return c in all_seals and c not in open_seals
         if 'locked_gate' in name:
             return c not in open_seals
+        if is_water(name):
+            return False
         return not any(k in name for k in PASSABLE)
+
+    def wet(c):
+        return is_water(cells.get(c))
 
     def ladder(c):
         s = cells.get(c)
@@ -1666,13 +1686,13 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
 
     def stands(c, od, os_):
         x, y, z = c
-        if ladder(c):
+        if ladder(c) or wet(c) or 'lily_pad' in str(cells.get(c)):
             return not solid((x, y + 1, z), od, os_)           # on a ladder one hangs wherever there is room for the head
         below = cells.get((x, y - 1, z))
         if below is None or below == AIR:
             return False
         name = below[2] if isinstance(below, tuple) else below
-        if any(k in name for k in ('mob_mark', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'chain', 'fog_gate', 'iron_bars', 'ladder', 'campfire', 'banner', 'carpet', 'place_name', 'minecraft:light')):
+        if any(k in name for k in NO_FOOTING):
             return False
         if (x, y - 1, z) in doors:
             return False
@@ -1682,12 +1702,13 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
 
     def neighbours(c, od, os_):
         x, y, z = c
-        if ladder(c):
+        swimming = wet(c)
+        if ladder(c) or swimming:
             for ny in (y + 1, y - 1):
-                if ladder((x, ny, z)) and stands((x, ny, z), od, os_):
+                if (ladder((x, ny, z)) or wet((x, ny, z))) and stands((x, ny, z), od, os_):
                     yield (x, ny, z)
         for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            for reach in (1, 2, 3, 4):
+            for reach in ((1,) if swimming else (1, 2, 3, 4)):
                 nx, nz = x + dx * reach, z + dz * reach
                 if not (0 <= nx < b.w and 0 <= nz < b.d):
                     break
@@ -1832,7 +1853,8 @@ def emission(name):
     return 0
 
 
-CLEAR = ('glass', 'iron_bars', 'chain', 'lantern', 'candle', 'mob_mark', 'banner', 'iron_door', 'fog_gate', 'lever', 'carpet', 'skull', 'cobweb',
+CLEAR = ('lily_pad', 'shallows', 'sludge', 'sugar_cane', 'hanging_moss', 'firefly_bush', 'mangrove_roots',
+         'glass', 'iron_bars', 'chain', 'lantern', 'candle', 'mob_mark', 'banner', 'iron_door', 'fog_gate', 'lever', 'carpet', 'skull', 'cobweb',
          'dead_bush', 'end_rod', 'fence', '_wall', 'campfire', 'decorated_pot', 'cauldron', 'hearth', 'forge', 'bell', 'chest', 'minecraft:light', 'place_name',
          'ladder', 'rail', 'glow_lichen', 'torch', 'locked_gate', 'pointed_dripstone', 'trapdoor', 'grindstone')
 

@@ -175,6 +175,10 @@ public class Dushi {
     public static final DeferredBlock<LockedGateBlock> LOCKED_GATE = BLOCKS.registerBlock("locked_gate", LockedGateBlock::new,
             props -> props.mapColor(MapColor.METAL).strength(-1.0F, 3600000.0F).noOcclusion().noLootTable()
                     .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.METAL));
+    /** A hand's depth of water over a floor, which is a floor: see {@link com.keykeeper.dushi.block.ShallowsBlock}. No item; maps set it. */
+    public static final DeferredBlock<com.keykeeper.dushi.block.ShallowsBlock> SHALLOWS = BLOCKS.registerBlock("shallows", com.keykeeper.dushi.block.ShallowsBlock::new,
+            props -> props.mapColor(MapColor.WATER).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
+                    .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.WET_GRASS));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MobMarkBlockEntity>> MOB_MARK_ENTITY = BLOCK_ENTITIES.register("mob_mark",
             () -> new BlockEntityType<>(MobMarkBlockEntity::new, MOB_MARK.get()));
 
@@ -331,6 +335,8 @@ public class Dushi {
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 14000));
     /** Opens the Quarrymen's Gate of the borough: see {@link LockedGateBlock}. */
     public static final DeferredItem<Item> QUARRY_KEY = ITEMS.registerItem("quarry_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
+    /** Opens the Mire Gate, at the other end of the same street. */
+    public static final DeferredItem<Item> MIRE_KEY = ITEMS.registerItem("mire_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     public static final DeferredItem<com.keykeeper.dushi.item.PowderPotItem> POWDER_POT = ITEMS.registerItem("powder_pot",
             props -> new com.keykeeper.dushi.item.PowderPotItem(props.stacksTo(16)));
     public static final DeferredItem<ReturnEmberItem> RETURN_EMBER = ITEMS.registerItem("return_ember", props -> new ReturnEmberItem(props.stacksTo(16)));
@@ -425,6 +431,7 @@ public class Dushi {
                 output.accept(POWDER_POT.get());
                 output.accept(IRON_WEDGE.get());
                 output.accept(QUARRY_KEY.get());
+                output.accept(MIRE_KEY.get());
                 output.accept(NAMELESS_SOUL.get());
                 output.accept(GREAT_SOUL.get());
                 output.accept(OVERSEER_SOUL.get());
