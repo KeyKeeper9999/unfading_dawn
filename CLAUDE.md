@@ -69,6 +69,10 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   sent to the client when the hearth's screen opens). A map's hearth has a name, `site=` in its block state
   (`HearthBlock.Site`, text `hearth.vsratie_dushi.<id>`): a new hearth of a map needs a new entry there and its text.
   Arriving is resting: the hour of the place comes back with it.
+- `block/LockedGateBlock` (`locked_gate`) - an iron grate across a way that a map keeps shut until a key is found
+  somewhere else: whoever touches it with the key among their things opens the whole gate, for good (the key is kept).
+  `lock=` in the state says which key (`LockedGateBlock.Lock`): a new gate is a new entry there and a new key item.
+  No item: maps set it.
 - `block/ShardBlock` (`shard_heap`) - a flask shard glowing in a heap of ash: taken with a click, once. Flask shards
   are not put in chests: they lie in such heaps or are left by the lords, about two to a part of a map.
 - `MapBuilder` (build only) and `client/MapSelfTest` (build only) - see "The map".
@@ -85,13 +89,23 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   and one of four turns, `PlanPiece` sets the blocks. The worldgen JSON only names the plan.
 - `entity/` - `SoulsMob` is the base of every enemy: an attack is a "move" with a wind-up, an impact tick and a recovery,
   known on both sides so the model can show it. `SoulsCombatGoal` walks the mob to its target and lets it choose moves.
+  What moves are made of: `hitArc` (a cone before the mob, or in any direction - a tail - and, if asked, through a
+  raised shield, which it knocks down), `hitAround`, `shove`, and `strikeLater` - a blow that lands on a place on the
+  ground after a delay, the place marked until then (dust sifting down for a falling rock, chips for a crack running
+  along the floor). The dead do not turn on each other: `setTarget` ignores another `SoulsMob`.
+- The quarry's own: `BlindCrawlerEntity` hears instead of seeing (`hears`: a walker from 13 blocks, somebody sneaking
+  only from 3.5) and calls the others; `UnhewnEntity` is a statue (phase 1, nothing of it moves) until somebody comes
+  within 4.5 blocks or strikes it; `TaskmasterEntity` and `StoneEaterEntity` are the lords (the second digs itself
+  under the floor: its model's root part `all` goes down, nothing reaches it there); `PowderPotEntity` (its `blast`
+  hurts the dead too) and `WedgeEntity` are what is thrown. These four mobs share `client/QuarryRenderer`.
 - `client/` - models, renderers, `SoulsHud`, `HearthScreen`, `ShopScreen`, the roll key.
 - `tools/` - everything generated is generated from here; run `sh tools/build_assets.sh [preview dir]` from the repo root:
   - `modelkit.py` - entity models described once in Python: texture layout, the mesh part of the Java model class (written
     between the `// <generated mesh>` markers) and a software preview render;
-  - `gen_withered.py` (seven kinds on one model: prisoner, guard, archer, acolyte, and the town's townsman, butcher
-    and watchman), `gen_knight.py`, `gen_keykeeper.py`, `gen_overseer.py`, `gen_chaplain.py`, `gen_hound.py`,
-    `gen_gravedigger.py` - the mobs;
+  - `gen_withered.py` (ten kinds on one model: prisoner, guard, archer, acolyte, the town's townsman, butcher and
+    watchman, the quarry's digger, barrowman and sapper), `gen_knight.py`, `gen_keykeeper.py`, `gen_overseer.py`,
+    `gen_chaplain.py`, `gen_hound.py`, `gen_gravedigger.py`, `gen_crawler.py`, `gen_unhewn.py`, `gen_taskmaster.py`,
+    `gen_stone_eater.py` - the mobs;
   - `gen_items.py` (icons), `gen_shields.py` and `gen_blocks.py` (box models), `gen_sounds.py`, `gen_lang.py` (all texts);
   - `gen_armor.py` - worn textures (64x32, the game's armour layout), icons and equipment definitions of the suits;
   - `gen_structures.py` - the buildings, block by block, with top-down and isometric previews; bars, fences and walls
@@ -99,7 +113,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   - `gen_data.py` - recipes, chest loot, tags, structure and structure-set JSON;
   - `check_assets.py` - checks that everything registered has its files and names;
   - `gen_world.py` - the map (not run by `build_assets.sh`: `PYTHONPATH=tools python3 tools/gen_world.py [preview dir]`);
-    it puts together the land, `gen_village.py` (the Dead Borough) and `gen_map.py` (the High Stockade);
+    it puts together the land, `gen_village.py` (the Dead Borough), `gen_map.py` (the High Stockade) and
+    `gen_quarry.py` (the White Pit);
   - `balance.py` - the sums of the map's progression (`PYTHONPATH=tools python3 tools/balance.py`).
 
   Never edit generated textures, models, `sounds.json` or the lang files by hand: change the generator and run it.
@@ -118,6 +133,10 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   drawing the hanging arm back and driving it forward (the pitchfork). A level cut is the arm raised forwards and
   turned (yRot). A move with its own animation does not also call `swingArm`: the game's swing is laid over it and
   all that is seen is a wave of the arm.
+- A weapon that is part of a mob's mesh (the spade, the maul) is posed by where its iron is: the pitch of the part
+  is the sum of the arm's, the forearm's and its own, and the move is thought out in that sum (see `TaskmasterModel`).
+- What a mob carries that is not a weapon is part of its model too and takes part in its moves: the barrowman's
+  barrow hangs from the model's root, his hands are set on its handles whatever else he does.
 - A mob that is meant to be feared looks it: the butcher has his own bulk on the withered's bones (parts shown only
   on him), is drawn a tenth bigger and has a box to match; doorways he must pass are three high.
 - In this version a loot entry's functions are written under the key `modifier` and a pool's conditions under
@@ -155,10 +174,24 @@ into it (`tools/gen_world.py`); the country outside the plan is the flat forest 
   (optional, comes out in the alley behind the chapter room) -> choir (the Chaplain) -> treasury and terrace.
   Whoever falls from its walls lands on the floor of the gorge and walks back round to the causeway.
 
-`gen_world.py` writes `map/high_stockade.plan.txt` (the same format as the buildings; about 1.2 million blocks),
+- The White Pit (`tools/gen_quarry.py`), under a hill of pale stone west of the town, in the town's night: the quarry
+  the Stockade was built from. It is entered by the Quarrymen's Gate at the west end of Low Street, which is locked
+  (`locked_gate`); its key lies in the Stockade's treasury, behind the Chaplain - a place can be reached from the hub
+  and still come after another. Gate -> a lane cut down through the plateau -> the open pit -> the unfinished head of
+  the Founder in the pit's west face: the way in is its mouth -> the Maw (hearth, anvil) -> the main drift -> the
+  pillar field -> a stair up to the Carvers' Shop (statues, four of them the Unhewn) -> the upper gallery (east: the
+  room behind the eyes; west: the gallery of the Wheel Hall) -> the cage shaft down (its door at the main drift opens
+  from inside: the short way from the hearth) -> the Wheel Hall (the Taskmaster; a seal behind him) -> the sump
+  (hearth) -> the lower workings (crawlers: creep past them along the far wall) -> the Breach (the Stone-Eater) ->
+  the crack. Three levels: `TOP` eight over the valley's ground, `MID` six under it, `LOW` thirteen under it.
+  Left for later: a barred drift north out of the lower workings, the fissure behind the Breach.
+
+`gen_world.py` writes `map/high_stockade.plan.txt` (the same format as the buildings; about 2.2 million blocks),
 `map/views.txt` and `map/light.txt`. The plan's origin is the place where the newcomer wakes; the game puts it at
 0, -46, 0 and turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the
-sunset. The dead of the town are of tier 0, of the lower fortress tier 1, of the upper city tier 2 (`World.tiers`).
+sunset. The dead of the town are of tier 0, of the lower fortress tier 1, of the upper city tier 2 (`World.tiers`);
+the quarry's are of tier 0 and strong by birth. The valley's ground is the plan's layer 16 (`GY`): the flat world has
+sixteen blocks of ground under its grass, and the quarry uses thirteen.
 
 A new place is a new file like `gen_village.py`: it builds into the world's `Map` at an offset, and `gen_world.py` gives
 it a piece of the gorge (`in_gorge`), a road, and - if its hour differs - a passage where the clock is turned. The yard
@@ -169,7 +202,8 @@ whose name begins with `as_player_` are walked to by the test as the newcomer is
 
 `gen_world.py` ends with a check of the map as a place to play, and every change to the map must leave it clean:
 
-- it walks the map the way a player can (steps, jumps, drops, levers, seals lifted lord by lord) and reports what is
+- it walks the map the way a player can (steps, jumps, drops, ladders, levers, seals lifted lord by lord and locked
+  gates opened when their key is in reach: `gen_map.STAGES` is the order) and reports what is
   reached at each stage, chests, shards and mobs nobody can reach, places that are traps, that nobody gets out of the
   gorge (no place at the edge of the plan is reached), and that the cathedral cannot be entered except by the covered walk;
 - it works out the light like the game does (its numbers matched the game's at every probe) and reports walkable
@@ -196,11 +230,17 @@ Things learnt the hard way:
   (`SPAWN_MOBS`): the night would fill with them.
 - A block with a direction of its own must turn with the plan (`rotate`): the fog gate did not, and stood edge-on in
   every doorway of the map. What is built late (corbels, lamps) can land in a stair: the check counts headroom.
+- A lord's death lifts every seal in a box of forty blocks either way round his mark (`FogGateBlock.lift`): two lords
+  of one place must stand further apart than that, or the first opens the way past the second.
+- Under the ground the plan holds only what differs from the world's stone: the hollows, and a skin of rock round them
+  so that the check sees walls (`Quarry.skin`). Above the ground everything is in the plan; a place cut open from
+  above gives its columns to `open_sky`, or firs are planted in the air over it.
 - Painted pots swallow what is put into them; a player who may not build cannot use them (`SoulMechanics.onUsePot`).
 - Time does not move; the hours (`PlaceNameBlock.DUSK`, `NIGHT`) were chosen by looking at pictures. `time set` is
   for the whole world: with several players in different places the last threshold crossed wins.
 
 Balance (see `tools/balance.py`): one clearing of the town brings a player to about level 10-12 before the Gravedigger;
-the lower fortress to about 18 before the Overseer; the upper city to about 29 before the Chaplain. The fortress was
+the lower fortress to about 18 before the Overseer; the upper city to about 29 before the Chaplain; the quarry to
+about 35 before the Taskmaster and 38 before the Stone-Eater. The fortress was
 first tuned for a newcomer; its tiers make up for the levels a player now brings to it. When mobs, weapons, tiers or
 the map change, run it again.

@@ -73,7 +73,7 @@ public class StoneEaterEntity extends SoulsMob {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 950.0).add(Attributes.ATTACK_DAMAGE, 15.0)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1000.0).add(Attributes.ATTACK_DAMAGE, 17.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.27).add(Attributes.ARMOR, 6.0).add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(Attributes.FOLLOW_RANGE, 44.0).add(Attributes.STEP_HEIGHT, 1.25);
     }

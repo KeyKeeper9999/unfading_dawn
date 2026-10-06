@@ -55,7 +55,7 @@ public class BlindCrawlerEntity extends SoulsMob {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 38.0).add(Attributes.ATTACK_DAMAGE, 7.0)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 55.0).add(Attributes.ATTACK_DAMAGE, 9.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.33).add(Attributes.FOLLOW_RANGE, 20.0);
     }
 

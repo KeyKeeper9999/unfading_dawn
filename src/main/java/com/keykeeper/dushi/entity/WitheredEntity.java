@@ -53,11 +53,11 @@ public class WitheredEntity extends SoulsMob {
         /** The night watch: a lantern, a pitchfork held like a pike, and a rattle that brings the street down on whoever he sees. */
         WATCHMAN("withered_watchman", 20.0, 4.0, 0.25, 2.0, 55),
         /** A digger of the quarry, white with its dust: his pick comes down with both hands and no shield holds it. */
-        DIGGER("withered_digger", 46.0, 9.0, 0.25, 4.0, 260),
+        DIGGER("withered_digger", 70.0, 11.0, 0.25, 4.0, 260),
         /** A barrowman: he never let go of his barrow of cut stone, and runs whoever he sees down with it. */
-        BARROWMAN("withered_barrowman", 62.0, 10.0, 0.24, 4.0, 320),
+        BARROWMAN("withered_barrowman", 95.0, 12.0, 0.24, 4.0, 320),
         /** A sapper with a keg of blasting powder on his back: lobs lit pots from afar, and when he is nearly done lights the keg. */
-        SAPPER("withered_sapper", 36.0, 6.0, 0.26, 2.0, 300);
+        SAPPER("withered_sapper", 55.0, 7.0, 0.26, 2.0, 300);
 
         public final String id;
         final double health;

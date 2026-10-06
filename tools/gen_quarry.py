@@ -669,9 +669,9 @@ class Quarry:
         b.mob('crawler', 11, low + 1, zc - 11, 'east')
         # east, half way: the drift that was being driven north-east when the work stopped - barred, and going on
         self.room(20, zc - 30, 27, zc - 24, low, 3, low_floor, salt=6)
-        for y in (low + 1, low + 2, low + 3):
+        for y in (low + 1, low + 2, low + 3):                   # (a gate nothing in the map opens: see LockedGateBlock)
             for z in range(zc - 28, zc - 25):
-                b.set(28, y, z, BARS)
+                b.set(28, y, z, f'{MOD}:locked_gate[axis=z,lock=none]')
         self.floor(29, zc - 28, 36, zc - 26, low, low_floor)
         self.dig(29, low + 1, zc - 28, 36, low + 3, zc - 26)
         b.set(33, low + 1, zc - 27, 'minecraft:soul_lantern[hanging=false]')
@@ -758,7 +758,7 @@ class Quarry:
         self.dig(cx, low + 1, nz - 22, cx, low + 3, nz - 16)     # the fissure: a body wide, barred where it drops
         self.floor(cx, nz - 22, cx, nz - 16, low, low_floor)
         for y in (low + 1, low + 2, low + 3):
-            b.set(cx, y, nz - 18, BARS)
+            b.set(cx, y, nz - 18, f'{MOD}:locked_gate[axis=x,lock=none]')
         b.set(cx, low + 1, nz - 21, 'minecraft:soul_lantern[hanging=false]')
         b.set(cx, low + 2, nz - 20, 'minecraft:glow_lichen[west=true]')
 

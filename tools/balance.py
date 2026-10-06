@@ -120,7 +120,7 @@ if __name__ == '__main__':
     print('levels: one more point costs', ', '.join(f'{lv}->{lv + 1}: {level_cost(lv)}' for lv in (1, 5, 10, 15, 20, 25, 30)))
     print('tiers: health x', TH, ' damage x', TD, ' souls x', TS)
     total = 0.0
-    done_marks, done_chests = set(), set()
+    done_marks, done_chests, done_shards = set(), set(), set()
     gulps = 5
     for i, boss in enumerate(BOSSES):
         seen = seen_before[i]
@@ -142,12 +142,14 @@ if __name__ == '__main__':
             for item, count in gen_data.MAP_CHESTS[name]:
                 chest_souls += count * SOUL if item == gen_data.SOUL else 0
                 chest_great += count * GREAT if item == gen_data.GREAT else 0
-        shards = sum(1 for x, y, z in b.shards if any((x + dx, y, z + dz) in seen for dx in (-1, 0, 1) for dz in (-1, 0, 1)))
+        found = {s for s in b.shards if s not in done_shards and any((s[0] + dx, s[1], s[2] + dz) in seen for dx in (-1, 0, 1) for dz in (-1, 0, 1))}
+        done_shards |= found
+        shards = len(found)
         drops = withered * DROP * SOUL + knights * KNIGHT_GREAT * GREAT * 0.5
         bt = tier_at[next((x, y, z) for k, x, y, z in b.marks if k == boss)]
         boss_mob = dict(M[boss], health=M[boss]['health'] * TH[bt], damage=M[boss]['damage'] * TD[bt])
         print()
-        print(f'before the {boss.capitalize()}: ' + ', '.join(f'{n} {k}' + (f' (tier {t})' if t else '') for (k, t), n in sorted(kinds.items())))
+        print(f'before the {boss.replace("_", "-").title()}: ' + ', '.join(f'{n} {k}' + (f' (tier {t})' if t else '') for (k, t), n in sorted(kinds.items())))
         print(f'  one clearing: {souls:.0f} for kills, about {drops:.0f} in souls dropped, {chest_souls} in chests (+{chest_great} in great souls, if not kept for the anvil)')
         spent = (350, 1500, 2500, 2500, 1500)[i]              # arms and armour bought or forged on the way
         for label, clears in (('one clearing', 1.0), ('one and a half', 1.5)):
@@ -158,7 +160,7 @@ if __name__ == '__main__':
         health = 20 + VITALITY * vit
         flask = gulps + shards
         gulp = max(10, health * 0.5)
-        print(f'  the {boss.capitalize()} (tier {bt}: {boss_mob["health"]:.0f} health, armour {boss_mob["armor"]:.0f}, blow {boss_mob["damage"]:.1f}) '
+        print(f'  the {boss.replace("_", "-").title()} (tier {bt}: {boss_mob["health"]:.0f} health, armour {boss_mob["armor"]:.0f}, blow {boss_mob["damage"]:.1f}) '
               f'against level {lv} (vitality {vit}, endurance {end}, strength {st}; {health:.0f} health, {flask} gulps of {gulp:.0f}):')
         arms = (('broken_sword', 'club', 'pitchfork', 'hatchet'), ('club', 'shortsword', 'longsword', 'cleaver', 'grave_spade'), ('longsword', 'broadsword', 'rust_greatsword', 'great_key'),
                 ('longsword', 'broadsword', 'rust_greatsword', 'great_key', 'censer_flail'), ('broadsword', 'quarry_pick', 'great_key', 'censer_flail', 'great_maul'))[i]

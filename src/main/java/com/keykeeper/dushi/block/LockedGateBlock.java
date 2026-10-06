@@ -36,13 +36,16 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /**
  * An iron grate across a way that a map keeps shut until its key is found somewhere else: whoever touches it with the key
  * among their things opens the whole gate, for good and for everybody (the key is kept). Without the key it only rattles.
+ * (A state property must have two values at least: the second lock is the one that has no key.)
  * Which key is the {@code lock} of the state, so that one block serves every such gate of a map: a new gate is a new
  * entry in {@link Lock} and a new key item.
  */
 public class LockedGateBlock extends Block {
     public enum Lock implements StringRepresentable {
         /** The Quarrymen's Gate at the west end of Low Street; its key lies in the treasury of the High Stockade. */
-        QUARRY("quarry", () -> Dushi.QUARRY_KEY.get());
+        QUARRY("quarry", () -> Dushi.QUARRY_KEY.get()),
+        /** A gate whose key is not in the map yet: a way that is being kept for a place still to come. Nothing opens it. */
+        NONE("none", () -> null);
 
         public final String id;
         private final Supplier<Item> key;
@@ -104,7 +107,7 @@ public class LockedGateBlock extends Block {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (level instanceof ServerLevel serverLevel) {
             Lock lock = state.getValue(LOCK);
-            if (player.isCreative() || Forge.count(player, lock.key()) > 0) {
+            if (player.isCreative() || lock.key() != null && Forge.count(player, lock.key()) > 0) {
                 open(serverLevel, pos);
                 serverLevel.playSound(null, pos, SoundEvents.IRON_DOOR_OPEN, SoundSource.BLOCKS, 1.4F, 0.6F);
                 serverLevel.playSound(null, pos, SoundEvents.CHAIN_BREAK, SoundSource.BLOCKS, 1.2F, 0.7F);

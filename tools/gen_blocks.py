@@ -287,7 +287,8 @@ if __name__ == '__main__':
                       'faces': {'north': dict(face), 'south': dict(face), 'up': {'uv': [0, 2, 16, 4], 'texture': '#t'},
                                 'down': {'uv': [0, 12, 16, 14], 'texture': '#t'}}}]})
     write_json(f'{A}/blockstates/locked_gate.json', {'variants': {
-        'axis=x,lock=quarry': {'model': f'{MOD}:block/locked_gate'}, 'axis=z,lock=quarry': {'model': f'{MOD}:block/locked_gate', 'y': 90}}})
+        f'axis={axis},lock={lock}': ({'model': f'{MOD}:block/locked_gate'} if axis == 'x' else {'model': f'{MOD}:block/locked_gate', 'y': 90})
+        for axis in 'xz' for lock in ('quarry', 'none')}})
 
     # a threshold that names a place: nothing is drawn, the game only needs to be told so
     write_json(f'{A}/models/block/place_name.json', {'textures': {'particle': 'minecraft:block/stone'}})

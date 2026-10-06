@@ -61,6 +61,14 @@ def turf(x, y, z):
     return 'minecraft:grass_block' if n < 0.9 else ('minecraft:moss_block' if n < 0.95 else 'minecraft:podzol')
 
 
+def bare(x, y, z):
+    """The top of the white hill: stone with a little thin turf on it."""
+    n = hsh(x, 0, z, 307)
+    if smooth(x, z, 6, 308) > 0.62:
+        return 'minecraft:grass_block' if n < 0.75 else 'minecraft:coarse_dirt'
+    return 'minecraft:calcite' if n < 0.42 else ('minecraft:diorite' if n < 0.62 else ('minecraft:gravel' if n < 0.76 else ('minecraft:coarse_dirt' if n < 0.9 else 'minecraft:grass_block')))
+
+
 def cliff(x, y, z):
     n = hsh(x, y, z, 302)
     if smooth(x + y, z - y, 7, 303) > 0.7:
@@ -165,8 +173,10 @@ class World:
                 continue
             for y in range(GY + 1, GY + h + 1):
                 exposed = y > GY + h - 2 and all(self.height.get((x + dx, z + dz), 0) >= y - GY - 1 for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)))
-                stone = gen_quarry.chalk if (x, z) in self.white else cliff
-                b.set(x, y, z, stone(x, y, z) if not exposed else ('minecraft:dirt' if y < GY + h else turf(x, y, z)))
+                if (x, z) in self.white:
+                    b.set(x, y, z, gen_quarry.chalk(x, y, z) if not exposed or y < GY + h else bare(x, y, z))
+                    continue
+                b.set(x, y, z, cliff(x, y, z) if not exposed else ('minecraft:dirt' if y < GY + h else turf(x, y, z)))
         self.inside = inside
         self.dist = dist
 
@@ -197,6 +207,10 @@ class World:
         for (x, z), h in sorted(self.height.items()):
             n = hsh(x, 7, z, 320)
             if h >= 4 and self.dist[(x, z)] >= 2:
+                if (x, z) in self.white and (n > 0.006 or 'grass' not in str(b.get(x, GY + h, z))):
+                    if n > 0.94 and b.free(x, GY + h + 1, z) and 'grass' in str(b.get(x, GY + h, z)):
+                        b.set(x, GY + h + 1, z, 'minecraft:short_grass' if n < 0.98 else 'minecraft:dead_bush')
+                    continue                                     # the white hill is all but bare
                 if n < 0.035 and min(x, W - 1 - x, z, D - 1 - z) > 3:
                     b.set(x, GY + h, z, 'minecraft:podzol')
                     spruce(b, x, GY + h + 1, z, 5 + int(hsh(x, 8, z, 321) * 6), x * 7 + z)

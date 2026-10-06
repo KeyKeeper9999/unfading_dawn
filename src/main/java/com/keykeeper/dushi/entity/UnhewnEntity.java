@@ -48,7 +48,7 @@ public class UnhewnEntity extends SoulsMob {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 120.0).add(Attributes.ATTACK_DAMAGE, 14.0)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 170.0).add(Attributes.ATTACK_DAMAGE, 16.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.19).add(Attributes.ARMOR, 10.0).add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(Attributes.FOLLOW_RANGE, 20.0);
     }
