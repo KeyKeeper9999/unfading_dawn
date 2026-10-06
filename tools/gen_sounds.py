@@ -907,11 +907,11 @@ d = 2.2
 S['wallower/breach'] = reverb(place(d, (0.0, splash(1.8, 2.6) * 1.6), (0.0, thump(1.4, 100, 24, 0.3) * 2.2), (0.0, lowpass(noise(0.5), 1100) * decay(0.5, 0.1) * 1.6),
                                     (0.05, voice(contour(1.3, (0, 70), (0.2, 124), (1, 60)), 1.3, WET, breath=0.5, jitter=0.08, rough=1.0) * env(1.3, 0.04, 0.8) * 1.1),
                                     (0.5, highpass(noise(1.5), 2600) * env(1.5, 0.3, 1.1) * 0.3)), 1.6, 0.4, 1.1)
-d = 3.6
-S['wallower/gulp'] = reverb(place(d, (0.0, moving_bandpass(noise(2.9), sweep(180, 1500, 2.9, 1.8), 0.5) * env(2.9, 1.9, 0.06) * 1.3),
-                                  (0.0, voice(contour(2.9, (0, 46), (1, 96)), 2.9, WET, breath=0.9, jitter=0.06, rough=0.7) * env(2.9, 1.2, 0.05) * 0.6),
-                                  (0.3, bubbles(2.5, 40, 180, 800) * env(2.5, 1.2, 0.3) * 0.4), (2.9, thump(0.5, 130, 44, 0.09) * 2.0),
-                                  (2.9, lowpass(noise(0.12), 2200) * decay(0.12, 0.02) * 1.5), (2.92, splash(0.6, 1.0) * 0.6)), 1.2, 0.35, 0.8)
+d = 3.4
+S['wallower/gulp'] = reverb(place(d, (0.0, moving_bandpass(noise(2.65), sweep(180, 1500, 2.65, 1.8), 0.5) * env(2.65, 1.9, 0.06) * 1.3),
+                                  (0.0, voice(contour(2.65, (0, 46), (1, 96)), 2.65, WET, breath=0.9, jitter=0.06, rough=0.7) * env(2.65, 1.2, 0.05) * 0.6),
+                                  (0.3, bubbles(2.3, 40, 180, 800) * env(2.3, 1.2, 0.3) * 0.4), (2.65, thump(0.5, 130, 44, 0.09) * 2.0),
+                                  (2.65, lowpass(noise(0.12), 2200) * decay(0.12, 0.02) * 1.5), (2.652, splash(0.6, 1.0) * 0.6)), 1.2, 0.35, 0.8)
 
 # the Weeping Mother: a woman's voice out of a tree, and the tree
 WOMAN = ((760, 130, 1.0), (1280, 170, 0.6), (2850, 320, 0.3))

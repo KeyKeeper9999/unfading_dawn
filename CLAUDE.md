@@ -61,8 +61,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `block/PlaceNameBlock` - a threshold nobody sees or feels: a player who steps through it is shown the name of the
   place (`place.vsratie_dushi.<id>` in the texts; the list of places is the enum in the block). Every place has its
   hour, and in a world whose time stands still the threshold sets the clock (`SoulMechanics.hour`); a name is shown
-  once, when the player first comes to the place (`PlayerSoul.placesSeen`, by id, saved with the player); `to_night` and
-  `to_dusk` have no name and only do that. No item: a map's builder sets it; with a mob mark in hand it can be seen
+  once, when the player first comes to the place (`PlayerSoul.placesSeen`, by id, saved with the player); `to_night`,
+  `to_dusk` and `to_murk` have no name and only do that. No item: a map's builder sets it; with a mob mark in hand it can be seen
   and removed in creative. A hearth remembers the hour it was rested at, for those who come back to it by dying.
 - `block/HearthBlock` - rest, level up, and travel: a player can go from the hearth they sit by to any other they have
   rested at (`HearthBlock.travel`, `client/TravelScreen`; the list is `PlayerSoul.rests`, saved with the player, and is
@@ -99,6 +99,19 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   nothing of it moves) until somebody comes within 4.5 blocks or strikes it; `TaskmasterEntity` and `StoneEaterEntity` are the lords (the second digs itself
   under the floor: its model's root part `all` goes down, nothing reaches it there); `PowderPotEntity` (its `blast`
   hurts the dead too) and `WedgeEntity` are what is thrown. These four mobs share `client/QuarryRenderer`.
+- The Mire's own: `BonePikeEntity` keeps to water (its goal swims it straight at its prey only while there is water
+  ahead, it leaps at whoever stands on the boards, and one that lands on them flounders and is hurt half as much
+  again); `LankyEntity` wades and reaches; `WispEntity` flies a ring round its prey and throws slow fire
+  (`called()` makes one that burns out by itself and leaves nothing: the Mother's); `WallowerEntity` (it dives:
+  the model's root part goes down through the floor, and nothing hurts it there; `MudGlobEntity` is what it spits
+  and `block/SludgeBlock` what that leaves) and `WeepingMotherEntity` (rooted: she does not walk, turn fast, or get
+  pushed, and keeps her own list of roots coming up) are the lords. The drowned are a kind of the withered that
+  walks the bottom. A mob that lives in water has no `FloatGoal`, is not `isAffectedByFluids` and has the path
+  malus of water at 0: it then walks the bottom at its own pace. These share `client/QuarryRenderer` too.
+- `block/ShallowsBlock` (`shallows`) - a hand's depth of water over a floor, which is a floor: no fluid in it, so
+  nobody is slowed and the roll works. `block/SludgeBlock` (`sludge`) lies some seconds where a clot burst, slows
+  whoever is not of the dead (`makeStuckInBlock`: the roll too), and leaves the shallows again if it lay in them.
+  A mob mark can stand in water (`waterlogged`).
 - `client/` - models, renderers, `SoulsHud`, `HearthScreen`, `ShopScreen`, the roll key.
 - `tools/` - everything generated is generated from here; run `sh tools/build_assets.sh [preview dir]` from the repo root:
   - `modelkit.py` - entity models described once in Python: texture layout, the mesh part of the Java model class (written
@@ -106,7 +119,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   - `gen_withered.py` (ten kinds on one model: prisoner, guard, archer, acolyte, the town's townsman, butcher and
     watchman, the quarry's digger, barrowman and sapper), `gen_knight.py`, `gen_keykeeper.py`, `gen_overseer.py`,
     `gen_chaplain.py`, `gen_hound.py`, `gen_gravedigger.py`, `gen_crawler.py`, `gen_unhewn.py`, `gen_taskmaster.py`,
-    `gen_stone_eater.py` - the mobs;
+    `gen_stone_eater.py`, `gen_pike.py`, `gen_lanky.py`, `gen_wisp.py`, `gen_wallower.py`, `gen_mother.py` - the mobs
+    (the withered are eleven kinds now: the Mire's drowned too);
   - `gen_items.py` (icons), `gen_shields.py` and `gen_blocks.py` (box models), `gen_sounds.py`, `gen_lang.py` (all texts);
   - `gen_armor.py` - worn textures (64x32, the game's armour layout), icons and equipment definitions of the suits;
   - `gen_structures.py` - the buildings, block by block, with top-down and isometric previews; bars, fences and walls
@@ -114,8 +128,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   - `gen_data.py` - recipes, chest loot, tags, structure and structure-set JSON;
   - `check_assets.py` - checks that everything registered has its files and names;
   - `gen_world.py` - the map (not run by `build_assets.sh`: `PYTHONPATH=tools python3 tools/gen_world.py [preview dir]`);
-    it puts together the land, `gen_village.py` (the Dead Borough), `gen_map.py` (the High Stockade) and
-    `gen_quarry.py` (the White Pit);
+    it puts together the land, `gen_village.py` (the Dead Borough), `gen_map.py` (the High Stockade),
+    `gen_quarry.py` (the White Pit) and `gen_swamp.py` (the Mire);
   - `balance.py` - the sums of the map's progression (`PYTHONPATH=tools python3 tools/balance.py`).
 
   Never edit generated textures, models, `sounds.json` or the lang files by hand: change the generator and run it.
@@ -139,6 +153,11 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   `TaskmasterModel`). The part's own rotation in the mesh is already in its `xRot` when `setupAnim` begins: a move
   that sets a pitch outright must add it (`HELD`), or the weapon lies back along the arm. And a trunk bent far
   forward takes the hands down with it: for a blow that ends before the mob, the arms must still reach forward.
+- A mob that does not walk is judged by its reach, and its reach is read, not guessed: the generator's sheet
+  shows the poses the animation uses (`gen_mother.py`: the same numbers `setupAnim` adds), and where the hands are
+  in each pose is worked out from the mesh. The entity's ranges follow from that. Parts that must not turn with a
+  rooted mob are turned back by its body's yaw (`roots.yRot = -bodyRot`); hair hangs because the bends of
+  everything above it are taken off it at the end of `setupAnim`.
 - A block state property needs two values at least (the game refuses to register a block otherwise): the second
   `Lock` is the gate nothing opens.
 - What a mob carries that is not a weapon is part of its model too and takes part in its moves: the barrowman's
@@ -200,8 +219,18 @@ into it (`tools/gen_world.py`); the country outside the plan is the flat forest 
   the crack. Three levels: `TOP` eight over the valley's ground, `MID` six under it, `LOW` thirteen under it.
   Left for later: a barred drift north out of the lower workings, the fissure behind the Breach.
 
-`gen_world.py` writes `map/high_stockade.plan.txt` (the same format as the buildings; about 2.2 million blocks),
-`map/views.txt` and `map/light.txt`. The plan's origin is the place where the newcomer wakes; the game puts it at
+- The Mire (`tools/gen_swamp.py`), east of the town, at an hour of its own: a green noon that does not pass. It is entered by the Mire Gate at the east end of Low Street (`locked_gate[lock=mire]`); its key lies in
+  the crack behind the Stone-Eater. Gate tower (hearth; the thresholds that turn the clock lie in its bend) -> the
+  Drowned End: the town's own houses sunk to their eaves, willows grown through some, a walk of planks along them ->
+  the ferryman's hut (hearth, anvil) -> the log roads over the open marsh, north to the Weir and south to a door
+  in the ridge that opens from the other side -> the Weir (the Wallower: a floor under the shallows; a seal behind
+  him) -> the mill (hearth, anvil) -> the withy wood -> the island (the Weeping Mother) -> the grove behind her.
+  Water to the knee slows and stops the roll, deep water is swum: the roads are what a player keeps to, and what
+  lives in the water waits beside them. Left for later: a barred way out of the grove.
+
+`gen_world.py` writes `map/high_stockade.plan.txt` (the same format as the buildings; about 2.3 million blocks),
+`map/views.txt`, `map/light.txt` and `map/biomes.txt` (the boxes of the world that get the Mire's biome:
+`MapBuilder.biomes` fills them, and says in `map.log` how many cells it changed). The plan's origin is the place where the newcomer wakes; the game puts it at
 0, -46, 0 and turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the
 sunset. The dead of the town are of tier 0, of the lower fortress tier 1, of the upper city tier 2 (`World.tiers`);
 the quarry's are of tier 0 and strong by birth. The valley's ground is the plan's layer 16 (`GY`): the flat world has
@@ -254,11 +283,23 @@ Things learnt the hard way:
   so that the check sees walls (`Quarry.skin`). Above the ground everything is in the plan; a place cut open from
   above gives its columns to `open_sky`, or firs are planted in the air over it.
 - Painted pots swallow what is put into them; a player who may not build cannot use them (`SoulMechanics.onUsePot`).
-- Time does not move; the hours (`PlaceNameBlock.DUSK`, `NIGHT`) were chosen by looking at pictures. `time set` is
+- The check knows water (`gen_map.is_water`): it is stood in and swum, left only onto what is level with its top,
+  and nothing is jumped from it. It found the market's well to be a trap (a grate lies over it now).
+- The colour of a place is its biome's (`worldgen/biome/mire.json`: fog, sky, water, leaves, and how much light the
+  sky gives and of what colour), laid over the place by the map's builder. But the game darkens a biome's fog and
+  sky by the hour and paints them orange towards a low sun, and no biome can take that away: a place with a colour
+  of its own has an hour of full day (`PlaceNameBlock.MURK`: noon, so that the sun is overhead and not in the
+  eyes) and makes its own gloom. Clouds stay white whatever the biome: its `cloud_fog_end_distance` hides them.
+- Nothing has more than 1024 health: the game cuts the attribute off there (the Wallower was born with 1300 and had
+  1024). A lord who needs more has a hide (`HIDE` in the entity: the share of a blow that gets through), and
+  `balance.py` counts it.
+- A willow is a stair too: nothing of one that can be stood on is lower than five blocks over the ground.
+- Time does not move; the hours (`PlaceNameBlock.DUSK`, `NIGHT`, `MURK`) were chosen by looking at pictures. `time set` is
   for the whole world: with several players in different places the last threshold crossed wins.
 
 Balance (see `tools/balance.py`): one clearing of the town brings a player to about level 10-12 before the Gravedigger;
 the lower fortress to about 18 before the Overseer; the upper city to about 29 before the Chaplain; the quarry to
-about 35 before the Taskmaster and 38 before the Stone-Eater. The fortress was
+about 35 before the Taskmaster and 38 before the Stone-Eater; the Mire to about 44 before the Wallower and 47 before
+the Weeping Mother. The fortress was
 first tuned for a newcomer; its tiers make up for the levels a player now brings to it. When mobs, weapons, tiers or
 the map change, run it again.

@@ -294,8 +294,16 @@ public final class SelfTest {
         int index = 0;
         for (Map.Entry<EntityType<? extends SoulsMob>, int[]> entry : drillPlan().entrySet()) {
             BlockPos at = new BlockPos(-18 + (index % 5) * 9, FLOOR_Y + 1, -21 + (index / 5) * 12);
+            if (entry.getKey() == Dushi.BONE_PIKE.get()) {
+                // a pike is drilled in water: on a dry floor all it does is flounder
+                for (BlockPos pos : BlockPos.betweenClosed(at.offset(-2, -2, -2), at.offset(2, -1, 9))) {
+                    boolean rim = Math.abs(pos.getX() - at.getX()) == 2 || pos.getZ() == at.getZ() - 2 || pos.getZ() == at.getZ() + 9 || pos.getY() == at.getY() - 2;
+                    level.setBlock(pos, rim ? Blocks.STONE.defaultBlockState() : Blocks.WATER.defaultBlockState(), 3);
+                }
+                at = at.below();
+            }
             SoulsMob mob = entry.getKey().spawn(level, at, EntitySpawnReason.COMMAND);
-            Mob dummy = EntityTypes.IRON_GOLEM.spawn(level, at.offset(0, 0, 7), EntitySpawnReason.COMMAND);
+            Mob dummy = EntityTypes.IRON_GOLEM.spawn(level, at.offset(0, 0, entry.getKey() == Dushi.BONE_PIKE.get() ? 3 : 7), EntitySpawnReason.COMMAND);
             if (mob == null || dummy == null) {
                 say("drill: FAILED to spawn " + EntityType.getKey(entry.getKey()).getPath());
                 continue;

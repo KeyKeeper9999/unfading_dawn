@@ -73,6 +73,11 @@ public class WeepingMotherEntity extends SoulsMob {
     /** Turning, her arms are out to the sides and do not reach so far - nor down to what stands against the bole. */
     public static final double WHIRL_REACH = 5.8;
     public static final double UNDER_ARMS = 2.3;
+    /** She does nothing to whoever is further off than this: the island is twelve blocks from her to its edge. */
+    public static final double HEARS = 14.5;
+
+    /** What gets through her bark of every blow: the game lets nothing have more than 1024 health (see the Wallower). */
+    public static final float HIDE = 0.65F;
 
     private record Root(Vec3 at, int due) {}
 
@@ -91,7 +96,7 @@ public class WeepingMotherEntity extends SoulsMob {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1550.0).add(Attributes.ATTACK_DAMAGE, 20.0)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1000.0).add(Attributes.ATTACK_DAMAGE, 20.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.0).add(Attributes.ARMOR, 6.0).add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(Attributes.FOLLOW_RANGE, 30.0);
     }
@@ -158,14 +163,17 @@ public class WeepingMotherEntity extends SoulsMob {
 
     @Override
     public int chooseAttack(LivingEntity target, double distance) {
+        double far = distance + (this.getBbWidth() + target.getBbWidth()) * 0.5;
+        if (far > HEARS) {
+            return 0;                                            // still outside her ring of roots: she waits
+        }
         int called = this.lightsCalled();
         if (this.wailCooldown <= 0 && called < (this.phase() >= 2 ? 3 : 2)) {
             this.wailCooldown = (this.phase() >= 2 ? 420 : 560) + this.random.nextInt(160);
             return WAIL;
         }
-        double far = distance + (this.getBbWidth() + target.getBbWidth()) * 0.5;
         if (far > REACH - 0.4) {
-            if (this.rootsCooldown <= 0 && far < 26.0) {
+            if (this.rootsCooldown <= 0) {
                 this.rootsCooldown = (this.phase() >= 2 ? 30 : 50) + this.random.nextInt(30);
                 return ROOTS;
             }
@@ -208,7 +216,7 @@ public class WeepingMotherEntity extends SoulsMob {
         if (!this.roots.isEmpty()) {
             this.rootsTick(level);
         }
-        // she turns on her bole after whoever she is watching, and not fast: there is time to get round behind her
+        // she turns on her bole after whoever she is watching, about as fast as a man runs round her at arm's length
         LivingEntity target = this.getTarget();
         if (target != null && this.attackId() == 0) {
             float want = (float) (Mth.atan2(target.getZ() - this.getZ(), target.getX() - this.getX()) * (180.0 / Math.PI)) - 90.0F;
@@ -402,6 +410,17 @@ public class WeepingMotherEntity extends SoulsMob {
 
     @Override
     protected void doPush(Entity entity) {
+    }
+
+    /** Her bole is a bole: it is walked round, not through. The lights she calls pass. */
+    @Override
+    public boolean canBeCollidedWith(Entity other) {
+        return this.isAlive() && !(other instanceof SoulsMob);
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        return super.hurtServer(level, source, damage == Float.MAX_VALUE ? damage : damage * HIDE);
     }
 
     @Override

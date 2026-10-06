@@ -62,6 +62,12 @@ public class WallowerEntity extends SoulsMob {
     public static final int GULP_TO = 50;
     public static final int GULP_BITE = 55;
 
+    /**
+     * The game lets nothing have more than 1024 health. What it should have beyond that is in its hide: this much of
+     * every blow gets through (tools/balance.py reads the number).
+     */
+    public static final float HIDE = 0.77F;
+
     private int spitCooldown = 60;
     private int diveCooldown = 180;
     private int gulpCooldown = 120;
@@ -74,7 +80,7 @@ public class WallowerEntity extends SoulsMob {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1300.0).add(Attributes.ATTACK_DAMAGE, 19.0)
+        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1000.0).add(Attributes.ATTACK_DAMAGE, 19.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.25).add(Attributes.ARMOR, 5.0).add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(Attributes.FOLLOW_RANGE, 44.0).add(Attributes.STEP_HEIGHT, 1.1);
     }
@@ -345,6 +351,11 @@ public class WallowerEntity extends SoulsMob {
     }
 
     @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        return super.hurtServer(level, source, damage == Float.MAX_VALUE ? damage : damage * HIDE);
+    }
+
+    @Override
     public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
         return this.under() || source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.CRAMMING) || super.isInvulnerableTo(level, source);
     }
@@ -352,6 +363,14 @@ public class WallowerEntity extends SoulsMob {
     @Override
     public boolean isPushable() {
         return !this.under() && super.isPushable();
+    }
+
+    /** Under the water it shoves nobody: there is only the ripple to go by. */
+    @Override
+    protected void doPush(net.minecraft.world.entity.Entity entity) {
+        if (!this.under()) {
+            super.doPush(entity);
+        }
     }
 
     @Override

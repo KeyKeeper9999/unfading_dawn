@@ -282,6 +282,9 @@ class Swamp:
                         b.set(x, y, z, 'minecraft:mossy_stone_bricks')
                     elif s == 'minecraft:stone' and y == top:
                         b.set(x, y, z, PLANK)                      # the floor of the loft, where the roof lets one see in
+                    elif wall and ('terracotta' in s or 'mud_bricks' in s) \
+                            and smooth(x + z, y, 2, 654 + seed) < (0.72, 0.6, 0.48, 0.38, 0.3)[max(0, min(4, y - g - 1))]:
+                        b.set(x, y, z, 'minecraft:moss_block')     # the plaster eaten green from the water up
                     elif y >= top and ('_stairs' in s or '_slab' in s) and ruin > 0 and smooth(x + y, z, 3, 651 + seed) < ruin:
                         b.set(x, y, z, AIR)                        # tiles gone
         # beards of moss under the eaves, a little green on the roof

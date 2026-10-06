@@ -214,6 +214,7 @@ MIRE = {
         'minecraft:visual/fog_start_distance': 0.0,
         'minecraft:visual/fog_end_distance': 72.0,
         'minecraft:visual/sky_fog_end_distance': 64.0,
+        'minecraft:visual/cloud_fog_end_distance': 128.0,      # no clouds: they are further off than this, and white
         'minecraft:visual/sky_light_factor': 0.42,
         'minecraft:visual/sky_light_color': '#b4e09c',
         'minecraft:visual/ambient_light_color': '#0a140a',

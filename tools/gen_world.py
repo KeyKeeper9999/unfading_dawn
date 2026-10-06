@@ -497,8 +497,8 @@ def views(w):
     return out
 
 
-MURK = 11200                        # the hour of the Mire: see PlaceNameBlock.MURK
-MURK_TRIED = (6000, 9000, 12000)
+MURK = 6000                         # the hour of the Mire: see PlaceNameBlock.MURK
+MURK_TRIED = ()
 
 
 # the pictures of the fortress that are still taken (it was looked at room by room when it was built)

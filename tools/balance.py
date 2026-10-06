@@ -43,6 +43,9 @@ def mobs():
                        ('wallower', 'entity/WallowerEntity.java'), ('weeping_mother', 'entity/WeepingMotherEntity.java')):
         text = read(path)
         out[name] = dict(attributes(text, 'createAttributes'), souls=int(re.search(r'soulReward\(\) \{\s+return (?:[\w.]+ > 0 \? 0 : )?(\d+);', text).group(1)))
+        hide = re.search(r'HIDE = ([0-9.]+)F', text)
+        if hide:                                             # (nothing has more than 1024 health: the rest is in its hide)
+            out[name]['health'] = round(out[name]['health'] / float(hide.group(1)))
     return out
 
 
