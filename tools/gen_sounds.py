@@ -972,6 +972,216 @@ S['weeping_mother/root'] = reverb(place(d, (0.0, thump(0.7, 120, 34, 0.14) * 2.0
 
 S['music/boss'] = boss_music()
 
+# ============================================================== the Black Firwood: men who will not sleep, wax, moths, and a bear kept awake
+# (everything of a new place is written after the old: the generator draws its noise from one stream, and what is added
+# at the end leaves every earlier sound as it was)
+HOARSE = ((480, 120, 1.0), (1250, 180, 0.6), (2600, 320, 0.3))
+OLD = ((390, 110, 1.0), (1020, 160, 0.6), (2350, 300, 0.22))
+BEAR = ((230, 100, 1.0), (560, 150, 0.9), (1200, 260, 0.4), (2400, 400, 0.14))
+SMOTHERED = ((210, 80, 1.0), (430, 100, 0.6), (900, 160, 0.12))
+
+
+def mutter(d, pitch, formants, syllables, drift=0.04, breath=0.6):
+    """A prayer said on one note by a dry mouth: short syllables with the breath showing between them."""
+    out = np.zeros(int(SR * d))
+    at = 0.05
+    for i in range(syllables):
+        n = float(rng.uniform(0.11, 0.2))
+        f = pitch * (1 + float(rng.uniform(-drift, drift)))
+        syl = voice(contour(n, (0, f * 0.97), (0.3, f), (1, f * 0.95)), n, formants, breath=breath, jitter=0.05, rough=0.35) * env(n, 0.02, n * 0.5)
+        a = int(at * SR)
+        if a + len(syl) >= len(out):
+            break
+        out[a:a + len(syl)] += syl * float(rng.uniform(0.6, 1.0))
+        at += n + float(rng.uniform(0.02, 0.09)) + (0.22 if i % 4 == 3 else 0.0)
+    return out
+
+
+def snore(d, pitch=62, whistle=1500):
+    """One breath of a sleeper: the rattle of the breath going in, and the long whistle of it coming out."""
+    a = d * 0.45
+    rattle_ = lowpass(voice(contour(a, (0, pitch * 0.9), (0.6, pitch * 1.15), (1, pitch)), a, ((160, 70, 1.0), (380, 110, 0.8), (800, 200, 0.3)),
+                            breath=0.9, jitter=0.12, rough=1.0), 1100) * env(a, a * 0.35, a * 0.25)
+    b = d - a - 0.08
+    out_ = moving_bandpass(noise(b), contour(b, (0, whistle * 0.8), (0.3, whistle), (1, whistle * 0.6)), 0.3) * env(b, b * 0.2, b * 0.6) * 0.5
+    out_ += tone(contour(b, (0, whistle * 1.5), (1, whistle * 1.1)), b) * env(b, b * 0.3, b * 0.6) * 0.03
+    return place(d, (0.0, rattle_), (a + 0.08, out_))
+
+
+def wingbeats(d, rate, lo=250, hi=2600):
+    """Wide soft wings: every beat a puff of air."""
+    n = int(SR * d)
+    beat = (0.5 + 0.5 * np.sin(2 * np.pi * np.cumsum(np.full(n, rate) * (1 + 0.12 * lowpass(rng.standard_normal(n), 3))) / SR)) ** 3
+    return bandpass(noise(d), lo, hi) * beat
+
+
+def wood_knock(d, f=620, hollow=1.0):
+    """A mallet on a hung board: the board's own notes, which are few and clear, and the smack of the wood."""
+    ring = (tone(f, d) + 0.55 * tone(f * 2.42, d, 1.0) + 0.3 * tone(f * 4.13, d, 2.0)) * decay(d, 0.07 * hollow)
+    smack = bandpass(noise(d), f * 1.5, f * 7) * decay(d, 0.006) * 1.2
+    return ring * 0.8 + smack + thump(d, f * 0.35, f * 0.2, 0.04) * 0.7
+
+
+def chain(d, count, seed=0):
+    return rattle(d, count, 1500, 4200, seed=seed)
+
+
+for k in (0, 1):
+    S[f'sect/ambient{k + 1}'] = reverb(mutter(2.2 + 0.4 * k, 112 - 12 * k, HOARSE, 9 + 2 * k) * 0.9, 1.0, 0.3, 0.6)
+d = 0.45
+S['sect/hurt'] = reverb(voice(contour(d, (0, 150), (0.2, 185), (1, 110)), d, HOARSE, breath=1.0, jitter=0.08, rough=0.6) * env(d, 0.01, 0.3), 0.5, 0.25, 0.3)
+d = 2.2
+S['sect/death'] = reverb(place(d, (0.0, voice(contour(1.5, (0, 150), (0.2, 132), (1, 70)), 1.5, HOARSE, breath=1.3, jitter=0.06, rough=0.3) * env(1.5, 0.05, 1.1)),
+                               (1.0, lowpass(noise(1.1), 900) * env(1.1, 0.4, 0.6) * 0.5), (1.3, thump(0.5, 80, 40, 0.09) * 0.9)), 1.0, 0.3, 0.6)
+d = 1.1
+S['wakeful/rise'] = reverb(place(d, (0.0, bandpass(noise(0.7), 900, 5000) * env(0.7, 0.2, 0.4) * np.clip(lowpass(noise(0.7), 18) * 5 + 0.6, 0, 1.3) * 0.7),
+                                 (0.15, creak(0.4, 60, 24, (500, 1100, 2100)) * env(0.4, 0.02, 0.3) * 0.25),
+                                 (0.4, voice(contour(0.55, (0, 96), (1, 142)), 0.55, HOARSE, breath=1.6, jitter=0.05) * env(0.55, 0.3, 0.1) * 0.9)), 0.8, 0.3, 0.5)
+d = 1.5
+S['wakeful/vigil'] = reverb(voice(contour(d, (0, 104), (0.25, 156), (0.7, 162), (1, 150)), d, ((620, 130, 1.0), (1150, 170, 0.7), (2500, 300, 0.3)),
+                                  breath=0.5, jitter=0.04, rough=0.3) * env(d, 0.12, 0.4), 1.3, 0.35, 0.9)
+for k in (0, 1):
+    S[f'waker/knock{k + 1}'] = reverb(wood_knock(0.5, 560 + 70 * k) * 1.2, 1.2, 0.35, 0.9)
+d = 0.7
+S['sleeper/cry'] = reverb(place(d, (0.0, voice(contour(0.22, (0, 120), (1, 260)), 0.22, HOARSE, breath=1.8, jitter=0.06) * env(0.22, 0.12, 0.03) * 0.7),
+                                (0.2, voice(contour(0.5, (0, 330), (0.15, 380), (1, 200)), 0.5, HOARSE, breath=0.5, jitter=0.09, rough=0.5) * env(0.5, 0.01, 0.35))),
+                          0.8, 0.3, 0.5)
+d = 0.8
+S['sleeper/fall'] = reverb(place(d, (0.0, thump(0.5, 110, 42, 0.09) * 1.8), (0.0, lowpass(noise(0.25), 1200) * decay(0.25, 0.04) * 1.2),
+                                 (0.04, wood_knock(0.3, 380, 0.6) * 0.7), (0.12, wood_knock(0.25, 460, 0.5) * 0.35),
+                                 (0.1, voice(contour(0.4, (0, 130), (1, 84)), 0.4, HOARSE, breath=1.2, jitter=0.06, rough=0.5) * env(0.4, 0.02, 0.3) * 0.5)), 0.6, 0.25, 0.4)
+for k in (0, 1):
+    S[f'sleeper/snore{k + 1}'] = reverb(snore(2.3 + 0.3 * k, 66 - 8 * k, 1500 - 250 * k) * 0.9, 0.8, 0.25, 0.5)
+
+
+# the waxen: a heap of everything their candles shed, with somebody's breath in it
+def waxen_ambient(k):
+    d = 2.6
+    moan = lowpass(voice(contour(d, (0, 74 - 6 * k), (0.4, 88 - 6 * k), (1, 62)), d, SMOTHERED, breath=0.5, jitter=0.07, rough=0.6), 700) * env(d, 0.6, 1.0)
+    return reverb(moan * 1.4 + place(d, (0.3, bubbles(1.8, 9 + 3 * k, 140, 420) * 0.6), (0.2, squelch(0.5, 180) * 0.5), (1.5, squelch(0.6, 150) * 0.45),
+                                     (0.0, crackle(d, 14, 2600) * 0.12)), 1.0, 0.3, 0.6)
+
+
+S['waxen/ambient1'] = waxen_ambient(0)
+S['waxen/ambient2'] = waxen_ambient(1)
+d = 0.6
+S['waxen/hurt'] = reverb(place(d, (0.0, squelch(0.35, 300) * 1.2), (0.0, thump(0.3, 140, 60, 0.05) * 1.0),
+                               (0.02, lowpass(voice(contour(0.5, (0, 110), (0.2, 128), (1, 76)), 0.5, SMOTHERED, breath=0.6, jitter=0.08, rough=0.7), 800)
+                                * env(0.5, 0.01, 0.35) * 1.3)), 0.6, 0.25, 0.4)
+d = 2.6
+S['waxen/death'] = reverb(place(d, (0.0, lowpass(voice(contour(1.4, (0, 118), (1, 44)), 1.4, SMOTHERED, breath=0.7, jitter=0.09, rough=0.8), 700) * env(1.4, 0.03, 1.0) * 1.3),
+                                (0.3, squelch(0.8, 220) * 1.3), (0.35, thump(0.8, 100, 34, 0.14) * 1.5), (0.5, bubbles(1.4, 30, 120, 520) * env(1.4, 0.05, 1.0) * 0.6),
+                                (0.6, highpass(noise(1.8), 3800) * decay(1.8, 0.45) * 0.6), (0.6, crackle(1.6, 60, 4200) * decay(1.6, 0.5) * 0.4)), 1.2, 0.3, 0.8)
+d = 0.9
+S['waxen/slam'] = reverb(place(d, (0.0, thump(0.7, 105, 32, 0.13) * 2.0), (0.0, squelch(0.5, 260) * 1.3), (0.0, lowpass(noise(0.3), 800) * decay(0.3, 0.06) * 1.2),
+                               (0.08, bubbles(0.5, 8, 160, 480) * 0.4)), 0.8, 0.3, 0.6)
+d = 1.0
+S['waxen/gather'] = reverb(moving_bandpass(noise(d), sweep(160, 950, d, 1.6), 0.5) * env(d, 0.7, 0.05) * 1.0 + place(d, (0.1, bubbles(0.85, 26, 140, 700) * env(0.85, 0.5, 0.1) * 0.7))
+                           + lowpass(voice(contour(d, (0, 60), (1, 118)), d, SMOTHERED, breath=0.4, jitter=0.07, rough=0.8), 700) * env(d, 0.5, 0.05) * 0.9, 0.6, 0.25, 0.3)
+d = 1.5
+S['waxen/spew'] = reverb(place(d, (0.0, bandpass(noise(1.3), 500, 4200) * env(1.3, 0.05, 0.6) * np.clip(lowpass(noise(1.3), 40) * 5 + 0.7, 0.1, 1.4) * 1.0),
+                               (0.0, bubbles(1.2, 40, 200, 900) * env(1.2, 0.02, 0.6) * 0.6), (0.0, crackle(1.3, 110, 4200) * env(1.3, 0.05, 0.7) * 0.5),
+                               (0.0, lowpass(voice(contour(1.1, (0, 128), (1, 86)), 1.1, SMOTHERED, breath=0.5, jitter=0.08, rough=1.0), 800) * env(1.1, 0.04, 0.6) * 1.0),
+                               (0.25, squelch(0.5, 320) * 0.6), (0.7, squelch(0.5, 280) * 0.5)), 0.8, 0.3, 0.5)
+
+# the sleep moth: wings as wide as a man's arms, and the dust they shed
+for k in (0, 1):
+    d = 1.3
+    S[f'sleep_moth/flutter{k + 1}'] = reverb(wingbeats(d, 17 + 3 * k) * env(d, 0.15, 0.4) * 1.0, 0.5, 0.2, 0.3)
+d = 0.4
+S['sleep_moth/hurt'] = reverb(wingbeats(d, 34, 400, 4200) * env(d, 0.01, 0.25) * 1.0 + tone(contour(d, (0, 3300), (0.3, 4100), (1, 2500)), d) * env(d, 0.01, 0.25) * 0.14,
+                              0.4, 0.2, 0.3)
+d = 1.3
+S['sleep_moth/death'] = reverb(place(d, (0.0, bandpass(noise(1.0), 300, 3200) * (0.5 + 0.5 * np.sin(2 * np.pi * np.cumsum(sweep(32, 6, 1.0, 0.6)) / SR)) ** 3
+                                         * env(1.0, 0.01, 0.6)), (0.0, tone(contour(0.5, (0, 3600), (1, 1700)), 0.5) * env(0.5, 0.01, 0.4) * 0.12),
+                                     (0.75, highpass(noise(0.5), 4500) * env(0.5, 0.05, 0.4) * 0.3), (0.8, thump(0.2, 160, 80, 0.04) * 0.35)), 0.6, 0.25, 0.4)
+d = 2.2
+S['sleep_moth/dust'] = reverb(place(d, (0.0, highpass(noise(1.8), 5200) * env(1.8, 0.5, 1.1) * 0.5), (0.1, chime(1320, 0.9, 0.6) * 0.5), (0.45, chime(1110, 1.0, 0.6) * 0.45),
+                                    (0.85, chime(880, 1.2, 0.5) * 0.4), (0.0, pad_chord((220.0, 277.2), 2.1, 0.7, 1.1, 900) * 0.9)), 1.6, 0.45, 1.2)
+
+
+# the Shatun: a chest like a barrel, and a chain that has never been off him
+def shatun_ambient(k):
+    d = 2.4
+    huff = voice(contour(1.1, (0, 58 - 4 * k), (0.3, 70), (1, 46)), 1.1, BEAR, breath=1.2, jitter=0.1, rough=1.0) * env(1.1, 0.15, 0.6)
+    huff2 = voice(contour(0.7, (0, 62), (1, 44)), 0.7, BEAR, breath=1.5, jitter=0.1, rough=1.0) * env(0.7, 0.1, 0.45)
+    return reverb(place(d, (0.1, huff * 1.2), (1.4 + 0.1 * k, huff2 * 0.8), (0.9, chain(0.6, 4, seed=71 + k) * 0.3)), 1.0, 0.3, 0.6)
+
+
+S['shatun/ambient1'] = shatun_ambient(0)
+S['shatun/ambient2'] = shatun_ambient(1)
+d = 0.8
+S['shatun/hurt'] = reverb(voice(contour(d, (0, 122), (0.15, 150), (1, 64)), d, BEAR, breath=0.6, jitter=0.1, rough=1.0) * env(d, 0.01, 0.5) * 1.2
+                          + place(d, (0.1, chain(0.5, 4, seed=73) * 0.25)), 0.9, 0.3, 0.6)
+d = 3.4
+S['shatun/death'] = reverb(place(d, (0.0, voice(contour(2.4, (0, 138), (0.12, 118), (0.6, 78), (1, 34)), 2.4, BEAR, breath=0.7, jitter=0.11, rough=1.0) * env(2.4, 0.03, 1.7) * 1.3),
+                                 (1.7, thump(1.2, 86, 24, 0.24) * 2.2), (1.7, lowpass(noise(0.5), 700) * decay(0.5, 0.1) * 1.4), (1.75, chain(1.0, 9, seed=75) * 0.45),
+                                 (2.1, lowpass(noise(1.2), 600) * env(1.2, 0.3, 0.8) * 0.6)), 1.6, 0.35, 1.0)
+d = 2.4
+S['shatun/roar'] = reverb(voice(contour(d, (0, 56), (0.15, 132), (0.55, 118), (1, 48)), d, ((260, 110, 1.0), (640, 170, 1.0), (1350, 280, 0.6), (2600, 420, 0.22)),
+                                breath=0.5, jitter=0.12, rough=1.0) * env(d, 0.12, 1.2) * 1.4
+                          + lowpass(noise(d), 240, 3) * env(d, 0.2, 1.2) * 1.4, 1.8, 0.4, 1.2)
+d = 0.6
+S['shatun/swipe'] = reverb(place(d, (0.0, whoosh(0.5, 160, 1500, 0.35, 0.5) * 1.4), (0.12, highpass(noise(0.2), 2600) * decay(0.2, 0.03) * 0.5),
+                                                                          (0.05, voice(contour(0.4, (0, 96), (1, 62)), 0.4, BEAR, breath=0.9, jitter=0.1, rough=1.0) * env(0.4, 0.05, 0.25) * 0.6)),
+                           0.5, 0.2, 0.3)
+d = 1.4
+S['shatun/slam'] = reverb(place(d, (0.0, thump(1.2, 92, 22, 0.26) * 2.6), (0.0, lowpass(noise(0.5), 850) * decay(0.5, 0.1) * 1.8), (0.0, crackle(0.6, 90, 1500) * decay(0.6, 0.15) * 0.8),
+                                (0.05, chain(0.7, 8, seed=77) * 0.4), (0.1, lowpass(noise(1.1), 200, 3) * decay(1.1, 0.35) * 2.0)), 1.3, 0.35, 0.9)
+d = 0.6
+S['shatun/bite'] = reverb(place(d, (0.0, voice(contour(0.3, (0, 90), (1, 150)), 0.3, BEAR, breath=0.8, jitter=0.1, rough=1.0) * env(0.3, 0.15, 0.03) * 0.8),
+                                (0.26, highpass(noise(0.07), 1700) * decay(0.07, 0.008) * 1.8), (0.26, thump(0.25, 190, 70, 0.04) * 1.4),
+                                (0.27, bandpass(noise(0.1), 700, 2600) * decay(0.1, 0.02) * 1.0)), 0.5, 0.25, 0.3)
+d = 0.5
+S['shatun/step'] = reverb(place(d, (0.0, thump(0.4, 78, 32, 0.09) * 1.6), (0.0, lowpass(noise(0.2), 500) * decay(0.2, 0.04) * 1.0), (0.06, chain(0.35, 3, seed=79) * 0.22)), 0.5, 0.2, 0.3)
+d = 1.9
+S['shatun/crash'] = reverb(place(d, (0.0, thump(0.9, 110, 30, 0.18) * 2.4), (0.0, creak(0.5, 110, 30, (300, 720, 1500)) * env(0.5, 0.005, 0.4) * 0.9),
+                                 (0.0, crackle(0.9, 130, 1700) * decay(0.9, 0.2) * 1.2), (0.03, lowpass(noise(0.4), 1300) * decay(0.4, 0.07) * 1.5),
+                                 (0.1, chain(0.8, 9, seed=81) * 0.4),
+                                 (0.5, voice(contour(1.2, (0, 110), (0.2, 96), (1, 58)), 1.2, BEAR, breath=1.0, jitter=0.14, rough=0.8) * env(1.2, 0.1, 0.8) * 0.8)), 1.2, 0.35, 0.8)
+
+
+# the Elder: the oldest voice of them, and the only one that is heard through the tent
+def elder_ambient(k):
+    d = 3.2
+    return reverb(mutter(d, 84 - 8 * k, OLD, 11 + k, drift=0.025, breath=0.45) * 1.0 + pad_chord((84.0 - 8 * k,), d, 0.8, 1.2, 500) * 0.5, 2.0, 0.45, 1.3)
+
+
+S['elder/ambient1'] = elder_ambient(0)
+S['elder/ambient2'] = elder_ambient(1)
+d = 0.6
+S['elder/hurt'] = reverb(voice(contour(d, (0, 118), (0.2, 140), (1, 82)), d, OLD, breath=0.9, jitter=0.09, rough=0.7) * env(d, 0.01, 0.4), 1.0, 0.35, 0.7)
+d = 3.6
+S['elder/death'] = reverb(place(d, (0.0, voice(contour(2.6, (0, 128), (0.15, 112), (1, 52)), 2.6, OLD, breath=1.4, jitter=0.07, rough=0.3) * env(2.6, 0.06, 2.0) * 1.1),
+                                (1.2, highpass(noise(1.6), 3600) * decay(1.6, 0.4) * 0.5), (1.9, wood_knock(0.5, 300, 0.8) * 0.8), (2.1, wood_knock(0.4, 360, 0.6) * 0.45),
+                                (2.0, thump(0.8, 84, 34, 0.14) * 1.4), (2.3, pad_chord((98.0, 146.8), 1.3, 0.3, 0.9, 700) * 0.7)), 2.2, 0.45, 1.4)
+d = 0.8
+S['elder/sweep'] = reverb(place(d, (0.0, whoosh(0.7, 140, 1300, 0.4, 0.5) * 1.3), (0.05, bandpass(noise(0.6), 200, 1200) * (0.5 + 0.5 * np.sin(2 * np.pi * 23 * t(0.6))) * env(0.6, 0.15, 0.3) * 0.7),
+                                                                        (0.1, crackle(0.5, 70, 3600) * env(0.5, 0.1, 0.3) * 0.3)), 0.7, 0.25, 0.4)
+d = 2.6
+S['elder/chant'] = reverb(place(d, (0.0, voice(contour(1.2, (0, 98), (0.1, 110), (1, 110)), 1.2, OLD, breath=0.3, jitter=0.03, rough=0.2) * env(1.2, 0.1, 0.2)),
+                                (1.15, voice(contour(1.4, (0, 110), (0.12, 147), (0.8, 147), (1, 131)), 1.4, OLD, breath=0.3, jitter=0.03, rough=0.2) * env(1.4, 0.08, 0.6) * 1.1),
+                                (0.0, choir((110.0, 165.0), 2.5, 0.6, 0.9) * 0.8)), 2.4, 0.5, 1.5)
+d = 1.2
+S['elder/knock'] = reverb(place(d, (0.0, wood_knock(0.7, 210, 1.6) * 1.5), (0.0, thump(0.8, 90, 30, 0.16) * 1.8), (0.0, lowpass(noise(0.3), 700) * decay(0.3, 0.06) * 1.0),
+                                (0.02, clang(1180, 0.9, strike=0.2) * 0.14)), 1.8, 0.45, 1.2)
+d = 1.5
+S['elder/call'] = reverb(place(d, (0.0, voice(contour(0.45, (0, 120), (0.3, 168), (1, 150)), 0.45, OLD, breath=0.4, jitter=0.05, rough=0.5) * env(0.45, 0.03, 0.12)),
+                               (0.5, voice(contour(0.95, (0, 150), (0.15, 205), (0.6, 190), (1, 120)), 0.95, OLD, breath=0.4, jitter=0.05, rough=0.5) * env(0.95, 0.03, 0.5) * 1.1)),
+                         2.2, 0.45, 1.4)
+d = 3.4
+S['elder/slumber'] = reverb(place(d, (0.0, voice(contour(1.9, (0, 96), (0.3, 170), (0.55, 160), (1, 70)), 1.9, ((640, 140, 1.0), (1100, 180, 0.6), (2400, 300, 0.2)),
+                                               breath=1.3, jitter=0.05, rough=0.15) * env(1.9, 0.5, 1.0)),
+                                  (1.7, snore(1.6, 54, 1150) * 0.9), (0.6, highpass(noise(1.6), 4000) * decay(1.6, 0.4) * 0.3)), 2.2, 0.45, 1.3)
+d = 3.2
+S['elder/dream'] = reverb(place(d, (0.0, pad_chord((110.0, 130.8, 164.8), 3.0, 1.2, 1.4, 1100, 0.007, 0.008) * 1.6), (0.3, choir((220.0, 261.6), 2.6, 1.0, 1.3) * 0.5),
+                                (0.6, highpass(noise(2.4), 5000) * env(2.4, 1.0, 1.2) * 0.25), (1.1, chime(880, 1.2, 0.5) * 0.25), (1.6, chime(659, 1.4, 0.5) * 0.22),
+                                (0.0, lowpass(noise(3.0), 180, 3) * env(3.0, 1.4, 1.2) * 1.2)), 2.6, 0.5, 1.6)
+for k in (0, 1):
+    S[f'elder/snore{k + 1}'] = reverb(snore(2.9 + 0.3 * k, 52 - 5 * k, 1150 - 150 * k) * 1.0 + pad_chord((52.0,), 3.0 + 0.3 * k, 1.0, 1.4, 300)[:int(SR * (2.9 + 0.3 * k))] * 0.5,
+                                      2.0, 0.4, 1.2)
+
+
 # ============================================================== events -> files
 EVENTS = {
     'entity.withered.ambient': ['withered/ambient1', 'withered/ambient2', 'withered/ambient3'],
@@ -1031,6 +1241,20 @@ EVENTS = {
     'entity.weeping_mother.death': ['weeping_mother/death'], 'entity.weeping_mother.wail': ['weeping_mother/wail'],
     'entity.weeping_mother.lash': ['weeping_mother/lash'], 'entity.weeping_mother.slam': ['weeping_mother/slam'],
     'entity.weeping_mother.creak': ['weeping_mother/creak'], 'entity.weeping_mother.root': ['weeping_mother/root'],
+    'entity.sect.ambient': ['sect/ambient1', 'sect/ambient2'], 'entity.sect.hurt': ['sect/hurt'], 'entity.sect.death': ['sect/death'],
+    'entity.wakeful.rise': ['wakeful/rise'], 'entity.wakeful.vigil': ['wakeful/vigil'], 'entity.waker.knock': ['waker/knock1', 'waker/knock2'],
+    'entity.sleeper.cry': ['sleeper/cry'], 'entity.sleeper.fall': ['sleeper/fall'], 'entity.sleeper.snore': ['sleeper/snore1', 'sleeper/snore2'],
+    'entity.waxen.ambient': ['waxen/ambient1', 'waxen/ambient2'], 'entity.waxen.hurt': ['waxen/hurt'], 'entity.waxen.death': ['waxen/death'],
+    'entity.waxen.slam': ['waxen/slam'], 'entity.waxen.gather': ['waxen/gather'], 'entity.waxen.spew': ['waxen/spew'],
+    'entity.sleep_moth.flutter': ['sleep_moth/flutter1', 'sleep_moth/flutter2'], 'entity.sleep_moth.hurt': ['sleep_moth/hurt'],
+    'entity.sleep_moth.death': ['sleep_moth/death'], 'entity.sleep_moth.dust': ['sleep_moth/dust'],
+    'entity.shatun.ambient': ['shatun/ambient1', 'shatun/ambient2'], 'entity.shatun.hurt': ['shatun/hurt'], 'entity.shatun.death': ['shatun/death'],
+    'entity.shatun.roar': ['shatun/roar'], 'entity.shatun.swipe': ['shatun/swipe'], 'entity.shatun.slam': ['shatun/slam'],
+    'entity.shatun.bite': ['shatun/bite'], 'entity.shatun.step': ['shatun/step'], 'entity.shatun.crash': ['shatun/crash'],
+    'entity.elder.ambient': ['elder/ambient1', 'elder/ambient2'], 'entity.elder.hurt': ['elder/hurt'], 'entity.elder.death': ['elder/death'],
+    'entity.elder.sweep': ['elder/sweep'], 'entity.elder.chant': ['elder/chant'], 'entity.elder.knock': ['elder/knock'],
+    'entity.elder.call': ['elder/call'], 'entity.elder.slumber': ['elder/slumber'], 'entity.elder.dream': ['elder/dream'],
+    'entity.elder.snore': ['elder/snore1', 'elder/snore2'],
     'entity.keykeeper.ambient': ['keykeeper/ambient1', 'keykeeper/ambient2'],
     'entity.keykeeper.give': ['keykeeper/give'],
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],
@@ -1050,7 +1274,12 @@ if __name__ == '__main__':
     used = {n for names in EVENTS.values() for n in names}
     assert used == set(S), (used - set(S), set(S) - used)
     report = []
+    # SOUNDS_NEW=1: only what has no file yet is written (an encoder never writes the same file twice, and nothing is
+    # gained by every sound of the mod changing in the repository whenever one is added)
+    only_new = bool(os.environ.get('SOUNDS_NEW'))
     for name, x in S.items():
+        if only_new and os.path.exists(f'{A}/sounds/{name}.ogg'):
+            continue
         x = highpass(np.asarray(x, float), 25)
         if name != 'music/boss':
             x[:64] *= np.linspace(0, 1, 64)

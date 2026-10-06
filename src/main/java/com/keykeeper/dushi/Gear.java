@@ -9,6 +9,7 @@ import com.keykeeper.dushi.item.WeaponItem;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
@@ -224,6 +225,26 @@ public final class Gear {
     /** The guard's armour makes a blocked blow cheaper; so does a quarryman's wedge on a cord. */
     public static float blockCost(Player player) {
         return (1.0F - ArmorSet.GUARD.bonus * worn(player, ArmorSet.GUARD)) * Charm.WEDGE_CORD.less(player);
+    }
+
+    /** For how many seconds the Elder's great candle sets alight what it strikes. */
+    public static final float CANDLE_BURNS = 4.0F;
+
+    /**
+     * Sleep as the Firwood gives it: the dark over the eyes and the weight in the legs, for {@code ticks}. Every piece of the
+     * linen of the Unsleeping takes a share off the time; nothing under half a second is felt at all.
+     *
+     * @param weight how heavy the legs are: the level of slowness, from 0
+     */
+    public static void drowse(LivingEntity victim, LivingEntity from, int ticks, int weight) {
+        if (victim instanceof Player player) {
+            ticks = Math.round(ticks * (1.0F - ArmorSet.VIGIL.bonus * worn(player, ArmorSet.VIGIL)));
+        }
+        if (ticks < 10) {
+            return;
+        }
+        victim.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DARKNESS, ticks, 0, false, false, true), from);
+        victim.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SLOWNESS, ticks, weight, false, false, true), from);
     }
 
     /** What a roll costs: the burden decides, and the wax of the vigil takes a share off. */

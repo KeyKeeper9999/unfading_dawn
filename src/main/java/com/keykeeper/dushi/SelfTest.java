@@ -43,6 +43,8 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 public final class SelfTest {
     private static final boolean ENABLED = System.getenv("DUSHI_SELFTEST") != null;
     private static final int FLOOR_Y = 200;
+    /** Half the side of the floor the mobs are tried on. */
+    private static final int HALF = 40;
     private static final int RUN_TICKS = 500;
 
     private static final Map<String, Mob> MOBS = new LinkedHashMap<>();
@@ -74,17 +76,17 @@ public final class SelfTest {
     }
 
     private static void start(ServerLevel level) {
-        for (int cx = -2; cx <= 2; cx++) {
-            for (int cz = -2; cz <= 2; cz++) {
+        for (int cx = -3; cx <= 2; cx++) {
+            for (int cz = -3; cz <= 2; cz++) {
                 level.setChunkForced(cx, cz, true);
             }
         }
-        for (BlockPos pos : BlockPos.betweenClosed(new BlockPos(-24, FLOOR_Y, -24), new BlockPos(24, FLOOR_Y, 24))) {
+        for (BlockPos pos : BlockPos.betweenClosed(new BlockPos(-HALF, FLOOR_Y, -HALF), new BlockPos(HALF, FLOOR_Y, HALF))) {
             level.setBlock(pos, Blocks.STONE.defaultBlockState(), 3);
         }
         // A wall around the floor so nobody walks off.
-        for (BlockPos pos : BlockPos.betweenClosed(new BlockPos(-25, FLOOR_Y, -25), new BlockPos(25, FLOOR_Y + 5, 25))) {
-            if (Math.abs(pos.getX()) == 25 || Math.abs(pos.getZ()) == 25) {
+        for (BlockPos pos : BlockPos.betweenClosed(new BlockPos(-HALF - 1, FLOOR_Y, -HALF - 1), new BlockPos(HALF + 1, FLOOR_Y + 5, HALF + 1))) {
+            if (Math.abs(pos.getX()) == HALF + 1 || Math.abs(pos.getZ()) == HALF + 1) {
                 level.setBlock(pos, Blocks.STONE.defaultBlockState(), 3);
             }
         }
@@ -104,13 +106,20 @@ public final class SelfTest {
         types.add(Dushi.WISP.get());
         types.add(Dushi.WALLOWER.get());
         types.add(Dushi.WEEPING_MOTHER.get());
+        types.add(Dushi.WAKEFUL.get());
+        types.add(Dushi.WAKER.get());
+        types.add(Dushi.SLEEPER.get());
+        types.add(Dushi.WAXEN.get());
+        types.add(Dushi.SLEEP_MOTH.get());
+        types.add(Dushi.SHATUN.get());
+        types.add(Dushi.ELDER.get());
         types.add(Dushi.KEYKEEPER.get());
         types.add(Dushi.OVERSEER.get());
         types.add(Dushi.CHAPLAIN.get());
         int index = 0;
         for (EntityType<? extends Mob> type : types) {
-            int x = -20 + (index % 6) * 8;
-            int z = -20 + (index / 6) * 10;
+            int x = -30 + (index % 7) * 10;
+            int z = -30 + (index / 7) * 12;
             BlockPos at = new BlockPos(x, FLOOR_Y + 1, z);
             Mob mob = type.spawn(level, at, EntitySpawnReason.COMMAND);
             String name = EntityType.getKey(type).getPath();
@@ -287,13 +296,13 @@ public final class SelfTest {
      * every move they have, one after another, against a golem that just stands there.
      */
     private static void startDrill(ServerLevel level) {
-        AABB arena = new AABB(-26, FLOOR_Y - 2, -26, 26, FLOOR_Y + 20, 26);
+        AABB arena = new AABB(-HALF - 2, FLOOR_Y - 2, -HALF - 2, HALF + 2, FLOOR_Y + 20, HALF + 2);
         for (Entity entity : level.getEntitiesOfClass(Entity.class, arena)) {
             entity.discard();
         }
         int index = 0;
         for (Map.Entry<EntityType<? extends SoulsMob>, int[]> entry : drillPlan().entrySet()) {
-            BlockPos at = new BlockPos(-18 + (index % 5) * 9, FLOOR_Y + 1, -21 + (index / 5) * 12);
+            BlockPos at = new BlockPos(-30 + (index % 6) * 12, FLOOR_Y + 1, -34 + (index / 6) * 13);
             if (entry.getKey() == Dushi.BONE_PIKE.get()) {
                 // a pike is drilled in water: on a dry floor all it does is flounder
                 for (BlockPos pos : BlockPos.betweenClosed(at.offset(-2, -2, -2), at.offset(2, -1, 9))) {
@@ -311,6 +320,12 @@ public final class SelfTest {
             dummy.setNoAi(true);
             if (mob instanceof com.keykeeper.dushi.entity.UnhewnEntity statue) {
                 statue.rouse();                                  // (it would stand through the whole drill otherwise)
+            }
+            if (mob instanceof com.keykeeper.dushi.entity.WakefulEntity kneeling) {
+                kneeling.rouse(dummy);                           // (and he would kneel through it)
+            }
+            if (mob instanceof com.keykeeper.dushi.entity.SleepMothEntity moth) {
+                moth.startle();
             }
             mob.setTarget(dummy);
             DRILL.add(new Drill(EntityType.getKey(entry.getKey()).getPath(), mob, dummy, entry.getValue()));
@@ -342,6 +357,15 @@ public final class SelfTest {
         plan.put(Dushi.WISP.get(), new int[] {1});
         plan.put(Dushi.WALLOWER.get(), new int[] {1, 2, 3, 4, 5});
         plan.put(Dushi.WEEPING_MOTHER.get(), new int[] {1, 2, 3, 4, 5, 6});
+        // the Black Firwood (the wakeful one's first move is his rising; the Elder falls asleep in his fifth, and the
+        // moves after it are the ones he makes sleeping)
+        plan.put(Dushi.WAKEFUL.get(), new int[] {2, 3});
+        plan.put(Dushi.WAKER.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.SLEEPER.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.WAXEN.get(), new int[] {1, 2});
+        plan.put(Dushi.SLEEP_MOTH.get(), new int[] {1});
+        plan.put(Dushi.SHATUN.get(), new int[] {1, 2, 3, 4, 5, 6, 7});
+        plan.put(Dushi.ELDER.get(), new int[] {1, 2, 3, 4, 5, 6, 7, 8});
         return plan;
     }
 
@@ -398,7 +422,7 @@ public final class SelfTest {
             }
             say(line.toString());
         }
-        AABB arena = new AABB(-26, FLOOR_Y - 2, -26, 26, FLOOR_Y + 20, 26);
+        AABB arena = new AABB(-HALF - 2, FLOOR_Y - 2, -HALF - 2, HALF + 2, FLOOR_Y + 20, HALF + 2);
         Map<String, Integer> census = new TreeMap<>();
         for (Entity entity : level.getEntitiesOfClass(Entity.class, arena)) {
             census.merge(EntityType.getKey(entity.getType()).getPath(), 1, Integer::sum);

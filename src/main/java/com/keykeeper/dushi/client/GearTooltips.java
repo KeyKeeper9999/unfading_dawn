@@ -57,6 +57,9 @@ public final class GearTooltips {
             lines.add(Component.translatable("tooltip.vsratie_dushi.damage", number(base), number(mine), number(mine * Gear.backstab(player, weapon)))
                     .withStyle(ChatFormatting.GOLD));
         }
+        if (stack.is(com.keykeeper.dushi.Dushi.GREAT_CANDLE.get())) {
+            lines.add(Component.translatable("tooltip.vsratie_dushi.great_candle", Math.round(Gear.CANDLE_BURNS)).withStyle(ChatFormatting.DARK_AQUA));
+        }
         if (Gear.isBow(stack)) {
             lines.add(Component.translatable("tooltip.vsratie_dushi.bow", WeaponItem.grade(Gear.BOW_SCALING)).withStyle(ChatFormatting.GRAY));
             if (player != null) {

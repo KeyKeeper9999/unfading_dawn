@@ -334,6 +334,8 @@ public class ShatunEntity extends SoulsMob {
         this.spawnAtLocation(level, new ItemStack(Dushi.FLASK_SHARD.get()));
         this.leave(level, Dushi.GREAT_SOUL.get(), 2, 3);
         this.leave(level, Dushi.SHATUN_HIDE.get(), 3, 5);
+        // a claw of his, which whoever felled him wears on a cord
+        this.spawnAtLocation(level, new ItemStack(Dushi.CHARMS.get(com.keykeeper.dushi.Charm.SHATUN_CLAW).get()));
     }
 
     @Override

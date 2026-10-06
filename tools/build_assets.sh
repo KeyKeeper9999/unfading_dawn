@@ -23,10 +23,16 @@ python3 tools/gen_wisp.py ${P:+$P/wisp.png}
 python3 tools/gen_wallower.py ${P:+$P/wallower.png}
 python3 tools/gen_mother.py ${P:+$P/mother.png}
 python3 tools/gen_root.py ${P:+$P/root.png}
+python3 tools/gen_sect.py ${P:+$P/sect.png}
+python3 tools/gen_waxen.py ${P:+$P/waxen.png}
+python3 tools/gen_moth.py ${P:+$P/moth.png}
+python3 tools/gen_shatun.py ${P:+$P/shatun.png}
+python3 tools/gen_elder.py ${P:+$P/elder.png}
 python3 tools/gen_items.py ${P:+$P/items.png}
 python3 tools/gen_shields.py ${P:+$P/shields.png}
 python3 tools/gen_armor.py ${P:+$P/armor.png}
 python3 tools/gen_blocks.py ${P:+$P/blocks.png}
 python3 tools/gen_structures.py ${P:+$P/structures}
 python3 tools/gen_data.py
-python3 tools/gen_sounds.py $P
+# only what has no file yet is written: delete a sound's file to have it made again (or unset SOUNDS_NEW for all of them)
+SOUNDS_NEW=1 python3 tools/gen_sounds.py $P

@@ -25,6 +25,7 @@ public abstract class UnsleepingEntity extends SoulsMob {
         this.leaveMaybe(level, Dushi.WAX.get(), 0.35F);
         this.leaveMaybe(level, Dushi.NAMELESS_SOUL.get(), 0.15F);
         this.leaveMaybe(level, Dushi.GREAT_SOUL.get(), 0.05F);
+        this.leavePiece(level, com.keykeeper.dushi.ArmorSet.VIGIL, 0.04F);
     }
 
     @Override

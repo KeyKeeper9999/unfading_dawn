@@ -583,6 +583,242 @@
       "vsratie_dushi:weeping_mother/root"
     ]
   },
+  "entity.sect.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sect.ambient",
+    "sounds": [
+      "vsratie_dushi:sect/ambient1",
+      "vsratie_dushi:sect/ambient2"
+    ]
+  },
+  "entity.sect.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sect.hurt",
+    "sounds": [
+      "vsratie_dushi:sect/hurt"
+    ]
+  },
+  "entity.sect.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sect.death",
+    "sounds": [
+      "vsratie_dushi:sect/death"
+    ]
+  },
+  "entity.wakeful.rise": {
+    "subtitle": "subtitles.vsratie_dushi.entity.wakeful.rise",
+    "sounds": [
+      "vsratie_dushi:wakeful/rise"
+    ]
+  },
+  "entity.wakeful.vigil": {
+    "subtitle": "subtitles.vsratie_dushi.entity.wakeful.vigil",
+    "sounds": [
+      "vsratie_dushi:wakeful/vigil"
+    ]
+  },
+  "entity.waker.knock": {
+    "subtitle": "subtitles.vsratie_dushi.entity.waker.knock",
+    "sounds": [
+      "vsratie_dushi:waker/knock1",
+      "vsratie_dushi:waker/knock2"
+    ]
+  },
+  "entity.sleeper.cry": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sleeper.cry",
+    "sounds": [
+      "vsratie_dushi:sleeper/cry"
+    ]
+  },
+  "entity.sleeper.fall": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sleeper.fall",
+    "sounds": [
+      "vsratie_dushi:sleeper/fall"
+    ]
+  },
+  "entity.sleeper.snore": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sleeper.snore",
+    "sounds": [
+      "vsratie_dushi:sleeper/snore1",
+      "vsratie_dushi:sleeper/snore2"
+    ]
+  },
+  "entity.waxen.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.waxen.ambient",
+    "sounds": [
+      "vsratie_dushi:waxen/ambient1",
+      "vsratie_dushi:waxen/ambient2"
+    ]
+  },
+  "entity.waxen.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.waxen.hurt",
+    "sounds": [
+      "vsratie_dushi:waxen/hurt"
+    ]
+  },
+  "entity.waxen.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.waxen.death",
+    "sounds": [
+      "vsratie_dushi:waxen/death"
+    ]
+  },
+  "entity.waxen.slam": {
+    "subtitle": "subtitles.vsratie_dushi.entity.waxen.slam",
+    "sounds": [
+      "vsratie_dushi:waxen/slam"
+    ]
+  },
+  "entity.waxen.gather": {
+    "subtitle": "subtitles.vsratie_dushi.entity.waxen.gather",
+    "sounds": [
+      "vsratie_dushi:waxen/gather"
+    ]
+  },
+  "entity.waxen.spew": {
+    "subtitle": "subtitles.vsratie_dushi.entity.waxen.spew",
+    "sounds": [
+      "vsratie_dushi:waxen/spew"
+    ]
+  },
+  "entity.sleep_moth.flutter": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sleep_moth.flutter",
+    "sounds": [
+      "vsratie_dushi:sleep_moth/flutter1",
+      "vsratie_dushi:sleep_moth/flutter2"
+    ]
+  },
+  "entity.sleep_moth.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sleep_moth.hurt",
+    "sounds": [
+      "vsratie_dushi:sleep_moth/hurt"
+    ]
+  },
+  "entity.sleep_moth.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sleep_moth.death",
+    "sounds": [
+      "vsratie_dushi:sleep_moth/death"
+    ]
+  },
+  "entity.sleep_moth.dust": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sleep_moth.dust",
+    "sounds": [
+      "vsratie_dushi:sleep_moth/dust"
+    ]
+  },
+  "entity.shatun.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.shatun.ambient",
+    "sounds": [
+      "vsratie_dushi:shatun/ambient1",
+      "vsratie_dushi:shatun/ambient2"
+    ]
+  },
+  "entity.shatun.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.shatun.hurt",
+    "sounds": [
+      "vsratie_dushi:shatun/hurt"
+    ]
+  },
+  "entity.shatun.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.shatun.death",
+    "sounds": [
+      "vsratie_dushi:shatun/death"
+    ]
+  },
+  "entity.shatun.roar": {
+    "subtitle": "subtitles.vsratie_dushi.entity.shatun.roar",
+    "sounds": [
+      "vsratie_dushi:shatun/roar"
+    ]
+  },
+  "entity.shatun.swipe": {
+    "subtitle": "subtitles.vsratie_dushi.entity.shatun.swipe",
+    "sounds": [
+      "vsratie_dushi:shatun/swipe"
+    ]
+  },
+  "entity.shatun.slam": {
+    "subtitle": "subtitles.vsratie_dushi.entity.shatun.slam",
+    "sounds": [
+      "vsratie_dushi:shatun/slam"
+    ]
+  },
+  "entity.shatun.bite": {
+    "subtitle": "subtitles.vsratie_dushi.entity.shatun.bite",
+    "sounds": [
+      "vsratie_dushi:shatun/bite"
+    ]
+  },
+  "entity.shatun.step": {
+    "subtitle": "subtitles.vsratie_dushi.entity.shatun.step",
+    "sounds": [
+      "vsratie_dushi:shatun/step"
+    ]
+  },
+  "entity.shatun.crash": {
+    "subtitle": "subtitles.vsratie_dushi.entity.shatun.crash",
+    "sounds": [
+      "vsratie_dushi:shatun/crash"
+    ]
+  },
+  "entity.elder.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.elder.ambient",
+    "sounds": [
+      "vsratie_dushi:elder/ambient1",
+      "vsratie_dushi:elder/ambient2"
+    ]
+  },
+  "entity.elder.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.elder.hurt",
+    "sounds": [
+      "vsratie_dushi:elder/hurt"
+    ]
+  },
+  "entity.elder.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.elder.death",
+    "sounds": [
+      "vsratie_dushi:elder/death"
+    ]
+  },
+  "entity.elder.sweep": {
+    "subtitle": "subtitles.vsratie_dushi.entity.elder.sweep",
+    "sounds": [
+      "vsratie_dushi:elder/sweep"
+    ]
+  },
+  "entity.elder.chant": {
+    "subtitle": "subtitles.vsratie_dushi.entity.elder.chant",
+    "sounds": [
+      "vsratie_dushi:elder/chant"
+    ]
+  },
+  "entity.elder.knock": {
+    "subtitle": "subtitles.vsratie_dushi.entity.elder.knock",
+    "sounds": [
+      "vsratie_dushi:elder/knock"
+    ]
+  },
+  "entity.elder.call": {
+    "subtitle": "subtitles.vsratie_dushi.entity.elder.call",
+    "sounds": [
+      "vsratie_dushi:elder/call"
+    ]
+  },
+  "entity.elder.slumber": {
+    "subtitle": "subtitles.vsratie_dushi.entity.elder.slumber",
+    "sounds": [
+      "vsratie_dushi:elder/slumber"
+    ]
+  },
+  "entity.elder.dream": {
+    "subtitle": "subtitles.vsratie_dushi.entity.elder.dream",
+    "sounds": [
+      "vsratie_dushi:elder/dream"
+    ]
+  },
+  "entity.elder.snore": {
+    "subtitle": "subtitles.vsratie_dushi.entity.elder.snore",
+    "sounds": [
+      "vsratie_dushi:elder/snore1",
+      "vsratie_dushi:elder/snore2"
+    ]
+  },
   "entity.keykeeper.ambient": {
     "subtitle": "subtitles.vsratie_dushi.entity.keykeeper.ambient",
     "sounds": [

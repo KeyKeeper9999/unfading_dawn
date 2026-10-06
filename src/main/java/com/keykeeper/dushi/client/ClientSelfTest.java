@@ -238,6 +238,15 @@ public final class ClientSelfTest {
         });
     }
 
+    /** Puts every mob on the floor in the given phase (the kneeling get up, the sitting fly, the Elder falls asleep). */
+    private static void phase(int phase) {
+        server(level -> {
+            for (SoulsMob mob : level.getEntitiesOfClass(SoulsMob.class, ARENA)) {
+                mob.showPhase(phase);
+            }
+        });
+    }
+
     /** Lets every mob go back to standing. */
     private static void rest() {
         server(level -> {
@@ -677,6 +686,190 @@ public final class ClientSelfTest {
         shot("s9_root_side");
         command(gone, clear);
 
+        // the Black Firwood: the Unsleeping in a row as they are met, then on their feet, then each through its moves
+        command(look(0.5, 0.5, 0, 0), summon("wakeful", 3.2, 5.0, ""), summon("waker", 1.2, 5.0, ""), summon("sleeper", -1.0, 5.0, ""),
+                summon("waxen", -3.6, 5.5, ""), "time set 18000");
+        shot("f1_sect_night", 30);
+        command("time set 6000");
+        shot("f1_sect", 20);
+        phase(2);
+        shot("f1_sect_up", 20);
+        command(look(3.5, 9.5, 150, 0));
+        shot("f1_sect_back");
+        command(gone, look(-4.0, 4.5, -90, 0), summon("wakeful", 0.0, 4.5, ""));
+        shot("f2_wakeful_kneeling_side", 20);
+        phase(2);
+        attack(com.keykeeper.dushi.entity.WakefulEntity.class, com.keykeeper.dushi.entity.WakefulEntity.RISE, 12);
+        shot("f2_wakeful_rising");
+        attack(com.keykeeper.dushi.entity.WakefulEntity.class, com.keykeeper.dushi.entity.WakefulEntity.STRIKE, 14);
+        shot("f2_wakeful_strike_raised");
+        attack(com.keykeeper.dushi.entity.WakefulEntity.class, com.keykeeper.dushi.entity.WakefulEntity.STRIKE, 21);
+        shot("f2_wakeful_strike");
+        attack(com.keykeeper.dushi.entity.WakefulEntity.class, com.keykeeper.dushi.entity.WakefulEntity.THRUST, 9);
+        shot("f2_wakeful_thrust_drawn");
+        attack(com.keykeeper.dushi.entity.WakefulEntity.class, com.keykeeper.dushi.entity.WakefulEntity.THRUST, 16);
+        shot("f2_wakeful_thrust");
+        rest();
+        shot("f2_wakeful_side");
+        command(gone, look(-4.0, 4.5, -90, 0), summon("waker", 0.0, 4.5, ""));
+        shot("f3_waker_side", 20);
+        attack(com.keykeeper.dushi.entity.WakerEntity.class, com.keykeeper.dushi.entity.WakerEntity.KNOCK, 8);
+        shot("f3_waker_knock_drawn");
+        attack(com.keykeeper.dushi.entity.WakerEntity.class, com.keykeeper.dushi.entity.WakerEntity.KNOCK, 11);
+        shot("f3_waker_knock");
+        attack(com.keykeeper.dushi.entity.WakerEntity.class, com.keykeeper.dushi.entity.WakerEntity.SWING, 10);
+        shot("f3_waker_swing_drawn");
+        attack(com.keykeeper.dushi.entity.WakerEntity.class, com.keykeeper.dushi.entity.WakerEntity.SWING, 17);
+        shot("f3_waker_swing");
+        attack(com.keykeeper.dushi.entity.WakerEntity.class, com.keykeeper.dushi.entity.WakerEntity.SMASH, 16);
+        shot("f3_waker_smash_raised");
+        attack(com.keykeeper.dushi.entity.WakerEntity.class, com.keykeeper.dushi.entity.WakerEntity.SMASH, 25);
+        shot("f3_waker_smash");
+        rest();
+        command(look(2.0, 1.0, 20, 0));
+        shot("f3_waker_front_quarter");
+        command(gone, look(-4.5, 4.5, -90, 0), summon("sleeper", 0.0, 4.5, ""));
+        shot("f4_sleeper_side", 20);
+        attack(com.keykeeper.dushi.entity.SleeperEntity.class, com.keykeeper.dushi.entity.SleeperEntity.FLURRY, 9);
+        shot("f4_sleeper_flurry_one");
+        attack(com.keykeeper.dushi.entity.SleeperEntity.class, com.keykeeper.dushi.entity.SleeperEntity.FLURRY, 16);
+        shot("f4_sleeper_flurry_two");
+        attack(com.keykeeper.dushi.entity.SleeperEntity.class, com.keykeeper.dushi.entity.SleeperEntity.LUNGE, 12);
+        shot("f4_sleeper_lunge_coiled");
+        attack(com.keykeeper.dushi.entity.SleeperEntity.class, com.keykeeper.dushi.entity.SleeperEntity.LUNGE, 20);
+        shot("f4_sleeper_lunge");
+        attack(com.keykeeper.dushi.entity.SleeperEntity.class, com.keykeeper.dushi.entity.SleeperEntity.LUNGE_FALL, 30);
+        shot("f4_sleeper_fallen");
+        attack(com.keykeeper.dushi.entity.SleeperEntity.class, com.keykeeper.dushi.entity.SleeperEntity.LUNGE_FALL, 76);
+        shot("f4_sleeper_getting_up");
+        rest();
+        command(gone, look(-5.5, 4.5, -90, 0), summon("waxen", 0.0, 4.5, ""));
+        shot("f5_waxen_side", 20);
+        attack(com.keykeeper.dushi.entity.WaxenEntity.class, com.keykeeper.dushi.entity.WaxenEntity.SLAM, 14);
+        shot("f5_waxen_slam_raised");
+        attack(com.keykeeper.dushi.entity.WaxenEntity.class, com.keykeeper.dushi.entity.WaxenEntity.SLAM, 23);
+        shot("f5_waxen_slam");
+        attack(com.keykeeper.dushi.entity.WaxenEntity.class, com.keykeeper.dushi.entity.WaxenEntity.SPEW, 12);
+        shot("f5_waxen_spew_gathering");
+        attack(com.keykeeper.dushi.entity.WaxenEntity.class, com.keykeeper.dushi.entity.WaxenEntity.SPEW, 30);
+        shot("f5_waxen_spew");
+        rest();
+        command(look(0.5, -0.5, 0, 0), "time set 18000");
+        shot("f5_waxen_night", 20);
+        command("time set 6000", gone, look(0.5, 1.5, 0, 5), summon("sleep_moth", 0.5, 4.5, ""));
+        shot("f6_moth_sitting", 20);
+        phase(2);
+        shot("f6_moth_flying", 12);
+        attack(com.keykeeper.dushi.entity.SleepMothEntity.class, com.keykeeper.dushi.entity.SleepMothEntity.SHED, 26);
+        shot("f6_moth_shedding");
+        rest();
+        command(look(-3.0, 4.5, -90, 5), "time set 18000");
+        shot("f6_moth_side_night", 20);
+        command("time set 6000", gone);
+
+        // the Shatun
+        command(look(0.5, -1.0, 0, 4), summon("shatun", 0.5, 6.0, ""), "time set 18000");
+        shot("f7_shatun_night", 30);
+        command("time set 6000");
+        shot("f7_shatun", 20);
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.SWIPE, 10);
+        shot("f7_swipe_drawn");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.SWIPE, 16);
+        shot("f7_swipe");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.SWIPE_LEFT, 16);
+        shot("f7_swipe_left");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.BITE, 12);
+        shot("f7_bite_drawn");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.BITE, 19);
+        shot("f7_bite");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.ROAR, 20);
+        shot("f7_roar");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.REAR, 26);
+        shot("f7_rear_up");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.REAR, 36);
+        shot("f7_rear_slam");
+        command(look(-8.5, 6.0, -90, 4));
+        shot("f8_side_rear_slam");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.REAR, 26);
+        shot("f8_side_rear_up");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.CHARGE, 14);
+        shot("f8_side_charge_gathering");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.CHARGE, 36);
+        shot("f8_side_charge");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.CRASH, 24);
+        shot("f8_side_crashed");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.MAUL, 12);
+        shot("f8_side_maul_one");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.MAUL, 30);
+        shot("f8_side_maul_two");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.MAUL, 52);
+        shot("f8_side_maul_rear");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.MAUL, 56);
+        shot("f8_side_maul_slam");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.BITE, 19);
+        shot("f8_side_bite");
+        attack(com.keykeeper.dushi.entity.ShatunEntity.class, com.keykeeper.dushi.entity.ShatunEntity.SWIPE, 16);
+        shot("f8_side_swipe");
+        rest();
+        shot("f8_shatun_side");
+        command(look(6.5, 12.0, 135, 6));
+        shot("f8_shatun_back");
+        command(gone);
+
+        // the Elder: awake, then asleep
+        command(look(0.5, -1.0, 0, -8), summon("elder", 0.5, 6.0, ""), "time set 18000");
+        shot("f9_elder_night", 30);
+        command("time set 6000");
+        shot("f9_elder", 20);
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.SWEEP, 14);
+        shot("f9_sweep_drawn");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.SWEEP, 22);
+        shot("f9_sweep");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.THRUST, 12);
+        shot("f9_thrust_drawn");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.THRUST, 19);
+        shot("f9_thrust");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.WAX_RAIN, 30);
+        shot("f9_wax_rain");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.CALL, 24);
+        shot("f9_call");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.SLUMBER, 30);
+        shot("f9_slumber");
+        command(look(-8.0, 6.0, -90, -6));
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.SWEEP, 22);
+        shot("g1_side_sweep");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.THRUST, 19);
+        shot("g1_side_thrust");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.WAX_RAIN, 30);
+        shot("g1_side_wax_rain");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.CALL, 24);
+        shot("g1_side_call");
+        rest();
+        phase(2);
+        shot("g1_side_asleep", 20);
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.FLURRY, 12);
+        shot("g1_side_flurry_one");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.FLURRY, 22);
+        shot("g1_side_flurry_two");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.FLURRY, 44);
+        shot("g1_side_flurry_last");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.LUNGE, 15);
+        shot("g1_side_lunge");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.DREAM, 28);
+        shot("g1_side_dream");
+        rest();
+        command(look(0.5, -1.0, 0, -8), "time set 18000");
+        shot("g2_elder_asleep_night", 20);
+        command("time set 6000");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.FLURRY, 22);
+        shot("g2_flurry");
+        attack(com.keykeeper.dushi.entity.ElderEntity.class, com.keykeeper.dushi.entity.ElderEntity.DREAM, 28);
+        shot("g2_dream");
+        rest();
+        command(look(5.5, 11.0, 140, -6));
+        shot("g2_elder_back");
+        command(gone, clear);
+
         // 5. every item of the mod as a picture in the air
         List<String> items = new ArrayList<>();
         Dushi.ITEMS.getEntries().forEach(entry -> items.add(entry.getId().toString()));
@@ -732,7 +925,8 @@ public final class ClientSelfTest {
         shot("30_blocking_first_person");
         client(() -> Minecraft.getInstance().options.keyUse.setDown(false));
         for (String[] set : new String[][] {{"great_key", "tower_shield"}, {"rust_greatsword", "round_shield"}, {"scholar_staff", "soul_shard"},
-                {"battle_axe", "plank_shield"}, {"short_bow", "prayer_beads"}}) {
+                {"battle_axe", "plank_shield"}, {"short_bow", "prayer_beads"}, {"bear_spear", "guard_shield"}, {"great_candle", "vigil_staff"},
+                {"waker_mallet", "round_shield"}}) {
             command("item replace entity @p weapon.mainhand with vsratie_dushi:" + set[0], "item replace entity @p weapon.offhand with vsratie_dushi:" + set[1]);
             camera(CameraType.THIRD_PERSON_FRONT);
             shot("31_held_" + set[0] + "_front", 20);
@@ -746,7 +940,7 @@ public final class ClientSelfTest {
         shot("32_tower_shield_blocking_front");
         client(() -> Minecraft.getInstance().options.keyUse.setDown(false));
 
-        // 7b. the four suits of armour on the player, and what the tooltips say about gear the mod did not make
+        // 7b. the suits of armour on the player, and what the tooltips say about gear the mod did not make
         client(() -> Minecraft.getInstance().options.keyUse.setDown(false));
         for (ArmorSet set : ArmorSet.values()) {
             command("item replace entity @p weapon.mainhand with minecraft:air", "item replace entity @p weapon.offhand with minecraft:air",

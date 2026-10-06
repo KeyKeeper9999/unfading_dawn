@@ -389,8 +389,7 @@ public class ElderEntity extends SoulsMob {
         if ((id == THRUST || id == LUNGE) && !victim.isBlocking()) {
             victim.igniteForSeconds(4.0F);                       // the great candle, end on
         } else if (id == DREAM) {
-            victim.addEffect(new MobEffectInstance(MobEffects.DARKNESS, DREAM_HOLDS, 0, false, false, true), this);
-            victim.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, DREAM_HOLDS, 2, false, false, true), this);
+            com.keykeeper.dushi.Gear.drowse(victim, this, DREAM_HOLDS, 2);
         }
     }
 

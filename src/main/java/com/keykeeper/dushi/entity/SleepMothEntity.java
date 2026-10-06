@@ -9,8 +9,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -185,8 +183,7 @@ public class SleepMothEntity extends SoulsMob {
                         new net.minecraft.world.phys.AABB(under, under).inflate(DUST_RADIUS, 3.0, DUST_RADIUS), this::isFoe)) {
                     if (Math.hypot(victim.getX() - this.getX(), victim.getZ() - this.getZ()) <= DUST_RADIUS && victim.getY() < this.getY()
                             && victim.hurtServer(level, this.damageSources().mobAttack(this), damage)) {
-                        victim.addEffect(new MobEffectInstance(MobEffects.DARKNESS, DROWSE, 0, false, false, true), this);
-                        victim.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, DROWSE, 1, false, false, true), this);
+                        com.keykeeper.dushi.Gear.drowse(victim, this, DROWSE, 1);
                         this.playSound(Dushi.sound("entity.sleep_moth.dust"), 1.0F, 1.0F);
                         this.dusted = true;
                     }

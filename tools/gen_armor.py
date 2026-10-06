@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The four suits of armour: the textures worn on the body (in the layout the game's own armour uses), the icons,
+"""The five suits of armour: the textures worn on the body (in the layout the game's own armour uses), the icons,
 the item models and the equipment definitions. Run from the repo root; pass a file name for a preview sheet."""
 import json
 import math
@@ -21,6 +21,7 @@ SUITS = {
     'guard': ('guard_hat', 'guard_hauberk', 'guard_leggings', 'guard_boots'),
     'rust': ('rust_helm', 'rust_cuirass', 'rust_tassets', 'rust_sabatons'),
     'chaplain': ('chaplain_mitre', 'chaplain_cassock', 'chaplain_skirt', 'chaplain_shoes'),
+    'vigil': ('vigil_cowl', 'vigil_shift', 'vigil_skirt', 'vigil_wraps'),
 }
 
 # ---------------------------------------------------------------------------------------------------- the worn textures
@@ -152,6 +153,11 @@ ROBE_D = (44, 30, 42)
 ROBE_L = (88, 62, 80)
 BLACK = (34, 28, 32)
 EMBER = (255, 150, 44)
+LINEN = (226, 220, 204)
+LINEN_D = (184, 176, 158)
+LINEN_L = (244, 240, 228)
+THREAD = (150, 40, 36)
+THREAD_D = (108, 30, 30)
 
 
 def prisoner():
@@ -333,7 +339,59 @@ def chaplain():
     return one, two
 
 
-WORN = {'prisoner': prisoner, 'guard': guard, 'rust': rust, 'chaplain': chaplain}
+def vigil():
+    """The white of the Unsleeping: bleached linen, and one red thread run through all of it."""
+    one, two = Worn(), Worn()
+    cloth = weave(LINEN, LINEN_D, 'vigil', 3.0, 0.55)
+    # the cowl: a cloth over the head and down on the shoulders, the face left open; the red thread round the brow
+    one.fill('head', cloth)
+    for py in range(2, 7):
+        for px in range(1, 7):
+            one.clear('head', 'front', px, py)
+    for face in SIDES:
+        for px in range(8):
+            one.put('head', face, px, 1, THREAD if px % 2 else THREAD_D)
+    one.fill('hat', cloth, faces=('top',))
+    one.fill('hat', cloth, faces=('right', 'left', 'back'), rows=(0, 7))
+    one.fill('hat', cloth, faces=('front',), rows=(0, 1))
+    for face in SIDES:
+        for px in range(8):
+            one.put('hat', face, px, 1, THREAD if px % 2 else THREAD_D)
+    for py in range(2, 8):                                  # the folds beside the face
+        one.put('hat', 'front', 0, py, shade(LINEN_D, 0.95))
+        one.put('hat', 'front', 7, py, shade(LINEN_D, 0.95))
+    # the shift: to the wrists, the thread down the breast, a cord of twisted linen for a belt
+    one.fill('body', cloth)
+    for py in range(0, 12):
+        if py % 3 != 2:
+            one.put('body', 'front', 4, py, shade(THREAD, 1.0 - 0.02 * py))
+    for face, w in (('front', 8), ('back', 8), ('right', 4), ('left', 4)):
+        for px in range(w):
+            one.put('body', face, px, 8, shade(LINEN_D, 0.82 if px % 2 else 0.7))
+    one.put('body', 'front', 2, 9, shade(LINEN_D, 0.75))     # the ends of the cord
+    one.put('body', 'front', 2, 10, shade(LINEN_D, 0.75))
+    one.fill('arm', cloth, faces=('top',) + SIDES, rows=(0, 10))
+    for face in SIDES:
+        for px in range(4):
+            one.put('arm', face, px, 10, THREAD if px % 2 else THREAD_D)
+    # the wraps: strips of the same linen round the feet
+    for face in SIDES:
+        for px in range(4):
+            for py in range(8, 12):
+                c = LINEN if (py + (px // 2 if py % 2 else 0)) % 2 else LINEN_D
+                one.put('leg', face, px, py, shade(c, 1.02 - 0.05 * (py - 8)))
+    one.fill('leg', lambda face, px, py, w, h: shade(LINEN_D, 0.7), faces=('bottom',))
+    # the skirt of the shift: to the ankle, the thread along the hem, grey with the forest floor below it
+    two.fill('body', cloth, faces=SIDES, rows=(8, 11))
+    two.fill('leg', cloth, faces=SIDES, rows=(0, 9))
+    for face in SIDES:
+        for px in range(4):
+            two.put('leg', face, px, 8, THREAD if px % 2 else THREAD_D)
+            two.put('leg', face, px, 9, shade(LINEN_D, 0.8))
+    return one, two
+
+
+WORN = {'prisoner': prisoner, 'guard': guard, 'rust': rust, 'chaplain': chaplain, 'vigil': vigil}
 
 # ---------------------------------------------------------------------------------------------------- the icons
 
@@ -408,6 +466,23 @@ HELMETS = {
         "................",
         "................",
         "................"], dict(L=ROBE_L, B=ROBE, D=ROBE_D, G=GOLD, g=GOLD_D)),
+    'vigil': ([
+        "................",
+        "................",
+        "....oooooooo....",
+        "...oLLLLBBBBo...",
+        "..oLLBBBBBBBDo..",
+        "..oNnNnNnNnNno..",
+        "..oLBooooooBDo..",
+        "..oLBo....oBDo..",
+        "..oBBo....oBDo..",
+        "..oBBo....oBDo..",
+        "..oBBBo..oBBDo..",
+        ".oLBBBDooBBBDDo.",
+        ".oBBBDo..oBBDDo.",
+        "..oooo....oooo..",
+        "................",
+        "................"], dict(L=LINEN_L, B=LINEN, D=LINEN_D, N=THREAD, n=THREAD_D)),
 }
 
 CHEST = [
@@ -476,6 +551,9 @@ OVER = {
     'chaplain_cassock': [(7, 4, ["Gg", "gG", "Gg", "gG", "Gg", "gG", "Gg", "gG"]), (2, 5, ["G"]), (13, 5, ["G"]), (6, 2, ["W"]), (9, 2, ["W"])],
     'chaplain_skirt': [(4, 12, ["Gg"]), (10, 12, ["gG"]), (4, 2, ["GgGgGgGg"])],
     'chaplain_shoes': [],
+    'vigil_shift': [(7, 4, ["N", "N", ".", "N", "N", ".", "N", "N"]), (3, 9, ["CRCRCRCRC"]), (5, 10, ["R"]), (2, 5, ["N"]), (13, 5, ["N"])],
+    'vigil_skirt': [(4, 11, ["Nn"]), (10, 11, ["nN"]), (4, 2, ["CRCRCRCR"])],
+    'vigil_wraps': [(3, 6, ["CC"]), (11, 6, ["CC"]), (2, 10, ["CAC"]), (10, 10, ["ACA"]), (3, 8, ["CC"]), (11, 8, ["CC"])],
 }
 
 PALETTES = {
@@ -483,6 +561,7 @@ PALETTES = {
     'guard': dict(A=(160, 160, 168), B=MAIL, C=MAIL_D, T=TABARD, t=TABARD_D, G=GOLD, l=LEATHER, M=(150, 150, 158), m=MAIL_D, S=STEEL_L),
     'rust': dict(A=(128, 120, 120), B=(96, 88, 88), C=(62, 56, 58), R=(140, 84, 50), L=(150, 148, 150), D=(62, 56, 58)),
     'chaplain': dict(A=ROBE_L, B=ROBE, C=ROBE_D, G=GOLD, g=GOLD_D, W=(172, 164, 150)),
+    'vigil': dict(A=LINEN_L, B=LINEN, C=LINEN_D, N=THREAD, n=THREAD_D, R=shade(LINEN_D, 0.78)),
 }
 # pieces whose base colours differ from the suit's
 PIECE_PALETTE = {
@@ -631,7 +710,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         sheet(shots, 6).save(sys.argv[1])
         cell = 104
-        out = Image.new('RGB', (4 * cell + 8, 5 * cell + 8), (198, 198, 198))
+        out = Image.new('RGB', (4 * cell + 8, 6 * cell + 8), (198, 198, 198))
         for i, name in enumerate(made):
             tile = Image.new('RGBA', (96, 96), (139, 139, 139, 255))
             tile.alpha_composite(made[name].img.resize((96, 96), 0))

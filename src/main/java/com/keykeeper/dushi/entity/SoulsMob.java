@@ -191,6 +191,11 @@ public abstract class SoulsMob extends Monster {
         this.entityData.set(PHASE, phase);
     }
 
+    /** Puts the mob in a phase outright: for the tests, which look at every phase without fighting their way to it. */
+    public void showPhase(int phase) {
+        this.setPhase(phase);
+    }
+
     public boolean canStartAttack() {
         return this.attackId() == 0 && this.attackCooldown <= 0;
     }

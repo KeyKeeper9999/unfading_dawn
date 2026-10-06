@@ -60,6 +60,14 @@ for key, ru, en in (
         ('withe_scourge', 'Плакучая плеть', 'Weeping Scourge'), ('bone_scale', 'Костяная чешуя', 'Bone Scale'), ('withe', 'Ивовая лоза', 'Withe'),
         ('mud_glob', 'Ком тины', 'Clot of Sludge'), ('wisp_flame_bolt', 'Болотный огонь', 'Marsh Fire'),
         ('wallower_soul', 'Душа Омутника', 'Soul of the Wallower'), ('mother_soul', 'Душа Плакучей', 'Soul of the Weeping Mother'),
+        ('firwood_key', 'Ключ от Лесной калитки', 'Key to the Wood Wicket'),
+        ('bleached_linen', 'Белёный холст', 'Bleached Linen'), ('candle_wax', 'Свечной воск', 'Candle Wax'),
+        ('shatun_hide', 'Шкура шатуна', "Shatun's Hide"),
+        ('vigil_staff', 'Посох бдящего', 'Staff of the Wakeful'), ('waker_mallet', 'Колотушка будильщика', "Waker's Mallet"),
+        ('bear_spear', 'Рогатина', 'Bear Spear'), ('great_candle', 'Большая свеча Старца', "The Elder's Great Candle"),
+        ('shatun_soul', 'Душа Шатуна', 'Soul of the Shatun'), ('elder_soul', 'Душа Старца', 'Soul of the Elder'),
+        ('vigil_cowl', 'Куколь неусыпающего', 'Cowl of the Unsleeping'), ('vigil_shift', 'Рубаха неусыпающего', 'Shift of the Unsleeping'),
+        ('vigil_skirt', 'Подол неусыпающего', 'Skirt of the Unsleeping'), ('vigil_wraps', 'Онучи неусыпающего', 'Footwraps of the Unsleeping'),
         ('tattered_cloth', 'Ветошь', 'Tattered Cloth'), ('rust_scrap', 'Ржавый лом', 'Rust Scrap')):
     t(f'item.{M}.{key}', ru, en)
 
@@ -93,6 +101,9 @@ MOBS = (('withered_prisoner', 'Истлевший узник', 'Withered Prisone
         ('taskmaster', 'Десятник Каменоломни', 'Taskmaster of the Quarry'), ('stone_eater', 'Камнеед', 'The Stone-Eater'),
         ('withered_drowned', 'Утопленник', 'The Drowned'), ('bone_pike', 'Костяная щука', 'Bone Pike'), ('lanky', 'Жердяй', 'The Lanky One'),
         ('wisp', 'Болотный огонёк', 'Marsh Wisp'), ('wallower', 'Омутник', 'The Wallower'), ('weeping_mother', 'Плакучая', 'The Weeping Mother'),
+        ('wakeful', 'Бдящий', 'The Wakeful'), ('waker', 'Будильщик', 'The Waker'), ('sleeper', 'Задремавший', 'The Dozer'),
+        ('waxen', 'Восковик', 'The Waxen'), ('sleep_moth', 'Сонница', 'Sleep Moth'), ('shatun', 'Шатун', 'The Shatun'),
+        ('elder', 'Старец Неусыпающих', 'Elder of the Unsleeping'),
         ('gilded_knight', 'Золочёный рыцарь', 'Gilded Knight'), ('rust_knight', 'Ржавый рыцарь', 'Rust Knight'),
         ('keykeeper', 'Слепой ключник', 'Blind Keykeeper'), ('overseer', 'Надзиратель Острога', 'Overseer of the Stockade'),
         ('chaplain', 'Капеллан Острога', 'Chaplain of the Stockade'))
@@ -130,6 +141,8 @@ t(f'tooltip.{M}.bow', 'Ловкость: %s (урон стрел)', 'Dexterity: 
 t(f'tooltip.{M}.set.prisoner', 'Силы восстанавливаются быстрее: +%s%% за вещь', 'Stamina recovers faster: +%s%% per piece')
 t(f'tooltip.{M}.set.guard', 'Блок щитом стоит меньше сил: −%s%% за вещь', 'Blocking costs less stamina: −%s%% per piece')
 t(f'tooltip.{M}.set.chaplain', 'Заклинания сильнее: +%s%% за вещь', 'Spells are stronger: +%s%% per piece')
+t(f'tooltip.{M}.set.vigil', 'Сон и морок отпускают раньше: −%s%% за вещь', 'Sleep and murk let go sooner: −%s%% per piece')
+t(f'tooltip.{M}.great_candle', 'Горит: кого ударит, тот в огне %s с', 'It is alight: what it strikes burns for %s s')
 
 t(f'spell.{M}.soul_shard.desc', 'Быстрый сгусток бледного света', 'A quick bolt of pale light')
 t(f'spell.{M}.heavy_soul_shard.desc', 'Медленный и тяжёлый: бьёт вдвое больнее', 'Slow and heavy: hits twice as hard')
@@ -186,6 +199,15 @@ t(f'place.{M}.log_roads', 'ГАТИ', 'THE LOG ROADS')
 t(f'place.{M}.weir', 'ЗАПРУДА', 'THE WEIR')
 t(f'place.{M}.withy', 'ИВНЯК', 'THE WITHY WOOD')
 t(f'place.{M}.isle', 'ОСТРОВ ПЛАКУЧЕЙ', 'THE ISLE OF THE WEEPING ONE')
+# the Black Firwood, north-east of the fortress road: the hour just before a dawn that does not come
+t(f'place.{M}.firwood', 'ЧЁРНЫЙ ЕЛЬНИК', 'THE BLACK FIRWOOD')
+t(f'place.{M}.den', 'ШАТУНОВА ПАДЬ', "THE SHATUN'S HOLLOW")
+t(f'place.{M}.skete', 'СКИТ НЕУСЫПАЮЩИХ', 'THE SKETE OF THE UNSLEEPING')
+t(f'place.{M}.vigil', 'БДЕНИЕ', 'THE VIGIL')
+t(f'place.{M}.white_tent', 'БЕЛЫЙ ШАТЁР', 'THE WHITE TENT')
+t(f'message.{M}.gate_locked.firwood', 'Заперто. Из-за решётки тянет хвоей и воском. Ключ унесли на казнь — и назад не принесли.',
+  'Locked. It smells of fir and wax beyond the grate. The key was carried off to a hanging, and never brought back.')
+t(f'message.{M}.gate_opened.firwood', 'Лесная калитка отперта', 'The Wood Wicket is unlocked')
 t(f'block.{M}.shallows', 'Мелкая вода', 'Shallows')
 t(f'block.{M}.sludge', 'Тина', 'Sludge')
 t(f'entity.{M}.mud_glob', 'Ком тины', 'Clot of Sludge')
@@ -218,7 +240,9 @@ for key, ru, en in (('none', 'Очаг (%s, %s, %s)', 'A hearth (%s, %s, %s)'), 
                     ('lodge', 'Сторожка у погоста', "The Sexton's Lodge"), ('keeper', 'Привратницкая Острога', 'The Stockade Gate'),
                     ('smithy', 'Кузня на площади', 'The Smithy on the Square'), ('sacristy', 'Ризница собора', 'The Cathedral Sacristy'),
                     ('terrace', 'Терраса над долиной', 'The Terrace above the Vale'), ('maw', 'Под Зевом', 'Under the Maw'),
-                    ('sump', 'Зумпф', 'The Sump'), ('ferry', 'Изба перевозчика', "The Ferryman's Hut"), ('mill', 'Мельница на запруде', 'The Mill on the Weir')):
+                    ('sump', 'Зумпф', 'The Sump'), ('ferry', 'Изба перевозчика', "The Ferryman's Hut"), ('mill', 'Мельница на запруде', 'The Mill on the Weir'),
+                    ('old_fir', 'Под старой елью', 'Under the Old Fir'), ('skete', 'Околица скита', "The Skete's Edge"),
+                    ('reliquary', 'Свечная кладовая', 'The Candle Store')):
     t(f'hearth.{M}.{key}', ru, en)
 t(f'screen.{M}.hearth.level', 'Уровень: %s', 'Level: %s')
 t(f'screen.{M}.hearth.souls', 'Души: %s', 'Souls: %s')
@@ -323,6 +347,27 @@ SUBTITLES = {
     'entity.weeping_mother.death': ('Плакучая падает', 'Weeping Mother falls'), 'entity.weeping_mother.wail': ('Плакучая воет', 'Weeping Mother wails'),
     'entity.weeping_mother.lash': ('Свистит ветвь', 'A bough whistles'), 'entity.weeping_mother.slam': ('Ветви бьют в землю', 'Boughs strike the ground'),
     'entity.weeping_mother.creak': ('Скрипит ствол', 'A bole creaks'), 'entity.weeping_mother.root': ('Корень рвёт землю', 'A root tears the ground'),
+    'entity.sect.ambient': ('Неусыпающий бормочет', 'One of the Unsleeping mutters'), 'entity.sect.hurt': ('Неусыпающий охает', 'One of the Unsleeping gasps'),
+    'entity.sect.death': ('Неусыпающий засыпает', 'One of the Unsleeping falls asleep'),
+    'entity.wakeful.rise': ('Бдящий встаёт с колен', 'Wakeful rises from his knees'), 'entity.wakeful.vigil': ('Бдящий подаёт голос', 'Wakeful raises his voice'),
+    'entity.waker.knock': ('Стучит било', 'A board is beaten'),
+    'entity.sleeper.cry': ('Задремавший вскрикивает', 'Dozer cries out'), 'entity.sleeper.fall': ('Задремавший валится', 'Dozer drops'),
+    'entity.sleeper.snore': ('Кто-то храпит', 'Somebody snores'),
+    'entity.waxen.ambient': ('Булькает воск', 'Wax gurgles'), 'entity.waxen.hurt': ('Восковик чавкает', 'Waxen squelches'),
+    'entity.waxen.death': ('Восковик оплывает', 'Waxen runs down'), 'entity.waxen.slam': ('Шлёпает воск', 'Wax slaps down'),
+    'entity.waxen.gather': ('Восковик набирает воска', 'Waxen draws up wax'), 'entity.waxen.spew': ('Льётся горячий воск', 'Hot wax pours'),
+    'entity.sleep_moth.flutter': ('Шуршат крылья', 'Wings rustle'), 'entity.sleep_moth.hurt': ('Сонница мечется', 'Sleep moth darts'),
+    'entity.sleep_moth.death': ('Сонница падает', 'Sleep moth drops'), 'entity.sleep_moth.dust': ('Сыплется сонная пыль', 'Sleeping dust sifts down'),
+    'entity.shatun.ambient': ('Шатун сопит', 'Shatun huffs'), 'entity.shatun.hurt': ('Шатун ревёт от боли', 'Shatun bellows in pain'),
+    'entity.shatun.death': ('Шатун валится', 'Shatun goes down'), 'entity.shatun.roar': ('Шатун ревёт', 'Shatun roars'),
+    'entity.shatun.swipe': ('Свистит лапа', 'A paw whistles'), 'entity.shatun.slam': ('Шатун бьёт оземь', 'Shatun strikes the ground'),
+    'entity.shatun.bite': ('Клацают зубы', 'Teeth snap'), 'entity.shatun.step': ('Гремит цепь', 'A chain rattles'),
+    'entity.shatun.crash': ('Шатун врезается', 'Shatun crashes'),
+    'entity.elder.ambient': ('Старец читает', 'Elder recites'), 'entity.elder.hurt': ('Старец кряхтит', 'Elder grunts'),
+    'entity.elder.death': ('Старец засыпает', 'Elder falls asleep'), 'entity.elder.sweep': ('Гудит пламя на посохе', 'A flame roars on a staff'),
+    'entity.elder.chant': ('Старец возглашает', 'Elder intones'), 'entity.elder.knock': ('Посох бьёт в землю', 'A staff strikes the ground'),
+    'entity.elder.call': ('Старец будит своих', 'Elder wakes his own'), 'entity.elder.slumber': ('Старец зевает', 'Elder yawns'),
+    'entity.elder.dream': ('Наползает сон', 'A dream creeps in'), 'entity.elder.snore': ('Старец храпит', 'Elder snores'),
     'entity.keykeeper.ambient': ('Ключник кашляет', 'Keykeeper coughs'), 'entity.keykeeper.give': ('Звенят ключи', 'Keys jingle'),
     'ui.death': ('Ты помер', 'You croaked'), 'ui.boss_defeated': ('Гад повержен', 'Fiend felled'), 'ui.hearth_lit': ('Очаг разгорается', 'Hearth flares up'),
     'ui.level_up': ('Сила прибывает', 'Strength grows'), 'ui.souls_gain': ('Души стекаются', 'Souls gather'),

@@ -444,6 +444,10 @@ public final class SoulMechanics {
             if (soul.exhaustedSwing && plays(attacker)) {
                 amount *= EXHAUSTED_DAMAGE;
             }
+            // The Elder's great candle is still alight: what it strikes burns (the waxen and the Elder do not).
+            if (attacker.getMainHandItem().is(Dushi.GREAT_CANDLE.get()) && !victim.fireImmune()) {
+                victim.igniteForSeconds(Gear.CANDLE_BURNS);
+            }
             event.setAmount(amount);
         } else if (event.getSource().getEntity() instanceof Player archer && event.getSource().getDirectEntity() instanceof AbstractArrow) {
             // An arrow flies truer from a deft hand, whatever bow sent it.

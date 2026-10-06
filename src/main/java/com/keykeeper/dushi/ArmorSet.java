@@ -22,7 +22,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * The four suits of armour of the mod. Besides protection every suit has a weight (see {@link Gear}) and a small gift of its
+ * The five suits of armour of the mod. Besides protection every suit has a weight (see {@link Gear}) and a small gift of its
  * own that grows with every piece worn.
  */
 public enum ArmorSet {
@@ -37,7 +37,10 @@ public enum ArmorSet {
             28, new int[] {3, 7, 5, 3}, 1.0F, 0.1F, SoundEvents.ARMOR_EQUIP_IRON, "repairs_scrap", Rarity.UNCOMMON),
     /** Vestments: light, little protection, every spell is stronger. */
     CHAPLAIN("chaplain", new String[] {"chaplain_mitre", "chaplain_cassock", "chaplain_skirt", "chaplain_shoes"}, 9.0F, 0.06F,
-            12, new int[] {1, 3, 2, 1}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_LEATHER, "repairs_cloth", Rarity.UNCOMMON);
+            12, new int[] {1, 3, 2, 1}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_LEATHER, "repairs_cloth", Rarity.UNCOMMON),
+    /** The white linen of the Unsleeping: light, a little better than rags; sleep and murk let go of the wearer sooner. */
+    VIGIL("vigil", new String[] {"vigil_cowl", "vigil_shift", "vigil_skirt", "vigil_wraps"}, 11.0F, 0.2F,
+            14, new int[] {2, 4, 3, 1}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_LEATHER, "repairs_cloth", Rarity.UNCOMMON);
 
     public static final EquipmentSlot[] SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
     private static final ArmorType[] TYPES = {ArmorType.HELMET, ArmorType.CHESTPLATE, ArmorType.LEGGINGS, ArmorType.BOOTS};

@@ -84,6 +84,11 @@ public final class Forge {
             add(list, Dushi.BOAT_HOOK, 700, new Part(Dushi.WITHE, 3), scrap(3));
             add(list, Dushi.WALLOWER_FANG, 0, new Part(Dushi.WALLOWER_SOUL, 1), new Part(Dushi.BONE_SCALE, 4));
             add(list, Dushi.WITHE_SCOURGE, 0, new Part(Dushi.MOTHER_SOUL, 1), new Part(Dushi.WITHE, 6));
+            // what the Unsleeping kept themselves awake with, and their bear
+            add(list, Dushi.VIGIL_STAFF, 800, new Part(Dushi.LINEN, 3), new Part(Dushi.WAX, 2));
+            add(list, Dushi.WAKER_MALLET, 800, new Part(Dushi.LINEN, 2), scrap(4));
+            add(list, Dushi.BEAR_SPEAR, 0, new Part(Dushi.SHATUN_SOUL, 1), new Part(Dushi.SHATUN_HIDE, 2));
+            add(list, Dushi.GREAT_CANDLE, 0, new Part(Dushi.ELDER_SOUL, 1), new Part(Dushi.WAX, 6));
             shelf = Category.SUPPLIES;
             add(list, () -> Items.ARROW, 8, 0, scrap(1));
             // shields
@@ -105,6 +110,10 @@ public final class Forge {
             }
             for (int piece = 0; piece < 4; piece++) {
                 add(list, ArmorSet.CHAPLAIN.pieces().get(piece), 150 * shape[piece], cloth(shape[piece] + 2), new Part(Dushi.NAMELESS_SOUL, 1));
+            }
+            // the white linen of the Unsleeping, stiffened with their wax
+            for (int piece = 0; piece < 4; piece++) {
+                add(list, ArmorSet.VIGIL.pieces().get(piece), 250 * shape[piece], new Part(Dushi.LINEN, shape[piece] + 2), new Part(Dushi.WAX, 1));
             }
             shelf = Category.MAGIC;
             // catalysts and spells: written with a soul

@@ -461,6 +461,83 @@ sp.pts([(23, 9), (24, 9)], R)
 sp.pts([(6, 26), (8, 24), (10, 22)], C)                  # a turn of cord where the hands go
 sp.outline(0.45, inner=False)
 
+# ---- the Black Firwood
+WAXL, WAXM, WAXD = (244, 236, 204), (214, 200, 156), (164, 146, 104)
+LINL, LINM, LIND = (236, 232, 220), (198, 192, 176), (150, 144, 130)
+THREAD = (150, 40, 36)
+
+# the staff of a wakeful one: a peeled pole, and on its end the candle he keeps his eyes open by
+sp = icon('vigil_staff', 32, big=True)
+for i in range(21):
+    xx, yy = 3 + i, 28 - i
+    sp.px(xx, yy, C if i % 6 else c)
+    sp.px(xx + 1, yy, c)
+    sp.px(xx + 1, yy + 1, k)
+for i in range(3):                                       # a turn of linen where the hands go
+    sp.px(8 + i * 2, 23 - i * 2, LINL)
+    sp.px(9 + i * 2, 23 - i * 2, LINM)
+for i in range(3):                                       # an iron cup the candle stands in
+    sp.px(22 + i, 8 + i, M)
+    sp.px(23 + i, 7 + i, m)
+for i in range(4):                                       # the candle, leaning the way the pole does
+    for kk, col in enumerate((WAXL, WAXM, WAXD)):
+        sp.px(23 + i + kk, 6 - i, col)
+sp.pts([(22, 7), (24, 9)], WAXM)                         # a run of wax down the cup
+sp.pts([(28, 2)], b, lock=True)
+sp.pts([(29, 0), (30, 0)], F, lock=True)
+sp.pts([(29, 1), (28, 1)], f, lock=True)
+sp.pts([(30, 1)], e, lock=True)
+sp.outline(0.45, inner=False)
+
+# the spear the bear was kept awake with: a stout shaft, a cross-bar so that he could not come up it, a blade like a leaf
+sp = icon('bear_spear', 32, big=True)
+for i in range(21):
+    xx, yy = 2 + i, 29 - i
+    sp.px(xx, yy, W if i % 6 else w)
+    sp.px(xx + 1, yy, w)
+    sp.px(xx + 1, yy + 1, b)
+for i in range(4):                                       # strips of his hide, wound where the hands go
+    sp.px(6 + i * 2, 25 - i * 2, (122, 96, 70))
+    sp.px(7 + i * 2, 25 - i * 2, (84, 62, 46))
+for kk in range(-3, 4):                                  # the cross-bar
+    sp.px(21 + kk, 11 + kk, s if kk % 2 else S)
+    sp.px(21 + kk, 12 + kk, d)
+for uu, half in enumerate((1, 2, 2, 2, 2, 1, 1, 0, 0)):   # the blade: along it, and across
+    for vv in range(-half, half + 1):
+        xx, yy = 23 + uu + vv, 8 - uu + vv
+        sp.px(xx, yy, S if vv < 0 else (s if vv == 0 else d))
+        if xx + 1 < 32:
+            sp.px(xx + 1, yy, s if vv < 0 else (d if vv < half else D))
+sp.pts([(22, 9), (23, 9), (22, 10)], D)
+sp.pts([(26, 6), (28, 4)], N)                            # what has not been washed off it
+sp.outline(0.45, inner=False)
+
+# the Elder's great candle: an iron pole, a pan for what runs down, and a candle as thick as an arm, alight
+sp = icon('great_candle', 32, big=True)
+for i in range(19):
+    xx, yy = 2 + i, 29 - i
+    sp.px(xx, yy, M if i % 5 else d)
+    sp.px(xx + 1, yy, m)
+    sp.px(xx + 1, yy + 1, O)
+for i in range(3):
+    sp.px(5 + i * 3, 26 - i * 3, D)
+for kk in range(-4, 5):                                  # the pan
+    sp.px(20 + kk, 11 + kk, s if abs(kk) < 4 else d)
+    sp.px(20 + kk, 12 + kk, D)
+for uu in range(8):                                      # the candle: along it, and across
+    for vv in range(-1, 2):
+        xx, yy = 22 + uu + vv, 9 - uu + vv
+        col = WAXL if vv < 0 else (WAXM if vv == 0 else WAXD)
+        if col == WAXL and uu % 3 == 1:
+            col = WAXM
+        sp.px(xx, yy, col)
+        sp.px(xx + 1, yy, WAXM if vv < 0 else WAXD)
+for xx, yy in ((19, 10), (18, 11), (25, 11), (26, 12), (26, 13), (17, 12)):   # what has run down and set
+    sp.px(xx, yy, WAXM)
+for xx, yy, col in ((30, 1, b), (30, 0, f), (31, 0, F), (31, 1, e)):
+    sp.px(xx, yy, col, lock=True)
+sp.outline(0.45, inner=False)
+
 # ---------------------------------------------------------------------------------------------------- bow
 
 def bow(name, pull):
@@ -967,6 +1044,97 @@ SOUL_ROWS = [
 ascii_icon('wallower_soul', SOUL_ROWS, {'1': (206, 214, 120), '2': (120, 142, 70), 'd': (70, 84, 52), 'M': (34, 42, 30), 'D': (52, 62, 40)}, lock='12dMD')
 ascii_icon('mother_soul', SOUL_ROWS, {'1': (214, 255, 196), '2': (120, 214, 110), 'd': (62, 120, 70), 'M': (22, 48, 30), 'D': (40, 80, 50)}, lock='12dMD')
 
+# ---- the Black Firwood: what its dead leave, what is made of them, and the key to it
+ascii_icon('waker_mallet', [
+    "................",
+    ".........ooo....",
+    "........oWWwo...",
+    ".......oWWwwbo..",
+    "......o1Wwwbbo..",
+    ".....o121wbbo...",
+    ".....oW121bo....",
+    "......owW1o.....",
+    ".....oLloo......",
+    "....oLlo........",
+    "...oLlo.........",
+    "..oLlo..........",
+    ".oWlo...........",
+    "oWwo............",
+    ".oo.............",
+    "................"], {'1': (236, 232, 220), '2': (198, 192, 176)}, handheld=True)
+ascii_icon('bleached_linen', [
+    "................",
+    "................",
+    "...oooooooooo...",
+    "..o1111111112o..",
+    "..o1111111122o..",
+    "..oNnNnNnNnN2o..",
+    "..o1111111122o..",
+    "..o1111111223o..",
+    "..o2222222233o..",
+    "..o1111111122o..",
+    "..o1111112223o..",
+    "..o2222222333o..",
+    "...oooooooooo...",
+    "................",
+    "................",
+    "................"], {'1': (236, 232, 220), '2': (198, 192, 176), '3': (150, 144, 130), 'N': (150, 40, 36), 'n': (196, 150, 140)})
+ascii_icon('candle_wax', [
+    "................",
+    "................",
+    "................",
+    ".......ooo......",
+    "......o112o.....",
+    ".....o11122o....",
+    "....oo112223o...",
+    "...o11o22233o...",
+    "..o11122o233oo..",
+    "..o1122223o112o.",
+    "..o1222233o1223o",
+    "...o22333o12233o",
+    "....oooooo.oooo.",
+    "................",
+    "................",
+    "................"], {'1': (244, 236, 204), '2': (214, 200, 156), '3': (164, 146, 104)})
+ascii_icon('shatun_hide', [
+    "................",
+    "..oo........oo..",
+    ".o12o......o12o.",
+    ".o122oooooo223o.",
+    "..o1212122223o..",
+    "..o1221212233o..",
+    "...o21212223o...",
+    "...o12122233o...",
+    "...o21222223o...",
+    "..o1212222333o..",
+    "..o1222223233o..",
+    ".o122oo33oo233o.",
+    ".o23o..oo..o33o.",
+    "..oo........oo..",
+    "................",
+    "................"], {'1': (122, 96, 70), '2': (84, 62, 46), '3': (52, 38, 30)})
+# the key of the Wood Wicket: the same make as the others, and somebody held a candle over it for a long time
+ascii_icon('firwood_key', [
+    "................",
+    "..........ooo...",
+    ".........oSsdo..",
+    "........oSo.odo.",
+    "........oso.odo.",
+    "........o1dodo..",
+    ".......o112do...",
+    "......oS12oo....",
+    ".....oSs2o......",
+    "....oSs2o.......",
+    "...oSsdoo.......",
+    "..oSsdoso.......",
+    ".oSsdos2o.......",
+    ".osdo.oo........",
+    "..oo............",
+    "................"], {'1': (244, 236, 204), '2': (214, 200, 156)})
+# the Shatun's: the colour of his eyes; the Elder's: the colour of a candle seen through linen
+ascii_icon('shatun_soul', SOUL_ROWS, {'1': (255, 196, 116), '2': (206, 122, 56), 'd': (122, 66, 38), 'M': (40, 22, 16), 'D': (84, 48, 32)}, lock='12dMD')
+ascii_icon('elder_soul', SOUL_ROWS, {'1': (255, 248, 222), '2': (228, 204, 140), 'd': (156, 130, 84), 'M': (52, 40, 26), 'D': (110, 92, 62)}, lock='12dMD')
+
 # ---------------------------------------------------------------------------------------------------- flying spells
 
 def bolt(name, core, mid, edge, rows):
@@ -1229,6 +1397,15 @@ egg('wallower', (92, 96, 62), (176, 170, 118), ((4, 10, O), (5, 10, C), (6, 10, 
                                                 (5, 7, F), (10, 7, F)))
 egg('weeping_mother', (70, 60, 46), (88, 112, 50), ((6, 6, C), (7, 6, C), (8, 6, C), (9, 6, C), (6, 7, MIRE_GREEN), (9, 7, MIRE_GREEN),
                                                     (6, 8, MIRE_GREEN), (9, 8, MIRE_GREEN), (6, 9, MIRE_GREEN), (9, 9, MIRE_GREEN)))
+SECT_WHITE = (222, 216, 200)
+egg('wakeful', SECT_WHITE, (150, 40, 36), ((6, 8, F), (9, 8, F), (6, 9, O), (9, 9, O), (7, 2, F), (7, 3, C)))
+egg('waker', (60, 56, 62), (152, 110, 66), ((6, 8, F), (9, 8, F), (11, 10, f), (11, 11, F)))
+egg('sleeper', (190, 182, 160), (140, 110, 70), ((5, 8, O), (6, 8, O), (9, 8, O), (10, 8, O), (7, 11, O), (8, 11, O)))
+egg('waxen', (236, 226, 190), (196, 176, 120), ((6, 2, F), (4, 4, F), (10, 3, F), (6, 9, O), (7, 9, O), (8, 9, O), (9, 9, O), (7, 10, O), (8, 10, O)))
+egg('sleep_moth', (120, 108, 100), (220, 214, 200), ((5, 7, F), (5, 8, O), (10, 7, F), (10, 8, O), (7, 5, O), (8, 5, O)))
+egg('shatun', (70, 52, 40), (110, 84, 60), ((6, 7, EMB), (9, 7, EMB), (6, 10, C), (7, 11, C), (8, 11, C), (9, 10, C), (4, 12, M), (5, 13, M)))
+egg('elder', (214, 208, 192), (128, 124, 128), ((5, 3, F), (7, 2, F), (10, 3, F), (6, 7, F), (9, 7, F), (7, 9, k), (8, 9, k), (7, 10, k), (8, 10, k),
+                                                 (7, 11, k), (8, 11, k)))
 egg('gilded_knight', (176, 176, 186), (214, 184, 106), ((5, 8, O), (6, 8, EMB), (7, 8, O), (8, 8, O), (9, 8, EMB), (10, 8, O)))
 egg('rust_knight', (84, 76, 76), (150, 90, 52), ((5, 8, O), (6, 8, EMB), (7, 8, O), (8, 8, O), (9, 8, EMB), (10, 8, O)))
 egg('keykeeper', (72, 76, 88), (196, 160, 72), ((5, 8, C), (6, 8, C), (7, 8, C), (8, 8, C), (9, 8, C), (10, 8, C)))
@@ -1265,7 +1442,8 @@ def big_display(grip):
     return out
 
 
-BIG_GRIP = {'rust_greatsword': 5.5, 'great_key': 10.5, 'grave_spade': 8.0, 'pitchfork': 10.0, 'quarry_pick': 9.0, 'great_maul': 8.0, 'boat_hook': 10.0}
+BIG_GRIP = {'rust_greatsword': 5.5, 'great_key': 10.5, 'grave_spade': 8.0, 'pitchfork': 10.0, 'quarry_pick': 9.0, 'great_maul': 8.0, 'boat_hook': 10.0,
+            'vigil_staff': 10.0, 'bear_spear': 10.0, 'great_candle': 9.0}
 
 if __name__ == '__main__':
     os.makedirs(f'{A}/textures/item', exist_ok=True)

@@ -76,6 +76,12 @@ final class WorldTest {
             say("rules: FAILED: " + e);
             e.printStackTrace(System.out);
         }
+        try {
+            firwood(level);
+        } catch (RuntimeException e) {
+            say("firwood: FAILED: " + e);
+            e.printStackTrace(System.out);
+        }
         for (String name : new String[] {"outpost", "stockade"}) {
             try {
                 found(level, name);
@@ -279,6 +285,71 @@ final class WorldTest {
         struck.discard();
         high.discard();
         tree.discard();
+    }
+
+    /** The Black Firwood: whom a kneeling one sees, whom a waker wakes, what the hides, the linen and the great candle do. */
+    private static void firwood(ServerLevel level) {
+        BlockPos at = new BlockPos(40, 240, 40);
+        // one of the wakeful, kneeling with his face to the south
+        boolean seen = com.keykeeper.dushi.entity.WakefulEntity.sees(0.0F, 0.0, 8.0, false) && com.keykeeper.dushi.entity.WakefulEntity.sees(0.0F, 3.0, 4.0, true);
+        boolean unseen = !com.keykeeper.dushi.entity.WakefulEntity.sees(0.0F, 0.0, -5.0, false) && !com.keykeeper.dushi.entity.WakefulEntity.sees(0.0F, 0.0, 8.0, true)
+                && !com.keykeeper.dushi.entity.WakefulEntity.sees(0.0F, 0.0, 12.0, false) && !com.keykeeper.dushi.entity.WakefulEntity.sees(0.0F, 6.0, 0.0, false);
+        boolean felt = com.keykeeper.dushi.entity.WakefulEntity.sees(0.0F, 0.0, -2.0, false) && !com.keykeeper.dushi.entity.WakefulEntity.sees(0.0F, 0.0, -1.0, true);
+        say("firwood: the wakeful: sees who is before him=" + seen + ", not who is behind, far, beside, or creeping at a distance=" + unseen
+                + ", feels who walks at his back and not who creeps there=" + felt + (seen && unseen && felt ? "" : " FAILED"));
+        com.keykeeper.dushi.entity.WakerEntity waker = Dushi.WAKER.get().spawn(level, at, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        com.keykeeper.dushi.entity.WakefulEntity near = Dushi.WAKEFUL.get().spawn(level, at.offset(7, 0, 0), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        com.keykeeper.dushi.entity.WakefulEntity far = Dushi.WAKEFUL.get().spawn(level, at.offset(-28, 0, 0), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        com.keykeeper.dushi.entity.ShatunEntity bear = Dushi.SHATUN.get().spawn(level, at.offset(0, 0, 6), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        com.keykeeper.dushi.entity.ElderEntity elder = Dushi.ELDER.get().spawn(level, at.offset(0, 0, -6), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        if (waker == null || near == null || far == null || bear == null || elder == null) {
+            say("firwood: something did not spawn FAILED");
+            return;
+        }
+        boolean knelt = !near.awake() && !far.awake();
+        waker.wake(level);
+        boolean woken = near.awake() && near.attackId() == com.keykeeper.dushi.entity.WakefulEntity.RISE && !far.awake();
+        say("firwood: the waker: they kneel=" + knelt + ", his board wakes the one who hears it and not the one who does not=" + woken + (knelt && woken ? "" : " FAILED"));
+        float bearWhole = bear.getHealth();
+        bear.hurtServer(level, level.damageSources().generic(), 100.0F);
+        float elderWhole = elder.getHealth();
+        elder.hurtServer(level, level.damageSources().generic(), 100.0F);
+        boolean hides = Math.abs(bearWhole - bear.getHealth() - 100.0F * com.keykeeper.dushi.entity.ShatunEntity.HIDE) < 0.01F
+                && Math.abs(elderWhole - elder.getHealth() - 100.0F * com.keykeeper.dushi.entity.ElderEntity.HIDE) < 0.01F;
+        say("firwood: of a blow of 100 the Shatun takes " + (bearWhole - bear.getHealth()) + " and the Elder " + (elderWhole - elder.getHealth()) + (hides ? "" : " FAILED"));
+        // sleep, and the linen that keeps it off
+        FakePlayer player = FakePlayerFactory.getMinecraft(level);
+        player.setPos(at.getX() + 0.5, at.getY(), at.getZ() + 3.5);
+        wear(player, null, null, null, null, null, null);
+        player.removeAllEffects();
+        Gear.drowse(player, waker, 100, 1);
+        var dark = player.getEffect(net.minecraft.world.effect.MobEffects.DARKNESS);
+        int bare = dark == null ? 0 : dark.getDuration();
+        player.removeAllEffects();
+        ArmorSet set = ArmorSet.VIGIL;
+        wear(player, set.piece(0), set.piece(1), set.piece(2), set.piece(3), null, null);
+        Gear.drowse(player, waker, 100, 1);
+        dark = player.getEffect(net.minecraft.world.effect.MobEffects.DARKNESS);
+        int clothed = dark == null ? 0 : dark.getDuration();
+        player.removeAllEffects();
+        Gear.drowse(player, waker, 40, 1);
+        boolean shrugged = player.getEffect(net.minecraft.world.effect.MobEffects.DARKNESS) == null;
+        player.removeAllEffects();
+        boolean linen = bare == 100 && clothed == Math.round(100 * (1.0F - 4 * set.bonus)) && shrugged;
+        say("firwood: sleep holds " + bare + " ticks, in the linen of the Unsleeping " + clothed + ", and a short one not at all=" + shrugged + (linen ? "" : " FAILED"));
+        // the great candle sets alight what it strikes
+        wear(player, null, null, null, null, Dushi.GREAT_CANDLE.get(), null);
+        near.setInvulnerableTime(0);
+        float before = near.getHealth();
+        player.attack(near);
+        boolean burns = near.getRemainingFireTicks() > 0;
+        say("firwood: the great candle: a blow of it took " + (before - near.getHealth()) + " and left its mark burning=" + burns + (burns ? "" : " FAILED"));
+        wear(player, null, null, null, null, null, null);
+        waker.discard();
+        near.discard();
+        far.discard();
+        bear.discard();
+        elder.discard();
     }
 
     // ------------------------------------------------------------------ gear

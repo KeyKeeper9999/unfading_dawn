@@ -177,14 +177,14 @@ for _name, _items in MAP_CHESTS.items():
 # ---------------------------------------------------------------------------------------------------- tags and worldgen
 
 TAGS = {
-    f'{MOD}/tags/item/repairs_cloth': [CLOTH],
+    f'{MOD}/tags/item/repairs_cloth': [CLOTH, M + 'bleached_linen'],
     f'{MOD}/tags/item/repairs_scrap': [SCRAP],
     # where the buildings may stand: any land of the overworld (water and cliffs are ruled out by the structure itself)
     f'{MOD}/tags/worldgen/biome/has_structure': ['#minecraft:is_overworld'],
-    'minecraft/tags/item/head_armor': [M + n for n in ('prisoner_hood', 'guard_hat', 'rust_helm', 'chaplain_mitre')],
-    'minecraft/tags/item/chest_armor': [M + n for n in ('prisoner_rags', 'guard_hauberk', 'rust_cuirass', 'chaplain_cassock')],
-    'minecraft/tags/item/leg_armor': [M + n for n in ('prisoner_breeches', 'guard_leggings', 'rust_tassets', 'chaplain_skirt')],
-    'minecraft/tags/item/foot_armor': [M + n for n in ('prisoner_wraps', 'guard_boots', 'rust_sabatons', 'chaplain_shoes')],
+    'minecraft/tags/item/head_armor': [M + n for n in ('prisoner_hood', 'guard_hat', 'rust_helm', 'chaplain_mitre', 'vigil_cowl')],
+    'minecraft/tags/item/chest_armor': [M + n for n in ('prisoner_rags', 'guard_hauberk', 'rust_cuirass', 'chaplain_cassock', 'vigil_shift')],
+    'minecraft/tags/item/leg_armor': [M + n for n in ('prisoner_breeches', 'guard_leggings', 'rust_tassets', 'chaplain_skirt', 'vigil_skirt')],
+    'minecraft/tags/item/foot_armor': [M + n for n in ('prisoner_wraps', 'guard_boots', 'rust_sabatons', 'chaplain_shoes', 'vigil_wraps')],
 }
 
 
