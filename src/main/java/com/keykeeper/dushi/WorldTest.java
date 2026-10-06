@@ -157,9 +157,10 @@ final class WorldTest {
         say("rules: the locked grate: holds without the key=" + held + ", opens whole with it=" + opened + ", the key is kept=" + kept
                 + (held && opened && kept ? "" : " FAILED"));
 
-        com.keykeeper.dushi.entity.BlindCrawlerEntity crawler = Dushi.BLIND_CRAWLER.get().create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
-        boolean ears = crawler != null && crawler.hears(false, 10.0) && !crawler.hears(true, 10.0) && crawler.hears(true, 2.5) && !crawler.hears(false, 16.0);
-        say("rules: the blind crawler: hears a walker at ten blocks and a creeper only at arm's length=" + ears + (ears ? "" : " FAILED"));
+        boolean ears = com.keykeeper.dushi.entity.BlindCrawlerEntity.hears(false, 10.0, 0.0, 0.0) && !com.keykeeper.dushi.entity.BlindCrawlerEntity.hears(false, 16.0, 0.0, 0.0)
+                && !com.keykeeper.dushi.entity.BlindCrawlerEntity.hears(true, 10.0, 0.0, 0.0) && !com.keykeeper.dushi.entity.BlindCrawlerEntity.hears(true, 2.0, 0.0, 0.0)
+                && !com.keykeeper.dushi.entity.BlindCrawlerEntity.hears(true, 0.0, 0.0, -1.6) && com.keykeeper.dushi.entity.BlindCrawlerEntity.hears(true, 1.4, 0.0, -1.4);
+        say("rules: the blind crawler: hears a walker at ten blocks and a creeper only on the blocks that touch its own=" + ears + (ears ? "" : " FAILED"));
 
         com.keykeeper.dushi.entity.UnhewnEntity statue = Dushi.UNHEWN.get().spawn(level, at.offset(-4, 0, 4), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
         if (statue == null) {

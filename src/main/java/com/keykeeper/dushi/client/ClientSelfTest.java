@@ -432,8 +432,15 @@ public final class ClientSelfTest {
         shot("q2_digger_pick_raised");
         attack(WitheredEntity.class, WitheredEntity.PICK, 19);
         shot("q2_digger_pick_struck");
-        attack(WitheredEntity.class, WitheredEntity.PICK, 30);
+        attack(WitheredEntity.class, WitheredEntity.PICK_STUCK, 21);
+        shot("q2_digger_pick_stuck");
+        attack(WitheredEntity.class, WitheredEntity.PICK_STUCK, 30);
         shot("q2_digger_pick_tug");
+        attack(WitheredEntity.class, WitheredEntity.PICK_STUCK, 51);
+        shot("q2_digger_pick_free");
+        command(look(3.0, 1.5, 30, 8));
+        attack(WitheredEntity.class, WitheredEntity.PICK_STUCK, 21);
+        shot("q2_digger_pick_stuck_front_quarter");
         rest();
         command(gone, look(-5.0, 4.5, -90, 5), summon("withered_barrowman", 0.0, 4.5, ""));
         shot("q2_barrow_side", 20);
@@ -443,6 +450,8 @@ public final class ClientSelfTest {
         shot("q2_barrow_run");
         attack(WitheredEntity.class, WitheredEntity.CHARGE, 42);
         shot("q2_barrow_fall");
+        attack(WitheredEntity.class, WitheredEntity.RAM, 7);
+        shot("q2_barrow_ram_draw");
         attack(WitheredEntity.class, WitheredEntity.RAM, 12);
         shot("q2_barrow_ram");
         rest();

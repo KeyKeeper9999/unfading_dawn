@@ -573,6 +573,24 @@ if __name__ == '__main__':
         print(' ', line)
     for p in problems:
         print('  PROBLEM:', p)
+    # fog, a seal or a grate shuts a way only if it fills it: beside every cell of one, in its own plane, there is
+    # more of it or something solid (the fog before the Stone-Eater once stood where the cave had eaten the drift's
+    # wall, and was walked round)
+    for name, group in list(b.fogs.items()) + list(b.seals.items()):
+        group = set(group)
+        flat = [i for i in range(3) if len({c[i] for c in group}) == 1]
+        if len(flat) != 1 or flat[0] == 1:
+            print(f'  PROBLEM: {name} is not one upright sheet')
+            continue
+        for c in sorted(group):
+            for i in range(3):
+                for d in (-1, 1):
+                    n = tuple(v + (d if j == i else 0) for j, v in enumerate(c))
+                    if i == flat[0] or n in group:
+                        continue
+                    s = b.get(*n)
+                    if (s is None and n[1] > GY) or s == AIR or (s is not None and any(k in str(s) for k in castle.PASSABLE)):
+                        print(f'  PROBLEM: {name} at {c} leaves a way round it at {n}: {s}')
     # the cathedral must be entered by the covered walk the first time: with the walk shut, nothing beyond it is reached
     shut = frozenset(C(x, y, 76) for x in (96, 97) for y in range(GAL + 1, GAL + 4))
     without, _, seen_shut = analyse(b, blocked=shut)

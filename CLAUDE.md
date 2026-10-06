@@ -94,8 +94,9 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   ground after a delay, the place marked until then (dust sifting down for a falling rock, chips for a crack running
   along the floor). The dead do not turn on each other: `setTarget` ignores another `SoulsMob`.
 - The quarry's own: `BlindCrawlerEntity` hears instead of seeing (`hears`: a walker from 13 blocks, somebody sneaking
-  only from 3.5) and calls the others; `UnhewnEntity` is a statue (phase 1, nothing of it moves) until somebody comes
-  within 4.5 blocks or strikes it; `TaskmasterEntity` and `StoneEaterEntity` are the lords (the second digs itself
+  only on its own block and the eight round it) and calls the others - so a way that crawlers keep is at least five
+  wide between whatever stands in it, or there is no creeping past them; `UnhewnEntity` is a statue (phase 1,
+  nothing of it moves) until somebody comes within 4.5 blocks or strikes it; `TaskmasterEntity` and `StoneEaterEntity` are the lords (the second digs itself
   under the floor: its model's root part `all` goes down, nothing reaches it there); `PowderPotEntity` (its `blast`
   hurts the dead too) and `WedgeEntity` are what is thrown. These four mobs share `client/QuarryRenderer`.
 - `client/` - models, renderers, `SoulsHud`, `HearthScreen`, `ShopScreen`, the roll key.
@@ -142,6 +143,14 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   `Lock` is the gate nothing opens.
 - What a mob carries that is not a weapon is part of its model too and takes part in its moves: the barrowman's
   barrow hangs from the model's root, his hands are set on its handles whatever else he does.
+- The game's humanoid turns its trunk about the neck: bent forward, the trunk leaves the legs behind. `WitheredModel.hips`
+  runs last in `setupAnim` and takes whatever a move bent the trunk by, beyond the stoop, about the hips instead (neck,
+  head and shoulders go forward and down). A move only sets `body.xRot`; it does not move the head or the arms to follow.
+  The barrowman's hands are solved after that (`handles`): the barrow's tip gives the height of its handles, the arms
+  reach to that height, and the barrow stands where the hands are.
+- A blow that is sometimes punished is two moves, not one with a random tail: the digger's `PICK` and `PICK_STUCK`
+  (about one in three) share the wind-up and the impact, and only the second leaves him bent over a pick fast in the
+  floor. A held thing points across the arm: to bury its point the hands go back, towards the shins.
 - A mob that is meant to be feared looks it: the butcher has his own bulk on the withered's bones (parts shown only
   on him), is drawn a tenth bigger and has a box to match; doorways he must pass are three high.
 - In this version a loot entry's functions are written under the key `modifier` and a pool's conditions under
@@ -235,6 +244,10 @@ Things learnt the hard way:
   (`SPAWN_MOBS`): the night would fill with them.
 - A block with a direction of its own must turn with the plan (`rotate`): the fog gate did not, and stood edge-on in
   every doorway of the map. What is built late (corbels, lamps) can land in a stair: the check counts headroom.
+- Fog fills its opening or it is walked round: the fog before the Stone-Eater stood where the cave had already eaten
+  the drift's wall. `b.fog` fills the free cells of its box (so the box can take in the point of an arch), and
+  `gen_world.py` reports any fog, seal or grate with a free cell beside it in its own plane.
+- A gallery over a lord's hall has its rail from wall to wall: boards that stop short are a way down to him.
 - A lord's death lifts every seal in a box of forty blocks either way round his mark (`FogGateBlock.lift`): two lords
   of one place must stand further apart than that, or the first opens the way past the second.
 - Under the ground the plan holds only what differs from the world's stone: the hollows, and a skin of rock round them

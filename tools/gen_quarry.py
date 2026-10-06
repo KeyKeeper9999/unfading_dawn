@@ -583,8 +583,10 @@ class Quarry:
             for dx, dz in ((-1, 0), (3, 0)):
                 b.set(px + dx, low + 5, pz, 'minecraft:diorite_wall')
                 b.set(px + dx, low + 4, pz, LANTERN)
-        # the gallery along the east wall, at the level of the upper workings: boards on posts, a rail
-        for z in range(z0 + 2, z1 - 1):
+        # the gallery along the east wall, at the level of the upper workings: boards on posts, a rail. Both run from
+        # wall to wall: where the boards stopped short of the walls, whoever walked to an end of them stepped off it
+        # onto the Taskmaster's floor
+        for z in range(z0, z1 + 1):
             for x in range(x1 - 2, x1 + 1):
                 b.set(x, top, z, 'minecraft:spruce_slab[type=top]')
             b.set(x1 - 2, top + 1, z, FENCE)
@@ -631,7 +633,9 @@ class Quarry:
     def workings(self):
         """The lower workings: the sump, where there is a hearth, and north of it a long gallery half under water
         with stalls either side, where nothing has carried a lamp for a long time. The crawlers there hear whoever
-        walks; whoever creeps along the far wall passes them."""
+        walks; whoever creeps along the far wall passes them. For that there must be a far wall: a crawler hears a
+        creeper on the block it is on and the eight round it, so the gallery is seven wide, five between the posts
+        of its timber, and nothing stands in it but the posts."""
         b, zc, low = self.b, self.zc, self.LOW
         b.zone = 'workings'
         # from the hall to the sump
@@ -644,7 +648,7 @@ class Quarry:
         self.lamp(13, low + 1, zc - 4)
         b.threshold('workings', 23, low + 1, zc - 1, 24, zc + 1)
         # the gallery, north from the sump
-        gx0, gx1, gz0, gz1 = 15, 19, zc - 49, zc - 5
+        gx0, gx1, gz0, gz1 = 15, 21, zc - 49, zc - 5
         self.floor(gx0, gz0, gx1, gz1, low, low_floor)
         self.dig(gx0, low + 1, gz0, gx1, low + 3, gz1)
         for x in range(gx0, gx1 + 1):
@@ -658,8 +662,8 @@ class Quarry:
                     b.set(x, low, z, WATER)
         for i, z in enumerate(range(zc - 8, gz0, -7)):
             self.frame_z(z, gx0, gx1, low + 1, low + 3)
-            if i % 2 == 0:
-                b.set(gx1 - 1, low + 2, z, SOUL_LANTERN)
+            if i % 2 == 0:                                       # (on the floor by the wall, between two sets: not in the way)
+                b.set(gx1, low + 1, z + 2, 'minecraft:soul_lantern[hanging=false]')
         # the stalls. West, near the sump: a nest
         self.room(8, zc - 16, 13, zc - 10, low, 3, low_floor, salt=5)
         self.dig(14, low + 1, zc - 14, 14, low + 2, zc - 12)
@@ -670,7 +674,7 @@ class Quarry:
         b.mob('crawler', 10, low + 1, zc - 15, 'east')
         b.mob('crawler', 11, low + 1, zc - 11, 'east')
         # east, half way: the drift that was being driven north-east when the work stopped - barred, and going on
-        self.room(20, zc - 30, 27, zc - 24, low, 3, low_floor, salt=6)
+        self.room(22, zc - 30, 27, zc - 24, low, 3, low_floor, salt=6)
         for y in (low + 1, low + 2, low + 3):                   # (a gate nothing in the map opens: see LockedGateBlock)
             for z in range(zc - 28, zc - 25):
                 b.set(28, y, z, f'{MOD}:locked_gate[axis=z,lock=none]')
@@ -683,7 +687,7 @@ class Quarry:
                     if hsh(x, y, z, 492) < (0.9 if x == 36 else 0.5):
                         b.set(x, y, z, 'minecraft:cobbled_deepslate' if hsh(x, y, z, 493) < 0.6 else 'minecraft:gravel')
         b.shard(26, low + 1, zc - 24)
-        b.mob('crawler', 23, low + 1, zc - 27, 'west')
+        b.mob('crawler', 24, low + 1, zc - 27, 'west')
         # west, further on: somebody dragged a statue down here
         self.room(8, zc - 44, 13, zc - 36, low, 4, low_floor, salt=7)
         self.dig(14, low + 1, zc - 41, 14, low + 2, zc - 39)
@@ -700,18 +704,26 @@ class Quarry:
         b.mob('crawler', gx0 + 1, low + 1, zc - 45, 'south')
         b.mob('digger', gx1 - 1, low + 1, zc - 47, 'south')
         # light enough to see shapes by
-        b.ambient((17,), low + 3, range(zc - 48, zc - 4, 3), 9)
-        for x, z in ((9, zc - 15), (12, zc - 11), (9, zc - 11), (12, zc - 15), (22, zc - 29), (25, zc - 25), (22, zc - 25), (9, zc - 43), (12, zc - 37),
+        # (three rows of it, between the sets of timber, and no knob of rock left where one goes: one row under a
+        # ragged roof left whole stretches black)
+        rows = [z for z in range(gz0 + 1, gz1) if (z - (zc - 8)) % 7 in (2, 5)]
+        for x in (16, 18, 20):
+            for z in rows:
+                b.set(x, low + 3, z, AIR)
+        b.ambient((16, 18, 20), low + 3, rows, 9)
+        for x, z in ((9, zc - 15), (12, zc - 11), (9, zc - 11), (12, zc - 15), (22, zc - 29), (26, zc - 29), (25, zc - 25), (22, zc - 25), (9, zc - 43), (12, zc - 37),
                      (9, zc - 38), (12, zc - 42), (23, zc - 47), (27, zc - 47), (31, zc - 47)):
             b.ambient((x,), low + 3, (z,), 9)
         # the end of the gallery turns east, to where the drift broke through
-        self.floor(20, zc - 49, 33, zc - 45, low, low_floor)
-        self.dig(20, low + 1, zc - 49, 33, low + 4, zc - 45)
-        for x in (22, 25):                                       # the last sets of timber, pushed over
+        self.floor(22, zc - 49, 33, zc - 45, low, low_floor)
+        self.dig(22, low + 1, zc - 49, 33, low + 4, zc - 45)
+        for x in (22, 27):                                       # the last sets of timber, pushed over
             b.set(x, low + 1, zc - 49, LOG % 'x')
             b.set(x + 1, low + 1, zc - 49, LOG % 'x')
         b.set(21, low + 1, zc - 45, 'minecraft:soul_lantern[hanging=false]')
-        b.fog('stone_eater_fog', 28, low + 1, zc - 49, 28, low + 4, zc - 45, 'z')
+        # the fog stands in the drift, where there is rock all round it: three blocks further on the cave has eaten
+        # the drift's wall and roof, and fog put there left a way round its corner
+        b.fog('stone_eater_fog', 25, low + 1, zc - 49, 25, low + 4, zc - 45, 'z')
 
     def breach(self):
         """The Breach: the cave the lowest drift broke into. Nothing here was cut by a pick."""
@@ -746,12 +758,12 @@ class Quarry:
         b.ambient(range(cx - 14, cx + 15, 4), low + 4, range(cz - 15, cz + 16, 4), 11)
         b.ambient((cx - 3, cx + 3), low + 3, (cz - 26, cz - 21), 8)
         b.mob('stone_eater', cx, low + 1, cz, 'south')
-        b.threshold('breach', 29, low + 1, zc - 49, 30, zc - 45)
+        b.threshold('breach', 26, low + 1, zc - 49, 27, zc - 45)
         # the crack beyond: sealed while it lives. What it kept, and a fissure that goes on down
         nz = cz - rz
         self.floor(cx - 1, nz - 7, cx + 1, nz + 2, low, low_floor)
         self.dig(cx - 1, low + 1, nz - 7, cx + 1, low + 3, nz + 2)
-        b.fog('stone_eater', cx - 1, low + 1, nz - 2, cx + 1, low + 3, nz - 2, 'x', sealed=True)
+        b.fog('stone_eater', cx - 1, low + 1, nz - 4, cx + 1, low + 3, nz - 4, 'x', sealed=True)
         self.room(cx - 5, nz - 15, cx + 5, nz - 8, low, 4, low_floor, salt=8)
         b.loot(cx - 5, low + 1, nz - 12, 'quarry_breach', 'east')
         b.shard(cx + 4, low + 1, nz - 14)
@@ -807,6 +819,7 @@ class Quarry:
             ('quarry_from_the_eye', (95.5, top + 3.6, zc - 5.5), (130, mid + 2, zc + 4)),
             ('quarry_hall_from_the_gallery', (55.6, top + 3.4, zc + 0.5), (42, low + 3, zc + 0.5)),
             ('quarry_wheel', (55, top + 2.6, zc + 8), (43, top + 2, zc - 14)),
+            ('quarry_gallery_end', (56.5, top + 2.6, zc + 5), (56, top + 1.2, zc + 14)),
             ('quarry_shaft_down', (62.5, top + 2.6, zc - 6.5), (62.5, low + 2, zc - 13)),
             ('quarry_shaft_foot', (63.5, low + 2.6, zc - 7.5), (59, low + 2.5, zc - 11)),
             ('quarry_hall_floor', (56, low + 2.6, zc - 11), (36, low + 8, zc + 4)),
@@ -814,7 +827,8 @@ class Quarry:
             ('quarry_sump', (19, low + 2.6, zc - 3), (15, low + 2, zc + 3)),
             ('quarry_workings', (17.5, low + 2.6, zc - 6), (17.5, low + 2.4, zc - 45)),
             ('quarry_barred_drift', (22, low + 2.6, zc - 26.5), (34, low + 2.4, zc - 26.5)),
-            ('quarry_breach_door', (22, low + 2.6, zc - 46.5), (30, low + 2.6, zc - 46.5)),
+            ('quarry_breach_door', (19.5, low + 2.6, zc - 45.5), (25, low + 2.6, zc - 47)),
+            ('quarry_breach_door_from_inside', (32, low + 2.8, zc - 48), (25, low + 2.6, zc - 46.5)),
             ('quarry_breach', (31, low + 2.6, zc - 47), (cx + 4, low + 5, cz - 4)),
             ('quarry_breach_from_the_north', (cx, low + 3, cz - 12), (cx - 2, low + 3, cz + 10)),
             ('quarry_crack', (cx + 3, low + 2.6, cz - 24), (cx, low + 2.4, cz - 36)),

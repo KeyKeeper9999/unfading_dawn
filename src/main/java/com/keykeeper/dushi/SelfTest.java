@@ -316,7 +316,7 @@ public final class SelfTest {
         plan.put(Dushi.CARRION_HOUND.get(), new int[] {1, 2});
         plan.put(Dushi.GRAVEDIGGER.get(), new int[] {1, 2, 3, 4, 5});
         // the quarry (the sapper's last move is his end: he is not alive after it)
-        plan.put(Dushi.WITHERED.get(com.keykeeper.dushi.entity.WitheredEntity.Kind.DIGGER).get(), new int[] {7, 1});
+        plan.put(Dushi.WITHERED.get(com.keykeeper.dushi.entity.WitheredEntity.Kind.DIGGER).get(), new int[] {7, 12, 1});
         plan.put(Dushi.WITHERED.get(com.keykeeper.dushi.entity.WitheredEntity.Kind.BARROWMAN).get(), new int[] {8, 11});
         plan.put(Dushi.WITHERED.get(com.keykeeper.dushi.entity.WitheredEntity.Kind.SAPPER).get(), new int[] {9, 10});
         plan.put(Dushi.BLIND_CRAWLER.get(), new int[] {3, 1, 2});

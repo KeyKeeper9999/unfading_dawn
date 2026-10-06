@@ -25,8 +25,12 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
     /** The butcher is twice the man the others are and carries himself straighter. */
     private final boolean bulky;
     private final WitheredEntity.Kind kind;
+    /** From the pivot of an arm to the hand at the end of it. */
+    private static final float ARM = 9.5F;
     /** The barrowman's barrow: it hangs from the root, before him, and turns about its axle. */
     private final ModelPart barrow;
+    /** How far along the barrow's handles, from its axle, his hands are. */
+    private float grip;
 
     public WitheredModel(ModelPart root, WitheredEntity.Kind kind) {
         super(root);
@@ -168,25 +172,41 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
         if (this.kind == WitheredEntity.Kind.BARROWMAN) {
             this.barrowman(state);
         }
-        if (state.attackId == WitheredEntity.PICK) {
+        if (state.attackId == WitheredEntity.PICK || state.attackId == WitheredEntity.PICK_STUCK) {
             // The pick goes up over the head in both hands until it hangs down his back, stays there for a breath, and
-            // comes down point first with the whole trunk bent after it. Then it is fast in the floor: he heaves at the
-            // haft twice before it comes.
+            // comes down point first with the whole trunk bent after it.
             float t = state.attackTime;
+            boolean stuck = state.attackId == WitheredEntity.PICK_STUCK;
             float raise = Anim.pulse(t, 0.0F, 11.0F, 14.0F, 17.0F);
-            float strike = Anim.pulse(t, 14.0F, 17.0F, 39.0F, 47.0F);
-            float tug = Anim.pulse(t, 26.0F, 29.0F, 31.0F, 34.0F) + Anim.pulse(t, 35.0F, 38.0F, 40.0F, 43.0F);
+            float strike;
+            float arm;
+            if (stuck) {
+                // It is fast in the floor. He is bent double over it, his hands at his shins, the iron out of sight: a
+                // held thing points across the arm, so the further back the hands the deeper the point. He heaves at
+                // the haft twice, and the third heave brings it out and him upright.
+                strike = Anim.pulse(t, 14.0F, 17.0F, 47.0F, 56.0F);
+                float tug = Anim.pulse(t, 26.0F, 29.0F, 31.0F, 34.0F) + Anim.pulse(t, 35.0F, 38.0F, 40.0F, 43.0F);
+                arm = 0.25F - 0.3F * tug;
+                this.body.xRot += -0.3F * raise + 1.1F * strike - 0.22F * tug;
+                this.head.xRot += -0.35F * raise + 0.45F * strike - 0.3F * tug;
+                this.rightLeg.xRot += -0.45F * strike;
+                this.leftLeg.xRot += 0.3F * strike;
+            } else {
+                // It rings off the floor and he has it up again.
+                strike = Anim.pulse(t, 14.0F, 17.0F, 20.0F, 29.0F);
+                arm = -0.1F;
+                this.body.xRot += -0.3F * raise + 0.7F * strike;
+                this.head.xRot += -0.35F * raise + 0.1F * strike;
+                this.rightLeg.xRot += -0.25F * strike;
+                this.leftLeg.xRot += 0.2F * strike;
+            }
             float held = Math.max(raise, strike);
             this.rightArm.xRot = Anim.lerp(raise, this.rightArm.xRot, -2.75F);
-            this.rightArm.xRot = Anim.lerp(strike, this.rightArm.xRot, -0.3F + 0.25F * tug);
+            this.rightArm.xRot = Anim.lerp(strike, this.rightArm.xRot, arm);
             this.rightArm.zRot = Anim.lerp(held, this.rightArm.zRot, -0.3F);
             this.leftArm.xRot = Anim.lerp(raise, this.leftArm.xRot, -2.55F);
-            this.leftArm.xRot = Anim.lerp(strike, this.leftArm.xRot, -0.6F + 0.25F * tug);
+            this.leftArm.xRot = Anim.lerp(strike, this.leftArm.xRot, arm - 0.3F);
             this.leftArm.zRot = Anim.lerp(held, this.leftArm.zRot, 0.5F);
-            this.body.xRot += -0.3F * raise + 0.6F * strike - 0.2F * tug;
-            this.head.xRot += -0.35F * raise + 0.1F * strike;
-            this.rightLeg.xRot += -0.25F * strike;
-            this.leftLeg.xRot += 0.2F * strike;
         }
         if (state.attackId == WitheredEntity.LOB) {
             // The pot is held out and the left hand brings the match to it; when it spits he swings it back low and
@@ -301,6 +321,29 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
                 this.leftArm.zRot -= 0.3F * raise;
             }
         }
+        this.hips(STOOP * stoop);
+        if (this.kind == WitheredEntity.Kind.BARROWMAN) {
+            this.handles();
+        }
+    }
+
+    /**
+     * The trunk of the game's man turns about his neck: bent forward, it leaves his legs behind. The legs stand where the
+     * stoop put them, so whatever a move has bent the trunk by beyond that is taken about the hips instead: the neck, the
+     * head on it and the shoulders go forward and down. It is done last, when everything has had its say about the trunk.
+     */
+    private void hips(float rest) {
+        float lean = this.body.xRot;
+        float forward = Mth.sin(lean) - Mth.sin(rest);
+        float down = Mth.cos(rest) - Mth.cos(lean);
+        this.body.z -= 12.0F * forward;
+        this.body.y += 12.0F * down;
+        this.head.z -= 12.0F * forward;
+        this.head.y += 12.0F * down;
+        this.rightArm.z -= 10.0F * forward;
+        this.rightArm.y += 10.0F * down;
+        this.leftArm.z -= 10.0F * forward;
+        this.leftArm.y += 10.0F * down;
     }
 
     /**
@@ -313,15 +356,15 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
         float t = state.attackTime;
         float lean = 0.0F;
         float tip = 0.0F;
-        float push = 0.0F;
+        this.grip = 21.0F;
         if (state.attackId == WitheredEntity.CHARGE) {
             float set = Anim.pulse(t, 0.0F, 12.0F, WitheredEntity.CHARGE_END, WitheredEntity.CHARGE_END + 3.0F);
             float run = Anim.pulse(t, WitheredEntity.CHARGE_START - 1.0F, WitheredEntity.CHARGE_START + 1.0F, WitheredEntity.CHARGE_END - 1.0F, WitheredEntity.CHARGE_END + 1.0F);
             float fall = Anim.pulse(t, WitheredEntity.CHARGE_END, WitheredEntity.CHARGE_END + 4.0F, 46.0F, 55.0F);
             float stride = Mth.sin(t * 1.3F) * run;
-            lean = 0.4F * set + 0.75F * fall;
-            tip = 0.75F * fall;
-            push = -2.0F * set * (1.0F - run) + 2.5F * fall;
+            lean = 0.4F * set + 0.5F * fall;
+            tip = 0.5F * fall;
+            this.grip += 2.5F * fall;
             rattle += Mth.sin(t * 2.9F) * 0.05F * run;
             this.rightLeg.xRot += stride * 1.1F + 0.5F * fall;
             this.leftLeg.xRot += -stride * 1.1F + 0.3F * fall;
@@ -329,29 +372,34 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
         } else if (state.attackId == WitheredEntity.RAM) {
             float draw = Anim.pulse(t, 0.0F, 6.0F, 7.5F, 10.0F);
             float shove = Anim.pulse(t, 7.5F, 10.0F, 14.0F, 23.0F);
-            push = -3.0F * draw + 6.5F * shove;
-            lean = -0.08F * draw + 0.3F * shove;
+            lean = -0.1F * draw + 0.4F * shove;
+            tip = -0.06F * draw + 0.22F * shove;
             this.rightLeg.xRot += 0.2F * draw - 0.5F * shove;
             this.leftLeg.xRot += -0.2F * draw + 0.4F * shove;
         }
         this.body.xRot += 0.1F + lean;
-        this.head.y += 2.0F * lean;
-        this.head.z -= 4.0F * lean;
-        this.barrow.z -= push;
-        this.barrow.xRot += rattle + tip;
-        this.barrow.y += Math.abs(rattle) * 6.0F;
-        // the hands: on the handles, which go forward with the barrow and up when it tips
-        float reach = -0.5F - push * 0.07F - tip * 1.0F;
+        // (the handles are carried a little off the level, or its legs would drag)
+        this.barrow.xRot += 0.08F + rattle + tip;
+        this.barrow.y -= Math.abs(rattle) * 6.0F;
+    }
+
+    /**
+     * The barrowman's hands, set when his shoulders are where they will be. The barrow turns about its axle and its
+     * wheel stays on the floor, so its handles are as high as its tip makes them: his arms reach forward as far as it
+     * takes to have the hands at that height, and the barrow stands where that puts it. Leaning into it pushes it
+     * forward, tipping it brings it up under his hands, and he never lets go.
+     */
+    private void handles() {
+        float tip = this.barrow.xRot;
+        float height = this.barrow.y - 8.0F * Mth.cos(tip) - this.grip * Mth.sin(tip);
+        float reach = -(float) Math.acos(Mth.clamp((height - this.rightArm.y) / ARM, -1.0F, 1.0F));
+        this.barrow.z = this.rightArm.z + ARM * Mth.sin(reach) - (this.grip * Mth.cos(tip) - 8.0F * Mth.sin(tip));
         this.rightArm.xRot = reach;
         this.leftArm.xRot = reach;
         this.rightArm.yRot = 0.0F;
         this.leftArm.yRot = 0.0F;
         this.rightArm.zRot = 0.12F;
         this.leftArm.zRot = -0.12F;
-        this.rightArm.y += 2.5F * lean;
-        this.leftArm.y += 2.5F * lean;
-        this.rightArm.z -= 5.0F * lean;
-        this.leftArm.z -= 5.0F * lean;
         this.rightArm.x -= 1.0F;
         this.leftArm.x += 1.0F;
     }

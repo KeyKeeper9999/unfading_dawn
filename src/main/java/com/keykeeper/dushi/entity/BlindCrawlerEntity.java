@@ -23,7 +23,8 @@ import net.minecraft.world.phys.Vec3;
 /**
  * The blind crawler of the lower workings: what became of the diggers who were left below when the lamps went out. It
  * has no eyes and does not need them: it hears. Whoever walks upright is heard from far off; whoever creeps (sneaks)
- * can pass within a few steps of it. When it hears somebody it shrieks, and every other crawler in earshot comes too.
+ * is heard only on the block it is on and the eight round it, and can pass it with one block between. When it hears
+ * somebody it shrieks, and every other crawler in earshot comes too.
  * <p>
  * Three quick rakes of its long arms, each a step closer, or a spring from a distance.
  */
@@ -40,9 +41,10 @@ public class BlindCrawlerEntity extends SoulsMob {
     public static final int SHRIEK_DURATION = 22;
     private static final int SHRIEK_SOUND = 6;
 
-    /** How far off it hears somebody walking, and somebody creeping. */
+    /** How far off it hears somebody walking. */
     public static final double HEARS_WALKING = 13.0;
-    public static final double HEARS_CREEPING = 3.5;
+    /** Somebody creeping: a block and a half either way along the floor - its own block and those that touch it. */
+    public static final double HEARS_CREEPING = 1.5;
     private static final double PACK_RANGE = 12.0;
 
     private int leapCooldown = 30;
@@ -70,12 +72,15 @@ public class BlindCrawlerEntity extends SoulsMob {
 
     /** Whether it can hear this one from where it is. */
     public boolean hears(LivingEntity entity) {
-        return this.hears(entity.isShiftKeyDown() || entity.isCrouching(), this.distanceTo(entity));
+        return hears(entity.isShiftKeyDown() || entity.isCrouching(), entity.getX() - this.getX(), entity.getY() - this.getY(), entity.getZ() - this.getZ());
     }
 
-    /** The rule of its ears, by itself (the self-test asks it directly). */
-    public boolean hears(boolean creeping, double distance) {
-        return distance <= (creeping ? HEARS_CREEPING : HEARS_WALKING);
+    /** The rule of its ears, by itself (the self-test asks it directly): how far off somebody is, along each axis. */
+    public static boolean hears(boolean creeping, double dx, double dy, double dz) {
+        if (creeping) {
+            return Math.abs(dx) <= HEARS_CREEPING && Math.abs(dz) <= HEARS_CREEPING && Math.abs(dy) <= 2.5;
+        }
+        return dx * dx + dy * dy + dz * dz <= HEARS_WALKING * HEARS_WALKING;
     }
 
     @Override

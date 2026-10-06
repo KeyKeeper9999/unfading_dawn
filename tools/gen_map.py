@@ -330,9 +330,11 @@ class Map(Build):
         self.census[self.zone][kind] = self.census[self.zone].get(kind, 0) + 1
 
     def fog(self, name, x0, y0, z0, x1, y1, z1, axis, sealed=False):
+        """Fog across a way, in every free cell of the box (so the box may take in the point of an arch)."""
         state = f'{MOD}:fog_gate[axis={axis},sealed={"true" if sealed else "false"}]'
-        self.fill(x0, y0, z0, x1, y1, z1, state)
-        cells = [(x, y, z) for x in range(x0, x1 + 1) for y in range(y0, y1 + 1) for z in range(z0, z1 + 1)]
+        cells = [(x, y, z) for x in range(x0, x1 + 1) for y in range(y0, y1 + 1) for z in range(z0, z1 + 1) if self.free(x, y, z)]
+        for c in cells:
+            self.set(*c, state)
         (self.seals if sealed else self.fogs)[name] = cells
 
     def barrels(self, cells):
@@ -736,9 +738,9 @@ def gate_hall(b):
         b.chandelier(x, z, L1 + 15, 8)
     # in from the bridge through the fog, out through the seal that lifts when he falls
     b.opening(62, L1 + 1, 149, 66, L1 + 6, 150, 'pale')
-    b.fog('overseer', 62, L1 + 1, 150, 66, L1 + 5, 150, 'x')
+    b.fog('overseer', 62, L1 + 1, 150, 66, L1 + 6, 150, 'x')
     b.opening(62, L1 + 1, 116, 66, L1 + 6, 117, 'pale')
-    b.fog('overseer', 62, L1 + 1, 117, 66, L1 + 5, 117, 'x', sealed=True)
+    b.fog('overseer', 62, L1 + 1, 117, 66, L1 + 6, 117, 'x', sealed=True)
     # his seat
     b.fill(61, L1 + 1, 119, 67, L1 + 1, 121, 'minecraft:polished_deepslate')
     b.set(64, L1 + 2, 119, stairs('polished_deepslate', 'south'))
@@ -1109,7 +1111,7 @@ def cathedral(b):
         if not 60 <= x <= 68:
             b.fill(x, LC + 6, 33, x, LC + 9, 34, BARS)
     b.opening(62, LC + 1, 33, 66, LC + 6, 34, 'white')
-    b.fog('chaplain', 62, LC + 1, 34, 66, LC + 5, 34, 'x')
+    b.fog('chaplain', 62, LC + 1, 34, 66, LC + 6, 34, 'x')
     b.fill(63, LC, 10, 65, LC, 34, 'minecraft:red_terracotta')
     b.fill(42, CLR + 1, 10, 49, CLR + 1, 34, white)
     # a dais, the altar on it, candles

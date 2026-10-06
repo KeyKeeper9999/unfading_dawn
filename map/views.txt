@@ -71,6 +71,7 @@ quarry_eyes -16.00 -36.40 127.50 -22.50 -36.00 120.50
 quarry_from_the_eye -22.00 -35.40 123.00 -12.50 -51.00 88.50
 quarry_hall_from_the_gallery -16.00 -35.60 162.90 -16.00 -57.00 176.50
 quarry_wheel -8.50 -36.40 163.50 -30.50 -37.00 175.50
+quarry_gallery_end -11.50 -36.40 162.00 -2.50 -37.80 162.50
 quarry_shaft_down -23.00 -36.40 156.00 -29.50 -58.00 156.00
 quarry_shaft_foot -24.00 -57.40 155.00 -27.50 -57.50 159.50
 quarry_hall_floor -27.50 -57.40 162.50 -12.50 -52.00 182.50
@@ -78,7 +79,8 @@ quarry_hall_up -4.50 -57.40 186.50 -26.50 -35.00 172.50
 quarry_sump -19.50 -57.40 199.50 -13.50 -58.00 203.50
 quarry_workings -22.50 -57.40 201.00 -61.50 -57.60 201.00
 quarry_barred_drift -43.00 -57.40 196.50 -43.00 -57.60 184.50
-quarry_breach_door -63.00 -57.40 196.50 -63.00 -57.40 188.50
+quarry_breach_door -62.00 -57.40 199.00 -63.50 -57.40 193.50
+quarry_breach_door_from_inside -64.50 -57.20 186.50 -63.00 -57.40 193.50
 quarry_breach -63.50 -57.40 187.50 -78.50 -55.00 175.50
 quarry_breach_from_the_north -86.50 -57.00 179.50 -64.50 -57.00 181.50
 quarry_crack -98.50 -57.40 176.50 -110.50 -57.60 179.50
@@ -105,5 +107,5 @@ kill vsratie_dushi:chaplain -495.50 -21.00 -7.50
 near_the_taskmaster -26.50 -57.00 163.50 -16.50 -57.00 175.50
 kill vsratie_dushi:taskmaster -17.50 -59.00 189.50
 near_the_stone_eater -63.50 -57.00 187.50 -74.50 -57.00 179.50
-kill vsratie_dushi:stone_eater -91.50 -59.00 180.50
+kill vsratie_dushi:stone_eater -93.50 -59.00 180.50
 gate -17.50 -46.00 55.50

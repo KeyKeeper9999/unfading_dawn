@@ -103,10 +103,17 @@ public class WitheredEntity extends SoulsMob {
     public static final int ALARM_DURATION = 34;
     private static final int ALARM_SOUND = 12;
     private static final double ALARM_RANGE = 18.0;
-    /** The digger's pick: up over the head in both hands, down through any guard, and then stuck in the floor while he tugs at it. */
+    /** The digger's pick: up over the head in both hands and down through any guard. */
     public static final int PICK = 7;
-    public static final int PICK_DURATION = 48;
+    public static final int PICK_DURATION = 30;
     public static final int PICK_IMPACT = 17;
+    /**
+     * The same blow when the pick goes into the floor and stays there: he is bent double over it and heaves at the haft
+     * twice before it comes. It happens to about one blow in three, and is the time to hit him.
+     */
+    public static final int PICK_STUCK = 12;
+    public static final int PICK_STUCK_DURATION = 58;
+    private static final int PICK_STICKS = 35;
     /** The barrowman's run: he sets his feet, puts his head down and goes straight, and cannot turn or stop. */
     public static final int CHARGE = 8;
     public static final int CHARGE_DURATION = 56;
@@ -215,6 +222,7 @@ public class WitheredEntity extends SoulsMob {
             case THRUST -> THRUST_DURATION;
             case ALARM -> ALARM_DURATION;
             case PICK -> PICK_DURATION;
+            case PICK_STUCK -> PICK_STUCK_DURATION;
             case CHARGE -> CHARGE_DURATION;
             case LOB -> LOB_DURATION;
             case FUSE -> FUSE_DURATION;
@@ -231,7 +239,7 @@ public class WitheredEntity extends SoulsMob {
             case CLEAVE -> CLEAVE_IMPACT - 6;
             case THRUST -> THRUST_IMPACT - 5;
             case ALARM -> ALARM_DURATION;
-            case PICK -> PICK_IMPACT - 7;
+            case PICK, PICK_STUCK -> PICK_IMPACT - 7;
             case CHARGE -> CHARGE_START - 2;
             case LOB -> LOB_RELEASE;
             case FUSE -> FUSE_DURATION;
@@ -288,7 +296,13 @@ public class WitheredEntity extends SoulsMob {
             return distance < 2.5 ? (this.random.nextInt(10) < 7 ? CLEAVE : SWING) : 0;
         }
         if (this.kind == Kind.DIGGER) {
-            return distance < 2.6 ? (this.random.nextInt(10) < 7 ? PICK : SWING) : 0;
+            if (distance >= 2.6) {
+                return 0;
+            }
+            if (this.random.nextInt(10) >= 7) {
+                return SWING;
+            }
+            return this.random.nextInt(100) < PICK_STICKS ? PICK_STUCK : PICK;
         }
         if (this.kind == Kind.BARROWMAN) {
             if (distance > 4.0 && distance < 13.0 && this.chargeCooldown <= 0 && this.hasLineOfSight(target)) {
@@ -324,7 +338,7 @@ public class WitheredEntity extends SoulsMob {
         if (id == CHARGE) {
             this.playSound(Dushi.sound("entity.withered.ambient"), 1.4F, 0.7F);
         }
-        if (id == SWING || id == CLEAVE || id == THRUST || id == PICK) {
+        if (id == SWING || id == CLEAVE || id == THRUST || id == PICK || id == PICK_STUCK) {
             this.playSound(Dushi.sound("entity.withered.ambient"), 0.8F, this.kind == Kind.BUTCHER ? 0.8F : 1.3F);
         }
         if (id == SHOOT) {
@@ -338,20 +352,21 @@ public class WitheredEntity extends SoulsMob {
     @Override
     protected void attackTick(ServerLevel level, int id, int time) {
         float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        if (id == PICK) {
+        if (id == PICK || id == PICK_STUCK) {
             if (time == PICK_IMPACT - 3) {
                 this.playSound(Dushi.sound("player.weapon_swing_heavy"), 0.9F, 0.9F);
             }
             if (time == PICK_IMPACT) {
                 this.hitArc(level, this.facing(), 3.0, 24.0, damage + 5.0F, 0.5, true);
                 Vec3 at = this.position().add(this.facing().scale(2.0));
-                this.rubble(level, at, 16, 0.3);
+                this.rubble(level, at, id == PICK_STUCK ? 26 : 12, 0.3);
                 level.playSound(null, at.x, at.y, at.z, Dushi.sound("entity.quarry.pick"), this.getSoundSource(), 1.3F, 0.9F + this.random.nextFloat() * 0.2F);
             }
-            if (time == PICK_IMPACT + 12 || time == PICK_IMPACT + 20) {
-                // the pick is fast in the floor: he works it loose
-                Vec3 at = this.position().add(this.facing().scale(2.0));
-                this.rubble(level, at, 4, 0.2);
+            if (id == PICK_STUCK && (time == PICK_IMPACT + 12 || time == PICK_IMPACT + 21 || time == PICK_IMPACT + 33)) {
+                // the pick is fast in the floor: he works it loose, and the third heave brings it out
+                Vec3 at = this.position().add(this.facing().scale(1.6));
+                this.rubble(level, at, time == PICK_IMPACT + 33 ? 12 : 5, 0.2);
+                level.playSound(null, at.x, at.y, at.z, Dushi.sound("entity.quarry.pick"), this.getSoundSource(), 0.5F, 1.5F + this.random.nextFloat() * 0.2F);
             }
         } else if (id == CHARGE) {
             if (time >= CHARGE_START && time < CHARGE_END) {

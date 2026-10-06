@@ -759,9 +759,27 @@ BULKY = {'body': (0.12, 0, 0), 'right_leg': {'off': (0, -0.1, 1.45)}, 'left_leg'
 CLEAVE_DRAW = dict(BULKY, right_arm={'rot': (-1.35, -1.2, 0), 'off': (-1.5, 0, 0)}, body=(0.06, -0.6, 0))
 CLEAVE_CUT = dict(BULKY, right_arm={'rot': (-1.35, 0.9, 0), 'off': (-1.5, 0, 0)}, body=(0.3, 0.6, 0))
 
-PUSH = dict(STOOP, right_arm={'rot': (-0.5, 0, 0.0), 'off': (-1.5, 0, 0)}, left_arm={'rot': (-0.5, 0, 0.0), 'off': (1.5, 0, 0)}, body=(0.32, 0, 0))
-PICK_UP = dict(STOOP, right_arm=(-2.7, 0, -0.35), left_arm=(-2.5, 0, 0.45), body=(0.0, 0, 0), head=(-0.2, 0, 0))
-PICK_DOWN = dict(STOOP, right_arm=(-0.9, 0, -0.3), left_arm=(-0.8, 0, 0.4), body=(0.6, 0, 0), head=(0.1, 0, 0))
+
+
+def hips(pose, rest=0.24):
+    """What WitheredModel.hips does: a trunk bent further than the stoop turns about the hips, not about the neck."""
+    import math
+    lean = pose['body'][0]
+    forward, down = math.sin(lean) - math.sin(rest), math.cos(rest) - math.cos(lean)
+    out = dict(pose)
+    for name, far in (('body', 12), ('head', 12), ('right_arm', 10), ('left_arm', 10)):
+        p = pose[name] if isinstance(pose[name], dict) else {'rot': pose[name]}
+        off = p.get('off', (0, 0, 0))
+        out[name] = dict(p, off=(off[0], off[1] + far * down, off[2] - far * forward))
+    return out
+
+
+PUSH = hips(dict(STOOP, right_arm={'rot': (-0.56, 0, 0.0), 'off': (-1.0, 0, 0)}, left_arm={'rot': (-0.56, 0, 0.0), 'off': (1.0, 0, 0)}, body=(0.34, 0, 0),
+                 barrow={'rot': (0.08, 0, 0), 'off': (0, 0, -2.3)}))
+PICK_UP = hips(dict(STOOP, right_arm=(-2.75, 0, -0.3), left_arm=(-2.55, 0, 0.5), body=(-0.06, 0, 0), head=(-0.17, 0, 0)))
+# the pick fast in the floor (PICK_STUCK): bent double over it, the hands at the shins
+PICK_DOWN = hips(dict(STOOP, right_arm=(0.25, 0, -0.3), left_arm=(-0.05, 0, 0.5), body=(1.34, 0, 0), head=(0.63, 0, 0),
+                      right_leg={'rot': (-0.45, 0, 0), 'off': (0, -0.4, 2.9)}, left_leg={'rot': (0.3, 0, 0), 'off': (0, -0.4, 2.9)}))
 
 
 if __name__ == '__main__':
