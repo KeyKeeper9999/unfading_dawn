@@ -40,7 +40,10 @@ def mobs():
                        ('hound', 'entity/CarrionHoundEntity.java'), ('crawler', 'entity/BlindCrawlerEntity.java'), ('unhewn', 'entity/UnhewnEntity.java'),
                        ('taskmaster', 'entity/TaskmasterEntity.java'), ('stone_eater', 'entity/StoneEaterEntity.java'),
                        ('pike', 'entity/BonePikeEntity.java'), ('lanky', 'entity/LankyEntity.java'), ('wisp', 'entity/WispEntity.java'),
-                       ('wallower', 'entity/WallowerEntity.java'), ('weeping_mother', 'entity/WeepingMotherEntity.java')):
+                       ('wallower', 'entity/WallowerEntity.java'), ('weeping_mother', 'entity/WeepingMotherEntity.java'),
+                       ('wakeful', 'entity/WakefulEntity.java'), ('waker', 'entity/WakerEntity.java'), ('sleeper', 'entity/SleeperEntity.java'),
+                       ('waxen', 'entity/WaxenEntity.java'), ('moth', 'entity/SleepMothEntity.java'), ('shatun', 'entity/ShatunEntity.java'),
+                       ('elder', 'entity/ElderEntity.java')):
         text = read(path)
         out[name] = dict(attributes(text, 'createAttributes'), souls=int(re.search(r'soulReward\(\) \{\s+return (?:[\w.]+ > 0 \? 0 : )?(\d+);', text).group(1)))
         hide = re.search(r'HIDE = ([0-9.]+)F', text)
@@ -91,10 +94,14 @@ VITALITY = float(re.search(r'HEALTH_PER_VITALITY = ([0-9.]+)', PLAYER).group(1))
 WRATH = float(re.search(r'WRATH_DAMAGE = ([0-9.]+)F', read('entity/ChaplainEntity.java')).group(1))
 DROP = 1 / 14          # a nameless soul from any of the withered
 KNIGHT_GREAT = 0.35
-BOSSES = ('gravedigger', 'overseer', 'chaplain', 'taskmaster', 'stone_eater', 'wallower', 'weeping_mother')
-# what opens the map, in order: the lords' seals, and the gates whose keys lie behind the Chaplain and the Stone-Eater
-ORDER = ('gravedigger', 'overseer', 'chaplain', 'quarry_key', 'taskmaster', 'stone_eater', 'mire_key', 'wallower', 'weeping_mother')
+BOSSES = ('gravedigger', 'overseer', 'chaplain', 'taskmaster', 'stone_eater', 'wallower', 'weeping_mother', 'shatun', 'elder')
+# what opens the map, in order: the lords' seals, and the gates whose keys lie behind the Chaplain, the Stone-Eater
+# and the Weeping Mother
+ORDER = ('gravedigger', 'overseer', 'chaplain', 'quarry_key', 'taskmaster', 'stone_eater', 'mire_key', 'wallower', 'weeping_mother',
+         'firwood_key', 'shatun', 'elder')
 WITHERED = ('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman', 'digger', 'barrowman', 'sapper', 'drowned')
+# those of the skete who kneel: nobody fights all of them (a clearing is counted with a third of them woken)
+KNEELING = 1 / 3
 
 
 def build_of(level):
@@ -136,7 +143,7 @@ if __name__ == '__main__':
             done_marks.add((x, y, z))
             t = tier_at[(x, y, z)]
             kinds[(kind, t)] = kinds.get((kind, t), 0) + 1
-            souls += M[kind]['souls'] * TS[t]
+            souls += M[kind]['souls'] * TS[t] * (KNEELING if kind == 'wakeful' else 1.0)
             withered += kind in WITHERED
             knights += kind in ('knight', 'gilded')
         chest_souls = chest_great = 0
@@ -156,7 +163,7 @@ if __name__ == '__main__':
         print()
         print(f'before the {boss.replace("_", "-").title()}: ' + ', '.join(f'{n} {k}' + (f' (tier {t})' if t else '') for (k, t), n in sorted(kinds.items())))
         print(f'  one clearing: {souls:.0f} for kills, about {drops:.0f} in souls dropped, {chest_souls} in chests (+{chest_great} in great souls, if not kept for the anvil)')
-        spent = (350, 1500, 2500, 2500, 1500, 2000, 1500)[i]  # arms and armour bought or forged on the way
+        spent = (350, 1500, 2500, 2500, 1500, 2000, 1500, 2500, 2000)[i]  # arms and armour bought or forged on the way
         for label, clears in (('one clearing', 1.0), ('one and a half', 1.5)):
             have = total + (souls + drops) * clears + chest_souls + chest_great * 0.5 - spent
             print(f'  {label}: {have:.0f} souls for levels after {spent} more spent on gear -> level {level_for(have)}')
@@ -169,7 +176,9 @@ if __name__ == '__main__':
               f'against level {lv} (vitality {vit}, endurance {end}, strength {st}; {health:.0f} health, {flask} gulps of {gulp:.0f}):')
         arms = (('broken_sword', 'club', 'pitchfork', 'hatchet'), ('club', 'shortsword', 'longsword', 'cleaver', 'grave_spade'), ('longsword', 'broadsword', 'rust_greatsword', 'great_key'),
                 ('longsword', 'broadsword', 'rust_greatsword', 'great_key', 'censer_flail'), ('broadsword', 'quarry_pick', 'great_key', 'censer_flail', 'great_maul'),
-                ('broadsword', 'boat_hook', 'great_maul', 'eater_claw', 'censer_flail'), ('broadsword', 'boat_hook', 'great_maul', 'eater_claw', 'wallower_fang'))[i]
+                ('broadsword', 'boat_hook', 'great_maul', 'eater_claw', 'censer_flail'), ('broadsword', 'boat_hook', 'great_maul', 'eater_claw', 'wallower_fang'),
+                ('broadsword', 'vigil_staff', 'waker_mallet', 'great_maul', 'wallower_fang', 'withe_scourge'),
+                ('broadsword', 'vigil_staff', 'waker_mallet', 'great_maul', 'wallower_fang', 'bear_spear'))[i]
         for wname in arms:
             n, blow = hits(WPN[wname], st, 0, boss_mob)
             print(f'    {wname}: {blow:.1f} a blow, {n} blows, {n / WPN[wname]["speed"]:.0f} s of pure striking')

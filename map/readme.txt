@@ -13,6 +13,12 @@
 через болото, запруда и ивняк, где день зелёный и никак не станет вечером. Ключ от Топких ворот -
 в Белом карьере, за тем, кто живёт в его нижних выработках. В воде по колено идёшь медленно и не
 перекатишься; по мелкой воде на запруде - как по полу.
+В скале двора между посадом и дорожным тоннелем - Лесная калитка. За ней Чёрный ельник и скит
+Неусыпающих, где небо только начало сереть и никак не посветлеет. Ключ от калитки - в Топи, в роще
+за той, что плачет. Те, кто в скиту стоит на коленях, видят только то, что перед ними, и чуют
+того, кто идёт за спиной в полный рост; кто крадётся - того не чуют. Будильщик глядит по сторонам:
+увидит - поднимет остальных. Скит можно обойти за шатрами, можно прокрасться, можно драться.
+Обереги: возьми в руку и нажми правую кнопку; носят один, снять можно у очага.
 
 Карта идёт в режиме приключения: блоки не ломаются, границы - стены и скалы ущелья.
 Очаг - отдых, фляга, уровни и точка возрождения; пока сидишь у очага, мёртвые тебя не замечают.
@@ -25,3 +31,7 @@ Put vsratie_dushi.jar into mods, unpack this archive into saves (saves/High_Stoc
 The game begins at night in the Dead Borough; the road from it leads through the churchyard to the High Stockade.
 The locked gate at the west end of Low Street leads to the White Pit, the quarry; its key lies at the end of the Stockade.
 The gate at the east end of the same street leads to the Mire; its key lies at the bottom of the White Pit.
+The Wood Wicket, in the cliff of the yard between the town's north gate and the road tunnel, leads to the Black Firwood
+and the skete of the Unsleeping; its key lies in the grove behind the Weeping Mother. Those who kneel there see what is
+before them and feel who walks behind them; whoever creeps behind them they do not know of.
+Charms: take one in your hand and right click; one is worn at a time, and it is taken off at a hearth.

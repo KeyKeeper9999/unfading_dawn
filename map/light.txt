@@ -48,3 +48,8 @@ mire_street -27 -46 -82
 mire_marsh -38 -46 -144
 mire_weir -52 -46 -189
 mire_isle 29 -46 -225
+firwood_passage -157 -46 -32
+firwood_track -178 -46 -88
+firwood_den -251 -46 -150
+skete_field -191 -46 -209
+skete_white_tent -145 -46 -212

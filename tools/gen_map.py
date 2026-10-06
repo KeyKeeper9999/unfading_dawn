@@ -1630,7 +1630,7 @@ def route(target):
 
 
 PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'skull', 'chain', 'banner', 'minecraft:light', 'place_name',
-            'ladder', 'rail', 'glow_lichen', 'torch', 'lily_pad', 'shallows', 'sludge', 'sugar_cane', 'hanging_moss', 'firefly_bush', 'mushroom')
+            'ladder', 'rail', 'glow_lichen', 'torch', 'lily_pad', 'shallows', 'sludge', 'sugar_cane', 'hanging_moss', 'firefly_bush', 'brown_mushroom', 'red_mushroom')
 # what one cannot stand on: thin things, and things one stands in rather than on
 NO_FOOTING = ('mob_mark', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'chain', 'fog_gate', 'iron_bars', 'ladder', 'campfire', 'banner',
               'carpet', 'place_name', 'minecraft:light', 'minecraft:water', 'waterlogged=true', 'lily_pad', 'shallows', 'sludge', 'sugar_cane', 'hanging_moss',

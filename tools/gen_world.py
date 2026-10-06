@@ -549,7 +549,8 @@ if __name__ == '__main__':
     COLOURS[0:0] = EXTRA_COLOURS
     PASSABLE_MORE = ('fern', 'short_grass', 'hanging_roots', 'moss_carpet')
     castle.PASSABLE = castle.PASSABLE + PASSABLE_MORE
-    castle.CLEAR = castle.CLEAR + ('fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water', 'hanging_roots', 'waterlogged=true')
+    castle.CLEAR = castle.CLEAR + ('fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water', 'hanging_roots', 'waterlogged=true',
+                                   'brown_mushroom', 'red_mushroom')
     w = World()
     b = w.build()
     built = len([1 for s in b.cells.values() if s != AIR])
@@ -724,3 +725,19 @@ if __name__ == '__main__':
                         px, pz = (x - mx0) * 6 + 2, (z - mz0) * 6 + 2
                         draw.rectangle([px, pz, px + 1, pz + 1], fill=(120, 200, 255) if castle.is_water(b.get(x, y, z)) else (255, 235, 90))
             img.save(f'{out}/{name}.png')
+        # the Firwood: its ground with a dot on every place a player can be, from above, and the skete from the side
+        fx0, fx1, fz0, fz1 = 222, 478, 262, 452
+        for name, top in (('firwood_ground', GY + 3), ('firwood_roofs', H - 1)):
+            img = b.top_down(top, scale=6).crop((fx0 * 6, fz0 * 6, fx1 * 6, fz1 * 6))
+            if name == 'firwood_ground':
+                draw = ImageDraw.Draw(img)
+                for (x, y, z) in seen:
+                    if fx0 <= x < fx1 and fz0 <= z < fz1 and GY <= y <= GY + 3:
+                        px, pz = (x - fx0) * 6 + 2, (z - fz0) * 6 + 2
+                        draw.rectangle([px, pz, px + 1, pz + 1], fill=(255, 235, 90))
+            img.save(f'{out}/{name}.png')
+        sub = Map('part', W, H, D)
+        sub.cells = {c: s for c, s in b.cells.items() if 388 <= c[0] < 474 and 326 <= c[2] < 450 and c[1] >= GY and 'spruce_leaves' not in str(s)}
+        sub.iso(scale=5).save(f'{out}/skete_iso.png')
+        sub.cells = {c: s for c, s in b.cells.items() if 270 <= c[0] < 386 and 268 <= c[2] < 402 and c[1] >= GY}
+        sub.iso(scale=4).save(f'{out}/firwood_iso.png')

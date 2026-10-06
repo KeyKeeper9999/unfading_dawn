@@ -647,13 +647,22 @@ class Skete:
             b.fog(name, cx - 1, g + 1, z, cx + 1, g + 4, z, 'x', sealed=sealed)
             self.keep(cx - 3, z - 3, cx + 3, z + 3)
         b.threshold('white_tent', cx - 1, g + 1, cz - R + 1, cx + 1, cz - R + 2)
-        # lamps hung from the roof, candles round the wall
-        for dx, dz in ((6, 6), (-6, 6), (6, -6), (-6, -6)):
-            top = g + TENT_WALL + 1 + (R - 9)
-            for y in range(top, g + 7, -1):
+        # lamps: one on a long chain from the point of the roof, with four round it; four more half way to the wall;
+        # candles round the wall
+        for y in range(g + TENT_WALL + R, g + 8, -1):
+            if b.free(cx, y, cz):
+                b.set(cx, y, cz, CHAIN % 'y')
+        b.set(cx, g + 8, cz, 'minecraft:spruce_planks')
+        for dx, dz in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)):
+            if dx or dz:
+                b.set(cx + dx, g + 8, cz + dz, 'minecraft:spruce_slab[type=top,waterlogged=false]')
+            b.set(cx + dx, g + 7, cz + dz, LANTERN)
+        for dx, dz in ((7, 0), (-7, 0), (0, 7), (0, -7), (5, 5), (-5, 5), (5, -5), (-5, -5)):
+            top = g + TENT_WALL + 1 + R - int(math.hypot(dx, dz) + 0.5)
+            for y in range(top, g + 6, -1):
                 if b.free(cx + dx, y, cz + dz):
                     b.set(cx + dx, y, cz + dz, CHAIN % 'y')
-            b.set(cx + dx, g + 7, cz + dz, LANTERN)
+            b.set(cx + dx, g + 6, cz + dz, LANTERN)
         for a in range(0, 360, 20):
             x, z = round(cx + math.cos(math.radians(a + 10)) * (R - 1.6)), round(cz + math.sin(math.radians(a + 10)) * (R - 1.6))
             if abs(x - cx) > 3 and b.free(x, g + 1, z):

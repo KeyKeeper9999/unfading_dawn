@@ -70,6 +70,16 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:firwood_key",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

@@ -169,7 +169,15 @@ MAP_CHESTS = {
     'mire_cove': [(GREAT, 3), (M + 'heavy_soul_shard', 1), (M + 'bone_scale', 2)],
     'mire_mill': [(GREAT, 2), (M + 'return_ember', 3), (SCRAP, 6)],
     'mire_hollow': [(GREAT, 3), (M + 'tar_pot', 4), (M + 'withe', 3)],
-    'mire_grove': [(GREAT, 5), (M + 'return_ember', 3), (M + 'bone_scale', 4), (M + 'weeping_herb', 1)],
+    'mire_grove': [(GREAT, 5), (M + 'return_ember', 3), (M + 'bone_scale', 4), (M + 'weeping_herb', 1), (M + 'firwood_key', 1)],      # the key of the Wood Wicket
+    # the Black Firwood and the skete (tools/gen_skete.py)
+    'firwood_stakes': [(GREAT, 2), (M + 'bleached_linen', 4), (M + 'return_ember', 2)],
+    'firwood_shrine': [(M + 'waker_mallet', 1), (M + 'candle_wax', 4), (GREAT, 2)],                # what the waker of the shrine would have left to the next
+    'firwood_den': [(GREAT, 4), (M + 'shatun_hide', 2), (SCRAP, 6)],
+    'skete_tent': [(M + 'vigil_cowl', 1), (M + 'vigil_wraps', 1), (M + 'bleached_linen', 4)],
+    'skete_altar': [(M + 'vigil_wax', 1), (M + 'candle_wax', 4), (GREAT, 2)],
+    'skete_wax_yard': [(M + 'vigil_staff', 1), (M + 'candle_wax', 8), (GREAT, 3)],
+    'skete_store': [(GREAT, 6), (M + 'return_ember', 3), (M + 'vigil_shift', 1), (M + 'vigil_skirt', 1)],
 }
 for _name, _items in MAP_CHESTS.items():
     CHESTS['map/' + _name] = [pool(item(_id, count=(_n, _n)) if _n > 1 else item(_id)) for _id, _n in _items]
