@@ -127,16 +127,18 @@ def make():
 
 
 STAND = {}
-LASH_BACK = {'torso': (0.05, 0.7, 0), 'right_arm': (-1.3, 0.9, 0.5), 'right_forearm': (0.2, 0, 0), 'head': (0.1, -0.5, 0)}
-LASH = {'torso': (0.35, -0.6, 0), 'right_arm': (-1.35, -0.7, 0.2), 'right_forearm': (0.25, 0, 0), 'head': (0.1, 0.4, 0), 'trunk': (0.12, 0, 0)}
-SLAM_UP = {'torso': (-0.25, 0, 0), 'right_arm': (-2.9, 0, 0.2), 'left_arm': (-2.9, 0, -0.2), 'right_forearm': (0.3, 0, 0), 'left_forearm': (0.3, 0, 0), 'head': (-0.4, 0, 0)}
-SLAM_DOWN = {'trunk': (0.35, 0, 0), 'torso': (0.55, 0, 0), 'right_arm': (-1.2, 0, 0.1), 'left_arm': (-1.2, 0, -0.1), 'right_forearm': (0.3, 0, 0), 'left_forearm': (0.3, 0, 0),
-             'head': (-0.3, 0, 0)}
+# the poses of WeepingMotherModel.setupAnim, as it adds them to the rest pose
+LASH_BACK = {'trunk': (-0.1, 0.5, 0), 'torso': (-0.15, 0.45, 0), 'right_arm': (-1.38, 0.35, 0.36), 'right_forearm': (0.5, 0, 0)}
+LASH = {'trunk': (0.24, -0.18, 0), 'torso': (0.48, -0.16, 0), 'right_arm': (-1.965, -0.13, 0), 'right_forearm': (0.3, 0, 0), 'left_arm': (-0.7, 0, 0)}
+LASH_END = {'trunk': (0.24, -0.5, 0), 'torso': (0.48, -0.45, 0), 'right_arm': (-1.965, -0.35, 0), 'right_forearm': (0.3, 0, 0), 'left_arm': (-0.7, 0, 0)}
+SLAM_UP = {'torso': (-0.37, 0, 0), 'right_arm': (-2.98, 0, 0.06), 'left_arm': (-2.98, 0, -0.06), 'right_forearm': (0.6, 0, 0), 'left_forearm': (0.6, 0, 0), 'head': (-0.62, 0, 0)}
+SLAM_DOWN = {'trunk': (0.29, 0, 0), 'torso': (0.48, 0, 0), 'right_arm': (-2.0, 0, -0.1), 'left_arm': (-2.0, 0, 0.1), 'right_forearm': (0.3, 0, 0), 'left_forearm': (0.3, 0, 0),
+             'head': (-0.5, 0, 0)}
 ROOTS = {'trunk': (0.3, 0, 0), 'torso': (0.5, 0, 0), 'right_arm': (-0.5, 0, 0.3), 'left_arm': (-0.5, 0, -0.3), 'right_forearm': (0.6, 0, 0), 'left_forearm': (0.6, 0, 0)}
-WAIL = {'torso': (-0.35, 0, 0), 'head': (-0.7, 0, 0), 'right_arm': (-0.4, 0, 1.1), 'left_arm': (-0.4, 0, -1.1), 'right_forearm': (0.6, 0, 0), 'left_forearm': (0.6, 0, 0),
+WAIL = {'torso': (-0.47, 0, 0), 'head': (-0.92, 0, 0), 'right_arm': (-0.48, 0, 0.96), 'left_arm': (-0.48, 0, -0.96), 'right_forearm': (0.9, 0, 0), 'left_forearm': (0.9, 0, 0),
         'hair_back': (0.5, 0, 0)}
-WHIRL = {'torso': (0.15, 1.2, 0), 'right_arm': (-0.2, 0, 1.45), 'left_arm': (-0.2, 0, -1.45), 'right_forearm': (0.15, 0, 0), 'left_forearm': (0.15, 0, 0),
-         'hair_back': (0.5, 0, 0.3), 'hair_right': (0, 0, 0.8), 'hair_left': (0, 0, -0.2)}
+WHIRL = {'trunk': (0.1, 1.2, 0), 'right_arm': (0, 0, 0.76), 'left_arm': (0, 0, -0.76), 'right_forearm': (0.3, 0, 0), 'left_forearm': (0.3, 0, 0),
+         'hair_back': (0.7, 0, 0), 'hair_right': (0, 0, 0.7), 'hair_left': (0, 0, -0.7), 'hair_front': (-0.5, 0, 0)}
 
 if __name__ == '__main__':
     M.write_java(JAVA) if len(sys.argv) < 3 else None
@@ -144,7 +146,7 @@ if __name__ == '__main__':
     tex.save(f'{A}/textures/entity/weeping_mother.png')
     glow.save(f'{A}/textures/entity/weeping_mother_glow.png')
     if len(sys.argv) > 1:
-        shots = [M.render(tex, yaw=yaw, pose=pose, size=(420, 470), zoom=3.5, centre=(0, -28), glow=glow)
-                 for yaw, pose in ((-0.5, STAND), (0.0, STAND), (1.5, STAND), (2.7, STAND), (-0.6, LASH_BACK), (-0.6, LASH), (-1.1, SLAM_UP), (-1.2, SLAM_DOWN),
-                                   (-0.9, ROOTS), (-0.5, WAIL), (-0.4, WHIRL))]
+        shots = [M.render(tex, yaw=yaw, pose=pose, size=(520, 470), zoom=3.0, centre=(0, -24), glow=glow)
+                 for yaw, pose in ((-0.5, STAND), (0.0, STAND), (1.5, STAND), (2.7, STAND), (-0.6, LASH_BACK), (-1.2, LASH), (-1.57, LASH), (-0.6, LASH_END),
+                                   (-1.1, SLAM_UP), (-1.57, SLAM_DOWN), (-0.9, ROOTS), (-1.57, ROOTS), (-0.5, WAIL), (-0.4, WHIRL), (-1.57, WHIRL))]
         sheet(shots, 4).save(sys.argv[1])

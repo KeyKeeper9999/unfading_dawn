@@ -40,6 +40,7 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
         this.barrow.visible = kind == WitheredEntity.Kind.BARROWMAN;
         this.head.getChild("candle_cap").visible = kind == WitheredEntity.Kind.DIGGER;
         this.body.getChild("keg").visible = kind == WitheredEntity.Kind.SAPPER;
+        this.head.getChild("weeds").visible = kind == WitheredEntity.Kind.DROWNED;
         this.body.getChild("bulk").visible = this.bulky;
         this.body.getChild("apron").visible = this.bulky;
         this.rightArm.getChild("brawn_r").visible = this.bulky || kind == WitheredEntity.Kind.BARROWMAN;
@@ -74,18 +75,18 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
                 .texOffs(16, 48).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
                 PartPose.offset(1.9F, 12.0F, 0.0F));
         PartDefinition collar = body.addOrReplaceChild("collar", CubeListBuilder.create()
-                .texOffs(36, 151).addBox(-4.5F, -0.6F, -2.5F, 9.0F, 2.0F, 5.0F),
+                .texOffs(36, 150).addBox(-4.5F, -0.6F, -2.5F, 9.0F, 2.0F, 5.0F),
                 PartPose.ZERO);
         PartDefinition shackle = left_arm.addOrReplaceChild("shackle", CubeListBuilder.create()
-                .texOffs(36, 158).addBox(-2.0F, 0.0F, -2.5F, 4.0F, 2.0F, 5.0F)
+                .texOffs(36, 157).addBox(-2.0F, 0.0F, -2.5F, 4.0F, 2.0F, 5.0F)
                 .texOffs(12, 55).addBox(-0.5F, 2.0F, -3.3F, 1.0F, 6.0F, 1.0F),
                 PartPose.offset(0.5F, 7.0F, 0.0F));
         PartDefinition kettle_hat = head.addOrReplaceChild("kettle_hat", CubeListBuilder.create()
-                .texOffs(0, 102).addBox(-6.0F, -6.6F, -6.0F, 12.0F, 1.0F, 12.0F)
-                .texOffs(0, 128).addBox(-4.5F, -9.6F, -4.5F, 9.0F, 3.0F, 9.0F),
+                .texOffs(0, 124).addBox(-6.0F, -6.6F, -6.0F, 12.0F, 1.0F, 12.0F)
+                .texOffs(0, 150).addBox(-4.5F, -9.6F, -4.5F, 9.0F, 3.0F, 9.0F),
                 PartPose.ZERO);
         PartDefinition pauldron = right_arm.addOrReplaceChild("pauldron", CubeListBuilder.create()
-                .texOffs(38, 125).addBox(-3.0F, -3.0F, -3.0F, 4.0F, 3.0F, 6.0F),
+                .texOffs(36, 77).addBox(-3.0F, -3.0F, -3.0F, 4.0F, 3.0F, 6.0F),
                 PartPose.ZERO);
         PartDefinition hood_tail = head.addOrReplaceChild("hood_tail", CubeListBuilder.create()
                 .texOffs(0, 48).addBox(-2.0F, -1.0F, -1.0F, 4.0F, 4.0F, 3.0F)
@@ -93,20 +94,20 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
                 PartPose.offsetAndRotation(0.0F, -6.5F, 4.0F, 0.45F, 0.0F, 0.0F));
         PartDefinition quiver = body.addOrReplaceChild("quiver", CubeListBuilder.create()
                 .texOffs(54, 16).addBox(-1.5F, 0.0F, 0.0F, 3.0F, 9.0F, 2.0F)
-                .texOffs(52, 78).addBox(-1.0F, -2.0F, 0.5F, 2.0F, 2.0F, 1.0F),
+                .texOffs(56, 82).addBox(-1.0F, -2.0F, 0.5F, 2.0F, 2.0F, 1.0F),
                 PartPose.offsetAndRotation(2.2F, 1.0F, 2.0F, 0.0F, 0.0F, 0.32F));
         PartDefinition cap = head.addOrReplaceChild("cap", CubeListBuilder.create()
-                .texOffs(0, 152).addBox(-4.5F, -9.4F, -4.5F, 9.0F, 2.0F, 9.0F)
-                .texOffs(32, 97).addBox(-3.5F, -8.0F, -6.5F, 7.0F, 1.0F, 2.0F),
+                .texOffs(0, 174).addBox(-4.5F, -9.4F, -4.5F, 9.0F, 2.0F, 9.0F)
+                .texOffs(38, 146).addBox(-3.5F, -8.0F, -6.5F, 7.0F, 1.0F, 2.0F),
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, -0.07F));
         PartDefinition bulk = body.addOrReplaceChild("bulk", CubeListBuilder.create()
-                .texOffs(0, 84).addBox(-5.0F, 0.0F, -3.0F, 10.0F, 12.0F, 6.0F, new CubeDeformation(0.25F)),
+                .texOffs(0, 106).addBox(-5.0F, 0.0F, -3.0F, 10.0F, 12.0F, 6.0F, new CubeDeformation(0.25F)),
                 PartPose.ZERO);
         PartDefinition belly = body.addOrReplaceChild("belly", CubeListBuilder.create()
-                .texOffs(36, 134).addBox(-4.0F, 4.0F, -5.0F, 8.0F, 7.0F, 2.0F),
+                .texOffs(38, 137).addBox(-4.0F, 4.0F, -5.0F, 8.0F, 7.0F, 2.0F),
                 PartPose.ZERO);
         PartDefinition apron = body.addOrReplaceChild("apron", CubeListBuilder.create()
-                .texOffs(36, 143).addBox(-4.0F, 0.0F, -0.5F, 8.0F, 7.0F, 1.0F),
+                .texOffs(32, 116).addBox(-4.0F, 0.0F, -0.5F, 8.0F, 7.0F, 1.0F),
                 PartPose.offsetAndRotation(0.0F, 11.0F, -3.8F, -0.24F, 0.0F, 0.0F));
         PartDefinition brawn_r = right_arm.addOrReplaceChild("brawn_r", CubeListBuilder.create()
                 .texOffs(20, 32).addBox(-3.0F, -3.0F, -3.0F, 5.0F, 8.0F, 6.0F),
@@ -115,27 +116,30 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
                 .texOffs(42, 32).addBox(-2.0F, -3.0F, -3.0F, 5.0F, 8.0F, 6.0F),
                 PartPose.ZERO);
         PartDefinition coat_tail = body.addOrReplaceChild("coat_tail", CubeListBuilder.create()
-                .texOffs(38, 115).addBox(-4.0F, 12.0F, -2.0F, 8.0F, 6.0F, 4.0F, new CubeDeformation(0.45F)),
+                .texOffs(32, 106).addBox(-4.0F, 12.0F, -2.0F, 8.0F, 6.0F, 4.0F, new CubeDeformation(0.45F)),
                 PartPose.ZERO);
         PartDefinition candle_cap = head.addOrReplaceChild("candle_cap", CubeListBuilder.create()
-                .texOffs(0, 140).addBox(-4.5F, -9.2F, -4.5F, 9.0F, 3.0F, 9.0F)
+                .texOffs(0, 162).addBox(-4.5F, -9.2F, -4.5F, 9.0F, 3.0F, 9.0F)
                 .texOffs(20, 46).addBox(-1.5F, -7.6F, -5.5F, 3.0F, 1.0F, 1.0F)
                 .texOffs(60, 27).addBox(-0.5F, -10.6F, -5.5F, 1.0F, 3.0F, 1.0F),
                 PartPose.ZERO);
         PartDefinition barrow = root.addOrReplaceChild("barrow", CubeListBuilder.create()
                 .texOffs(0, 32).addBox(-1.0F, -4.0F, -4.0F, 2.0F, 8.0F, 8.0F)
-                .texOffs(0, 64).addBox(-6.0F, -9.0F, 3.0F, 12.0F, 6.0F, 14.0F)
-                .texOffs(0, 115).addBox(-4.5F, -12.0F, 5.0F, 9.0F, 3.0F, 10.0F)
+                .texOffs(0, 86).addBox(-6.0F, -9.0F, 3.0F, 12.0F, 6.0F, 14.0F)
+                .texOffs(0, 137).addBox(-4.5F, -12.0F, 5.0F, 9.0F, 3.0F, 10.0F)
                 .texOffs(46, 46).addBox(-6.5F, -8.5F, 17.0F, 1.0F, 1.0F, 8.0F)
                 .texOffs(46, 55).addBox(5.5F, -8.5F, 17.0F, 1.0F, 1.0F, 8.0F)
-                .texOffs(52, 71).addBox(-5.5F, -3.0F, 14.0F, 1.0F, 6.0F, 1.0F)
-                .texOffs(56, 71).addBox(4.5F, -3.0F, 14.0F, 1.0F, 6.0F, 1.0F)
+                .texOffs(58, 64).addBox(-5.5F, -3.0F, 14.0F, 1.0F, 6.0F, 1.0F)
+                .texOffs(58, 71).addBox(4.5F, -3.0F, 14.0F, 1.0F, 6.0F, 1.0F)
                 .texOffs(0, 55).addBox(-2.5F, -1.0F, -1.0F, 1.0F, 2.0F, 5.0F)
-                .texOffs(52, 64).addBox(1.5F, -1.0F, -1.0F, 1.0F, 2.0F, 5.0F),
+                .texOffs(52, 86).addBox(1.5F, -1.0F, -1.0F, 1.0F, 2.0F, 5.0F),
                 PartPose.offset(0.0F, 20.0F, -24.0F));
         PartDefinition keg = body.addOrReplaceChild("keg", CubeListBuilder.create()
-                .texOffs(32, 84).addBox(-3.0F, 1.0F, 2.0F, 6.0F, 8.0F, 5.0F)
-                .texOffs(60, 71).addBox(0.5F, -2.0F, 4.0F, 1.0F, 3.0F, 1.0F),
+                .texOffs(36, 64).addBox(-3.0F, 1.0F, 2.0F, 6.0F, 8.0F, 5.0F)
+                .texOffs(56, 78).addBox(0.5F, -2.0F, 4.0F, 1.0F, 3.0F, 1.0F),
+                PartPose.ZERO);
+        PartDefinition weeds = head.addOrReplaceChild("weeds", CubeListBuilder.create()
+                .texOffs(0, 64).addBox(-4.5F, -8.6F, -4.5F, 9.0F, 13.0F, 9.0F, new CubeDeformation(0.2F)),
                 PartPose.ZERO);
         // </generated mesh>
         return LayerDefinition.create(mesh, 64, 192);

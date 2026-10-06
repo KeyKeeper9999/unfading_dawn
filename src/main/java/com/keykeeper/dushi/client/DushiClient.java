@@ -59,6 +59,17 @@ public final class DushiClient {
                 context -> new QuarryRenderer<>(context, new TaskmasterModel(context.bakeLayer(TaskmasterModel.LAYER)), "taskmaster", 1.0F, true, true));
         event.registerEntityRenderer(Dushi.STONE_EATER.get(),
                 context -> new QuarryRenderer<>(context, new StoneEaterModel(context.bakeLayer(StoneEaterModel.LAYER)), "stone_eater", 2.0F, true, true));
+        event.registerEntityRenderer(Dushi.MUD_GLOB_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.8F, false));
+        event.registerEntityRenderer(Dushi.BONE_PIKE.get(),
+                context -> new QuarryRenderer<>(context, new BonePikeModel(context.bakeLayer(BonePikeModel.LAYER)), "bone_pike", 0.5F, true, true));
+        event.registerEntityRenderer(Dushi.LANKY.get(),
+                context -> new QuarryRenderer<>(context, new LankyModel(context.bakeLayer(LankyModel.LAYER)), "lanky", 0.5F, true, true));
+        event.registerEntityRenderer(Dushi.WISP.get(),
+                context -> new QuarryRenderer<>(context, new WispModel(context.bakeLayer(WispModel.LAYER)), "wisp", 0.0F, true, true));
+        event.registerEntityRenderer(Dushi.WALLOWER.get(),
+                context -> new QuarryRenderer<>(context, new WallowerModel(context.bakeLayer(WallowerModel.LAYER)), "wallower", 2.0F, true, true));
+        event.registerEntityRenderer(Dushi.WEEPING_MOTHER.get(),
+                context -> new QuarryRenderer<>(context, new WeepingMotherModel(context.bakeLayer(WeepingMotherModel.LAYER)), "weeping_mother", 1.6F, true, true));
         Dushi.WITHERED.forEach((kind, type) -> event.registerEntityRenderer(type.get(), context -> new WitheredRenderer(context, kind)));
         event.registerEntityRenderer(Dushi.RUST_KNIGHT.get(), context -> new RustKnightRenderer(context, "rust_knight"));
         event.registerEntityRenderer(Dushi.GILDED_KNIGHT.get(), context -> new RustKnightRenderer(context, "gilded_knight"));
@@ -79,6 +90,11 @@ public final class DushiClient {
         event.registerLayerDefinition(UnhewnModel.LAYER, UnhewnModel::createLayer);
         event.registerLayerDefinition(TaskmasterModel.LAYER, TaskmasterModel::createLayer);
         event.registerLayerDefinition(StoneEaterModel.LAYER, StoneEaterModel::createLayer);
+        event.registerLayerDefinition(BonePikeModel.LAYER, BonePikeModel::createLayer);
+        event.registerLayerDefinition(LankyModel.LAYER, LankyModel::createLayer);
+        event.registerLayerDefinition(WispModel.LAYER, WispModel::createLayer);
+        event.registerLayerDefinition(WallowerModel.LAYER, WallowerModel::createLayer);
+        event.registerLayerDefinition(WeepingMotherModel.LAYER, WeepingMotherModel::createLayer);
         event.registerLayerDefinition(KeykeeperModel.LAYER, KeykeeperModel::createLayer);
         event.registerLayerDefinition(OverseerModel.LAYER, OverseerModel::createLayer);
         event.registerLayerDefinition(ChaplainModel.LAYER, ChaplainModel::createLayer);

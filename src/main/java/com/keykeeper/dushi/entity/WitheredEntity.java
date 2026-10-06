@@ -57,7 +57,12 @@ public class WitheredEntity extends SoulsMob {
         /** A barrowman: he never let go of his barrow of cut stone, and runs whoever he sees down with it. */
         BARROWMAN("withered_barrowman", 95.0, 12.0, 0.24, 4.0, 320),
         /** A sapper with a keg of blasting powder on his back: lobs lit pots from afar, and when he is nearly done lights the keg. */
-        SAPPER("withered_sapper", 55.0, 7.0, 0.26, 2.0, 300);
+        SAPPER("withered_sapper", 55.0, 7.0, 0.26, 2.0, 300),
+        /**
+         * One of the drowned of the Mire: he walks the bottom as he walked the street, the water neither slows nor
+         * lifts him, and he has no need of air. A boat hook, held like a pike, or his hands.
+         */
+        DROWNED("withered_drowned", 115.0, 14.0, 0.25, 2.0, 420);
 
         public final String id;
         final double health;
@@ -145,6 +150,27 @@ public class WitheredEntity extends SoulsMob {
         super(type, level);
         this.kind = kind;
         this.xpReward = 5;
+        if (kind == Kind.DROWNED) {
+            // (the goals were set before the kind was known: he does not swim up, and water is a way like any other)
+            this.goalSelector.removeAllGoals(goal -> goal instanceof FloatGoal);
+            this.setPathfindingMalus(net.minecraft.world.level.pathfinder.PathType.WATER, 0.0F);
+            this.setPathfindingMalus(net.minecraft.world.level.pathfinder.PathType.WATER_BORDER, 0.0F);
+        }
+    }
+
+    @Override
+    public boolean isAffectedByFluids() {
+        return this.kind != Kind.DROWNED;
+    }
+
+    @Override
+    public boolean canBreatheUnderwater() {
+        return this.kind == Kind.DROWNED || super.canBreatheUnderwater();
+    }
+
+    @Override
+    public boolean isPushedByFluid() {
+        return this.kind != Kind.DROWNED;
     }
 
     public Kind kind() {
@@ -198,6 +224,11 @@ public class WitheredEntity extends SoulsMob {
             case DIGGER -> this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.QUARRY_PICK.get()), 0.05F);
             case SAPPER -> this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.POWDER_POT.get()), 0.0F);
             case BARROWMAN -> {
+            }
+            case DROWNED -> {
+                if (this.random.nextInt(10) < 6) {
+                    this.equip(EquipmentSlot.MAINHAND, new ItemStack(Dushi.BOAT_HOOK.get()), 0.05F);
+                }
             }
         }
         return data;
@@ -270,7 +301,7 @@ public class WitheredEntity extends SoulsMob {
 
     /** Whether it holds something to thrust with. */
     private boolean hasPike() {
-        return this.getMainHandItem().is(Dushi.PITCHFORK.get());
+        return this.getMainHandItem().is(Dushi.PITCHFORK.get()) || this.getMainHandItem().is(Dushi.BOAT_HOOK.get());
     }
 
     @Override
@@ -582,6 +613,11 @@ public class WitheredEntity extends SoulsMob {
                 this.leave(level, Dushi.RUST_SCRAP.get(), 1, 2);
                 this.leaveMaybe(level, Dushi.IRON_WEDGE.get(), 0.35F);
                 this.leaveMaybe(level, Dushi.GREAT_SOUL.get(), 0.06F);
+            }
+            case DROWNED -> {
+                this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 2);
+                this.leaveMaybe(level, Dushi.NAMELESS_SOUL.get(), 0.15F);
+                this.leaveMaybe(level, Dushi.GREAT_SOUL.get(), 0.04F);
             }
             case SAPPER -> {
                 this.leave(level, Dushi.TATTERED_CLOTH.get(), 0, 2);

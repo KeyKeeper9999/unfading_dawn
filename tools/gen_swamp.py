@@ -82,7 +82,7 @@ def street_bed(x, y, z):
 def weir_floor(x, y, z):
     n = hsh(x, 0, z, 624)
     return 'minecraft:mud_bricks' if n < 0.36 else ('minecraft:packed_mud' if n < 0.6 else ('minecraft:mossy_cobblestone' if n < 0.8 else
-                                                                                         ('minecraft:cobblestone' if n < 0.92 else 'minecraft:mud')))
+                                                                                         ('minecraft:cobblestone' if n < 0.92 else 'minecraft:mossy_stone_bricks')))
 
 
 def isle_floor(x, y, z):

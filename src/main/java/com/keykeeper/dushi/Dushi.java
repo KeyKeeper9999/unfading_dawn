@@ -120,6 +120,14 @@ public class Dushi {
             "entity.taskmaster.wedge", "entity.taskmaster.crack",
             "entity.stone_eater.ambient", "entity.stone_eater.hurt", "entity.stone_eater.death", "entity.stone_eater.roar", "entity.stone_eater.burrow",
             "entity.stone_eater.erupt", "entity.stone_eater.bite",
+            "entity.pike.ambient", "entity.pike.hurt", "entity.pike.death", "entity.pike.bite", "entity.pike.leap", "entity.pike.flop",
+            "entity.lanky.ambient", "entity.lanky.hurt", "entity.lanky.death", "entity.lanky.slam", "entity.lanky.step",
+            "entity.wisp.ambient", "entity.wisp.hurt", "entity.wisp.death", "entity.wisp.cast",
+            "entity.wallower.ambient", "entity.wallower.hurt", "entity.wallower.death", "entity.wallower.roar", "entity.wallower.bite",
+            "entity.wallower.slap", "entity.wallower.spit", "entity.wallower.plop", "entity.wallower.dive", "entity.wallower.wake",
+            "entity.wallower.breach", "entity.wallower.gulp",
+            "entity.weeping_mother.ambient", "entity.weeping_mother.hurt", "entity.weeping_mother.death", "entity.weeping_mother.wail",
+            "entity.weeping_mother.lash", "entity.weeping_mother.slam", "entity.weeping_mother.creak", "entity.weeping_mother.root",
             "block.hearth.rest", "block.fog_gate.pass",
             "item.flask.drink", "item.flask.empty", "item.spell.shard", "item.spell.shard_hit", "item.spell.mend", "item.spell.rebuke",
             "item.spell.fire", "item.spell.fire_burst", "item.spell.fizzle",
@@ -179,6 +187,10 @@ public class Dushi {
     public static final DeferredBlock<com.keykeeper.dushi.block.ShallowsBlock> SHALLOWS = BLOCKS.registerBlock("shallows", com.keykeeper.dushi.block.ShallowsBlock::new,
             props -> props.mapColor(MapColor.WATER).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
                     .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.WET_GRASS));
+    /** A pool of sludge that lies a while and is gone: see {@link com.keykeeper.dushi.block.SludgeBlock}. No item; the Wallower spits it. */
+    public static final DeferredBlock<com.keykeeper.dushi.block.SludgeBlock> SLUDGE = BLOCKS.registerBlock("sludge", com.keykeeper.dushi.block.SludgeBlock::new,
+            props -> props.mapColor(MapColor.COLOR_BROWN).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
+                    .pushReaction(PushReaction.DESTROY).sound(SoundType.MUD));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MobMarkBlockEntity>> MOB_MARK_ENTITY = BLOCK_ENTITIES.register("mob_mark",
             () -> new BlockEntityType<>(MobMarkBlockEntity::new, MOB_MARK.get()));
 
@@ -245,6 +257,11 @@ public class Dushi {
     public static final DeferredItem<WeaponItem> GREAT_MAUL = weapon("great_maul", 16.0F, 0.65F, 1.0F, 42.0F, 1.0F, 0.0F, 1.5F, 900, Rarity.EPIC);
     public static final DeferredItem<WeaponItem> EATER_CLAW = weapon("eater_claw", 9.5F, 1.9F, 0.0F, 14.0F, 0.2F, 0.9F, 2.0F, 800, Rarity.EPIC);
 
+    /** The Mire: a ferryman's boat hook, a tooth of the Wallower on a grip of its hide, and a scourge plaited of the Weeping Mother's withes. */
+    public static final DeferredItem<WeaponItem> BOAT_HOOK = weapon("boat_hook", 8.0F, 1.4F, 1.0F, 18.0F, 0.4F, 0.7F, 1.4F, 400, Rarity.UNCOMMON);
+    public static final DeferredItem<WeaponItem> WALLOWER_FANG = weapon("wallower_fang", 11.0F, 1.7F, 0.0F, 16.0F, 0.5F, 0.8F, 2.0F, 800, Rarity.EPIC);
+    public static final DeferredItem<WeaponItem> WITHE_SCOURGE = weapon("withe_scourge", 9.5F, 1.5F, 1.75F, 20.0F, 0.1F, 1.0F, 1.5F, 800, Rarity.EPIC);
+
     public static final DeferredItem<ShortBowItem> SHORT_BOW = ITEMS.registerItem("short_bow", props -> new ShortBowItem(props.stacksTo(1)));
 
     // ------------------------------------------------------------------ shields
@@ -285,6 +302,11 @@ public class Dushi {
     public static final DeferredItem<Item> RUST_SCRAP = ITEMS.registerSimpleItem("rust_scrap");
     /** A quarryman's splitting wedge: the iron of the quarry, for what is forged from it. */
     public static final DeferredItem<Item> IRON_WEDGE = ITEMS.registerSimpleItem("iron_wedge");
+    /** The Mire's two: a scale of a bone pike, and a withe of the willows that walk. */
+    public static final DeferredItem<Item> BONE_SCALE = ITEMS.registerSimpleItem("bone_scale");
+    public static final DeferredItem<Item> WITHE = ITEMS.registerSimpleItem("withe");
+    /** Only the picture of what the Wallower spits; not in the creative tab. */
+    public static final DeferredItem<Item> MUD_GLOB = ITEMS.registerSimpleItem("mud_glob");
 
     // ------------------------------------------------------------------ magic
 
@@ -333,6 +355,10 @@ public class Dushi {
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 10000));
     public static final DeferredItem<SoulItem> STONE_EATER_SOUL = ITEMS.registerItem("stone_eater_soul",
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 14000));
+    public static final DeferredItem<SoulItem> WALLOWER_SOUL = ITEMS.registerItem("wallower_soul",
+            props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 18000));
+    public static final DeferredItem<SoulItem> MOTHER_SOUL = ITEMS.registerItem("mother_soul",
+            props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 24000));
     /** Opens the Quarrymen's Gate of the borough: see {@link LockedGateBlock}. */
     public static final DeferredItem<Item> QUARRY_KEY = ITEMS.registerItem("quarry_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     /** Opens the Mire Gate, at the other end of the same street. */
@@ -393,6 +419,19 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.StoneEaterEntity>> STONE_EATER = ENTITIES.registerEntityType(
             "stone_eater", com.keykeeper.dushi.entity.StoneEaterEntity::new, MobCategory.MONSTER, b -> b.sized(3.0F, 2.7F).eyeHeight(1.9F).clientTrackingRange(12).fireImmune());
 
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.BonePikeEntity>> BONE_PIKE = ENTITIES.registerEntityType(
+            "bone_pike", com.keykeeper.dushi.entity.BonePikeEntity::new, MobCategory.MONSTER, b -> b.sized(0.9F, 0.8F).eyeHeight(0.5F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.LankyEntity>> LANKY = ENTITIES.registerEntityType(
+            "lanky", com.keykeeper.dushi.entity.LankyEntity::new, MobCategory.MONSTER, b -> b.sized(0.7F, 3.3F).eyeHeight(3.0F).clientTrackingRange(10));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.WispEntity>> WISP = ENTITIES.registerEntityType(
+            "wisp", com.keykeeper.dushi.entity.WispEntity::new, MobCategory.MONSTER, b -> b.sized(0.6F, 0.8F).eyeHeight(0.5F).clientTrackingRange(10).fireImmune());
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.WallowerEntity>> WALLOWER = ENTITIES.registerEntityType(
+            "wallower", com.keykeeper.dushi.entity.WallowerEntity::new, MobCategory.MONSTER, b -> b.sized(3.2F, 1.9F).eyeHeight(1.3F).clientTrackingRange(12));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.WeepingMotherEntity>> WEEPING_MOTHER = ENTITIES.registerEntityType(
+            "weeping_mother", com.keykeeper.dushi.entity.WeepingMotherEntity::new, MobCategory.MONSTER, b -> b.sized(2.2F, 5.4F).eyeHeight(4.8F).clientTrackingRange(12));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.MudGlobEntity>> MUD_GLOB_ENTITY = ENTITIES.registerEntityType(
+            "mud_glob", com.keykeeper.dushi.entity.MudGlobEntity::new, MobCategory.MISC, b -> b.sized(0.4F, 0.4F).clientTrackingRange(6).updateInterval(5));
+
     public static final List<DeferredItem<SpawnEggItem>> SPAWN_EGGS = new ArrayList<>();
 
     private static void egg(String name, Supplier<? extends EntityType<? extends Mob>> type) {
@@ -409,6 +448,11 @@ public class Dushi {
         egg("unhewn", UNHEWN);
         egg("taskmaster", TASKMASTER);
         egg("stone_eater", STONE_EATER);
+        egg("bone_pike", BONE_PIKE);
+        egg("lanky", LANKY);
+        egg("wisp", WISP);
+        egg("wallower", WALLOWER);
+        egg("weeping_mother", WEEPING_MOTHER);
         egg("keykeeper", KEYKEEPER);
         egg("overseer", OVERSEER);
         egg("chaplain", CHAPLAIN);
@@ -439,6 +483,8 @@ public class Dushi {
                 output.accept(GRAVEDIGGER_SOUL.get());
                 output.accept(TASKMASTER_SOUL.get());
                 output.accept(STONE_EATER_SOUL.get());
+                output.accept(WALLOWER_SOUL.get());
+                output.accept(MOTHER_SOUL.get());
                 WEAPONS.forEach(item -> output.accept(item.get()));
                 output.accept(SHORT_BOW.get());
                 SHIELDS.forEach(item -> output.accept(item.get()));
@@ -447,6 +493,8 @@ public class Dushi {
                 }
                 output.accept(TATTERED_CLOTH.get());
                 output.accept(RUST_SCRAP.get());
+                output.accept(BONE_SCALE.get());
+                output.accept(WITHE.get());
                 output.accept(SCHOLAR_STAFF.get());
                 output.accept(PRAYER_BEADS.get());
                 output.accept(EMBER_GLOVE.get());
@@ -474,6 +522,11 @@ public class Dushi {
             event.put(UNHEWN.get(), com.keykeeper.dushi.entity.UnhewnEntity.createAttributes().build());
             event.put(TASKMASTER.get(), com.keykeeper.dushi.entity.TaskmasterEntity.createAttributes().build());
             event.put(STONE_EATER.get(), com.keykeeper.dushi.entity.StoneEaterEntity.createAttributes().build());
+            event.put(BONE_PIKE.get(), com.keykeeper.dushi.entity.BonePikeEntity.createAttributes().build());
+            event.put(LANKY.get(), com.keykeeper.dushi.entity.LankyEntity.createAttributes().build());
+            event.put(WISP.get(), com.keykeeper.dushi.entity.WispEntity.createAttributes().build());
+            event.put(WALLOWER.get(), com.keykeeper.dushi.entity.WallowerEntity.createAttributes().build());
+            event.put(WEEPING_MOTHER.get(), com.keykeeper.dushi.entity.WeepingMotherEntity.createAttributes().build());
             event.put(KEYKEEPER.get(), KeykeeperEntity.createAttributes().build());
             event.put(OVERSEER.get(), OverseerEntity.createAttributes().build());
             event.put(CHAPLAIN.get(), ChaplainEntity.createAttributes().build());

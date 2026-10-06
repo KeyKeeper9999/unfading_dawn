@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """The withered (prisoner, guard, archer, acolyte; townsman, butcher, watchman of the village; digger, barrowman,
-sapper of the quarry): mesh extras for WitheredModel.java and their textures.
+sapper of the quarry; the drowned of the Mire): mesh extras for WitheredModel.java and their textures.
 Run from the repo root; pass a file name to also get a preview sheet."""
 import random
 import sys
@@ -44,6 +44,8 @@ M.part('barrow', None, (0, 20, -24), boxes=[
     Box(-2.5, -1, -1, 1, 2, 5, 'plank', 'fork_r'), Box(1.5, -1, -1, 1, 2, 5, 'plank', 'fork_l')])
 # a sapper: a keg of blasting powder on his back, the match cord coiled over it
 M.part('keg', 'body', (0, 0, 0), boxes=[Box(-3, 1, 2, 6, 8, 5, 'keg', 'keg'), Box(0.5, -2, 4, 1, 3, 1, 'fuse', 'fuse')])
+# the Mire. One of the drowned: a mat of weed over the head and shoulders, hanging in strands
+M.part('weeds', 'head', (0, 0, 0), boxes=[Box(-4.5, -8.6, -4.5, 9, 13, 9, 'weed', 'weeds', inflate=0.2)])
 M.pack(start_y=0)
 
 # ---------------------------------------------------------------- colours
@@ -243,6 +245,29 @@ def dust(p, boxes, rnd):
                     if face not in ('top', 'bottom') and y >= fh - 2:
                         amount += 0.2
                     p.px(fx + x, fy + y, mix(c, DUST, min(0.75, amount)))
+
+
+BOG = (112, 134, 110)
+BOG_D = (70, 92, 76)
+WEED = (56, 84, 46)
+WEED_D = (36, 56, 36)
+WEED_L = (92, 124, 60)
+
+
+def drown(p, boxes):
+    """A long time under: everything gone the grey-green of the water, darker low down, blotched, and slime in the folds."""
+    for b in boxes:
+        for face, (fx, fy, fw, fh) in b.faces().items():
+            for x in range(fw):
+                for y in range(fh):
+                    c = p.tex.getpixel((fx + x, fy + y))
+                    if c[3] == 0 or c[:3] in (BLACK, EMBER):
+                        continue
+                    amount = 0.42 + 0.25 * blotch_(f'bog{b.part}{face}', x, y, 2.8)
+                    c = mix(c, BOG if blotch_(f'bog2{b.part}{face}', x, y, 2.0) < 0.62 else BOG_D, amount)
+                    if blotch_(f'slime{b.part}{face}', x, y, 1.6) > 0.76:
+                        c = mix(c, WEED, 0.6)
+                    p.px(fx + x, fy + y, c)
 
 
 def make(kind, seed):
@@ -452,6 +477,16 @@ def make(kind, seed):
         for x in range(8):
             for z in range(4):
                 p.put(body, 'top', x, z, LEATHER)
+    elif kind == 'drowned':
+        # what he went under in: a linen shirt gone to threads, wool breeches, one boot
+        cloth_rows(p, body, range(0, 10), LINEN_D, shade(LINEN_D, 0.75), rnd)
+        cloth_rows(p, ra, range(0, 5), LINEN_D, shade(LINEN_D, 0.75), rnd)
+        cloth_rows(p, la, range(0, 3), LINEN_D, shade(LINEN_D, 0.75), rnd)
+        for b in (rl, ll):
+            cloth_rows(p, b, range(0, 8), WOOL_D, shade(WOOL_D, 0.8), rnd)
+        cloth_rows(p, rl, range(8, 12), BOOT, shade(BOOT, 0.8), rnd, ragged=False)
+        p.band(body, 9, ROPE)
+        drown(p, [body, ra, la, rl, ll, head])
     elif kind == 'watchman':
         # the night watch: a long dark coat with brass buttons, a wide belt, tall boots, gloves
         for b, rows in ((body, range(0, 12)), (ra, range(0, 9)), (la, range(0, 9)), (rl, range(0, 6)), (ll, range(0, 6))):
@@ -719,6 +754,19 @@ def make(kind, seed):
             c = STONE_D
         return shade(c, {'top': 1.1, 'bottom': 0.7}.get(face, 0.95))
     p.fill_box(load, stone)
+    # ---- the Mire's
+    def weed(face, px, py, fw, fh, r):
+        if face == 'bottom':
+            return None
+        if face == 'top':
+            return shade(WEED if (px + py) % 3 else WEED_L, 1.05) if blotch_('weedtop', px, py, 1.8) > 0.25 else None
+        long = 2 + int(blotch_(f'weedlen{face}', px, 0, 0.9) * (fh - 2))
+        if face == 'front' and 1 <= px <= fw - 2:
+            long = min(long, 2 if 2 <= px <= fw - 3 else 6)        # the face is not covered: two hanks beside it
+        if py >= long or (px % 3 == 1 and py > 1):
+            return None
+        return shade(WEED_D if px % 3 == 2 else (WEED_L if blotch_(f'weedc{face}', px, py, 1.5) > 0.7 else WEED), 1.05 - 0.04 * py)
+    p.fill_box(M.parts['weeds']['boxes'][0], weed)
     keg, fuse = M.parts['keg']['boxes']
 
     def keg_paint(face, px, py, fw, fh, r):
@@ -736,7 +784,7 @@ def make(kind, seed):
 
 
 EXTRAS = ('collar', 'shackle', 'kettle_hat', 'pauldron', 'hood_tail', 'quiver', 'cap', 'bulk', 'belly', 'apron', 'brawn_r', 'brawn_l', 'coat_tail',
-          'candle_cap', 'barrow', 'keg')
+          'candle_cap', 'barrow', 'keg', 'weeds')
 KIND_SHOW = {
     'prisoner': ('collar', 'shackle'),
     'guard': ('kettle_hat', 'pauldron'),
@@ -748,6 +796,7 @@ KIND_SHOW = {
     'digger': ('candle_cap',),
     'barrowman': ('barrow', 'brawn_r', 'brawn_l'),
     'sapper': ('hood_tail', 'keg', 'coat_tail'),
+    'drowned': ('weeds',),
 }
 KIND_HIDE = {kind: tuple(e for e in EXTRAS if e not in shown) for kind, shown in KIND_SHOW.items()}
 STOOP = {'body': (0.24, 0, 0), 'right_leg': {'off': (0, -0.4, 2.9)}, 'left_leg': {'off': (0, -0.4, 2.9)}, 'head': (0.18, 0, 0),
@@ -785,7 +834,7 @@ PICK_DOWN = hips(dict(STOOP, right_arm=(0.25, 0, -0.3), left_arm=(-0.05, 0, 0.5)
 if __name__ == '__main__':
     M.write_java(JAVA)
     shots = []
-    for i, kind in enumerate(('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman', 'digger', 'barrowman', 'sapper')):
+    for i, kind in enumerate(('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman', 'digger', 'barrowman', 'sapper', 'drowned')):
         tex = make(kind, 100 + i)
         tex.save(f'{A}/textures/entity/withered_{kind}.png')
         hidden = KIND_HIDE[kind]

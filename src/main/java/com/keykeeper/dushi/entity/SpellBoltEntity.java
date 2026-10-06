@@ -34,7 +34,9 @@ public class SpellBoltEntity extends ThrowableItemProjectile {
         /** The chaplain's spear of light. */
         LIGHT_SPEAR("light_spear", 0.0, 0.0),
         /** The chaplain's second phase: black fire that bursts. */
-        DARK_FLAME("dark_flame", 0.0, 2.2);
+        DARK_FLAME("dark_flame", 0.0, 2.2),
+        /** What a wisp of the Mire throws: a slow tongue of its own green fire. */
+        WISP_FLAME("wisp_flame", 0.0, 0.0);
 
         public final String id;
         public final double gravity;
@@ -114,6 +116,7 @@ public class SpellBoltEntity extends ThrowableItemProjectile {
                 case FIRE_ORB -> ParticleTypes.FLAME;
                 case LIGHT_SPEAR -> ParticleTypes.END_ROD;
                 case DARK_FLAME -> ParticleTypes.LARGE_SMOKE;
+                case WISP_FLAME -> ParticleTypes.GLOW;
             };
             level.sendParticles(trail, this.getX(), this.getY() + 0.15, this.getZ(), kind == Kind.HEAVY_SHARD ? 3 : 1, 0.05, 0.05, 0.05, 0.0);
         }
@@ -170,7 +173,8 @@ public class SpellBoltEntity extends ThrowableItemProjectile {
             level.sendParticles(ParticleTypes.LAVA, at.x, at.y + 0.2, at.z, 10, kind.burst * 0.3, 0.2, kind.burst * 0.3, 0.0);
             level.playSound(null, at.x, at.y, at.z, Dushi.sound("item.spell.fire_burst"), SoundSource.NEUTRAL, 1.4F, kind == Kind.DARK_FLAME ? 0.7F : 1.0F);
         } else {
-            level.sendParticles(kind == Kind.LIGHT_SPEAR ? ParticleTypes.END_ROD : ParticleTypes.SOUL_FIRE_FLAME, at.x, at.y, at.z, 12, 0.15, 0.15, 0.15, 0.05);
+            level.sendParticles(kind == Kind.LIGHT_SPEAR ? ParticleTypes.END_ROD : kind == Kind.WISP_FLAME ? ParticleTypes.GLOW : ParticleTypes.SOUL_FIRE_FLAME,
+                    at.x, at.y, at.z, 12, 0.15, 0.15, 0.15, 0.05);
             level.playSound(null, at.x, at.y, at.z, Dushi.sound("item.spell.shard_hit"), SoundSource.NEUTRAL, 0.9F, kind == Kind.HEAVY_SHARD ? 0.7F : 1.1F);
         }
         this.discard();

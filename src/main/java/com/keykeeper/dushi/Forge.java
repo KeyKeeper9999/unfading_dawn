@@ -80,6 +80,10 @@ public final class Forge {
             add(list, Dushi.QUARRY_PICK, 600, new Part(Dushi.IRON_WEDGE, 3), scrap(3));
             add(list, Dushi.GREAT_MAUL, 0, new Part(Dushi.TASKMASTER_SOUL, 1), new Part(Dushi.IRON_WEDGE, 6));
             add(list, Dushi.EATER_CLAW, 0, new Part(Dushi.STONE_EATER_SOUL, 1), new Part(Dushi.IRON_WEDGE, 2));
+            // what the Mire grows
+            add(list, Dushi.BOAT_HOOK, 700, new Part(Dushi.WITHE, 3), scrap(3));
+            add(list, Dushi.WALLOWER_FANG, 0, new Part(Dushi.WALLOWER_SOUL, 1), new Part(Dushi.BONE_SCALE, 4));
+            add(list, Dushi.WITHE_SCOURGE, 0, new Part(Dushi.MOTHER_SOUL, 1), new Part(Dushi.WITHE, 6));
             shelf = Category.SUPPLIES;
             add(list, () -> Items.ARROW, 8, 0, scrap(1));
             // shields
