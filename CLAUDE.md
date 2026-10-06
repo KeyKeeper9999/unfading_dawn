@@ -5,6 +5,9 @@ A souls-like inside Minecraft: NeoForge mod for Minecraft 26.3. The owner writes
 The mod is a souls-like "in the spirit of", with its own world, names and designs: it does not copy the characters, bosses,
 items or names of any existing game, and every sound is synthesised from scratch. Keep it that way when adding content.
 
+The story the map tells, the traders and items agreed for the next round, and the places thought of after that are in
+`docs/story.md` (in Russian). Read it before adding content or writing any text of the game, and keep it up to date.
+
 ## Building and checking
 
 Nothing can be built on a machine without access to the NeoForge and Mojang servers, so the build runs in GitHub Actions
