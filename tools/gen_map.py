@@ -1638,7 +1638,8 @@ NO_FOOTING = ('mob_mark', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', '
 # what is opened, in this order, and what the report calls the game from then on (a lord's name: his seals lift)
 STAGES = (('gravedigger', 'after the Gravedigger'), ('overseer', 'after the Overseer'), ('chaplain', 'after the Chaplain'),
           ('quarry_key', "with the key of the Quarrymen's Gate"), ('taskmaster', 'after the Taskmaster'), ('stone_eater', 'after the Stone-Eater'),
-          ('mire_key', 'with the key of the Mire Gate'), ('wallower', 'after the Wallower'), ('weeping_mother', 'after the Weeping Mother'))
+          ('mire_key', 'with the key of the Mire Gate'), ('wallower', 'after the Wallower'), ('weeping_mother', 'after the Weeping Mother'),
+          ('firwood_key', 'with the key of the Wood Wicket'), ('shatun', 'after the Shatun'), ('elder', 'after the Elder'))
 
 
 def is_water(state):

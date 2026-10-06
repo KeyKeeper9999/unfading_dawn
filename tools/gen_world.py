@@ -16,6 +16,7 @@ from collections import deque
 
 import gen_map as castle
 import gen_quarry
+import gen_skete
 import gen_swamp
 import gen_village
 from gen_map import (BARS, BELL, CY, FLOOR_LANTERN, GAL, L0, L1, L2, LANTERN, LC, PASSABLE, VAULT, Map, analyse, cobbles, dark_places, hsh, stairs, valid_blocks)
@@ -117,13 +118,14 @@ class World:
         self.village = gen_village.Village(self.b, VX, VZ, GY)
         self.quarry = gen_quarry.Quarry(self.b, GY, self.village)
         self.swamp = gen_swamp.Swamp(self.b, GY, self.village)
+        self.skete = gen_skete.Skete(self.b, GY)
         self.keep = set()                # columns of the valley where nothing may grow: roads, the feet of walls
 
     # ------------------------------------------------------------------ the shape of the gorge
 
     def in_gorge(self, x, z):
         """The floor of the gorge: round the fortress, the yard before the tunnel, and the town."""
-        if self.village.inside(x, z) or self.swamp.inside(x, z):
+        if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z):
             return True
         wob = (smooth(x, z, 13, 310) - 0.5) * 8
         if OX - 15 + wob <= x <= OX + 128 + 15 - wob and OZ - 15 + wob <= z <= SPUR[0] - wob * 0.5:
@@ -193,8 +195,8 @@ class World:
         far = {}
         queue = deque()
         for (x, z) in self.inside:
-            if self.village.inside(x, z) or self.swamp.inside(x, z):
-                continue                                         # (the Mire plants its own)
+            if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z):
+                continue                                         # (the Mire and the Firwood plant their own)
             hard = (x, z) in self.keep or any(self.height.get((x + dx, z + dz), 1) > 0 for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)))
             if hard:
                 far[(x, z)] = 0
@@ -204,7 +206,7 @@ class World:
             for dx in (-1, 0, 1):
                 for dz in (-1, 0, 1):
                     n = (x + dx, z + dz)
-                    if n in self.inside and n not in far and not self.village.inside(*n) and not self.swamp.inside(*n):
+                    if n in self.inside and n not in far and not self.village.inside(*n) and not self.swamp.inside(*n) and not self.skete.inside(*n):
                         far[n] = far[(x, z)] + 1
                         queue.append(n)
         trees = []
@@ -392,8 +394,8 @@ class World:
         b = self.b
         line = OZ + 151                                           # the north end of the great bridge
         for kind, x, y, z in b.marks:
-            if kind == 'keykeeper' or z >= OZ + 272:
-                continue
+            if kind == 'keykeeper' or z >= OZ + 272 or not OX - 20 <= x <= OX + 150:
+                continue                                         # (only the fortress has tiers: what lies east of its gorge is the Firwood)
             tier = 1 if z >= line or kind == 'overseer' else 2
             state = b.cells[(x, y, z)]
             b.cells[(x, y, z)] = state.replace(']', f',tier={tier}]')
@@ -413,6 +415,8 @@ class World:
             self.height[column] = 0
         b.zone = 'mire'
         self.swamp.build()
+        b.zone = 'firwood'
+        self.skete.build(self.height)
         self.woods()
         self.tiers()
         return b
@@ -494,9 +498,19 @@ def views(w):
         out.append(('time', hour))
         out += [(f'{name}_at_{hour}', eye, look) for name, eye, look in mire if name in ('mire_drowned_end', 'mire_log_road_north')]
     out.append(('time', 18000))
+    fir = w.skete.views()
+    out += fir[:1]                                               # the wicket, from the yard, in the town's night
+    out.append(('time', FOREDAWN))
+    out += fir[1:]
+    for hour in FOREDAWN_TRIED:                                  # the same places at other hours, to choose by
+        out.append(('time', hour))
+        out += [(f'{name}_at_{hour}', eye, look) for name, eye, look in fir if name in ('firwood_track', 'skete_vigil_from_behind', 'skete_white_tent_from_above')]
+    out.append(('time', 18000))
     return out
 
 
+FOREDAWN = 22600                    # the hour of the Firwood: see PlaceNameBlock.FOREDAWN
+FOREDAWN_TRIED = (22200, 22900, 23300)
 MURK = 6000                         # the hour of the Mire: see PlaceNameBlock.MURK
 MURK_TRIED = ()
 
@@ -517,6 +531,7 @@ def probes(w):
     out += [(name, C(*at)) for name, at in castle.PROBES]
     out += w.quarry.probes()
     out += w.swamp.probes()
+    out += w.skete.probes()
     return out
 
 
@@ -526,11 +541,13 @@ EXTRA_COLOURS = castle.EXTRA_COLOURS + [
     ('black_stained', (30, 30, 36)), ('black_wool', (20, 20, 24)), ('dark_oak', (66, 44, 22)), ('place_name', (255, 0, 255)), ('fern', (70, 110, 60)),
     ('short_grass', (90, 130, 70)), ('dirt_path', (148, 122, 65)), ('locked_gate', (255, 120, 0)), ('calcite', (222, 222, 214)), ('diorite', (196, 196, 196)),
     ('dripstone', (132, 104, 88)), ('glow_lichen', (110, 220, 190)), ('rail', (150, 120, 80)), ('spruce', (104, 78, 48)),
+    ('white_wool', (232, 232, 226)), ('light_gray_wool', (176, 176, 170)), ('red_wool', (160, 40, 36)), ('mushroom_stem', (226, 216, 180)),
+    ('candle', (255, 214, 120)), ('packed_mud', (140, 106, 80)), ('rooted_dirt', (124, 90, 62)), ('coarse_dirt', (112, 80, 54)), ('bone_block', (220, 214, 190)),
 ]
 
 if __name__ == '__main__':
     COLOURS[0:0] = EXTRA_COLOURS
-    PASSABLE_MORE = ('fern', 'short_grass', 'hanging_roots')
+    PASSABLE_MORE = ('fern', 'short_grass', 'hanging_roots', 'moss_carpet')
     castle.PASSABLE = castle.PASSABLE + PASSABLE_MORE
     castle.CLEAR = castle.CLEAR + ('fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water', 'hanging_roots', 'waterlogged=true')
     w = World()
@@ -545,8 +562,8 @@ if __name__ == '__main__':
     report, problems, seen = analyse(b)
     spawn = b.spawn
     for kind, x, y, z in b.marks:
-        tall = 6 if kind == 'weeping_mother' else 4 if kind == 'lanky' else 3 if kind in (
-            'gravedigger', 'overseer', 'chaplain', 'knight', 'gilded', 'unhewn', 'taskmaster', 'stone_eater') else 2
+        tall = 6 if kind == 'weeping_mother' else 4 if kind in ('lanky', 'elder') else 3 if kind in (
+            'gravedigger', 'overseer', 'chaplain', 'knight', 'gilded', 'unhewn', 'taskmaster', 'stone_eater', 'shatun', 'waxen') else 2
         for h in range(tall):
             above = b.get(x, y + h, z)
             if h and above not in (None, AIR) and not any(k in str(above) for k in castle.PASSABLE) and not castle.is_water(above):
@@ -572,11 +589,13 @@ if __name__ == '__main__':
                                 ('taskmaster', (55, GY - 10, 525), (43, GY - 10, 535)),
                                 ('stone_eater', (31, GY - 10, 488), (39, GY - 10, 477)),
                                 ('wallower', (gen_swamp.WEIR[0] - 9, GY + 4, gen_swamp.WEIR[1] + 3), (gen_swamp.WEIR[0], GY + 2, gen_swamp.WEIR[1])),
-                                ('weeping_mother', (gen_swamp.ISLE[0] + 2, GY + 5, gen_swamp.ISLE[1] - 10), (gen_swamp.ISLE[0], GY + 4, gen_swamp.ISLE[1]))):
+                                ('weeping_mother', (gen_swamp.ISLE[0] + 2, GY + 5, gen_swamp.ISLE[1] - 10), (gen_swamp.ISLE[0], GY + 4, gen_swamp.ISLE[1])),
+                                ('shatun', (gen_skete.DEN[0] + 2, GY + 4, gen_skete.DEN[1] + 11), (gen_skete.DEN[0], GY + 2, gen_skete.DEN[1] - 6)),
+                                ('elder', (gen_skete.TENT[0] + 1, GY + 4, gen_skete.TENT[1] - 9), (gen_skete.TENT[0], GY + 3, gen_skete.TENT[1] + 4))):
             f.write(f'near_the_{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')
         # and tries the locked gate without its key and with it
-        for key in ('quarry_key', 'mire_key'):
+        for key in ('quarry_key', 'mire_key', 'firwood_key'):
             f.write('gate ' + ' '.join(f'{v_:.2f}' for v_ in world(*sorted(b.seals[key])[0], spawn)) + '\n')
     # the columns that get a biome of their own (MapBuilder lays it): boxes of the world, four blocks wide - the game
     # keeps a biome for every four blocks each way - a line each

@@ -338,7 +338,7 @@ if __name__ == '__main__':
                                 'down': {'uv': [0, 12, 16, 14], 'texture': '#t'}}}]})
     write_json(f'{A}/blockstates/locked_gate.json', {'variants': {
         f'axis={axis},lock={lock}': ({'model': f'{MOD}:block/locked_gate'} if axis == 'x' else {'model': f'{MOD}:block/locked_gate', 'y': 90})
-        for axis in 'xz' for lock in ('quarry', 'mire', 'none')}})
+        for axis in 'xz' for lock in ('quarry', 'mire', 'firwood', 'none')}})
 
     # a hand's depth of water over a floor (ShallowsBlock): a film as thick as two of a block's sixteen parts, murky
     # green, moving slowly. Its picture has see-through parts, which is what makes the game draw it like water.

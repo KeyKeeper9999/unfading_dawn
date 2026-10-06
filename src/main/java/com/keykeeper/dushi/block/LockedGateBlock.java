@@ -46,6 +46,8 @@ public class LockedGateBlock extends Block {
         QUARRY("quarry", () -> Dushi.QUARRY_KEY.get()),
         /** The Mire Gate at the east end of the same street; its key lies in the crack behind the Stone-Eater. */
         MIRE("mire", () -> Dushi.MIRE_KEY.get()),
+        /** The Wood Wicket in the cliff of the yard before the town's north gate; its key lies in the grove behind the Weeping Mother. */
+        FIRWOOD("firwood", () -> Dushi.FIRWOOD_KEY.get()),
         /** A gate whose key is not in the map yet: a way that is being kept for a place still to come. Nothing opens it. */
         NONE("none", () -> null);
 

@@ -325,7 +325,7 @@ public final class SelfTest {
                 kneeling.rouse(dummy);                           // (and he would kneel through it)
             }
             if (mob instanceof com.keykeeper.dushi.entity.SleepMothEntity moth) {
-                moth.startle();
+                moth.startle(dummy);
             }
             mob.setTarget(dummy);
             DRILL.add(new Drill(EntityType.getKey(entry.getKey()).getPath(), mob, dummy, entry.getValue()));

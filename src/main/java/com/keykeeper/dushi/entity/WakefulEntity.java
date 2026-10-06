@@ -43,6 +43,8 @@ public class WakefulEntity extends UnsleepingEntity {
     public static final double SEES = 10.0;
     public static final double SEES_CREEPING = 5.0;
     public static final double SEES_ANGLE = 55.0;
+    /** One who is struck on his knees wakes those kneeling this near him. */
+    public static final double BESIDE = 4.6;
     /** Whoever walks this near it is felt, from any side. Whoever creeps is not. */
     public static final double FEELS = 2.2;
 
@@ -157,7 +159,13 @@ public class WakefulEntity extends UnsleepingEntity {
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         boolean hurt = super.hurtServer(level, source, damage);
         if (hurt && !this.awake()) {
-            this.rouse(source.getEntity() instanceof LivingEntity attacker ? attacker : null);
+            LivingEntity attacker = source.getEntity() instanceof LivingEntity living ? living : null;
+            this.rouse(attacker);
+            // he cries out, and those kneeling at his elbows hear it: nobody on his knees here is struck down alone
+            for (WakefulEntity beside : level.getEntitiesOfClass(WakefulEntity.class, this.getBoundingBox().inflate(BESIDE, 2.0, BESIDE),
+                    other -> other != this && !other.awake() && other.distanceToSqr(this) <= BESIDE * BESIDE)) {
+                beside.rouse(attacker);
+            }
         }
         return hurt;
     }

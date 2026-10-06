@@ -33,6 +33,12 @@ public class PlaceNameBlock extends Block {
      */
     public static final int MURK = 6000;
 
+    /**
+     * The hour of the Black Firwood: the sky has only just begun to pale and there is no sun yet (it comes up at
+     * 23000 or so; the hour with the sun on the edge of the world is being kept for another place).
+     */
+    public static final int FOREDAWN = 22600;
+
     public enum Place implements StringRepresentable {
         STOCKADE("stockade", DUSK, true),
         WARD("ward", DUSK, true),
@@ -62,10 +68,17 @@ public class PlaceNameBlock extends Block {
         WEIR("weir", MURK, true),
         WITHY("withy", MURK, true),
         ISLE("isle", MURK, true),
+        /** The Black Firwood, in a hollow of the plateau north-east of the town: the hour before a dawn that does not come. */
+        FIRWOOD("firwood", FOREDAWN, true),
+        DEN("den", FOREDAWN, true),
+        SKETE("skete", FOREDAWN, true),
+        VIGIL("vigil", FOREDAWN, true),
+        WHITE_TENT("white_tent", FOREDAWN, true),
         /** Says nothing: only turns the hour, in a bend of a passage from which no sky is seen. */
         TO_NIGHT("to_night", NIGHT, false),
         TO_DUSK("to_dusk", DUSK, false),
-        TO_MURK("to_murk", MURK, false);
+        TO_MURK("to_murk", MURK, false),
+        TO_FOREDAWN("to_foredawn", FOREDAWN, false);
 
         public final String id;
         /** The hour of the day at this place; the world's clock is set to it when a player comes. */
