@@ -198,9 +198,9 @@ public class TaskmasterModel extends EntityModel<BossRenderState> {
                 this.rightArm.xRot = Anim.lerp(raise, this.rightArm.xRot, -2.3F);
                 this.rightForearm.xRot = Anim.lerp(raise, this.rightForearm.xRot, -0.6F);
                 this.maul.xRot = Anim.lerp(raise, this.maul.xRot, HELD + 0.2F);
-                this.rightArm.xRot = Anim.lerp(strike, this.rightArm.xRot, -0.75F);
+                this.rightArm.xRot = Anim.lerp(strike, this.rightArm.xRot, -1.5F);
                 this.rightForearm.xRot = Anim.lerp(strike, this.rightForearm.xRot, -0.3F);
-                this.maul.xRot = Anim.lerp(strike, this.maul.xRot, HELD + 1.05F);
+                this.maul.xRot = Anim.lerp(strike, this.maul.xRot, HELD + 1.3F);
             }
             case TaskmasterEntity.THROW -> {
                 // The left hand takes a wedge from the belt, goes back over the shoulder and whips forward.
@@ -242,14 +242,15 @@ public class TaskmasterModel extends EntityModel<BossRenderState> {
         float strike = Anim.pulse(t, hold, impact, stay, end);
         float stuck = Anim.pulse(t, impact + 3.0F, impact + 6.0F, stay - 3.0F, stay);
         this.rightArm.xRot = Anim.lerp(raise, this.rightArm.xRot, -2.85F);
-        this.rightArm.xRot = Anim.lerp(strike, this.rightArm.xRot, -0.95F);
+        this.rightArm.xRot = Anim.lerp(strike, this.rightArm.xRot, -1.65F);
         this.rightForearm.xRot = Anim.lerp(Math.max(raise, strike), this.rightForearm.xRot, -0.22F);
         this.leftArm.xRot = Anim.lerp(raise, this.leftArm.xRot, -2.6F);
-        this.leftArm.xRot = Anim.lerp(strike, this.leftArm.xRot, -0.9F);
+        this.leftArm.xRot = Anim.lerp(strike, this.leftArm.xRot, -1.55F);
         this.leftArm.zRot -= 0.25F * Math.max(raise, strike);
         this.leftForearm.xRot = Anim.lerp(Math.max(raise, strike), this.leftForearm.xRot, -0.35F);
         this.maul.xRot = Anim.lerp(raise, this.maul.xRot, HELD);
-        this.maul.xRot = Anim.lerp(strike, this.maul.xRot, HELD + 0.75F);
+        // (bent as he is, the arms must still reach forward for the iron to lie out before him and not under him)
+        this.maul.xRot = Anim.lerp(strike, this.maul.xRot, HELD + 1.27F);
         this.chest.xRot += -0.28F * raise + 0.55F * strike + Mth.sin(t * 0.9F) * 0.04F * stuck;
         this.chest.yRot += turn * raise - turn * strike;
         this.head.xRot += -0.2F * raise + 0.2F * strike;

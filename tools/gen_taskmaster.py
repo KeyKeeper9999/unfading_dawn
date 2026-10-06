@@ -209,8 +209,8 @@ def make():
 IDLE = {'right_arm': (-0.45, 0, 0.12), 'right_forearm': (-1.75, 0, 0), 'maul': (-0.1, 0, 0), 'left_arm': (0.1, 0, -0.12), 'left_forearm': (-0.3, 0, 0)}
 SLAM_UP = dict(IDLE, right_arm=(-2.85, 0, 0.1), right_forearm=(-0.25, 0, 0), left_arm=(-2.6, 0, -0.35), left_forearm=(-0.4, 0, 0), chest=(-0.28, 0, 0),
                head=(-0.2, 0, 0), maul=(0.0, 0, 0))
-SLAM_DOWN = dict(IDLE, right_arm=(-0.95, 0, 0.1), right_forearm=(-0.2, 0, 0), left_arm=(-0.9, 0, -0.35), left_forearm=(-0.3, 0, 0), chest=(0.55, 0, 0),
-                 head=(0.2, 0, 0), maul=(0.75, 0, 0))
+SLAM_DOWN = dict(IDLE, right_arm=(-1.65, 0, 0.1), right_forearm=(-0.2, 0, 0), left_arm=(-1.55, 0, -0.35), left_forearm=(-0.3, 0, 0), chest=(0.55, 0, 0),
+                 head=(0.2, 0, 0), maul=(1.27, 0, 0))
 SWEEP = dict(IDLE, right_arm=(-1.35, -1.1, 0.1), right_forearm=(-0.15, 0, 0), chest=(0.1, -0.7, 0), maul=(1.1, 0, 0), left_arm=(-1.1, 0.5, -0.3))
 WEDGE_SET = dict(IDLE, body={'off': (0, 5, 0)}, chest=(0.75, 0, 0), head=(-0.3, 0, 0), left_arm=(-0.9, 0, 0.2), left_forearm=(-0.5, 0, 0),
                  right_arm=(-2.3, 0, 0.1), right_forearm=(-0.6, 0, 0), maul=(0.2, 0, 0),

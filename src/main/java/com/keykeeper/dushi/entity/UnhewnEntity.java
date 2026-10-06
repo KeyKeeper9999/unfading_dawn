@@ -164,7 +164,7 @@ public class UnhewnEntity extends SoulsMob {
                     this.playSound(Dushi.sound("entity.unhewn.ambient"), 1.4F, 1.3F);
                 }
                 if (time == SHOVE_IMPACT) {
-                    Vec3 push = this.facing().scale(1.35).add(0.0, 0.38, 0.0);
+                    Vec3 push = this.facing().scale(0.8).add(0.0, 0.38, 0.0);
                     for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0, 1.0, 4.0), this::isFoe)) {
                         Vec3 to = new Vec3(victim.getX() - this.getX(), 0.0, victim.getZ() - this.getZ());
                         double distance = to.length() - victim.getBbWidth() * 0.5 - this.getBbWidth() * 0.5;

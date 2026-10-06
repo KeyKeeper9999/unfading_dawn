@@ -397,7 +397,8 @@ public class WitheredEntity extends SoulsMob {
                 double dx = target.getX() - this.getX();
                 double dz = target.getZ() - this.getZ();
                 double flat = Math.sqrt(dx * dx + dz * dz);
-                pot.shoot(dx, target.getY() - pot.getY() + flat * 0.42, dz, (float) Math.min(1.25, 0.42 + flat * 0.052), 2.5F);
+                // (lobbed at about twenty degrees: the speed that carries a thrown thing that far is as the root of the distance)
+                pot.shoot(dx, target.getY() - pot.getY() + flat * 0.42, dz, (float) Math.min(1.1, 0.21 * Math.sqrt(flat)), 1.5F);
                 level.addFreshEntity(pot);
                 this.playSound(SoundEvents.SNOWBALL_THROW, 1.0F, 0.6F);
             }

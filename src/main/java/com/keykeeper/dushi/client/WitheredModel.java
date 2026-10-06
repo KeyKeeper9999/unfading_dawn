@@ -178,12 +178,12 @@ public class WitheredModel extends HumanoidModel<SoulsRenderState> {
             float tug = Anim.pulse(t, 26.0F, 29.0F, 31.0F, 34.0F) + Anim.pulse(t, 35.0F, 38.0F, 40.0F, 43.0F);
             float held = Math.max(raise, strike);
             this.rightArm.xRot = Anim.lerp(raise, this.rightArm.xRot, -2.75F);
-            this.rightArm.xRot = Anim.lerp(strike, this.rightArm.xRot, -0.55F + 0.25F * tug);
+            this.rightArm.xRot = Anim.lerp(strike, this.rightArm.xRot, -0.3F + 0.25F * tug);
             this.rightArm.zRot = Anim.lerp(held, this.rightArm.zRot, -0.3F);
             this.leftArm.xRot = Anim.lerp(raise, this.leftArm.xRot, -2.55F);
-            this.leftArm.xRot = Anim.lerp(strike, this.leftArm.xRot, -0.75F + 0.25F * tug);
+            this.leftArm.xRot = Anim.lerp(strike, this.leftArm.xRot, -0.6F + 0.25F * tug);
             this.leftArm.zRot = Anim.lerp(held, this.leftArm.zRot, 0.5F);
-            this.body.xRot += -0.3F * raise + 0.45F * strike - 0.2F * tug;
+            this.body.xRot += -0.3F * raise + 0.6F * strike - 0.2F * tug;
             this.head.xRot += -0.35F * raise + 0.1F * strike;
             this.rightLeg.xRot += -0.25F * strike;
             this.leftLeg.xRot += 0.2F * strike;

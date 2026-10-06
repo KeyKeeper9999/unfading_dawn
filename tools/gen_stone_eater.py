@@ -99,7 +99,7 @@ def make():
                                                                 {'top': 1.1, 'bottom': 0.7}.get(face, 0.95)))
         elif b.mat == 'tooth':
             p.fill_box(b, lambda face, px, py, fw, fh, r: (TOOTH if px % 2 == 0 else None) if face in ('front', 'back') else (TOOTH if face in ('right', 'left') else None))
-    # the head: no eyes and no place for them; nostrils; the lips drawn back off the teeth
+    # the head: no eyes and no place for them, not so much as a nostril to be taken for one; the lips drawn back off the teeth
     skull, snout, jaw = boxes['skull'], boxes['snout'], boxes['jaw']
     for side in ('right', 'left'):
         for x in range(5):
@@ -107,9 +107,6 @@ def make():
             p.put(snout, side, x, 4, HIDE_DD)
         for x in range(12):
             p.put(jaw, side, x, 0, MOUTH if x % 2 else TOOTH)
-    for x in (2, 6):
-        p.put(snout, 'front', x, 1, BLACK)
-        p.put(snout, 'front', x, 2, BLACK)
     for x in range(9):
         p.put(snout, 'front', x, 5, TOOTH if x % 2 else MOUTH)
         p.put(snout, 'front', x, 4, HIDE_DD)
