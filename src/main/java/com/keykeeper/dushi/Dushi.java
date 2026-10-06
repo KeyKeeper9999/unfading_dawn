@@ -128,6 +128,14 @@ public class Dushi {
             "entity.wallower.breach", "entity.wallower.gulp",
             "entity.weeping_mother.ambient", "entity.weeping_mother.hurt", "entity.weeping_mother.death", "entity.weeping_mother.wail",
             "entity.weeping_mother.lash", "entity.weeping_mother.slam", "entity.weeping_mother.creak", "entity.weeping_mother.root",
+            "entity.sect.ambient", "entity.sect.hurt", "entity.sect.death", "entity.wakeful.rise", "entity.wakeful.vigil", "entity.waker.knock",
+            "entity.sleeper.cry", "entity.sleeper.fall", "entity.sleeper.snore",
+            "entity.waxen.ambient", "entity.waxen.hurt", "entity.waxen.death", "entity.waxen.slam", "entity.waxen.gather", "entity.waxen.spew",
+            "entity.sleep_moth.flutter", "entity.sleep_moth.hurt", "entity.sleep_moth.death", "entity.sleep_moth.dust",
+            "entity.shatun.ambient", "entity.shatun.hurt", "entity.shatun.death", "entity.shatun.roar", "entity.shatun.swipe", "entity.shatun.slam",
+            "entity.shatun.bite", "entity.shatun.step", "entity.shatun.crash",
+            "entity.elder.ambient", "entity.elder.hurt", "entity.elder.death", "entity.elder.sweep", "entity.elder.chant", "entity.elder.knock",
+            "entity.elder.call", "entity.elder.slumber", "entity.elder.dream", "entity.elder.snore",
             "block.hearth.rest", "block.fog_gate.pass",
             "item.flask.drink", "item.flask.empty", "item.spell.shard", "item.spell.shard_hit", "item.spell.mend", "item.spell.rebuke",
             "item.spell.fire", "item.spell.fire_burst", "item.spell.fizzle",
@@ -262,6 +270,15 @@ public class Dushi {
     public static final DeferredItem<WeaponItem> WALLOWER_FANG = weapon("wallower_fang", 11.0F, 1.7F, 0.0F, 16.0F, 0.5F, 0.8F, 2.0F, 800, Rarity.EPIC);
     public static final DeferredItem<WeaponItem> WITHE_SCOURGE = weapon("withe_scourge", 9.5F, 1.5F, 1.75F, 20.0F, 0.1F, 1.0F, 1.5F, 800, Rarity.EPIC);
 
+    /**
+     * The Black Firwood: the staff a wakeful one holds his candle on, the mallet a waker beats his board with, the spear
+     * the bear was kept awake with, and the Elder's great candle on its pole (it sets alight what it strikes).
+     */
+    public static final DeferredItem<WeaponItem> VIGIL_STAFF = weapon("vigil_staff", 10.0F, 1.35F, 0.75F, 19.0F, 0.5F, 0.6F, 1.5F, 600, Rarity.UNCOMMON);
+    public static final DeferredItem<WeaponItem> WAKER_MALLET = weapon("waker_mallet", 12.0F, 1.05F, 0.0F, 25.0F, 1.0F, 0.0F, 1.5F, 600, Rarity.UNCOMMON);
+    public static final DeferredItem<WeaponItem> BEAR_SPEAR = weapon("bear_spear", 12.5F, 1.25F, 1.5F, 24.0F, 0.7F, 0.6F, 1.6F, 900, Rarity.EPIC);
+    public static final DeferredItem<WeaponItem> GREAT_CANDLE = weapon("great_candle", 12.0F, 1.1F, 1.0F, 26.0F, 0.5F, 0.5F, 1.5F, 900, Rarity.EPIC);
+
     public static final DeferredItem<ShortBowItem> SHORT_BOW = ITEMS.registerItem("short_bow", props -> new ShortBowItem(props.stacksTo(1)));
 
     // ------------------------------------------------------------------ shields
@@ -305,6 +322,10 @@ public class Dushi {
     /** The Mire's two: a scale of a bone pike, and a withe of the willows that walk. */
     public static final DeferredItem<Item> BONE_SCALE = ITEMS.registerSimpleItem("bone_scale");
     public static final DeferredItem<Item> WITHE = ITEMS.registerSimpleItem("withe");
+    /** The Firwood's: the bleached linen of the Unsleeping, the wax of their candles, and a piece of the hide of the bear they would not let sleep. */
+    public static final DeferredItem<Item> LINEN = ITEMS.registerSimpleItem("bleached_linen");
+    public static final DeferredItem<Item> WAX = ITEMS.registerSimpleItem("candle_wax");
+    public static final DeferredItem<Item> SHATUN_HIDE = ITEMS.registerSimpleItem("shatun_hide");
     /** Only the picture of what the Wallower spits; not in the creative tab. */
     public static final DeferredItem<Item> MUD_GLOB = ITEMS.registerSimpleItem("mud_glob");
 
@@ -368,10 +389,16 @@ public class Dushi {
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 18000));
     public static final DeferredItem<SoulItem> MOTHER_SOUL = ITEMS.registerItem("mother_soul",
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 24000));
+    public static final DeferredItem<SoulItem> SHATUN_SOUL = ITEMS.registerItem("shatun_soul",
+            props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 30000));
+    public static final DeferredItem<SoulItem> ELDER_SOUL = ITEMS.registerItem("elder_soul",
+            props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 38000));
     /** Opens the Quarrymen's Gate of the borough: see {@link LockedGateBlock}. */
     public static final DeferredItem<Item> QUARRY_KEY = ITEMS.registerItem("quarry_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     /** Opens the Mire Gate, at the other end of the same street. */
     public static final DeferredItem<Item> MIRE_KEY = ITEMS.registerItem("mire_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
+    /** Opens the wicket in the cliff of the fortress road: the way to the Black Firwood. */
+    public static final DeferredItem<Item> FIRWOOD_KEY = ITEMS.registerItem("firwood_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     public static final DeferredItem<com.keykeeper.dushi.item.PowderPotItem> POWDER_POT = ITEMS.registerItem("powder_pot",
             props -> new com.keykeeper.dushi.item.PowderPotItem(props.stacksTo(16)));
     public static final DeferredItem<ReturnEmberItem> RETURN_EMBER = ITEMS.registerItem("return_ember", props -> new ReturnEmberItem(props.stacksTo(16)));
@@ -441,6 +468,22 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.MudGlobEntity>> MUD_GLOB_ENTITY = ENTITIES.registerEntityType(
             "mud_glob", com.keykeeper.dushi.entity.MudGlobEntity::new, MobCategory.MISC, b -> b.sized(0.4F, 0.4F).clientTrackingRange(6).updateInterval(5));
 
+    /** The Unsleeping of the Black Firwood and what lives beside them. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.WakefulEntity>> WAKEFUL = ENTITIES.registerEntityType(
+            "wakeful", com.keykeeper.dushi.entity.WakefulEntity::new, MobCategory.MONSTER, b -> b.sized(0.6F, 1.95F).eyeHeight(1.74F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.WakerEntity>> WAKER = ENTITIES.registerEntityType(
+            "waker", com.keykeeper.dushi.entity.WakerEntity::new, MobCategory.MONSTER, b -> b.sized(0.6F, 1.95F).eyeHeight(1.74F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.SleeperEntity>> SLEEPER = ENTITIES.registerEntityType(
+            "sleeper", com.keykeeper.dushi.entity.SleeperEntity::new, MobCategory.MONSTER, b -> b.sized(0.6F, 1.95F).eyeHeight(1.6F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.WaxenEntity>> WAXEN = ENTITIES.registerEntityType(
+            "waxen", com.keykeeper.dushi.entity.WaxenEntity::new, MobCategory.MONSTER, b -> b.sized(1.3F, 2.3F).eyeHeight(1.9F).clientTrackingRange(10).fireImmune());
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.SleepMothEntity>> SLEEP_MOTH = ENTITIES.registerEntityType(
+            "sleep_moth", com.keykeeper.dushi.entity.SleepMothEntity::new, MobCategory.MONSTER, b -> b.sized(0.9F, 1.3F).eyeHeight(0.9F).clientTrackingRange(10));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ShatunEntity>> SHATUN = ENTITIES.registerEntityType(
+            "shatun", com.keykeeper.dushi.entity.ShatunEntity::new, MobCategory.MONSTER, b -> b.sized(2.2F, 2.4F).eyeHeight(1.8F).clientTrackingRange(12));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ElderEntity>> ELDER = ENTITIES.registerEntityType(
+            "elder", com.keykeeper.dushi.entity.ElderEntity::new, MobCategory.MONSTER, b -> b.sized(1.0F, 3.2F).eyeHeight(2.75F).clientTrackingRange(12).fireImmune());
+
     /** A root of the Weeping Mother, out of the ground: see {@link com.keykeeper.dushi.entity.RootEntity}. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.RootEntity>> ROOT = ENTITIES.registerEntityType(
             "root", com.keykeeper.dushi.entity.RootEntity::new, MobCategory.MISC, b -> b.sized(1.2F, 2.6F).clientTrackingRange(8).updateInterval(20).fireImmune());
@@ -466,6 +509,13 @@ public class Dushi {
         egg("wisp", WISP);
         egg("wallower", WALLOWER);
         egg("weeping_mother", WEEPING_MOTHER);
+        egg("wakeful", WAKEFUL);
+        egg("waker", WAKER);
+        egg("sleeper", SLEEPER);
+        egg("waxen", WAXEN);
+        egg("sleep_moth", SLEEP_MOTH);
+        egg("shatun", SHATUN);
+        egg("elder", ELDER);
         egg("keykeeper", KEYKEEPER);
         egg("overseer", OVERSEER);
         egg("chaplain", CHAPLAIN);
@@ -489,6 +539,7 @@ public class Dushi {
                 output.accept(IRON_WEDGE.get());
                 output.accept(QUARRY_KEY.get());
                 output.accept(MIRE_KEY.get());
+                output.accept(FIRWOOD_KEY.get());
                 output.accept(NAMELESS_SOUL.get());
                 output.accept(GREAT_SOUL.get());
                 output.accept(OVERSEER_SOUL.get());
@@ -498,6 +549,8 @@ public class Dushi {
                 output.accept(STONE_EATER_SOUL.get());
                 output.accept(WALLOWER_SOUL.get());
                 output.accept(MOTHER_SOUL.get());
+                output.accept(SHATUN_SOUL.get());
+                output.accept(ELDER_SOUL.get());
                 WEAPONS.forEach(item -> output.accept(item.get()));
                 output.accept(SHORT_BOW.get());
                 SHIELDS.forEach(item -> output.accept(item.get()));
@@ -508,6 +561,9 @@ public class Dushi {
                 output.accept(RUST_SCRAP.get());
                 output.accept(BONE_SCALE.get());
                 output.accept(WITHE.get());
+                output.accept(LINEN.get());
+                output.accept(WAX.get());
+                output.accept(SHATUN_HIDE.get());
                 output.accept(SCHOLAR_STAFF.get());
                 output.accept(PRAYER_BEADS.get());
                 output.accept(EMBER_GLOVE.get());
@@ -541,6 +597,13 @@ public class Dushi {
             event.put(WISP.get(), com.keykeeper.dushi.entity.WispEntity.createAttributes().build());
             event.put(WALLOWER.get(), com.keykeeper.dushi.entity.WallowerEntity.createAttributes().build());
             event.put(WEEPING_MOTHER.get(), com.keykeeper.dushi.entity.WeepingMotherEntity.createAttributes().build());
+            event.put(WAKEFUL.get(), com.keykeeper.dushi.entity.WakefulEntity.createAttributes().build());
+            event.put(WAKER.get(), com.keykeeper.dushi.entity.WakerEntity.createAttributes().build());
+            event.put(SLEEPER.get(), com.keykeeper.dushi.entity.SleeperEntity.createAttributes().build());
+            event.put(WAXEN.get(), com.keykeeper.dushi.entity.WaxenEntity.createAttributes().build());
+            event.put(SLEEP_MOTH.get(), com.keykeeper.dushi.entity.SleepMothEntity.createAttributes().build());
+            event.put(SHATUN.get(), com.keykeeper.dushi.entity.ShatunEntity.createAttributes().build());
+            event.put(ELDER.get(), com.keykeeper.dushi.entity.ElderEntity.createAttributes().build());
             event.put(KEYKEEPER.get(), KeykeeperEntity.createAttributes().build());
             event.put(OVERSEER.get(), OverseerEntity.createAttributes().build());
             event.put(CHAPLAIN.get(), ChaplainEntity.createAttributes().build());

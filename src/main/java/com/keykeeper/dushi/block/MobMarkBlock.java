@@ -68,7 +68,14 @@ public class MobMarkBlock extends Block implements EntityBlock {
         LANKY("lanky", () -> Dushi.LANKY.get(), false),
         WISP("wisp", () -> Dushi.WISP.get(), false),
         WALLOWER("wallower", () -> Dushi.WALLOWER.get(), true),
-        WEEPING_MOTHER("weeping_mother", () -> Dushi.WEEPING_MOTHER.get(), true);
+        WEEPING_MOTHER("weeping_mother", () -> Dushi.WEEPING_MOTHER.get(), true),
+        WAKEFUL("wakeful", () -> Dushi.WAKEFUL.get(), false),
+        WAKER("waker", () -> Dushi.WAKER.get(), false),
+        SLEEPER("sleeper", () -> Dushi.SLEEPER.get(), false),
+        WAXEN("waxen", () -> Dushi.WAXEN.get(), false),
+        MOTH("moth", () -> Dushi.SLEEP_MOTH.get(), false),
+        SHATUN("shatun", () -> Dushi.SHATUN.get(), true),
+        ELDER("elder", () -> Dushi.ELDER.get(), true);
 
         public final String id;
         private final Supplier<EntityType<? extends Mob>> type;

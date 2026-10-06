@@ -71,6 +71,20 @@ public final class DushiClient {
                 context -> new QuarryRenderer<>(context, new WallowerModel(context.bakeLayer(WallowerModel.LAYER)), "wallower", 2.0F, true, true));
         event.registerEntityRenderer(Dushi.WEEPING_MOTHER.get(),
                 context -> new QuarryRenderer<>(context, new WeepingMotherModel(context.bakeLayer(WeepingMotherModel.LAYER)), "weeping_mother", 1.6F, true, true));
+        event.registerEntityRenderer(Dushi.WAKEFUL.get(), context -> new QuarryRenderer<>(context,
+                new SectModel(context.bakeLayer(SectModel.LAYER), SectModel.Kind.WAKEFUL), "wakeful", 0.5F, true, true));
+        event.registerEntityRenderer(Dushi.WAKER.get(), context -> new QuarryRenderer<>(context,
+                new SectModel(context.bakeLayer(SectModel.LAYER), SectModel.Kind.WAKER), "waker", 0.5F, true, true));
+        event.registerEntityRenderer(Dushi.SLEEPER.get(), context -> new QuarryRenderer<>(context,
+                new SectModel(context.bakeLayer(SectModel.LAYER), SectModel.Kind.SLEEPER), "sleeper", 0.5F, false, false));
+        event.registerEntityRenderer(Dushi.WAXEN.get(),
+                context -> new QuarryRenderer<>(context, new WaxenModel(context.bakeLayer(WaxenModel.LAYER)), "waxen", 0.9F, true, true));
+        event.registerEntityRenderer(Dushi.SLEEP_MOTH.get(),
+                context -> new QuarryRenderer<>(context, new MothModel(context.bakeLayer(MothModel.LAYER)), "sleep_moth", 0.0F, true, true));
+        event.registerEntityRenderer(Dushi.SHATUN.get(),
+                context -> new QuarryRenderer<>(context, new ShatunModel(context.bakeLayer(ShatunModel.LAYER)), "shatun", 1.6F, true, true));
+        event.registerEntityRenderer(Dushi.ELDER.get(),
+                context -> new QuarryRenderer<>(context, new ElderModel(context.bakeLayer(ElderModel.LAYER)), "elder", 0.8F, "elder_glow", "elder_asleep_glow"));
         Dushi.WITHERED.forEach((kind, type) -> event.registerEntityRenderer(type.get(), context -> new WitheredRenderer(context, kind)));
         event.registerEntityRenderer(Dushi.RUST_KNIGHT.get(), context -> new RustKnightRenderer(context, "rust_knight"));
         event.registerEntityRenderer(Dushi.GILDED_KNIGHT.get(), context -> new RustKnightRenderer(context, "gilded_knight"));
@@ -97,6 +111,11 @@ public final class DushiClient {
         event.registerLayerDefinition(WallowerModel.LAYER, WallowerModel::createLayer);
         event.registerLayerDefinition(WeepingMotherModel.LAYER, WeepingMotherModel::createLayer);
         event.registerLayerDefinition(RootModel.LAYER, RootModel::createLayer);
+        event.registerLayerDefinition(SectModel.LAYER, SectModel::createLayer);
+        event.registerLayerDefinition(WaxenModel.LAYER, WaxenModel::createLayer);
+        event.registerLayerDefinition(MothModel.LAYER, MothModel::createLayer);
+        event.registerLayerDefinition(ShatunModel.LAYER, ShatunModel::createLayer);
+        event.registerLayerDefinition(ElderModel.LAYER, ElderModel::createLayer);
         event.registerLayerDefinition(KeykeeperModel.LAYER, KeykeeperModel::createLayer);
         event.registerLayerDefinition(OverseerModel.LAYER, OverseerModel::createLayer);
         event.registerLayerDefinition(ChaplainModel.LAYER, ChaplainModel::createLayer);

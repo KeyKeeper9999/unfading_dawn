@@ -6,7 +6,6 @@ import com.keykeeper.dushi.entity.SoulsMob;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
@@ -18,16 +17,18 @@ public class QuarryRenderer<T extends SoulsMob, M extends EntityModel<BossRender
     private final Identifier texture;
 
     public QuarryRenderer(EntityRendererProvider.Context context, M model, String name, float shadow, boolean glowAtRest, boolean glowRoused) {
+        this(context, model, name, shadow, glowAtRest ? name + "_glow" : null, glowRoused ? name + "_glow" : null);
+    }
+
+    /** With a picture of its own for what shines in each phase (null: nothing does): the Elder's crown goes out when he sleeps. */
+    public QuarryRenderer(EntityRendererProvider.Context context, M model, String name, float shadow, String glowAtRest, String glowRoused) {
         super(context, model, shadow);
         this.texture = Dushi.id("textures/entity/" + name + ".png");
-        if (glowAtRest || glowRoused) {
-            RenderType glow = RenderTypes.eyes(Dushi.id("textures/entity/" + name + "_glow.png"));
-            if (glowAtRest) {
-                this.addLayer(new GlowLayer<>(this, glow, 1));
-            }
-            if (glowRoused) {
-                this.addLayer(new GlowLayer<>(this, glow, 2));
-            }
+        if (glowAtRest != null) {
+            this.addLayer(new GlowLayer<>(this, RenderTypes.eyes(Dushi.id("textures/entity/" + glowAtRest + ".png")), 1));
+        }
+        if (glowRoused != null) {
+            this.addLayer(new GlowLayer<>(this, RenderTypes.eyes(Dushi.id("textures/entity/" + glowRoused + ".png")), 2));
         }
     }
 

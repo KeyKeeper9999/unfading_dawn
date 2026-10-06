@@ -369,9 +369,17 @@ public abstract class SoulsMob extends Monster {
                 if (knockback > 0.0) {
                     victim.knockback(knockback, this.getX() - victim.getX(), this.getZ() - victim.getZ(), source, damage);
                 }
+                this.struck(level, victim);
             }
         }
         return hits;
+    }
+
+    /**
+     * Called for everybody a blow of {@link #hitArc} or {@link #hitAround} has just hurt (not one that was rolled
+     * through or stopped whole by a shield): for what a blow does besides hurting - setting alight, slowing.
+     */
+    protected void struck(ServerLevel level, LivingEntity victim) {
     }
 
     /** Knocks a raised shield down for a couple of seconds. */
@@ -412,38 +420,51 @@ public abstract class SoulsMob extends Monster {
         Iterator<Pending> all = this.pending.iterator();
         while (all.hasNext()) {
             Pending strike = all.next();
-            Vec3 at = strike.at();
             if (this.clock >= strike.due()) {
                 all.remove();
-                this.hitAround(level, at, strike.radius(), strike.damage(), 0.4, this.damageSources().mobAttack(this));
-                this.rubble(level, at, strike.fromAbove() ? 36 : 14, strike.radius() * 0.5);
-                if (strike.fromAbove()) {
-                    level.playSound(null, at.x, at.y, at.z, Dushi.sound("entity.quarry.rockfall"), this.getSoundSource(), 1.6F, 0.85F + this.random.nextFloat() * 0.3F);
-                }
-            } else if (strike.fromAbove()) {
-                if (this.clock % 2 == 0) {
-                    level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.FALLING_DUST,
-                            net.minecraft.world.level.block.Blocks.CALCITE.defaultBlockState()), at.x, at.y + 4.5, at.z, 3, strike.radius() * 0.4, 0.6,
-                            strike.radius() * 0.4, 0.0);
-                    level.sendParticles(ParticleTypes.WHITE_ASH, at.x, at.y + 0.15, at.z, 4, strike.radius() * 0.45, 0.02, strike.radius() * 0.45, 0.0);
-                }
-                if (this.clock % 4 == 0) {
-                    // the edge of the place it will land on, drawn in smoke on the floor
-                    for (int i = 0; i < 8; i++) {
-                        double angle = i * Math.PI / 4.0 + this.clock * 0.1;
-                        level.sendParticles(ParticleTypes.SMOKE, at.x + Math.cos(angle) * strike.radius(), at.y + 0.1, at.z + Math.sin(angle) * strike.radius(),
-                                1, 0.0, 0.0, 0.0, 0.0);
-                    }
-                }
-                if (strike.due() - this.clock == 5) {
-                    // and the rock itself, on its way down
-                    level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,
-                            net.minecraft.world.level.block.Blocks.CALCITE.defaultBlockState()), at.x, at.y + 4.0, at.z, 40, strike.radius() * 0.35, 2.0,
-                            strike.radius() * 0.35, 0.0);
-                }
-            } else if (this.clock % 2 == 0) {
-                this.rubble(level, at, 3, strike.radius() * 0.3);
+                this.strikeLands(level, strike.at(), strike.radius(), strike.damage(), strike.fromAbove());
+            } else {
+                this.strikeComing(level, strike.at(), strike.radius(), strike.due() - this.clock, strike.fromAbove());
             }
+        }
+    }
+
+    /** The clock the marked places are counted by: for drawing them. */
+    protected int strikeClock() {
+        return this.clock;
+    }
+
+    /** A place marked by {@link #strikeLater} is struck: the hurt, and what is seen and heard of it. Rock, unless a kind says otherwise. */
+    protected void strikeLands(ServerLevel level, Vec3 at, double radius, float damage, boolean fromAbove) {
+        this.hitAround(level, at, radius, damage, 0.4, this.damageSources().mobAttack(this));
+        this.rubble(level, at, fromAbove ? 36 : 14, radius * 0.5);
+        if (fromAbove) {
+            level.playSound(null, at.x, at.y, at.z, Dushi.sound("entity.quarry.rockfall"), this.getSoundSource(), 1.6F, 0.85F + this.random.nextFloat() * 0.3F);
+        }
+    }
+
+    /** Every tick until then: how the place is shown, {@code left} ticks before it is struck. */
+    protected void strikeComing(ServerLevel level, Vec3 at, double radius, int left, boolean fromAbove) {
+        if (fromAbove) {
+            if (this.clock % 2 == 0) {
+                level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.FALLING_DUST,
+                        net.minecraft.world.level.block.Blocks.CALCITE.defaultBlockState()), at.x, at.y + 4.5, at.z, 3, radius * 0.4, 0.6, radius * 0.4, 0.0);
+                level.sendParticles(ParticleTypes.WHITE_ASH, at.x, at.y + 0.15, at.z, 4, radius * 0.45, 0.02, radius * 0.45, 0.0);
+            }
+            if (this.clock % 4 == 0) {
+                // the edge of the place it will land on, drawn in smoke on the floor
+                for (int i = 0; i < 8; i++) {
+                    double angle = i * Math.PI / 4.0 + this.clock * 0.1;
+                    level.sendParticles(ParticleTypes.SMOKE, at.x + Math.cos(angle) * radius, at.y + 0.1, at.z + Math.sin(angle) * radius, 1, 0.0, 0.0, 0.0, 0.0);
+                }
+            }
+            if (left == 5) {
+                // and the rock itself, on its way down
+                level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,
+                        net.minecraft.world.level.block.Blocks.CALCITE.defaultBlockState()), at.x, at.y + 4.0, at.z, 40, radius * 0.35, 2.0, radius * 0.35, 0.0);
+            }
+        } else if (this.clock % 2 == 0) {
+            this.rubble(level, at, 3, radius * 0.3);
         }
     }
 
@@ -461,6 +482,7 @@ public abstract class SoulsMob extends Monster {
                 if (knockback > 0.0) {
                     victim.knockback(knockback, centre.x - victim.getX(), centre.z - victim.getZ(), source, damage);
                 }
+                this.struck(level, victim);
             }
         }
         return hits;

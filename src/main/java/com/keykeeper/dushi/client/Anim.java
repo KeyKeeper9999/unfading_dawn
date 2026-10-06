@@ -20,4 +20,20 @@ final class Anim {
     static float lerp(float amount, float from, float to) {
         return from + (to - from) * amount;
     }
+
+    /**
+     * Moves {@code part} {@code amount} of the way from where it is now to its rest pose turned by ({@code x}, {@code y},
+     * {@code z}): the numbers are those of the pose sheets the generators draw (rotations added to the rest pose).
+     */
+    static void pose(net.minecraft.client.model.geom.ModelPart part, float amount, float x, float y, float z) {
+        net.minecraft.client.model.geom.PartPose rest = part.getInitialPose();
+        part.xRot = lerp(amount, part.xRot, rest.xRot() + x);
+        part.yRot = lerp(amount, part.yRot, rest.yRot() + y);
+        part.zRot = lerp(amount, part.zRot, rest.zRot() + z);
+    }
+
+    /** The same for one axis. */
+    static void pitch(net.minecraft.client.model.geom.ModelPart part, float amount, float x) {
+        part.xRot = lerp(amount, part.xRot, part.getInitialPose().xRot() + x);
+    }
 }
