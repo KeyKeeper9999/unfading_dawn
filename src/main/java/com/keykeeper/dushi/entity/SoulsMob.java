@@ -427,6 +427,20 @@ public abstract class SoulsMob extends Monster {
                             strike.radius() * 0.4, 0.0);
                     level.sendParticles(ParticleTypes.WHITE_ASH, at.x, at.y + 0.15, at.z, 4, strike.radius() * 0.45, 0.02, strike.radius() * 0.45, 0.0);
                 }
+                if (this.clock % 4 == 0) {
+                    // the edge of the place it will land on, drawn in smoke on the floor
+                    for (int i = 0; i < 8; i++) {
+                        double angle = i * Math.PI / 4.0 + this.clock * 0.1;
+                        level.sendParticles(ParticleTypes.SMOKE, at.x + Math.cos(angle) * strike.radius(), at.y + 0.1, at.z + Math.sin(angle) * strike.radius(),
+                                1, 0.0, 0.0, 0.0, 0.0);
+                    }
+                }
+                if (strike.due() - this.clock == 5) {
+                    // and the rock itself, on its way down
+                    level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,
+                            net.minecraft.world.level.block.Blocks.CALCITE.defaultBlockState()), at.x, at.y + 4.0, at.z, 40, strike.radius() * 0.35, 2.0,
+                            strike.radius() * 0.35, 0.0);
+                }
             } else if (this.clock % 2 == 0) {
                 this.rubble(level, at, 3, strike.radius() * 0.3);
             }

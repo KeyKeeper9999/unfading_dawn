@@ -134,7 +134,12 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   turned (yRot). A move with its own animation does not also call `swingArm`: the game's swing is laid over it and
   all that is seen is a wave of the arm.
 - A weapon that is part of a mob's mesh (the spade, the maul) is posed by where its iron is: the pitch of the part
-  is the sum of the arm's, the forearm's and its own, and the move is thought out in that sum (see `TaskmasterModel`).
+  is the sum of the trunk's, the arm's, the forearm's and its own, and the move is thought out in that sum (see
+  `TaskmasterModel`). The part's own rotation in the mesh is already in its `xRot` when `setupAnim` begins: a move
+  that sets a pitch outright must add it (`HELD`), or the weapon lies back along the arm. And a trunk bent far
+  forward takes the hands down with it: for a blow that ends before the mob, the arms must still reach forward.
+- A block state property needs two values at least (the game refuses to register a block otherwise): the second
+  `Lock` is the gate nothing opens.
 - What a mob carries that is not a weapon is part of its model too and takes part in its moves: the barrowman's
   barrow hangs from the model's root, his hands are set on its handles whatever else he does.
 - A mob that is meant to be feared looks it: the butcher has his own bulk on the withered's bones (parts shown only

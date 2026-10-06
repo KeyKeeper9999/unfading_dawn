@@ -200,7 +200,7 @@ public class TaskmasterModel extends EntityModel<BossRenderState> {
                 this.maul.xRot = Anim.lerp(raise, this.maul.xRot, HELD + 0.2F);
                 this.rightArm.xRot = Anim.lerp(strike, this.rightArm.xRot, -1.5F);
                 this.rightForearm.xRot = Anim.lerp(strike, this.rightForearm.xRot, -0.3F);
-                this.maul.xRot = Anim.lerp(strike, this.maul.xRot, HELD + 1.3F);
+                this.maul.xRot = Anim.lerp(strike, this.maul.xRot, HELD + 1.15F);
             }
             case TaskmasterEntity.THROW -> {
                 // The left hand takes a wedge from the belt, goes back over the shoulder and whips forward.
