@@ -928,7 +928,7 @@ public final class ClientSelfTest {
         rest();
         // what lives in the sand and over it
         command(gone, look(0.5, 1.5, 0, 14), summon("sand_crab", -1.5, 4.5, ""), summon("skua", 2.0, 4.5, ""),
-                "fill -3 " + (GROUND - 1) + " 3 4 " + (GROUND - 1) + " 6 minecraft:sand");
+                "fill -3 " + (GROUND - 1) + " 3 4 " + (GROUND - 1) + " 6 minecraft:smooth_sandstone");
         shot("h5_buried_and_sitting", 20);
         phase(2);
         shot("h5_up_and_flying", 16);
@@ -989,7 +989,7 @@ public final class ClientSelfTest {
         command(gone);
 
         // the Capsized: a boat on the sand, and then not
-        command(look(0.5, -1.0, 0, 6), summon("capsized", 0.5, 6.0, ""), "fill -5 " + (GROUND - 1) + " 1 6 " + (GROUND - 1) + " 11 minecraft:sand");
+        command(look(0.5, -1.0, 0, 6), summon("capsized", 0.5, 6.0, ""), "fill -5 " + (GROUND - 1) + " 1 6 " + (GROUND - 1) + " 11 minecraft:smooth_sandstone");
         shot("h8_boat", 30);
         attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.RISE, 12);
         shot("h8_rising");

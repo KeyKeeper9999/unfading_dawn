@@ -524,7 +524,7 @@ def views(w):
 
 
 SUNRISE = 23600                     # the hour of the Morning Wharf: see PlaceNameBlock.SUNRISE
-SUNRISE_TRIED = (23250, 23950, 450)
+SUNRISE_TRIED = ()                  # (23250: the sun half out and the land still dark; 23950 and 450: day already, the mist gone white)
 
 
 FOREDAWN = 22600                    # the hour of the Firwood: see PlaceNameBlock.FOREDAWN

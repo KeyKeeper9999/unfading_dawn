@@ -208,6 +208,7 @@ class Shore:
         self.sea = gy - 1                    # the layer the top of the sea is in
         self.port = Port(b, gy)
         self.kind = {}
+        self.land = {}                       # how far inside the sand a column of wet sand is: the film of water lies at its edge
         self.taken = set()                   # columns something stands on: nothing more is strewn there
         self.mobs = True
         for x in range(width):
@@ -241,6 +242,7 @@ class Shore:
         if land > 6:
             return 'sand'
         if land > 0.8:
+            self.land[(x, z)] = land
             return 'wet'
         if stones > 1.0:
             return 'stones'
@@ -269,7 +271,12 @@ class Shore:
                 b.set(x, g, z, sand(x, g, z))
                 b.set(x, g - 1, z, 'minecraft:sandstone')
             elif kind in ('wet', 'stones'):
-                b.set(x, g, z, FILM if hsh(x, 1, z, 913) < (0.8 if kind == 'wet' else 0.45) else AIR)
+                # the film of water: along the sea's edge of the sand, and in pools among the stones - not strewn cell by cell
+                if kind == 'wet':
+                    film = self.land.get((x, z), 0) < 2.6 + smooth(x, z, 6, 913) * 2.6
+                else:
+                    film = smooth(x, z, 4, 913) > 0.52
+                b.set(x, g, z, FILM if film else AIR)
                 b.set(x, sea, z, sand(x, sea, z) if kind == 'wet' else shingle(x, sea, z))
                 b.set(x, sea - 1, z, 'minecraft:sandstone')
             elif kind == 'wade':
@@ -446,6 +453,11 @@ class Shore:
         b.loot(x1 - 1, g + 1, z0 + 1, 'wharf_shed', 'west')
         b.set(x0 + 1, g + 4, z1 - 2, LANTERN)
         self.shed_at = (x0, z0, x1, z1)
+        # the drying yard behind the back street: two rows of racks
+        yx0, yz0 = p.at(26, 1, 0, 0)
+        yx1, yz1 = p.at(29, 4, 2, 2)
+        self.racks(yx0 + 1, yz0 + 2, yx1 - 1, yz0 + 2, 941)
+        self.racks(yx0 + 1, yz1 - 2, yx1 - 1, yz1 - 2, 942)
         p.street_dressing()
 
     def shed(self, c0, r0, c1, r1, seed):
@@ -520,7 +532,7 @@ class Shore:
         self.keep(176, 686, 180, 692)
         self.keep(189, 686, 193, 692)
 
-    def boat(self, x, y, z, length, afloat=True, keel_up=False, ribs=False, axis='z'):
+    def boat(self, x, y, z, length, afloat=True, keel_up=False, ribs=False, axis='z', wood=TARRED):
         """A karbas: a boat of five strakes, a man and a half long. Afloat it lies in the sea's own layer - a low hull
         of tarred wood, her thwarts showing; ashore she stands on her keel, or lies bottom up; `ribs` is one on the
         stocks, not yet planked."""
@@ -538,9 +550,9 @@ class Shore:
                     if half and s == 0 and k % 2 == 0:
                         b.set(px, y + 1, pz, 'minecraft:spruce_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]')
                 elif keel_up:
-                    b.set(px, y, pz, TARRED)
+                    b.set(px, y, pz, wood)
                     if s == 0 and half:
-                        b.set(px, y + 1, pz, 'minecraft:dark_oak_slab[type=bottom,waterlogged=false]')
+                        b.set(px, y + 1, pz, wood.replace('_planks', '_slab[type=bottom,waterlogged=false]'))
                 elif ribs:
                     if s == 0:
                         b.set(px, y, pz, 'minecraft:stripped_spruce_log[axis=%s]' % axis)
@@ -800,7 +812,7 @@ class Shore:
             for z in range(mz - 1, mz + 2):
                 if self.kind.get((x, z)) in ('wet', 'sand'):
                     continue
-                wide = low or hsh(x, 0, z, 926) < 0.9
+                wide = topy != g + 1 or hsh(x, 0, z, 926) < 0.9      # (a stone missing here and there, where the top is dry)
                 for y in range(sea - 1, topy + 1):
                     b.set(x, y, z, mole_stone(x, y, z) if wide or y < topy else AIR)
                 for y in range(topy + 1, g + 2):
@@ -873,6 +885,30 @@ class Shore:
                 b.set(c[0], y, c[1], stack(c[0], y, c[1]))
             filled += 1
         return filled
+
+    def weir(self, x0, z0, x1, z1, salt=0):
+        """Stakes of an old fish weir, out in the water: a line of them, some gone, for the mist to thin out along."""
+        b, g, sea = self.b, self.g, self.sea
+        steps = max(abs(x1 - x0), abs(z1 - z0))
+        for i in range(0, steps + 1, 2):
+            x, z = round(x0 + (x1 - x0) * i / steps), round(z0 + (z1 - z0) * i / steps)
+            n = hsh(x, 15, z, 943 + salt)
+            if n < 0.25 or self.kind.get((x, z)) != 'deep' or (x, z) in self.taken or not self.clear_of_ways(x, z, 4):
+                continue
+            b.fill(x, sea - 1, z, x, g + (1 if n < 0.7 else 2), z, POST)
+            self.taken.add((x, z))
+
+    def dunes(self):
+        """Under the cliff of the east bay the sand is dry enough for grass: tufts of it, and what the wind has laid there."""
+        b, g = self.b, self.g
+        for (x, z), kind in sorted(self.kind.items()):
+            if kind != 'sand' or (x, z) in self.taken or not 336 <= x <= 428 or z > coast(x) + 8:
+                continue
+            n = hsh(x, 16, z, 944)
+            lee = smooth(x, z, 5, 945)
+            if lee > 0.62 and n < 0.5 and b.free(x, g + 1, z):
+                b.set(x, g, z, 'minecraft:coarse_dirt' if n < 0.12 else sand(x, g, z))
+                b.set(x, g + 1, z, 'minecraft:short_grass' if n < 0.36 else ('minecraft:dead_bush' if n < 0.44 else 'minecraft:fern'))
 
     def clear_of_ways(self, x, z, r):
         return all(self.kind.get((x + dx, z + dz), 'deep') == 'deep' and (x + dx, z + dz) not in self.taken
@@ -991,7 +1027,7 @@ class Shore:
         self.name('shoal', east + 4, sz - 2, east + 5, sz + 2)
         # the boats that are boats
         for bx, bz, axis in ((sx - 6, sz + 4, 'x'), (sx + 5, sz + 6, 'z'), (sx - 7, sz - 5, 'z')):
-            self.boat(bx, sea + 1, bz, 5, afloat=False, keel_up=True, axis=axis)
+            self.boat(bx, sea + 1, bz, 5, afloat=False, keel_up=True, axis=axis, wood=PLANK)      # (grey with weather, like the one that is not a boat)
         self.mob('capsized', sx + 1, sea + 1, sz - 4, 'east')
         self.arch = (east, north)
 
@@ -1112,7 +1148,7 @@ class Shore:
         self.mob('sand_crab', 186, self.on(186, QUAY[1] + 3), QUAY[1] + 3, 'north')
         x0, x1, zend = PIER
         for kind, x, z, facing in (('dockhand', x0 + 2, 708, 'north'), ('skua', x0 + 1, 716, 'north'), ('harpooner', x0 + 3, 730, 'north'),
-                                   ('dockhand', x0 + 1, 738, 'north'), ('oarsman', x0 + 2, 747, 'north'), ('skua', x0 + 3, zend - 2, 'north')):
+                                   ('dockhand', x0 + 1, 738, 'north'), ('oarsman', x0 + 2, 744, 'north'), ('skua', x0 + 3, zend - 2, 'north')):
             self.mob(kind, x, g + 1, z, facing)
         for (jx, jz) in self.jetties:
             self.mob('skua', jx + 1, g + 1, jz - 4, 'north')
@@ -1120,9 +1156,9 @@ class Shore:
         b.zone = 'spit'
         mz = MOLE[2]
         for kind, x, facing in (('skua', 268, 'west'), ('harpooner', 286, 'west'), ('dockhand', 294, 'west'), ('sand_crab', 306, 'west'), ('sand_crab', 309, 'west'),
-                                ('oarsman', 322, 'west'), ('skua', 334, 'west')):
+                                ('dockhand', 322, 'west'), ('skua', 334, 'west')):
             self.mob(kind, x, self.on(x, mz), mz, facing)
-        for kind, x, z, facing in (('sand_crab', 360, 748, 'north'), ('sand_crab', 352, 760, 'north'), ('dockhand', 362, 766, 'north'), ('sand_crab', 364, 778, 'north'),
+        for kind, x, z, facing in (('sand_crab', 360, 748, 'north'), ('sand_crab', 352, 760, 'north'), ('oarsman', 362, 766, 'north'), ('sand_crab', 364, 778, 'north'),
                                    ('skua', 356, 784, 'north'), ('sand_crab', 349, 796, 'north'), ('skua', 352, 818, 'north'),
                                    ('sand_crab', 346, 808, 'north'), ('sand_crab', 344, 826, 'north'), ('sand_crab', 334, 838, 'east'), ('skua', 326, 846, 'east'),
                                    ('sand_crab', 316, 852, 'east'), ('oarsman', 304, 858, 'east'), ('sand_crab', 292, 862, 'east'), ('dockhand', 280, 864, 'east'),
@@ -1177,8 +1213,11 @@ class Shore:
         self.people()
         self.finds()
         self.ways()
+        self.dunes()
         self.strew()
         self.no_pits()
+        for i, line in enumerate(((298, 744, 328, 762), (392, 752, 420, 792), (246, 884, 296, 894), (150, 736, 186, 752))):
+            self.weir(*line, salt=i)
         self.names()
         b.undertow = self.undertow()
 
@@ -1204,12 +1243,12 @@ class Shore:
             ('shore_back_street', (PX + 30, g + 2.6, PZ + 19.5), (PX + 70, g + 3, PZ + 19.5)),
             ('shore_quay_east', (PX + 44, g + 2.6, QUAY[0] - 2), (PX + 100, g + 4, QUAY[0] + 6)),
             ('shore_quay_west', (PX + 84, g + 2.6, QUAY[0] - 2), (PX + 20, g + 4, QUAY[0] + 8)),
-            ('shore_port_from_above', (x1 + 60, g + 44, QUAY[1] + 50), (x0, g + 2, PZ + 24)),
+            ('shore_port_from_above', (x1 + 40, g + 26, QUAY[1] + 34), (x0, g + 2, PZ + 24)),
             ('shore_harbour_office', (self.office[0] - 4, g + 2.6, self.office[1] + 0.5), (self.office[0] + 3, g + 2, self.office[1] + 0.5)),
             ('shore_long_pier', (x0 + 2.5, g + 2.6, QUAY[1] + 2), (x0 + 2.5, g + 4, zend)),
-            ('shore_pier_looking_back', (x0 + 2.5, g + 2.6, zend - 12), (x0 + 2.5, g + 6, QUAY[0] - 10)),
+            ('shore_pier_looking_back', (x0 + 1.5, g + 2.6, 735.5), (x0 + 2.5, g + 6, QUAY[0] - 10)),
             ('shore_the_daybreak_from_the_pier', (x0 + 2.5, g + 2.6, GANGWAY - 16), (cx, g + 10, z0 + 24)),
-            ('shore_the_daybreak_gangway', (x1 + 0.5, g + 2.6, GANGWAY + 0.5), (cx, d + 2, GANGWAY - 6)),
+            ('shore_the_daybreak_gangway', (x1 - 0.5, g + 2.6, GANGWAY + 3.5), (cx, d + 1.5, GANGWAY - 3)),
             ('shore_the_daybreak_deck', (cx - 3.5, d + 1.6, z0 + SHIP_LENGTH - 12), (cx, d + 2, z0 + CABIN)),
             ('shore_the_daybreak_deck_to_the_bow', (cx + 2.5, d + 1.6, z0 + CABIN + 2), (cx, d + 4, z0 + SHIP_LENGTH)),
             ('shore_the_daybreak_from_above', (cx + 34, g + 34, z0 + 54), (cx, g + 4, z0 + 20)),
@@ -1219,20 +1258,20 @@ class Shore:
             ('shore_karbas', (KARBAS[0] - 8, g + 2.6, KARBAS[1] + 6), (KARBAS[0], g + 2.5, KARBAS[1])),
             ('shore_spit_from_its_root', (364.5, g + 2.6, 744.5), (354, g + 2, 800)),
             ('shore_spit_wet_sand', (352.5, sea + 2.6, 800.5), (336, sea + 1.5, 836)),
-            ('shore_spit_from_above', (396, g + 50, 866), (330, g, 810)),
+            ('shore_spit_from_above', (372, g + 22, 846), (330, g, 815)),
+            ('shore_roads_from_the_spit', (344.5, g + 2.6, 800.5), (298, g + 8, 790)),
             ('shore_spit_far_arm', (300.5, sea + 2.6, 858.5), (236, sea + 2, 858)),
             ('shore_strand', (228.5, sea + 2.6, 856.5), (208, sea + 2.5, 834)),
-            ('shore_strand_to_the_arch', (209.5, sea + 2.6, 832.5), (sx + SHOAL_R, sea + 3, sz)),
+            ('shore_strand_to_the_arch', (207.5, sea + 2.6, 830.5), (sx + SHOAL_R + 2, sea + 3, sz)),
             ('shore_shoal', (sx + SHOAL_R - 1.5, sea + 2.6, sz + 0.5), (sx - 4, sea + 2, sz - 3)),
             ('shore_shoal_from_above', (sx + 22, g + 30, sz + 26), (sx, sea, sz)),
-            ('shore_causeway', (sx + 0.5, sea + 2.6, sz - SHOAL_R - 4), (lx, g + 12, lz)),
+            ('shore_causeway', (184.5, sea + 2.6, 804.5), (lx, g + 12, lz)),
             ('shore_lighthouse_foot', (lx + 9.5, self.floor + 1.6, lz + 3.5), (lx, self.floor + 8, lz)),
             ('shore_lighthouse_inside', (lx + 2.5, self.floor + 1.6, lz + 0.5), (lx - 2, self.floor + 6, lz - 1)),
             ('shore_lamp_room', (lx + 1.5, self.lamp + 2.6, lz + 1.5), (lx - 1, self.lamp + 2.5, lz - 1)),
             ('shore_from_the_gallery', (lx + 0.5, self.lamp + 2.6, lz + 4.6), (lx + 30, g + 2, lz + 60)),
             ('shore_from_the_gallery_to_the_port', (lx + 4.6, self.lamp + 2.6, lz - 2.5), (x0, g + 2, QUAY[1])),
             ('shore_lighthouse_from_the_pier', (x0 + 1.5, g + 2.6, zend - 1.5), (lx, g + 14, lz)),
-            ('shore_whole_from_above', (300, g + 110, 930), (270, g, 780)),
         ]
 
     def probes(self):

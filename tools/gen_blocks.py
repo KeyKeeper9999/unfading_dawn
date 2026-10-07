@@ -365,6 +365,8 @@ if __name__ == '__main__':
     write_json(f'{A}/textures/block/sea_shallows.png.mcmeta', {'animation': {'frametime': 5, 'interpolate': True}})
     model = json.load(open(f'{A}/models/block/shallows.json'))
     model['textures'] = {'t': f'{MOD}:block/sea_shallows', 'particle': f'{MOD}:block/sea_shallows'}
+    # (only its top: between two cells of it the sides showed through as a grid of lines over the whole of a sand flat)
+    model['elements'][0]['faces'] = {'up': model['elements'][0]['faces']['up']}
     write_json(f'{A}/models/block/sea_shallows.json', model)
     write_json(f'{A}/blockstates/sea_shallows.json', {'variants': {'': {'model': f'{MOD}:block/sea_shallows'}}})
 

@@ -32,7 +32,12 @@ down from their plans and counted, the marks raising, losing and raising their m
 world the server generated. The client test makes an ordinary world, works on a stone stage at y = 180, and at the end
 flies to the nearest outpost and stockade and takes pictures from fixed places of their plans (`view(...)`).
 
-`git fetch origin ci-out` and read the files; the commit message of `ci-out` names the commit of `main` it was built from.
+`git fetch origin +ci-out:refs/remotes/origin/ci-out` and read the files (the branch is written anew every time: without
+the `+` a fetch into an existing ref is refused and yesterday's files are read); the commit message of `ci-out` names the
+commit of `main` it was built from. A whole run - build, server, client, map, the map's pictures - takes about forty minutes.
+If `client.log` stops after the resources are loaded and there are no pictures, look in it for `Failed to create model`:
+a model class that asks for a part its mesh does not have (see "mirror" below) stops the client at its loading screen,
+and would stop a player's too.
 
 The map (see "The map" below) is built by the same workflow when `.ci/map` exists: a dedicated server is started in a
 flat world of forest (the `generator-settings` in the workflow: its top layer is at y = -47) with
@@ -83,11 +88,12 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `MapBuilder` (build only) and `client/MapSelfTest` (build only) - see "The map".
 - `Gear` - what the rules know about any piece of gear, the game's own included: stamina cost, scaling and backstab of
   a weapon (by item tag for vanilla ones), stability of a shield, weight of everything worn or held, and the burden that
-  follows from the weight (it decides the roll). `ArmorSet` - the mod's seven suits and the gift of each (the prisoner's,
+  follows from the weight (it decides the roll). `ArmorSet` - the mod's eight suits and the gift of each (the prisoner's,
   the guard's, the rusted plate, the chaplain's, the linen of the Unsleeping, a stonecutter's felt and leather, the
-  Mire's coat of scales). A gift is a function of `Gear` asked where the thing happens (`staminaRegen`, `blockCost`,
-  `drowse`, `blastShare`, `wading`); a blow that must be known for what it is says so while it lands (`SoulsMob.rockfall`).
-- `Charm` + `item/CharmItem` - the charms: nine small things, one to a place, one worn at a time (`PlayerSoul.charm`,
+  Mire's coat of scales, a seaman's oilskins). A gift is a function of `Gear` asked where the thing happens (`staminaRegen`,
+  `blockCost`, `drowse`, `blastShare`, `wading`, `thrown`: how far a blow throws - asked by `SoulsMob.shove` and by both
+  of its hits); a blow that must be known for what it is says so while it lands (`SoulsMob.rockfall`).
+- `Charm` + `item/CharmItem` - the charms: eleven small things, one or two to a place, one worn at a time (`PlayerSoul.charm`,
   kept through death). A charm is put on by using it and the one worn before comes back into the hand; it is taken off at
   a hearth (`HearthScreen`) and shown beside the flask (`SoulsHud`). What each gives is asked of the enum where the thing
   happens (`Charm.X.more(player)`, `.less(player)`, `.on(player)`). A new charm is an entry there, an icon, its two texts
@@ -152,8 +158,23 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   `DREAM`, which is rolled through like a blow). `SoulsMob.struck` is what a blow does besides hurting (setting alight,
   slowing); `strikeLands`/`strikeComing` are how a marked place is struck and shown, for a kind that drops something
   other than rock.
-- `block/ShallowsBlock` (`shallows`) - a hand's depth of water over a floor, which is a floor: no fluid in it, so
-  nobody is slowed and the roll works. `block/SludgeBlock` (`sludge`) lies some seconds where a clot burst, slows
+- The Wharf's own (`tools/gen_sailor.py`: the dockhand, the harpooner, the oarsman, the Pilot and the Helmsman on one
+  mesh, drawn at three sizes; `gen_crab.py`, `gen_skua.py`, `gen_capsized.py`; all on `client/QuarryRenderer`):
+  `ShoremanEntity` is what the seamen have in common. `DockhandEntity` hooks and hauls in (`struck` is the hauling);
+  `HarpoonerEntity` throws from afar (`HarpoonEntity`), stabs up close and hops back if there is ground behind him;
+  `OarsmanEntity` sweeps an oar level (the arm down, the trunk turning: `SailorModel.sweep`). `PilotEntity` is not a
+  lord but is met like one, at the lighthouse's foot. `SandCrabEntity` lies in the sand (phase 1) until somebody is
+  near, and goes round its prey sideways; `called()` is one a lord raps up, which leaves nothing and goes back down.
+  `SkuaEntity` sits, is startled, rings its prey and stoops along a line fixed when it starts to fall. The lords:
+  `HelmsmanEntity` (the anchor is a thing thrown, `AnchorEntity`, aimed by flight time, not by `shoot`; while he hauls
+  it back, and giddy after his whirl, he is `open()` and his hide lets twice as much through) and `CapsizedEntity` (a
+  boat on the sand until woken; `housed()` - lying, or sat down under her - is when nothing but planks is struck).
+- `SoulMechanics.undertow` - the sea of the Wharf is waded, not swum: a player in water two blocks deep or more, in the
+  biome `vsratie_dushi:shore`, is warned, held down and taken (a sixth of their health every half second after a moment's
+  grace); the stain is left where they last stood. `waterDepth` counts the column. The map's check knows the same cells
+  (`Map.undertow`, filled by `gen_shore.py`), so nothing is "reached" through deep water.
+- `block/ShallowsBlock` (`shallows`; `sea_shallows` is the same thing in the sea's grey, for the Wharf's sands) - a
+  hand's depth of water over a floor, which is a floor: no fluid in it, so nobody is slowed and the roll works. `block/SludgeBlock` (`sludge`) lies some seconds where a clot burst, slows
   whoever is not of the dead (`makeStuckInBlock`: the roll too), and leaves the shallows again if it lay in them.
   A mob mark can stand in water (`waterlogged`).
 - `client/` - models, renderers, `SoulsHud`, `HearthScreen`, `ShopScreen`, the roll key.
@@ -165,7 +186,11 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
     `gen_chaplain.py`, `gen_hound.py`, `gen_gravedigger.py`, `gen_crawler.py`, `gen_unhewn.py`, `gen_taskmaster.py`,
     `gen_stone_eater.py`, `gen_pike.py`, `gen_lanky.py`, `gen_wisp.py`, `gen_wallower.py`, `gen_mother.py`, `gen_root.py`,
     `gen_sect.py` (the wakeful, the waker and the sleeper on one model), `gen_waxen.py`, `gen_moth.py`, `gen_shatun.py`,
-    `gen_elder.py` - the mobs (the withered are eleven kinds now: the Mire's drowned too);
+    `gen_elder.py`, `gen_sailor.py` (five seamen on one mesh), `gen_crab.py`, `gen_skua.py`, `gen_capsized.py` - the mobs
+    (the withered are eleven kinds now: the Mire's drowned too). `Model.mirror` gives a mirrored part the parent of its
+    source with "right" turned to "left" in the name: a part whose parent is named otherwise (`leg_r1`, `wing_r`) must be
+    given its `parent=`, or the left shin hangs from the right leg - which the preview shows only if one looks, and the
+    game refuses outright;
   - `gen_items.py` (icons), `gen_shields.py` and `gen_blocks.py` (box models), `gen_sounds.py`, `gen_lang.py` (all texts);
   - `gen_armor.py` - worn textures (64x32, the game's armour layout), icons and equipment definitions of the suits;
   - `gen_structures.py` - the buildings, block by block, with top-down and isometric previews; bars, fences and walls
@@ -174,8 +199,11 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   - `check_assets.py` - checks that everything registered has its files and names;
   - `gen_world.py` - the map (not run by `build_assets.sh`: `PYTHONPATH=tools python3 tools/gen_world.py [preview dir]`);
     it puts together the land, `gen_village.py` (the Dead Borough), `gen_map.py` (the High Stockade),
-    `gen_quarry.py` (the White Pit), `gen_swamp.py` (the Mire) and `gen_skete.py` (the Black Firwood);
-  - `balance.py` - the sums of the map's progression (`PYTHONPATH=tools python3 tools/balance.py`).
+    `gen_quarry.py` (the White Pit), `gen_swamp.py` (the Mire), `gen_skete.py` (the Black Firwood) and `gen_shore.py`
+    (the Morning Wharf); without a preview directory it takes about two and a half minutes, with one about five;
+  - `balance.py` - the sums of the map's progression (`PYTHONPATH=tools python3 tools/balance.py`): it reads
+    `map/census.json`, which `gen_world.py` writes (what comes into reach before each lord), so it takes a second -
+    run it after `gen_world.py` when the map changed, and by itself when only numbers in the Java changed.
 
   Never edit generated textures, models, `sounds.json` or the lang files by hand: change the generator and run it.
   Animations (`setupAnim`) are hand-written Java; when a rest pose changes, update the pose in the generator's preview too.
@@ -286,9 +314,26 @@ into it (`tools/gen_world.py`); the country outside the plan is the flat forest 
   round behind the tents, or crept through, or fought all at once. Left for later: a barred way east out of the
   court behind the White Tent.
 
-`gen_world.py` writes `map/high_stockade.plan.txt` (the same format as the buildings; about 3.7 million blocks),
-`map/views.txt`, `map/light.txt` and `map/biomes.txt` (the boxes of the world that get the Mire's biome:
-`MapBuilder.biomes` fills them, and says in `map.log` how many cells it changed). The plan's origin is the place where the newcomer wakes; the game puts it at
+- The Morning Wharf (`tools/gen_shore.py`), south of the town where the plateau falls into the sea, at an hour of its
+  own: the sun just clear of the water (`PlaceNameBlock.SUNRISE`), in a mist that is its biome's
+  (`worldgen/biome/shore.json`, which also gives it its surf and its gulls). It is entered by the Sea Gate, the old
+  south gate of the yard of the first hearth (`locked_gate[lock=shore]`); its key lies in the candle store behind the
+  Elder. Sea Gate -> a passage under the plateau (the clock is turned in its cross leg) -> the port: the town's own
+  houses on a grid of their own (`gen_shore.Port` is a `gen_village.Village`), the harbour office (hearth, anvil), the
+  net loft, the boat shed -> the quay -> the long pier -> the koch "Daybreak" at its end (the Helmsman, on her deck:
+  fog on the gangway from the pier, a seal on the one over her other side) -> the old mole (a gap to jump, a slump to
+  the water) -> the Long Spit: flat sand, wet at its edges, a long hook round the roads where three ships lie at
+  anchor that nobody reaches (a hearth under an upturned karbas at its root) -> the boulder strand -> the shoal in its
+  ring of stacks (the Capsized; an arch in, a sealed arch out) -> a causeway -> the lighthouse on its rock (the Pilot
+  at its foot, a hearth inside, a stair round the wall, the lamp room - kept empty of people for a keeper to come).
+  Levels: quay, piers and dry sand are the valley's ground; the sea's top layer of water is one below it; wet sand
+  lies in that layer under a film (`sea_shallows`); where the sea is waded there is sand a layer lower, where it is
+  deep, two. Left for later: nothing barred yet (a way into the rock under the lighthouse is thought of).
+
+`gen_world.py` writes `map/high_stockade.plan.txt` (the same format as the buildings; about 4.9 million blocks),
+`map/views.txt`, `map/light.txt`, `map/census.json` (for `balance.py`) and `map/biomes.txt` (the boxes of the world that
+get a biome of their own - the Mire's, the shore's: `MapBuilder.biomes` fills them, and says in `map.log` how many cells
+it changed). The plan's origin is the place where the newcomer wakes; the game puts it at
 0, -46, 0 and turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the
 sunset. The dead of the town are of tier 0, of the lower fortress tier 1, of the upper city tier 2 (`World.tiers`);
 the quarry's are of tier 0 and strong by birth. The valley's ground is the plan's layer 16 (`GY`): the flat world has
@@ -360,6 +405,16 @@ Things learnt the hard way:
   (the cells a place keeps free), and a lord is not looked at across the post in the middle of his hollow.
 - A lord whose charge ends against what does not give needs something in his arena that does not give: the Shatun's
   hollow was a bare ring, with nothing but its walls to lead him into.
+- The world's own ground is grass over three of dirt over stone, and `MapBuilder` clears only what is over it: a place
+  lower than the valley (the sea) writes air into the ground's own layer and whatever it wants below.
+- A fence is a block to the check and a block and a half to the game: a deck one step higher than another, with the
+  lower one's rail beside it, is a way overboard to the check. The Daybreak's deck is one level from end to end, her
+  cabin's roof has no way up, and nothing on her deck stands within two cells of the rail.
+- Fog in the open needs a doorway built for it: posts and a beam on a ship, an arch of rock on a shoal.
+- What the game does to a biome's colours by the hour is in its `data/minecraft/timeline/day.json`: every hour multiplies
+  fog, sky and the sky's light (at 23600 by about 0.7, 0.7 and 0.55). `.ci/ref.txt` lists files of the game's jar to copy
+  into `ci-out/ref/` - that is how its own biomes were read for the shape of `minecraft:audio/ambient_sounds`.
+- Boulders strewn by chance make pits: `Shore.no_pits` fills whatever on the strand is not come to from its way.
 
 Souls and levels. A level costs `100 + 20 n + 2 n^2` souls, `n` being the level less one (`PlayerSoul.levelCost`): it grows
 with the square of the level. (It used to grow by a tenth of itself each level, which is the same to the thirties and
@@ -373,6 +428,7 @@ level he is met at; the dead of the place are priced so that the script's "meant
 Balance (see `tools/balance.py`): one clearing of the town brings a player to about level 10-12 before the Gravedigger;
 the lower fortress to about 18 before the Overseer; the upper city to about 29 before the Chaplain; the quarry to
 about 35 before the Taskmaster and 39 before the Stone-Eater; the Mire to about 46 before the Wallower and 50 before
-the Weeping Mother; the Firwood to about 55 before the Shatun and 60 before the Elder. The fortress was
+the Weeping Mother; the Firwood to about 55 before the Shatun and 60 before the Elder; the Wharf to about 66 before
+the Helmsman and 70 before the Capsized. The fortress was
 first tuned for a newcomer; its tiers make up for the levels a player now brings to it. When mobs, weapons, tiers or
 the map change, run it again.

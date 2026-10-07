@@ -18,6 +18,11 @@
 за той, что плачет. Те, кто в скиту стоит на коленях, видят только то, что перед ними, и чуют
 того, кто идёт за спиной в полный рост; кто крадётся - того не чуют. Будильщик глядит по сторонам:
 увидит - поднимет остальных. Скит можно обойти за шатрами, можно прокрасться, можно драться.
+Старые южные ворота во дворе первого очага - Морские. За ними ход под скалой и Утренняя пристань:
+порт под обрывом, длинный пирс и коч «Заря» у его конца, старый мол, Долгая коса, каменная гряда,
+отмель и маяк. Там утро: солнце только что встало из моря. Ключ от Морских ворот - в скиту, в свечной
+кладовой за Белым шатром. Море там переходят вброд, а не плавают: где глубже колена, тянет на дно.
+С пирсов и с мола лучше не падать.
 Обереги: возьми в руку и нажми правую кнопку; носят один, снять можно у очага.
 
 Карта идёт в режиме приключения: блоки не ломаются, границы - стены и скалы ущелья.
@@ -34,4 +39,8 @@ The gate at the east end of the same street leads to the Mire; its key lies at t
 The Wood Wicket, in the cliff of the yard between the town's north gate and the road tunnel, leads to the Black Firwood
 and the skete of the Unsleeping; its key lies in the grove behind the Weeping Mother. Those who kneel there see what is
 before them and feel who walks behind them; whoever creeps behind them they do not know of.
+The old south gate of the yard of the first hearth is the Sea Gate: behind it a passage leads down to the Morning Wharf -
+a port, a long pier with the cog "Daybreak" at its end, an old mole, the Long Spit, a strand of boulders, a shoal and a
+lighthouse, at sunrise. Its key lies in the skete, in the candle store behind the White Tent. The sea there is waded, not
+swum: where it is deeper than the knee it takes you under.
 Charms: take one in your hand and right click; one is worn at a time, and it is taken off at a hearth.
