@@ -819,6 +819,236 @@
       "vsratie_dushi:elder/snore2"
     ]
   },
+  "entity.sailor.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sailor.ambient",
+    "sounds": [
+      "vsratie_dushi:sailor/ambient1",
+      "vsratie_dushi:sailor/ambient2"
+    ]
+  },
+  "entity.sailor.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sailor.hurt",
+    "sounds": [
+      "vsratie_dushi:sailor/hurt"
+    ]
+  },
+  "entity.sailor.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sailor.death",
+    "sounds": [
+      "vsratie_dushi:sailor/death"
+    ]
+  },
+  "entity.sailor.hook": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sailor.hook",
+    "sounds": [
+      "vsratie_dushi:sailor/hook"
+    ]
+  },
+  "entity.sailor.throw": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sailor.throw",
+    "sounds": [
+      "vsratie_dushi:sailor/throw"
+    ]
+  },
+  "entity.sailor.oar": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sailor.oar",
+    "sounds": [
+      "vsratie_dushi:sailor/oar"
+    ]
+  },
+  "entity.harpoon.hit": {
+    "subtitle": "subtitles.vsratie_dushi.entity.harpoon.hit",
+    "sounds": [
+      "vsratie_dushi:harpoon/hit"
+    ]
+  },
+  "entity.pilot.whirl": {
+    "subtitle": "subtitles.vsratie_dushi.entity.pilot.whirl",
+    "sounds": [
+      "vsratie_dushi:pilot/whirl"
+    ]
+  },
+  "entity.pilot.lead": {
+    "subtitle": "subtitles.vsratie_dushi.entity.pilot.lead",
+    "sounds": [
+      "vsratie_dushi:pilot/lead"
+    ]
+  },
+  "entity.sand_crab.dig": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sand_crab.dig",
+    "sounds": [
+      "vsratie_dushi:sand_crab/dig"
+    ]
+  },
+  "entity.sand_crab.snap": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sand_crab.snap",
+    "sounds": [
+      "vsratie_dushi:sand_crab/snap1",
+      "vsratie_dushi:sand_crab/snap2"
+    ]
+  },
+  "entity.sand_crab.click": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sand_crab.click",
+    "sounds": [
+      "vsratie_dushi:sand_crab/click1",
+      "vsratie_dushi:sand_crab/click2"
+    ]
+  },
+  "entity.sand_crab.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sand_crab.hurt",
+    "sounds": [
+      "vsratie_dushi:sand_crab/hurt"
+    ]
+  },
+  "entity.sand_crab.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.sand_crab.death",
+    "sounds": [
+      "vsratie_dushi:sand_crab/death"
+    ]
+  },
+  "entity.skua.cry": {
+    "subtitle": "subtitles.vsratie_dushi.entity.skua.cry",
+    "sounds": [
+      "vsratie_dushi:skua/cry1",
+      "vsratie_dushi:skua/cry2"
+    ]
+  },
+  "entity.skua.stoop": {
+    "subtitle": "subtitles.vsratie_dushi.entity.skua.stoop",
+    "sounds": [
+      "vsratie_dushi:skua/stoop"
+    ]
+  },
+  "entity.skua.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.skua.hurt",
+    "sounds": [
+      "vsratie_dushi:skua/hurt"
+    ]
+  },
+  "entity.skua.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.skua.death",
+    "sounds": [
+      "vsratie_dushi:skua/death"
+    ]
+  },
+  "entity.helmsman.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.helmsman.ambient",
+    "sounds": [
+      "vsratie_dushi:helmsman/ambient1",
+      "vsratie_dushi:helmsman/ambient2"
+    ]
+  },
+  "entity.helmsman.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.helmsman.hurt",
+    "sounds": [
+      "vsratie_dushi:helmsman/hurt"
+    ]
+  },
+  "entity.helmsman.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.helmsman.death",
+    "sounds": [
+      "vsratie_dushi:helmsman/death"
+    ]
+  },
+  "entity.helmsman.swing": {
+    "subtitle": "subtitles.vsratie_dushi.entity.helmsman.swing",
+    "sounds": [
+      "vsratie_dushi:helmsman/swing"
+    ]
+  },
+  "entity.helmsman.anchor": {
+    "subtitle": "subtitles.vsratie_dushi.entity.helmsman.anchor",
+    "sounds": [
+      "vsratie_dushi:helmsman/anchor"
+    ]
+  },
+  "entity.helmsman.chain": {
+    "subtitle": "subtitles.vsratie_dushi.entity.helmsman.chain",
+    "sounds": [
+      "vsratie_dushi:helmsman/chain1",
+      "vsratie_dushi:helmsman/chain2"
+    ]
+  },
+  "entity.helmsman.shout": {
+    "subtitle": "subtitles.vsratie_dushi.entity.helmsman.shout",
+    "sounds": [
+      "vsratie_dushi:helmsman/shout"
+    ]
+  },
+  "entity.capsized.ambient": {
+    "subtitle": "subtitles.vsratie_dushi.entity.capsized.ambient",
+    "sounds": [
+      "vsratie_dushi:capsized/ambient1",
+      "vsratie_dushi:capsized/ambient2"
+    ]
+  },
+  "entity.capsized.hurt": {
+    "subtitle": "subtitles.vsratie_dushi.entity.capsized.hurt",
+    "sounds": [
+      "vsratie_dushi:capsized/hurt"
+    ]
+  },
+  "entity.capsized.death": {
+    "subtitle": "subtitles.vsratie_dushi.entity.capsized.death",
+    "sounds": [
+      "vsratie_dushi:capsized/death"
+    ]
+  },
+  "entity.capsized.rise": {
+    "subtitle": "subtitles.vsratie_dushi.entity.capsized.rise",
+    "sounds": [
+      "vsratie_dushi:capsized/rise"
+    ]
+  },
+  "entity.capsized.snap": {
+    "subtitle": "subtitles.vsratie_dushi.entity.capsized.snap",
+    "sounds": [
+      "vsratie_dushi:capsized/snap"
+    ]
+  },
+  "entity.capsized.creak": {
+    "subtitle": "subtitles.vsratie_dushi.entity.capsized.creak",
+    "sounds": [
+      "vsratie_dushi:capsized/creak1",
+      "vsratie_dushi:capsized/creak2"
+    ]
+  },
+  "entity.capsized.slam": {
+    "subtitle": "subtitles.vsratie_dushi.entity.capsized.slam",
+    "sounds": [
+      "vsratie_dushi:capsized/slam"
+    ]
+  },
+  "entity.capsized.knock": {
+    "subtitle": "subtitles.vsratie_dushi.entity.capsized.knock",
+    "sounds": [
+      "vsratie_dushi:capsized/knock1",
+      "vsratie_dushi:capsized/knock2"
+    ]
+  },
+  "ambient.shore.surf": {
+    "subtitle": "subtitles.vsratie_dushi.ambient.shore.surf",
+    "sounds": [
+      {
+        "name": "vsratie_dushi:shore/surf",
+        "stream": true
+      }
+    ]
+  },
+  "ambient.shore.gull": {
+    "subtitle": "subtitles.vsratie_dushi.ambient.shore.gull",
+    "sounds": [
+      "vsratie_dushi:shore/gull1",
+      "vsratie_dushi:shore/gull2",
+      "vsratie_dushi:shore/gull3"
+    ]
+  },
+  "player.undertow": {
+    "subtitle": "subtitles.vsratie_dushi.player.undertow",
+    "sounds": [
+      "vsratie_dushi:player/undertow"
+    ]
+  },
   "entity.keykeeper.ambient": {
     "subtitle": "subtitles.vsratie_dushi.entity.keykeeper.ambient",
     "sounds": [

@@ -17,13 +17,14 @@ spells = re.findall(r'^\s+[A-Z_]+\("(\w+)", SpellSchool', open(f'{J}/Spell.java'
 bolts = re.findall(r'^\s+[A-Z_]+\("(\w+)", [\d.]+, [\d.]+\)', open(f'{J}/entity/SpellBoltEntity.java').read(), re.M)
 kinds = re.findall(r'^\s+[A-Z_]+\("(withered_\w+)"', open(f'{J}/entity/WitheredEntity.java').read(), re.M)
 mobs = kinds + ['rust_knight', 'gilded_knight', 'keykeeper', 'overseer', 'chaplain', 'carrion_hound', 'gravedigger', 'blind_crawler', 'unhewn', 'taskmaster',
-               'stone_eater', 'bone_pike', 'lanky', 'wisp', 'wallower', 'weeping_mother', 'wakeful', 'waker', 'sleeper', 'waxen', 'sleep_moth', 'shatun', 'elder']
+               'stone_eater', 'bone_pike', 'lanky', 'wisp', 'wallower', 'weeping_mother', 'wakeful', 'waker', 'sleeper', 'waxen', 'sleep_moth', 'shatun', 'elder',
+               'dockhand', 'harpooner', 'oarsman', 'pilot', 'sand_crab', 'skua', 'helmsman', 'capsized']
 charms = re.findall(r'^\s+[A-Z_]+\("(\w+)", \d+\)', open(f'{J}/Charm.java').read(), re.M)
-armour = re.findall(r'"((?:prisoner|guard|rust|chaplain|vigil|mason|scale)_\w+)"', open(f'{J}/ArmorSet.java').read())
+armour = re.findall(r'"((?:prisoner|guard|rust|chaplain|vigil|mason|scale|oilskin)_\w+)"', open(f'{J}/ArmorSet.java').read())
 items |= set(armour)
 items |= set(charms) | set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate', 'mob_mark', 'forge'}
 blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name', 'shard_heap', 'locked_gate', 'shallows', 'sludge'}
-entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot', 'powder_pot', 'thrown_wedge', 'mud_glob', 'root'}
+entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot', 'powder_pot', 'thrown_wedge', 'mud_glob', 'root', 'thrown_harpoon', 'thrown_anchor'}
 lang = {l: json.load(open(f'{A}/lang/{l}.json', encoding='utf-8')) for l in ('ru_ru', 'en_us')}
 
 
@@ -79,10 +80,11 @@ for tex in re.findall(r'"(textures/entity/[\w/]+\.png)"', ''.join(open(f).read()
     need(f'{A}/{tex}', 'entity texture')
 for kind in kinds + ['blind_crawler', 'unhewn', 'unhewn_glow', 'taskmaster', 'taskmaster_glow', 'stone_eater', 'stone_eater_glow', 'bone_pike',
                      'bone_pike_glow', 'lanky', 'lanky_glow', 'wisp', 'wisp_glow', 'wallower', 'wallower_glow', 'weeping_mother', 'weeping_mother_glow', 'wakeful', 'wakeful_glow', 'waker', 'waker_glow', 'sleeper',
-                     'waxen', 'waxen_glow', 'sleep_moth', 'sleep_moth_glow', 'shatun', 'shatun_glow', 'elder', 'elder_glow', 'elder_asleep_glow']:
+                     'waxen', 'waxen_glow', 'sleep_moth', 'sleep_moth_glow', 'shatun', 'shatun_glow', 'elder', 'elder_glow', 'elder_asleep_glow',
+                     'dockhand', 'harpooner', 'oarsman', 'pilot', 'pilot_glow', 'helmsman', 'helmsman_glow', 'sand_crab', 'skua', 'capsized', 'capsized_glow']:
     need(f'{A}/textures/entity/{kind}.png', 'entity texture')
 sounds = json.load(open(f'{A}/sounds.json'))
-registered = set(re.findall(r'"((?:entity|ui|block|item|player|music)\.[\w.]+)"', main[main.index('SOUND_NAMES'):main.index('static {', main.index('SOUND_NAMES'))]))
+registered = set(re.findall(r'"((?:entity|ui|block|item|player|music|ambient)\.[\w.]+)"', main[main.index('SOUND_NAMES'):main.index('static {', main.index('SOUND_NAMES'))]))
 used = set(re.findall(r'sound\("([\w.]+)"\)', ''.join(open(f).read() for f in glob.glob(f'{J}/**/*.java', recursive=True))))
 used |= set(re.findall(r'new Net\.Banner\("[\w.]*", [\w.]+, "([\w.]+)"\)', ''.join(open(f).read() for f in glob.glob(f'{J}/**/*.java', recursive=True))))
 for name in registered ^ set(sounds):

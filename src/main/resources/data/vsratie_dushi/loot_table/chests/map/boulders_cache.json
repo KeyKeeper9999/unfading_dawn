@@ -1,0 +1,55 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:great_soul",
+          "weight": 1,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 4,
+                "max": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:return_ember",
+          "weight": 1,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 3,
+                "max": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:oilskin_trousers",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

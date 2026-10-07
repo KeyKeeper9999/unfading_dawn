@@ -39,6 +39,12 @@ public class PlaceNameBlock extends Block {
      */
     public static final int FOREDAWN = 22600;
 
+    /**
+     * The hour of the Morning Wharf: the sun just clear of the sea, and it does not climb. This is the dawn the country
+     * is named for - and the only place in it where it is one. Its mist is the biome's (worldgen/biome/shore.json).
+     */
+    public static final int SUNRISE = 23600;
+
     public enum Place implements StringRepresentable {
         STOCKADE("stockade", DUSK, true),
         WARD("ward", DUSK, true),
@@ -78,7 +84,15 @@ public class PlaceNameBlock extends Block {
         TO_NIGHT("to_night", NIGHT, false),
         TO_DUSK("to_dusk", DUSK, false),
         TO_MURK("to_murk", MURK, false),
-        TO_FOREDAWN("to_foredawn", FOREDAWN, false);
+        TO_FOREDAWN("to_foredawn", FOREDAWN, false),
+        WHARF("wharf", SUNRISE, true),
+        SHIP("ship", SUNRISE, true),
+        MOLE("mole", SUNRISE, true),
+        SPIT("spit", SUNRISE, true),
+        BOULDERS("boulders", SUNRISE, true),
+        SHOAL("shoal", SUNRISE, true),
+        LIGHTHOUSE("lighthouse", SUNRISE, true),
+        TO_SUNRISE("to_sunrise", SUNRISE, false);
 
         public final String id;
         /** The hour of the day at this place; the world's clock is set to it when a player comes. */

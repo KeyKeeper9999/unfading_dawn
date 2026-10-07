@@ -1182,6 +1182,188 @@ for k in (0, 1):
                                       2.0, 0.4, 1.2)
 
 
+# ============================================================== the Morning Wharf
+SALT = ((330, 110, 1.0), (880, 160, 0.7), (1900, 280, 0.3))     # a seaman's throat: wind, salt and shouting over water
+BRASS = ((300, 100, 1.0), (760, 150, 0.9), (1500, 260, 0.45), (2700, 400, 0.18))
+
+
+def sailor_ambient(k):
+    # a breath through a throat full of water, and half a word of a hauling song
+    d = 2.0 + 0.3 * k
+    hum = voice(contour(d, (0, 96 - 8 * k), (0.3, 122 - 8 * k), (0.6, 108 - 8 * k), (1, 88 - 8 * k)), d, SALT, breath=0.9, jitter=0.06, rough=0.5) * env(d, 0.3, 0.8)
+    return reverb(hum * 0.9 + place(d, (0.4, bubbles(1.0, 5 + 2 * k, 180, 520) * 0.35)), 0.9, 0.3, 0.5)
+
+
+S['sailor/ambient1'] = sailor_ambient(0)
+S['sailor/ambient2'] = sailor_ambient(1)
+d = 0.45
+S['sailor/hurt'] = reverb(voice(contour(d, (0, 140), (0.2, 172), (1, 100)), d, SALT, breath=0.9, jitter=0.08, rough=0.7) * env(d, 0.01, 0.3)
+                          + place(d, (0.05, bubbles(0.3, 3, 200, 500) * 0.3)), 0.5, 0.25, 0.3)
+d = 2.3
+S['sailor/death'] = reverb(place(d, (0.0, voice(contour(1.4, (0, 138), (0.2, 120), (1, 62)), 1.4, SALT, breath=1.2, jitter=0.07, rough=0.4) * env(1.4, 0.04, 1.0)),
+                                 (0.7, bubbles(1.2, 12, 150, 480) * 0.6), (1.3, thump(0.5, 84, 40, 0.09) * 0.9), (1.3, lowpass(noise(0.4), 900) * decay(0.4, 0.08) * 0.6)),
+                           1.0, 0.3, 0.6)
+d = 0.7
+S['sailor/hook'] = reverb(place(d, (0.0, whoosh(0.35, 400, 2600, 0.5, 0.4) * 1.2), (0.22, clang(1450, 0.35, strike=0.5) * 0.35),
+                                (0.22, wood_knock(0.25, 420, 0.5) * 0.6), (0.3, creak(0.3, 90, 40, (600, 1300, 2400)) * env(0.3, 0.01, 0.2) * 0.3)), 0.5, 0.2, 0.3)
+d = 0.6
+S['sailor/throw'] = reverb(place(d, (0.0, voice(contour(0.2, (0, 150), (1, 110)), 0.2, SALT, breath=1.4, jitter=0.06, rough=0.5) * env(0.2, 0.02, 0.12) * 0.6),
+                                 (0.06, whoosh(0.5, 300, 3200, 0.3, 0.35) * 1.3)), 0.5, 0.2, 0.3)
+d = 0.8
+S['sailor/oar'] = reverb(place(d, (0.0, whoosh(0.7, 110, 900, 0.45, 0.5) * 1.5), (0.1, lowpass(noise(0.5), 500) * env(0.5, 0.15, 0.3) * 0.6)), 0.6, 0.2, 0.3)
+d = 0.5
+S['harpoon/hit'] = reverb(place(d, (0.0, wood_knock(0.3, 520, 0.5) * 0.9), (0.0, thump(0.3, 150, 60, 0.05) * 1.2), (0.0, clang(1900, 0.3, strike=0.6) * 0.25),
+                                (0.04, lowpass(noise(0.2), 1500) * decay(0.2, 0.04) * 0.6)), 0.4, 0.2, 0.3)
+d = 1.0
+S['pilot/whirl'] = reverb(place(d, *[(0.22 * i, whoosh(0.3, 250, 1800 + 200 * i, 0.5, 0.4) * (0.9 + 0.1 * i)) for i in range(4)],
+                                (0.0, bandpass(noise(d), 1800, 5200) * env(d, 0.3, 0.4) * 0.12)), 0.6, 0.2, 0.3)
+d = 0.9
+S['pilot/lead'] = reverb(place(d, (0.0, thump(0.6, 130, 44, 0.1) * 2.2), (0.0, lowpass(noise(0.3), 900) * decay(0.3, 0.05) * 1.3), (0.0, clang(420, 0.6, strike=0.3) * 0.22),
+                               (0.08, chain(0.4, 3, seed=91) * 0.14)), 0.8, 0.3, 0.5)
+
+# what lives in the sand: dry plates, and nothing in it of a voice
+d = 0.8
+S['sand_crab/dig'] = reverb(place(d, (0.0, bandpass(noise(0.7), 700, 4200) * env(0.7, 0.1, 0.4) * np.clip(lowpass(noise(0.7), 22) * 5 + 0.6, 0, 1.3) * 0.9),
+                                  (0.1, thump(0.4, 110, 60, 0.08) * 0.6), (0.2, crackle(0.5, 40, 2400) * 0.5)), 0.4, 0.15, 0.2)
+for k in (0, 1):
+    S[f'sand_crab/snap{k + 1}'] = reverb(place(0.3, (0.0, wood_knock(0.2, 1500 + 260 * k, 0.25) * 0.9), (0.0, highpass(noise(0.05), 2500) * decay(0.05, 0.006) * 1.1),
+                                               (0.012, wood_knock(0.15, 2100 + 200 * k, 0.2) * 0.4)), 0.3, 0.15, 0.2)
+    S[f'sand_crab/click{k + 1}'] = reverb(place(0.6, *[(float(0.05 + 0.1 * i + 0.02 * ((i * 7 + k * 3) % 3)), wood_knock(0.08, 2300 + 190 * ((i * 5 + k) % 4), 0.12)
+                                                      * (0.3 + 0.12 * (i % 3))) for i in range(5)]), 0.3, 0.15, 0.2)
+d = 0.35
+S['sand_crab/hurt'] = reverb(place(d, (0.0, wood_knock(0.2, 1100, 0.3) * 0.8), (0.0, crackle(0.3, 90, 3000) * decay(0.3, 0.08) * 0.9),
+                                   (0.02, tone(contour(0.25, (0, 2900), (1, 2100)), 0.25) * env(0.25, 0.01, 0.2) * 0.1)), 0.3, 0.15, 0.2)
+d = 0.9
+S['sand_crab/death'] = reverb(place(d, (0.0, wood_knock(0.3, 760, 0.5) * 1.0), (0.0, crackle(0.5, 80, 2600) * decay(0.5, 0.12) * 1.1), (0.1, squelch(0.4, 320) * 0.6),
+                                    (0.4, wood_knock(0.1, 2100, 0.15) * 0.3), (0.52, wood_knock(0.1, 1900, 0.15) * 0.2)), 0.4, 0.2, 0.25)
+
+
+# the skua: a gull's bigger, darker cousin, which takes what others caught
+def bird_cry(d, f0, f1, harsh=0.6, notes=1):
+    out = np.zeros(int(SR * d))
+    n = d / notes
+    for i in range(notes):
+        f = contour(n * 0.92, (0, f0 * 0.8), (0.18, f0), (0.7, (f0 + f1) * 0.5), (1, f1))
+        note = (tone(f, n * 0.92) + 0.6 * tone(f * 2.0, n * 0.92, 0.4) + 0.35 * tone(f * 3.02, n * 0.92, 1.1)) * env(n * 0.92, 0.02, n * 0.4)
+        note = note * (1.0 - harsh + harsh * np.clip(0.55 + 0.45 * np.sin(2 * np.pi * 61 * t(n * 0.92)) + lowpass(noise(n * 0.92), 300) * 2.0, 0, 1.6))
+        a = int(i * n * SR)
+        out[a:a + len(note)] += note[:len(out) - a] * (1.0 - 0.12 * i)
+    return bandpass(out, 500, 6500)
+
+
+for k in (0, 1):
+    S[f'skua/cry{k + 1}'] = reverb(bird_cry(0.9 + 0.2 * k, 1250 - 150 * k, 760 - 80 * k, 0.75, 2 + k) * 0.9, 1.4, 0.3, 0.9)
+d = 0.9
+S['skua/stoop'] = reverb(place(d, (0.0, bird_cry(0.4, 1500, 1050, 0.8) * 0.8), (0.25, whoosh(0.6, 500, 3600, 0.75, 0.35) * 1.2),
+                               (0.2, wingbeats(0.3, 14, 300, 2200) * 0.5)), 0.8, 0.25, 0.5)
+d = 0.4
+S['skua/hurt'] = reverb(place(d, (0.0, bird_cry(0.3, 1650, 1250, 0.95) * 0.9), (0.0, wingbeats(0.4, 22, 300, 2600) * env(0.4, 0.01, 0.25) * 0.7)), 0.5, 0.2, 0.3)
+d = 1.0
+S['skua/death'] = reverb(place(d, (0.0, bird_cry(0.55, 1400, 620, 0.9) * 0.9), (0.2, wingbeats(0.6, 18, 250, 2200) * decay(0.6, 0.2) * 0.9),
+                                (0.7, thump(0.25, 150, 70, 0.04) * 0.6), (0.7, lowpass(noise(0.2), 1600) * decay(0.2, 0.04) * 0.5)), 0.6, 0.25, 0.4)
+
+
+# the Helmsman of the Daybreak: a chest like a cask, a chain across it, and an order nobody has obeyed since
+def helmsman_ambient(k):
+    d = 2.8
+    breath = voice(contour(d, (0, 64 - 5 * k), (0.4, 78 - 5 * k), (1, 58 - 5 * k)), d, BRASS, breath=0.9, jitter=0.06, rough=0.8) * env(d, 0.5, 1.0)
+    return reverb(breath * 1.2 + place(d, (0.5 + 0.3 * k, chain(0.7, 5, seed=93 + k) * 0.2), (1.6, creak(0.6, 70, 34, (240, 560, 1100)) * env(0.6, 0.05, 0.4) * 0.2)),
+                  1.4, 0.35, 0.8)
+
+
+S['helmsman/ambient1'] = helmsman_ambient(0)
+S['helmsman/ambient2'] = helmsman_ambient(1)
+d = 0.7
+S['helmsman/hurt'] = reverb(voice(contour(d, (0, 104), (0.15, 128), (1, 70)), d, BRASS, breath=0.6, jitter=0.09, rough=1.0) * env(d, 0.01, 0.5) * 1.2
+                            + place(d, (0.05, chain(0.4, 4, seed=95) * 0.2)), 1.0, 0.3, 0.6)
+d = 3.8
+S['helmsman/death'] = reverb(place(d, (0.0, voice(contour(2.4, (0, 118), (0.15, 104), (0.6, 74), (1, 40)), 2.4, BRASS, breath=0.9, jitter=0.1, rough=0.9) * env(2.4, 0.04, 1.7) * 1.3),
+                                   (1.5, chain(1.2, 10, seed=97) * 0.35), (2.2, thump(1.2, 80, 26, 0.24) * 2.4), (2.2, clang(210, 1.5, strike=0.3) * 0.5),
+                                   (2.25, lowpass(noise(0.6), 800) * decay(0.6, 0.12) * 1.4), (2.5, creak(1.0, 60, 22, (220, 520, 1000)) * env(1.0, 0.05, 0.8) * 0.5)),
+                             2.0, 0.4, 1.2)
+d = 0.9
+S['helmsman/swing'] = reverb(place(d, (0.0, whoosh(0.8, 90, 800, 0.5, 0.55) * 1.8), (0.1, chain(0.6, 6, seed=99) * 0.3),
+                                   (0.15, lowpass(noise(0.5), 380) * env(0.5, 0.15, 0.3) * 0.9)), 0.8, 0.25, 0.5)
+d = 1.5
+S['helmsman/anchor'] = reverb(place(d, (0.0, thump(1.2, 100, 24, 0.3) * 3.0), (0.0, clang(196, 1.4, strike=0.35) * 0.75), (0.0, clang(523, 0.8, strike=0.5) * 0.25),
+                                    (0.0, wood_knock(0.5, 240, 1.2) * 1.3), (0.02, lowpass(noise(0.7), 900) * decay(0.7, 0.14) * 1.6),
+                                    (0.05, crackle(0.6, 80, 1600) * decay(0.6, 0.16) * 0.8), (0.2, chain(0.8, 7, seed=101) * 0.3)), 1.8, 0.4, 1.1)
+for k in (0, 1):
+    S[f'helmsman/chain{k + 1}'] = reverb(place(0.7, (0.0, chain(0.6, 6 + 2 * k, seed=103 + k) * 0.6), (0.05, lowpass(chain(0.5, 4, seed=107 + k), 2200) * 0.4),
+                                               (0.1, grind(0.4, 300, 1400, seed=11 + k) * env(0.4, 0.05, 0.25) * 0.14)), 0.6, 0.2, 0.4)
+d = 2.0
+S['helmsman/shout'] = reverb(place(d, (0.0, voice(contour(0.5, (0, 96), (0.3, 150), (1, 140)), 0.5, BRASS, breath=0.4, jitter=0.06, rough=0.9) * env(0.5, 0.03, 0.12)),
+                                   (0.55, voice(contour(1.35, (0, 140), (0.1, 196), (0.55, 186), (1, 92)), 1.35, BRASS, breath=0.4, jitter=0.07, rough=1.0) * env(1.35, 0.03, 0.8) * 1.2)),
+                             2.4, 0.45, 1.5)
+
+
+# the Capsized: an old boat's timbers working, and under them something that has no voice at all
+def capsized_ambient(k):
+    d = 2.6
+    return reverb(place(d, (0.0, creak(1.2, 54 - 6 * k, 30, (190, 430, 880)) * env(1.2, 0.1, 0.8) * 0.9), (1.2, creak(0.9, 40, 24, (240, 520, 1040)) * env(0.9, 0.1, 0.6) * 0.6),
+                        (0.3, bubbles(1.6, 8 + 2 * k, 120, 380) * 0.5), (0.8 + 0.4 * k, wood_knock(0.12, 1700, 0.14) * 0.25), (1.0 + 0.4 * k, wood_knock(0.12, 1500, 0.14) * 0.2),
+                        (0.0, lowpass(noise(d), 240, 3) * env(d, 0.8, 1.0) * 0.6)), 1.2, 0.35, 0.8)
+
+
+S['capsized/ambient1'] = capsized_ambient(0)
+S['capsized/ambient2'] = capsized_ambient(1)
+d = 0.7
+S['capsized/hurt'] = reverb(place(d, (0.0, wood_knock(0.4, 300, 1.0) * 1.2), (0.0, crackle(0.5, 80, 1800) * decay(0.5, 0.12) * 1.0),
+                                  (0.05, creak(0.5, 120, 50, (300, 700, 1500)) * env(0.5, 0.01, 0.4) * 0.6), (0.0, squelch(0.4, 220) * 0.7)), 0.8, 0.3, 0.5)
+d = 3.6
+S['capsized/death'] = reverb(place(d, (0.0, creak(1.8, 110, 26, (200, 480, 980)) * env(1.8, 0.02, 1.4) * 1.2), (0.6, crackle(1.4, 70, 1500) * env(1.4, 0.2, 0.9) * 1.2),
+                                   (1.5, thump(1.3, 74, 24, 0.3) * 2.6), (1.5, wood_knock(0.7, 170, 1.8) * 1.4), (1.55, splash(1.2, 1.6, 3600) * 1.1),
+                                   (1.9, bubbles(1.5, 16, 110, 420) * 0.7), (2.4, wood_knock(0.3, 420, 0.6) * 0.4)), 1.8, 0.4, 1.1)
+d = 2.0
+S['capsized/rise'] = reverb(place(d, (0.0, bandpass(noise(1.4), 500, 3800) * env(1.4, 0.3, 0.8) * np.clip(lowpass(noise(1.4), 16) * 5 + 0.7, 0, 1.4) * 1.0),
+                                  (0.2, creak(1.4, 44, 96, (210, 470, 940)) * env(1.4, 0.2, 0.5) * 1.1), (0.5, splash(1.0, 1.4, 3600) * 0.8),
+                                  (0.9, thump(0.9, 70, 30, 0.2) * 1.6), (1.3, bubbles(0.6, 8, 150, 500) * 0.5)), 1.4, 0.35, 0.9)
+d = 0.6
+S['capsized/snap'] = reverb(place(d, (0.0, whoosh(0.25, 300, 2400, 0.7, 0.4) * 1.0), (0.16, wood_knock(0.35, 640, 0.5) * 1.5), (0.16, highpass(noise(0.06), 1800) * decay(0.06, 0.008) * 1.6),
+                                  (0.16, thump(0.3, 180, 70, 0.05) * 1.3), (0.19, wood_knock(0.2, 980, 0.3) * 0.5)), 0.7, 0.25, 0.4)
+for k in (0, 1):
+    S[f'capsized/creak{k + 1}'] = reverb(place(1.1, (0.0, creak(1.0, 70 + 26 * k, 34 + 10 * k, (230 + 40 * k, 540, 1120)) * env(1.0, 0.06, 0.6) * 1.2),
+                                               (0.2, lowpass(noise(0.7), 420) * env(0.7, 0.2, 0.4) * 0.5), (0.5, crackle(0.5, 30, 1600) * 0.35)), 1.0, 0.3, 0.6)
+d = 1.6
+S['capsized/slam'] = reverb(place(d, (0.0, thump(1.3, 86, 22, 0.32) * 3.0), (0.0, wood_knock(0.8, 150, 2.0) * 1.7), (0.0, lowpass(noise(0.6), 1000) * decay(0.6, 0.12) * 1.8),
+                                  (0.02, splash(1.2, 1.6, 4200) * 1.1), (0.1, crackle(0.7, 70, 1500) * decay(0.7, 0.2) * 0.9)), 1.8, 0.4, 1.1)
+for k in (0, 1):
+    S[f'capsized/knock{k + 1}'] = reverb(place(0.6, (0.0, wood_knock(0.5, 250 + 40 * k, 1.5) * 1.5), (0.0, thump(0.4, 110, 50, 0.08) * 1.0),
+                                               (0.0, highpass(noise(0.04), 1500) * decay(0.04, 0.006) * 0.8)), 1.2, 0.35, 0.8)
+
+
+# the shore itself: surf on sand that never quite draws back, gulls, and what the sea does to whoever swims
+def surf(d, waves):
+    """A loop: `waves` swells in it, each a hiss that climbs the sand and a slower suck back; it ends as it begins."""
+    n = int(SR * d)
+    x = np.arange(n) / n
+    swell = np.zeros(n)
+    for i in range(waves):
+        c = (i + 0.37 + 0.11 * np.sin(i * 2.3)) / waves
+        w = 0.085 + 0.02 * np.cos(i * 1.7)
+        dist = np.minimum(np.abs(x - c), 1.0 - np.abs(x - c))
+        rise = np.where(((x - c + 0.5) % 1.0) < 0.5, np.exp(-(dist / (w * 0.55)) ** 2), np.exp(-(dist / (w * 1.7)) ** 2))
+        swell += rise * (0.8 + 0.2 * np.cos(i * 3.1))
+    base = noise(d)
+    hiss = bandpass(base, 900, 6000) * swell ** 1.5
+    wash = lowpass(noise(d), 500, 3) * (0.35 + 0.65 * swell) * 2.2
+    far = lowpass(noise(d), 140, 3) * 2.6
+    out = hiss * 0.9 + wash + far
+    # (the ends are the same noise seen through the same swell: a short crossfade makes the join seamless)
+    k = int(SR * 0.25)
+    out[:k] = out[:k] * np.linspace(0, 1, k) + out[-k:] * np.linspace(1, 0, k)
+    return out[:n - k]
+
+
+S['shore/surf'] = surf(9.25, 2)
+for k in (0, 1, 2):
+    S[f'shore/gull{k + 1}'] = reverb(place(2.4, *[(0.1 + 0.34 * i + 0.05 * ((i + k) % 2), bird_cry(0.3, 1900 - 160 * k + 60 * ((i * 3 + k) % 3), 1500 - 140 * k, 0.35) * (0.22 - 0.03 * i))
+                                                  for i in range(3 + k)]), 2.6, 0.6, 1.6, 3800) * 0.6
+d = 1.6
+S['player/undertow'] = reverb(place(d, (0.0, lowpass(noise(1.5), 320, 3) * env(1.5, 0.5, 0.7) * 2.4), (0.2, bubbles(1.2, 18, 140, 560) * 0.8),
+                                    (0.0, thump(1.4, 62, 30, 0.5) * 1.3), (0.4, whoosh(1.0, 120, 700, 0.6, 0.6) * 1.0)), 1.0, 0.3, 0.6)
+
+
 # ============================================================== events -> files
 EVENTS = {
     'entity.withered.ambient': ['withered/ambient1', 'withered/ambient2', 'withered/ambient3'],
@@ -1255,6 +1437,22 @@ EVENTS = {
     'entity.elder.sweep': ['elder/sweep'], 'entity.elder.chant': ['elder/chant'], 'entity.elder.knock': ['elder/knock'],
     'entity.elder.call': ['elder/call'], 'entity.elder.slumber': ['elder/slumber'], 'entity.elder.dream': ['elder/dream'],
     'entity.elder.snore': ['elder/snore1', 'elder/snore2'],
+    'entity.sailor.ambient': ['sailor/ambient1', 'sailor/ambient2'], 'entity.sailor.hurt': ['sailor/hurt'], 'entity.sailor.death': ['sailor/death'],
+    'entity.sailor.hook': ['sailor/hook'], 'entity.sailor.throw': ['sailor/throw'], 'entity.sailor.oar': ['sailor/oar'],
+    'entity.harpoon.hit': ['harpoon/hit'], 'entity.pilot.whirl': ['pilot/whirl'], 'entity.pilot.lead': ['pilot/lead'],
+    'entity.sand_crab.dig': ['sand_crab/dig'], 'entity.sand_crab.snap': ['sand_crab/snap1', 'sand_crab/snap2'],
+    'entity.sand_crab.click': ['sand_crab/click1', 'sand_crab/click2'], 'entity.sand_crab.hurt': ['sand_crab/hurt'],
+    'entity.sand_crab.death': ['sand_crab/death'],
+    'entity.skua.cry': ['skua/cry1', 'skua/cry2'], 'entity.skua.stoop': ['skua/stoop'], 'entity.skua.hurt': ['skua/hurt'], 'entity.skua.death': ['skua/death'],
+    'entity.helmsman.ambient': ['helmsman/ambient1', 'helmsman/ambient2'], 'entity.helmsman.hurt': ['helmsman/hurt'],
+    'entity.helmsman.death': ['helmsman/death'], 'entity.helmsman.swing': ['helmsman/swing'], 'entity.helmsman.anchor': ['helmsman/anchor'],
+    'entity.helmsman.chain': ['helmsman/chain1', 'helmsman/chain2'], 'entity.helmsman.shout': ['helmsman/shout'],
+    'entity.capsized.ambient': ['capsized/ambient1', 'capsized/ambient2'], 'entity.capsized.hurt': ['capsized/hurt'],
+    'entity.capsized.death': ['capsized/death'], 'entity.capsized.rise': ['capsized/rise'], 'entity.capsized.snap': ['capsized/snap'],
+    'entity.capsized.creak': ['capsized/creak1', 'capsized/creak2'], 'entity.capsized.slam': ['capsized/slam'],
+    'entity.capsized.knock': ['capsized/knock1', 'capsized/knock2'],
+    'ambient.shore.surf': ['shore/surf'], 'ambient.shore.gull': ['shore/gull1', 'shore/gull2', 'shore/gull3'],
+    'player.undertow': ['player/undertow'],
     'entity.keykeeper.ambient': ['keykeeper/ambient1', 'keykeeper/ambient2'],
     'entity.keykeeper.give': ['keykeeper/give'],
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],
@@ -1281,7 +1479,7 @@ if __name__ == '__main__':
         if only_new and os.path.exists(f'{A}/sounds/{name}.ogg'):
             continue
         x = highpass(np.asarray(x, float), 25)
-        if name != 'music/boss':
+        if name not in ('music/boss', 'shore/surf'):                # (a loop keeps its ends)
             x[:64] *= np.linspace(0, 1, 64)
             x[-400:] *= np.linspace(1, 0, 400)
         x = x / (np.max(np.abs(x)) + 1e-9) * (0.8 if name.startswith('music') else 0.89)
@@ -1298,7 +1496,7 @@ if __name__ == '__main__':
             os.remove(wav)
     sounds = {}
     for event, names in EVENTS.items():
-        entries = [{'name': f'{MOD}:{n}', 'stream': True} if n.startswith('music') else f'{MOD}:{n}' for n in names]
+        entries = [{'name': f'{MOD}:{n}', 'stream': True} if n.startswith('music') or n == 'shore/surf' else f'{MOD}:{n}' for n in names]
         sounds[event] = {'subtitle': f'subtitles.{MOD}.{event}', 'sounds': entries}
     with open(f'{A}/sounds.json', 'w') as fh:
         json.dump(sounds, fh, indent=2)
@@ -1310,7 +1508,8 @@ if __name__ == '__main__':
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
         names = [n for n in S if n != 'music/boss']
-        fig, axes = plt.subplots(17, 9, figsize=(36, 51))
+        rows = -(-len(names) // 9)
+        fig, axes = plt.subplots(rows, 9, figsize=(36, 3 * rows))
         axes = axes.ravel()
         for ax, name in zip(axes, names):
             x = np.asarray(S[name], float)

@@ -25,7 +25,11 @@ public enum Charm {
     /** The Firwood: wax of a candle of the vigil. A roll costs less stamina. */
     VIGIL_WAX("vigil_wax", 20),
     /** The Firwood: a claw of the bear that could not sleep. Three hearts more. */
-    SHATUN_CLAW("shatun_claw", 3);
+    SHATUN_CLAW("shatun_claw", 3),
+    /** The wharf: a knot no landsman ties, off the pilot's lamp. A swing costs less stamina. */
+    SEA_KNOT("sea_knot", 12),
+    /** The shoal: what the Capsized grew under its boat. Health comes back by itself, half a heart every so many seconds. */
+    TIDE_PEARL("tide_pearl", 4);
 
     public final String id;
     /** What it gives, as its tooltip says it: a percentage for most, a number for the link and the claw. */

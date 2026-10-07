@@ -91,6 +91,12 @@ public final class Forge {
             add(list, Dushi.WAKER_MALLET, 800, new Part(Dushi.LINEN, 2), scrap(4));
             add(list, Dushi.BEAR_SPEAR, 0, new Part(Dushi.SHATUN_SOUL, 1), new Part(Dushi.SHATUN_HIDE, 2));
             add(list, Dushi.GREAT_CANDLE, 0, new Part(Dushi.ELDER_SOUL, 1), new Part(Dushi.WAX, 6));
+            // what was to go to sea that morning (the pilot's lead is not made: it is taken from him)
+            add(list, Dushi.CARGO_HOOK, 900, new Part(Dushi.TARRED_ROPE, 2), scrap(3));
+            add(list, Dushi.HARPOON, 900, new Part(Dushi.TARRED_ROPE, 3), scrap(4));
+            add(list, Dushi.OAR, 900, new Part(Dushi.TARRED_ROPE, 2), new Part(Dushi.SAILCLOTH, 2));
+            add(list, Dushi.SHIP_ANCHOR, 0, new Part(Dushi.HELMSMAN_SOUL, 1), new Part(Dushi.TARRED_ROPE, 6));
+            add(list, Dushi.CAPSIZED_CLAW, 0, new Part(Dushi.CAPSIZED_SOUL, 1), new Part(Dushi.CRAB_SHELL, 6));
             shelf = Category.SUPPLIES;
             add(list, () -> Items.ARROW, 8, 0, scrap(1));
             // shields
@@ -127,6 +133,10 @@ public final class Forge {
             // the white linen of the Unsleeping, stiffened with their wax
             for (int piece = 0; piece < 4; piece++) {
                 add(list, ArmorSet.VIGIL.pieces().get(piece), 250 * shape[piece], new Part(Dushi.LINEN, shape[piece] + 2), new Part(Dushi.WAX, 1));
+            }
+            // a seaman's oilskins: sailcloth, and a turn of tarred rope to tie them with
+            for (int piece = 0; piece < 4; piece++) {
+                add(list, ArmorSet.OILSKIN.pieces().get(piece), 280 * shape[piece], new Part(Dushi.SAILCLOTH, shape[piece] + 2), new Part(Dushi.TARRED_ROPE, 1));
             }
             shelf = Category.MAGIC;
             // catalysts and spells: written with a soul

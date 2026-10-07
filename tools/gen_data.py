@@ -177,7 +177,17 @@ MAP_CHESTS = {
     'skete_tent': [(M + 'vigil_cowl', 1), (M + 'vigil_wraps', 1), (M + 'bleached_linen', 4)],
     'skete_altar': [(M + 'vigil_wax', 1), (M + 'candle_wax', 4), (GREAT, 2)],
     'skete_wax_yard': [(M + 'vigil_staff', 1), (M + 'candle_wax', 8), (GREAT, 3), (M + 'hot_wax', 1)],
-    'skete_store': [(GREAT, 6), (M + 'return_ember', 3), (M + 'vigil_shift', 1), (M + 'vigil_skirt', 1)],
+    'skete_store': [(GREAT, 6), (M + 'return_ember', 3), (M + 'vigil_shift', 1), (M + 'vigil_skirt', 1), (M + 'shore_key', 1)],      # the key of the Sea Gate
+    # the Morning Wharf (tools/gen_shore.py)
+    'wharf_office': [(GREAT, 3), (M + 'return_ember', 3), (M + 'sailcloth', 4), (M + 'oilskin_smock', 1)],
+    'wharf_loft': [(M + 'harpoon', 1), (M + 'tarred_rope', 4), (GREAT, 2)],                        # the net loft: what the whalers hung up to dry
+    'wharf_shed': [(M + 'cargo_hook', 1), (M + 'tarred_rope', 3), (M + 'tar_pot', 4)],
+    'ship_hold': [(GREAT, 5), (M + 'oilskin_souwester', 1), (M + 'sailcloth', 6), (M + 'return_ember', 2)],
+    'mole_end': [(GREAT, 3), (M + 'crab_shell', 3), (M + 'oar', 1)],
+    'spit_wreck': [(GREAT, 3), (M + 'oilskin_boots', 1), (M + 'crab_shell', 3), (M + 'tarred_rope', 2)],
+    'boulders_cache': [(GREAT, 4), (M + 'return_ember', 3), (M + 'oilskin_trousers', 1)],
+    'lighthouse_cellar': [(GREAT, 4), (M + 'sailcloth', 4), (M + 'tarred_rope', 4), (M + 'crab_shell', 4)],
+    'lighthouse_lamp': [(GREAT, 6), (M + 'sea_knot', 1), (M + 'return_ember', 3)],                 # the keeper's own, hung by the lamp
 }
 for _name, _items in MAP_CHESTS.items():
     CHESTS['map/' + _name] = [pool(item(_id, count=(_n, _n)) if _n > 1 else item(_id)) for _id, _n in _items]
@@ -185,14 +195,14 @@ for _name, _items in MAP_CHESTS.items():
 # ---------------------------------------------------------------------------------------------------- tags and worldgen
 
 TAGS = {
-    f'{MOD}/tags/item/repairs_cloth': [CLOTH, M + 'bleached_linen'],
+    f'{MOD}/tags/item/repairs_cloth': [CLOTH, M + 'bleached_linen', M + 'sailcloth'],
     f'{MOD}/tags/item/repairs_scrap': [SCRAP],
     # where the buildings may stand: any land of the overworld (water and cliffs are ruled out by the structure itself)
     f'{MOD}/tags/worldgen/biome/has_structure': ['#minecraft:is_overworld'],
-    'minecraft/tags/item/head_armor': [M + n for n in ('prisoner_hood', 'guard_hat', 'rust_helm', 'chaplain_mitre', 'vigil_cowl', 'mason_cap', 'scale_hood')],
-    'minecraft/tags/item/chest_armor': [M + n for n in ('prisoner_rags', 'guard_hauberk', 'rust_cuirass', 'chaplain_cassock', 'vigil_shift', 'mason_apron', 'scale_coat')],
-    'minecraft/tags/item/leg_armor': [M + n for n in ('prisoner_breeches', 'guard_leggings', 'rust_tassets', 'chaplain_skirt', 'vigil_skirt', 'mason_breeches', 'scale_leggings')],
-    'minecraft/tags/item/foot_armor': [M + n for n in ('prisoner_wraps', 'guard_boots', 'rust_sabatons', 'chaplain_shoes', 'vigil_wraps', 'mason_boots', 'scale_waders')],
+    'minecraft/tags/item/head_armor': [M + n for n in ('prisoner_hood', 'guard_hat', 'rust_helm', 'chaplain_mitre', 'vigil_cowl', 'mason_cap', 'scale_hood', 'oilskin_souwester')],
+    'minecraft/tags/item/chest_armor': [M + n for n in ('prisoner_rags', 'guard_hauberk', 'rust_cuirass', 'chaplain_cassock', 'vigil_shift', 'mason_apron', 'scale_coat', 'oilskin_smock')],
+    'minecraft/tags/item/leg_armor': [M + n for n in ('prisoner_breeches', 'guard_leggings', 'rust_tassets', 'chaplain_skirt', 'vigil_skirt', 'mason_breeches', 'scale_leggings', 'oilskin_trousers')],
+    'minecraft/tags/item/foot_armor': [M + n for n in ('prisoner_wraps', 'guard_boots', 'rust_sabatons', 'chaplain_shoes', 'vigil_wraps', 'mason_boots', 'scale_waders', 'oilskin_boots')],
 }
 
 
@@ -239,8 +249,30 @@ MIRE = {
     'temperature': 0.8,
 }
 
+# The Morning Wharf's biome: a morning mist over the sea, pale and a little warm, the far end of the long pier just lost
+# in it; the game itself lights its edge towards the risen sun (the hour is PlaceNameBlock.SUNRISE), and here that is
+# wanted. The sea is grey-green and one cannot see far into it.
+SHORE = {
+    'attributes': {
+        'minecraft:visual/fog_color': '#cfc8bc',
+        'minecraft:visual/sky_color': '#a9bccb',
+        'minecraft:visual/fog_start_distance': 0.0,
+        'minecraft:visual/fog_end_distance': 132.0,
+        'minecraft:visual/sky_fog_end_distance': 120.0,
+        'minecraft:visual/water_fog_color': '#1d3b42',
+        'minecraft:visual/water_fog_end_distance': {'argument': 0.7, 'modifier': 'multiply'},
+    },
+    'carvers': [],
+    'downfall': 0.5,
+    'effects': {'dry_foliage_color': '#8a7a4c', 'foliage_color': '#6f8a4a', 'grass_color': '#7d9458', 'water_color': '#4c8794'},
+    'features': [],
+    'has_precipitation': True,
+    'temperature': 0.6,
+}
+
 if __name__ == '__main__':
     write_json(f'{DATA}/{MOD}/worldgen/biome/mire.json', MIRE)
+    write_json(f'{DATA}/{MOD}/worldgen/biome/shore.json', SHORE)
     for old in glob.glob(f'{DATA}/{MOD}/recipe/*.json'):
         os.remove(old)
     for name, recipe in RECIPES.items():

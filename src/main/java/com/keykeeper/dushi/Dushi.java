@@ -136,6 +136,15 @@ public class Dushi {
             "entity.shatun.bite", "entity.shatun.step", "entity.shatun.crash",
             "entity.elder.ambient", "entity.elder.hurt", "entity.elder.death", "entity.elder.sweep", "entity.elder.chant", "entity.elder.knock",
             "entity.elder.call", "entity.elder.slumber", "entity.elder.dream", "entity.elder.snore",
+            "entity.sailor.ambient", "entity.sailor.hurt", "entity.sailor.death", "entity.sailor.hook", "entity.sailor.throw", "entity.sailor.oar",
+            "entity.harpoon.hit", "entity.pilot.whirl", "entity.pilot.lead",
+            "entity.sand_crab.dig", "entity.sand_crab.snap", "entity.sand_crab.click", "entity.sand_crab.hurt", "entity.sand_crab.death",
+            "entity.skua.cry", "entity.skua.stoop", "entity.skua.hurt", "entity.skua.death",
+            "entity.helmsman.ambient", "entity.helmsman.hurt", "entity.helmsman.death", "entity.helmsman.swing", "entity.helmsman.anchor",
+            "entity.helmsman.chain", "entity.helmsman.shout",
+            "entity.capsized.ambient", "entity.capsized.hurt", "entity.capsized.death", "entity.capsized.rise", "entity.capsized.snap",
+            "entity.capsized.creak", "entity.capsized.slam", "entity.capsized.knock",
+            "ambient.shore.surf", "ambient.shore.gull", "player.undertow",
             "block.hearth.rest", "block.fog_gate.pass",
             "item.flask.drink", "item.flask.empty", "item.spell.shard", "item.spell.shard_hit", "item.spell.mend", "item.spell.rebuke",
             "item.spell.fire", "item.spell.fire_burst", "item.spell.fizzle",
@@ -283,6 +292,18 @@ public class Dushi {
     public static final DeferredItem<WeaponItem> BEAR_SPEAR = weapon("bear_spear", 12.5F, 1.25F, 1.5F, 24.0F, 0.7F, 0.6F, 1.6F, 900, Rarity.EPIC);
     public static final DeferredItem<WeaponItem> GREAT_CANDLE = weapon("great_candle", 12.0F, 1.1F, 1.0F, 26.0F, 0.5F, 0.5F, 1.5F, 900, Rarity.EPIC);
 
+    /**
+     * The Morning Wharf: a stevedore's hook, a harpoon, an oar of a karbas (two hands), the pilot's sounding lead on its
+     * line (it reaches far), the anchor of the Daybreak (two hands, and the slowest thing there is) and the lesser claw of
+     * the Capsized on a grip of tarred rope.
+     */
+    public static final DeferredItem<WeaponItem> CARGO_HOOK = weapon("cargo_hook", 11.0F, 1.75F, -0.25F, 14.0F, 0.5F, 0.6F, 2.0F, 600, Rarity.UNCOMMON);
+    public static final DeferredItem<WeaponItem> HARPOON = weapon("harpoon", 12.0F, 1.35F, 1.25F, 20.0F, 0.4F, 0.8F, 1.5F, 600, Rarity.UNCOMMON);
+    public static final DeferredItem<WeaponItem> OAR = weapon("oar", 15.0F, 0.85F, 1.25F, 34.0F, 1.0F, 0.0F, 1.5F, 600, Rarity.UNCOMMON);
+    public static final DeferredItem<WeaponItem> LEAD_LINE = weapon("lead_line", 12.5F, 1.3F, 2.0F, 22.0F, 0.3F, 0.9F, 1.5F, 900, Rarity.EPIC);
+    public static final DeferredItem<WeaponItem> SHIP_ANCHOR = weapon("ship_anchor", 19.5F, 0.6F, 1.0F, 46.0F, 1.0F, 0.0F, 1.5F, 900, Rarity.EPIC);
+    public static final DeferredItem<WeaponItem> CAPSIZED_CLAW = weapon("capsized_claw", 13.5F, 1.6F, 0.0F, 17.0F, 0.6F, 0.6F, 1.75F, 900, Rarity.EPIC);
+
     public static final DeferredItem<ShortBowItem> SHORT_BOW = ITEMS.registerItem("short_bow", props -> new ShortBowItem(props.stacksTo(1)));
 
     // ------------------------------------------------------------------ shields
@@ -344,6 +365,10 @@ public class Dushi {
     public static final DeferredItem<Item> LINEN = ITEMS.registerSimpleItem("bleached_linen");
     public static final DeferredItem<Item> WAX = ITEMS.registerSimpleItem("candle_wax");
     public static final DeferredItem<Item> SHATUN_HIDE = ITEMS.registerSimpleItem("shatun_hide");
+    /** The shore's: sailcloth, rope that was tarred against the sea, and the shell of what lives in the sand. */
+    public static final DeferredItem<Item> SAILCLOTH = ITEMS.registerSimpleItem("sailcloth");
+    public static final DeferredItem<Item> TARRED_ROPE = ITEMS.registerSimpleItem("tarred_rope");
+    public static final DeferredItem<Item> CRAB_SHELL = ITEMS.registerSimpleItem("crab_shell");
     /** Only the picture of what the Wallower spits; not in the creative tab. */
     public static final DeferredItem<Item> MUD_GLOB = ITEMS.registerSimpleItem("mud_glob");
 
@@ -411,12 +436,18 @@ public class Dushi {
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 30000));
     public static final DeferredItem<SoulItem> ELDER_SOUL = ITEMS.registerItem("elder_soul",
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 38000));
+    public static final DeferredItem<SoulItem> HELMSMAN_SOUL = ITEMS.registerItem("helmsman_soul",
+            props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 46000));
+    public static final DeferredItem<SoulItem> CAPSIZED_SOUL = ITEMS.registerItem("capsized_soul",
+            props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 54000));
     /** Opens the Quarrymen's Gate of the borough: see {@link LockedGateBlock}. */
     public static final DeferredItem<Item> QUARRY_KEY = ITEMS.registerItem("quarry_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     /** Opens the Mire Gate, at the other end of the same street. */
     public static final DeferredItem<Item> MIRE_KEY = ITEMS.registerItem("mire_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     /** Opens the wicket in the cliff of the fortress road: the way to the Black Firwood. */
     public static final DeferredItem<Item> FIRWOOD_KEY = ITEMS.registerItem("firwood_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
+    /** Opens the Sea Gate, the old south gate of the yard of the first hearth: the way down to the Morning Wharf. */
+    public static final DeferredItem<Item> SHORE_KEY = ITEMS.registerItem("shore_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     public static final DeferredItem<com.keykeeper.dushi.item.PowderPotItem> POWDER_POT = ITEMS.registerItem("powder_pot",
             props -> new com.keykeeper.dushi.item.PowderPotItem(props.stacksTo(16)));
     public static final DeferredItem<ReturnEmberItem> RETURN_EMBER = ITEMS.registerItem("return_ember", props -> new ReturnEmberItem(props.stacksTo(16)));
@@ -502,6 +533,28 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ElderEntity>> ELDER = ENTITIES.registerEntityType(
             "elder", com.keykeeper.dushi.entity.ElderEntity::new, MobCategory.MONSTER, b -> b.sized(1.0F, 3.2F).eyeHeight(2.75F).clientTrackingRange(12).fireImmune());
 
+    /** The Morning Wharf: those who were to sail that morning, what lives in the sand and over it, and the two lords. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.DockhandEntity>> DOCKHAND = ENTITIES.registerEntityType(
+            "dockhand", com.keykeeper.dushi.entity.DockhandEntity::new, MobCategory.MONSTER, b -> b.sized(0.6F, 1.95F).eyeHeight(1.74F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.HarpoonerEntity>> HARPOONER = ENTITIES.registerEntityType(
+            "harpooner", com.keykeeper.dushi.entity.HarpoonerEntity::new, MobCategory.MONSTER, b -> b.sized(0.6F, 1.95F).eyeHeight(1.74F).clientTrackingRange(10));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.OarsmanEntity>> OARSMAN = ENTITIES.registerEntityType(
+            "oarsman", com.keykeeper.dushi.entity.OarsmanEntity::new, MobCategory.MONSTER, b -> b.sized(0.8F, 2.35F).eyeHeight(2.1F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.PilotEntity>> PILOT = ENTITIES.registerEntityType(
+            "pilot", com.keykeeper.dushi.entity.PilotEntity::new, MobCategory.MONSTER, b -> b.sized(0.8F, 2.35F).eyeHeight(2.1F).clientTrackingRange(10));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.SandCrabEntity>> SAND_CRAB = ENTITIES.registerEntityType(
+            "sand_crab", com.keykeeper.dushi.entity.SandCrabEntity::new, MobCategory.MONSTER, b -> b.sized(1.0F, 0.7F).eyeHeight(0.5F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.SkuaEntity>> SKUA = ENTITIES.registerEntityType(
+            "skua", com.keykeeper.dushi.entity.SkuaEntity::new, MobCategory.MONSTER, b -> b.sized(0.7F, 0.7F).eyeHeight(0.5F).clientTrackingRange(10));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.HelmsmanEntity>> HELMSMAN = ENTITIES.registerEntityType(
+            "helmsman", com.keykeeper.dushi.entity.HelmsmanEntity::new, MobCategory.MONSTER, b -> b.sized(1.1F, 2.95F).eyeHeight(2.6F).clientTrackingRange(12));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.CapsizedEntity>> CAPSIZED = ENTITIES.registerEntityType(
+            "capsized", com.keykeeper.dushi.entity.CapsizedEntity::new, MobCategory.MONSTER, b -> b.sized(2.6F, 2.0F).eyeHeight(1.2F).clientTrackingRange(12));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.HarpoonEntity>> HARPOON_ENTITY = ENTITIES.registerEntityType(
+            "thrown_harpoon", com.keykeeper.dushi.entity.HarpoonEntity::new, MobCategory.MISC, b -> b.sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(3));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.AnchorEntity>> ANCHOR_ENTITY = ENTITIES.registerEntityType(
+            "thrown_anchor", com.keykeeper.dushi.entity.AnchorEntity::new, MobCategory.MISC, b -> b.sized(0.9F, 0.9F).clientTrackingRange(8).updateInterval(3));
+
     /** A root of the Weeping Mother, out of the ground: see {@link com.keykeeper.dushi.entity.RootEntity}. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.RootEntity>> ROOT = ENTITIES.registerEntityType(
             "root", com.keykeeper.dushi.entity.RootEntity::new, MobCategory.MISC, b -> b.sized(1.2F, 2.6F).clientTrackingRange(8).updateInterval(20).fireImmune());
@@ -534,6 +587,14 @@ public class Dushi {
         egg("sleep_moth", SLEEP_MOTH);
         egg("shatun", SHATUN);
         egg("elder", ELDER);
+        egg("dockhand", DOCKHAND);
+        egg("harpooner", HARPOONER);
+        egg("oarsman", OARSMAN);
+        egg("pilot", PILOT);
+        egg("sand_crab", SAND_CRAB);
+        egg("skua", SKUA);
+        egg("helmsman", HELMSMAN);
+        egg("capsized", CAPSIZED);
         egg("keykeeper", KEYKEEPER);
         egg("overseer", OVERSEER);
         egg("chaplain", CHAPLAIN);
@@ -558,6 +619,7 @@ public class Dushi {
                 output.accept(QUARRY_KEY.get());
                 output.accept(MIRE_KEY.get());
                 output.accept(FIRWOOD_KEY.get());
+                output.accept(SHORE_KEY.get());
                 output.accept(NAMELESS_SOUL.get());
                 output.accept(GREAT_SOUL.get());
                 output.accept(OVERSEER_SOUL.get());
@@ -569,6 +631,8 @@ public class Dushi {
                 output.accept(MOTHER_SOUL.get());
                 output.accept(SHATUN_SOUL.get());
                 output.accept(ELDER_SOUL.get());
+                output.accept(HELMSMAN_SOUL.get());
+                output.accept(CAPSIZED_SOUL.get());
                 WEAPONS.forEach(item -> output.accept(item.get()));
                 output.accept(SHORT_BOW.get());
                 SHIELDS.forEach(item -> output.accept(item.get()));
@@ -582,6 +646,9 @@ public class Dushi {
                 output.accept(LINEN.get());
                 output.accept(WAX.get());
                 output.accept(SHATUN_HIDE.get());
+                output.accept(SAILCLOTH.get());
+                output.accept(TARRED_ROPE.get());
+                output.accept(CRAB_SHELL.get());
                 output.accept(SCHOLAR_STAFF.get());
                 output.accept(PRAYER_BEADS.get());
                 output.accept(EMBER_GLOVE.get());
@@ -622,6 +689,14 @@ public class Dushi {
             event.put(SLEEP_MOTH.get(), com.keykeeper.dushi.entity.SleepMothEntity.createAttributes().build());
             event.put(SHATUN.get(), com.keykeeper.dushi.entity.ShatunEntity.createAttributes().build());
             event.put(ELDER.get(), com.keykeeper.dushi.entity.ElderEntity.createAttributes().build());
+            event.put(DOCKHAND.get(), com.keykeeper.dushi.entity.DockhandEntity.createAttributes().build());
+            event.put(HARPOONER.get(), com.keykeeper.dushi.entity.HarpoonerEntity.createAttributes().build());
+            event.put(OARSMAN.get(), com.keykeeper.dushi.entity.OarsmanEntity.createAttributes().build());
+            event.put(PILOT.get(), com.keykeeper.dushi.entity.PilotEntity.createAttributes().build());
+            event.put(SAND_CRAB.get(), com.keykeeper.dushi.entity.SandCrabEntity.createAttributes().build());
+            event.put(SKUA.get(), com.keykeeper.dushi.entity.SkuaEntity.createAttributes().build());
+            event.put(HELMSMAN.get(), com.keykeeper.dushi.entity.HelmsmanEntity.createAttributes().build());
+            event.put(CAPSIZED.get(), com.keykeeper.dushi.entity.CapsizedEntity.createAttributes().build());
             event.put(KEYKEEPER.get(), KeykeeperEntity.createAttributes().build());
             event.put(OVERSEER.get(), OverseerEntity.createAttributes().build());
             event.put(CHAPLAIN.get(), ChaplainEntity.createAttributes().build());

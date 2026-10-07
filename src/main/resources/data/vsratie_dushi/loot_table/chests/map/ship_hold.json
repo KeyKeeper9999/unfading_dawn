@@ -1,0 +1,75 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:great_soul",
+          "weight": 1,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 5,
+                "max": 5
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:oilskin_souwester",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:sailcloth",
+          "weight": 1,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 6,
+                "max": 6
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:return_ember",
+          "weight": 1,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 2,
+                "max": 2
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

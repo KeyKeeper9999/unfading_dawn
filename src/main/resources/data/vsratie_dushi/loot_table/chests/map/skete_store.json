@@ -60,6 +60,16 @@
           "weight": 1
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:shore_key",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

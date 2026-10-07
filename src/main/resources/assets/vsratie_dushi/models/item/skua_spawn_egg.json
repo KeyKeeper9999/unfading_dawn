@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "vsratie_dushi:item/skua_spawn_egg"
+  }
+}

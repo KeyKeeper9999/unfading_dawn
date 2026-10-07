@@ -251,6 +251,16 @@ public final class Gear {
         return ArmorSet.SCALE.bonus * worn(player, ArmorSet.SCALE);
     }
 
+    /** The share of a throw that still moves somebody in a seaman's oilskins: they were made to stand on a wet deck in. */
+    public static float thrown(LivingEntity victim) {
+        return victim instanceof Player player ? 1.0F - ArmorSet.OILSKIN.bonus * worn(player, ArmorSet.OILSKIN) : 1.0F;
+    }
+
+    /** What a swing costs: the weapon's own, less what a seaman's knot takes off. */
+    public static float swingCost(Player player, float cost) {
+        return cost * Charm.SEA_KNOT.less(player);
+    }
+
     /** For how many seconds the Elder's great candle sets alight what it strikes. */
     public static final float CANDLE_BURNS = 4.0F;
 

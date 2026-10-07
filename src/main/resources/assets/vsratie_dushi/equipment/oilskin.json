@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "vsratie_dushi:oilskin"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "vsratie_dushi:oilskin"
+      }
+    ]
+  }
+}

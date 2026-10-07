@@ -78,6 +78,7 @@ final class WorldTest {
         }
         try {
             firwood(level);
+            shore(level);
         } catch (RuntimeException e) {
             say("firwood: FAILED: " + e);
             e.printStackTrace(System.out);
@@ -507,6 +508,65 @@ final class WorldTest {
         wear(player, null, null, null, null, null, null);
     }
 
+    /** The Morning Wharf: the lords' hides, what lies as a boat and what lies in the sand, the oilskins, and how deep the sea is. */
+    private static void shore(ServerLevel level) {
+        BlockPos at = new BlockPos(-40, 240, 40);
+        for (BlockPos pos : BlockPos.betweenClosed(at.offset(-12, -1, -12), at.offset(12, -1, 12))) {
+            level.setBlock(pos, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), 3);
+        }
+        com.keykeeper.dushi.entity.HelmsmanEntity helmsman = Dushi.HELMSMAN.get().spawn(level, at.offset(-6, 0, 0), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        com.keykeeper.dushi.entity.CapsizedEntity boat = Dushi.CAPSIZED.get().spawn(level, at.offset(6, 0, 0), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        com.keykeeper.dushi.entity.SandCrabEntity crab = Dushi.SAND_CRAB.get().spawn(level, at.offset(0, 0, 8), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        com.keykeeper.dushi.entity.SkuaEntity skua = Dushi.SKUA.get().spawn(level, at.offset(0, 0, -8), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        if (helmsman == null || boat == null || crab == null || skua == null) {
+            say("shore: something did not spawn FAILED");
+            return;
+        }
+        float whole = helmsman.getHealth();
+        helmsman.hurtServer(level, level.damageSources().generic(), 100.0F);
+        float helm = whole - helmsman.getHealth();
+        boolean lay = !boat.up() && boat.housed() && !crab.up() && skua.phase() == 1;
+        whole = boat.getHealth();
+        boat.hurtServer(level, level.damageSources().generic(), 100.0F);
+        float planks = whole - boat.getHealth();
+        boolean rose = boat.up() && boat.attackId() == com.keykeeper.dushi.entity.CapsizedEntity.RISE;
+        crab.hurtServer(level, level.damageSources().generic(), 1.0F);
+        skua.hurtServer(level, level.damageSources().generic(), 1.0F);
+        boolean woke = crab.up() && skua.phase() >= 2;
+        boolean hides = Math.abs(helm - 100.0F * com.keykeeper.dushi.entity.HelmsmanEntity.HIDE) < 0.01F
+                && Math.abs(planks - 100.0F * com.keykeeper.dushi.entity.CapsizedEntity.PLANKS) < 0.01F;
+        say("shore: of a blow of 100 the Helmsman takes " + helm + " and the boat on the sand " + planks + "; they lay still=" + lay + ", struck, the boat gets up="
+                + rose + ", the crab and the skua too=" + woke + (hides && lay && rose && woke ? "" : " FAILED"));
+        helmsman.discard();
+        boat.discard();
+        crab.discard();
+        skua.discard();
+        // the oilskins, and the sea
+        FakePlayer player = FakePlayerFactory.getMinecraft(level);
+        ArmorSet oilskin = ArmorSet.OILSKIN;
+        wear(player, oilskin.piece(0), oilskin.piece(1), oilskin.piece(2), oilskin.piece(3), null, null);
+        float thrown = Gear.thrown(player);
+        wear(player, null, null, null, null, null, null);
+        BlockPos pool = at.offset(0, 6, 0);
+        for (BlockPos pos : BlockPos.betweenClosed(pool.offset(-1, -1, -1), pool.offset(2, 3, 1))) {
+            level.setBlock(pos, net.minecraft.world.level.block.Blocks.GLASS.defaultBlockState(), 3);
+        }
+        for (int y = 0; y < 3; y++) {
+            level.setBlock(pool.above(y), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState(), 3);
+        }
+        level.setBlock(pool.offset(1, 0, 0), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState(), 3);
+        level.setBlock(pool.offset(1, 1, 0), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+        int deep = SoulMechanics.waterDepth(level, pool.above());
+        int knee = SoulMechanics.waterDepth(level, pool.offset(1, 0, 0));
+        int dry = SoulMechanics.waterDepth(level, pool.offset(1, 1, 0));
+        boolean sea = Math.abs(thrown - (1.0F - 4 * oilskin.bonus)) < 1.0E-4 && Gear.thrown(player) == 1.0F && deep == 3 && knee == 1 && dry == 0;
+        say("shore: a blow throws somebody in oilskins x" + rounded(thrown) + "; the sea is " + deep + " deep where it takes them, " + knee + " where it is waded, "
+                + dry + " over it" + (sea ? "" : " FAILED"));
+        for (BlockPos pos : BlockPos.betweenClosed(pool.offset(-1, -1, -1), pool.offset(2, 3, 1))) {
+            level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+        }
+    }
+
     /** The charms: one is worn, by using it; the next takes its place and gives the first back; each gives what it says. */
     private static void charms(ServerLevel level) {
         FakePlayer player = FakePlayerFactory.getMinecraft(level);
@@ -532,20 +592,22 @@ final class WorldTest {
                 + ", taken off and given back=" + off + (on && swapped && off ? "" : " FAILED"));
         player.getInventory().clearContent();
         Gear.Weapon sword = Gear.weapon(new ItemStack(Dushi.LONGSWORD.get()));
-        float[] bare = {Gear.staminaRegen(player), Gear.spellBonus(player), Gear.blockCost(player), Gear.rollCost(player, Gear.Burden.MEDIUM), Gear.backstab(player, sword)};
+        float[] bare = {Gear.staminaRegen(player), Gear.spellBonus(player), Gear.blockCost(player), Gear.rollCost(player, Gear.Burden.MEDIUM), Gear.backstab(player, sword),
+                Gear.swingCost(player, 20.0F)};
         StringBuilder gifts = new StringBuilder("charms:");
         boolean each = true;
         for (Charm charm : Charm.values()) {
             soul.charm = charm.id;
-            float[] with = {Gear.staminaRegen(player), Gear.spellBonus(player), Gear.blockCost(player), Gear.rollCost(player, Gear.Burden.MEDIUM), Gear.backstab(player, sword)};
+            float[] with = {Gear.staminaRegen(player), Gear.spellBonus(player), Gear.blockCost(player), Gear.rollCost(player, Gear.Burden.MEDIUM), Gear.backstab(player, sword),
+                    Gear.swingCost(player, 20.0F)};
             int changed = 0;
             for (int i = 0; i < bare.length; i++) {
                 if (with[i] != bare[i]) {
                     changed++;
-                    gifts.append(' ').append(charm.id).append('=').append(new String[] {"regen x", "spells x", "block x", "roll ", "backstab x"}[i]).append(rounded(with[i]));
+                    gifts.append(' ').append(charm.id).append('=').append(new String[] {"regen x", "spells x", "block x", "roll ", "backstab x", "swing "}[i]).append(rounded(with[i]));
                 }
             }
-            boolean other = charm == Charm.COFFIN_NAIL || charm == Charm.ASH_KNOT || charm == Charm.FETTER_LINK || charm == Charm.SHATUN_CLAW;
+            boolean other = charm == Charm.COFFIN_NAIL || charm == Charm.ASH_KNOT || charm == Charm.FETTER_LINK || charm == Charm.SHATUN_CLAW || charm == Charm.TIDE_PEARL;
             each &= changed == (other ? 0 : 1);
         }
         soul.charm = Charm.COFFIN_NAIL.id;

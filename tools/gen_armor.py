@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The seven suits of armour: the textures worn on the body (in the layout the game's own armour uses), the icons,
+"""The eight suits of armour: the textures worn on the body (in the layout the game's own armour uses), the icons,
 the item models and the equipment definitions. Run from the repo root; pass a file name for a preview sheet."""
 import json
 import math
@@ -24,6 +24,7 @@ SUITS = {
     'vigil': ('vigil_cowl', 'vigil_shift', 'vigil_skirt', 'vigil_wraps'),
     'mason': ('mason_cap', 'mason_apron', 'mason_breeches', 'mason_boots'),
     'scale': ('scale_hood', 'scale_coat', 'scale_leggings', 'scale_waders'),
+    'oilskin': ('oilskin_souwester', 'oilskin_smock', 'oilskin_trousers', 'oilskin_boots'),
 }
 
 # ---------------------------------------------------------------------------------------------------- the worn textures
@@ -547,7 +548,87 @@ def scale():
     return one, two
 
 
-WORN = {'prisoner': prisoner, 'guard': guard, 'rust': rust, 'chaplain': chaplain, 'vigil': vigil, 'mason': mason, 'scale': scale}
+OIL, OIL_D, OIL_L = (196, 164, 72), (146, 116, 50), (226, 198, 104)
+PITCH, PITCH_L = (44, 40, 40), (72, 66, 62)
+HEMP = (150, 132, 98)
+
+
+def oilskin():
+    """A seaman's foul-weather gear: sailcloth boiled in oil until it is the colour of old butter - a sou'wester with its
+    brim long behind, a smock that goes on over the head, trousers of the same, and sea boots tarred black to the thigh."""
+    one, two = Worn(), Worn()
+    cloth = lambda face, px, py, w, h: shade(OIL if blotch('oil' + face, px, py, 2.4) < 0.7 else OIL_D, light(face, py, h) + 0.03)
+    dull = lambda face, px, py, w, h: shade(OIL_D if blotch('oilt' + face, px, py, 2.4) < 0.7 else shade(OIL_D, 0.84), light(face, py, h) + 0.03)
+    tar = lambda face, px, py, w, h: shade(PITCH if blotch('pitch' + face, px, py, 2.0) < 0.75 else PITCH_L, light(face, py, h) + 0.05)
+    # the sou'wester: close on the crown, open before, the seams of its gores showing; over it (the outer layer) the brim:
+    # turned up over the brow, and down over the ears and the neck
+    one.fill('head', cloth, faces=('top',) + SIDES, rows=(0, 3))
+    for face in ('top',) + SIDES:
+        for px in range(8):
+            if px in (3, 4):
+                continue
+            if face == 'top':
+                one.put('head', face, px, 3, shade(OIL_D, 1.0))
+                one.put('head', face, px, 4, shade(OIL_D, 1.0))
+    for py in range(8):
+        one.put('head', 'top', 3, py, shade(OIL_D, 1.05))
+        one.put('head', 'top', 4, py, shade(OIL_L, 1.05))
+    for py in (2, 3):
+        for px in range(1, 7):
+            one.clear('head', 'front', px, py)
+    one.fill('hat', cloth, faces=('right', 'left', 'back'), rows=(2, 6))
+    one.fill('hat', cloth, faces=('front',), rows=(1, 2))
+    for px in range(8):
+        one.put('hat', 'front', px, 2, shade(OIL_D, 0.92))             # the brim's turned edge
+        one.put('hat', 'back', px, 6, shade(OIL_D, 0.86))
+        one.put('hat', 'back', px, 7, shade(OIL_D, 0.74))
+    for face in ('right', 'left'):
+        for px in range(8):
+            one.put('hat', face, px, 6, shade(OIL_D, 0.86))
+        for px in (2, 3, 4, 5):                                        # the flap over the ear, and the tie under the chin
+            one.put('hat', face, px, 7, shade(OIL_D, 0.8))
+    for px in (0, 7):
+        for py in (3, 4, 5, 6, 7):
+            one.put('hat', 'front', px, py, shade(HEMP, 0.9 if py % 2 else 0.74))
+    # the smock: one piece, a yoke doubled over the shoulders, a flap buttoned across the throat, a rope for a belt
+    one.fill('body', cloth)
+    for face, w in (('front', 8), ('back', 8), ('right', 4), ('left', 4)):
+        for px in range(w):
+            one.put('body', face, px, 3, shade(OIL_D, 0.95))           # the edge of the yoke
+            one.put('body', face, px, 9, shade(HEMP, 0.95 if px % 2 else 0.72))
+            one.put('body', face, px, 11, shade(OIL_D, 0.8))
+    for px, py in ((3, 0), (4, 0), (3, 1), (4, 1), (4, 2)):
+        one.put('body', 'front', px, py, shade(OIL_D, 0.9))
+    one.put('body', 'front', 5, 1, PITCH_L)                             # a horn button
+    one.put('body', 'front', 6, 10, shade(HEMP, 0.8))                   # the end of the rope
+    one.put('body', 'front', 6, 11, shade(HEMP, 0.7))
+    one.fill('arm', cloth, faces=('top',) + SIDES, rows=(0, 9))
+    for face in SIDES:
+        for px in range(4):
+            one.put('arm', face, px, 3, shade(OIL_D, 0.95))
+            one.put('arm', face, px, 9, shade(HEMP, 0.9 if px % 2 else 0.72))    # the cuff, tied against the water
+    # the sea boots: tarred leather to the top of the thigh, turned down in a cuff, the sole thick
+    one.fill('leg', tar, faces=SIDES, rows=(2, 11))
+    one.fill('leg', lambda face, px, py, w, h: (26, 24, 24), faces=('bottom',))
+    for face in SIDES:
+        for px in range(4):
+            one.put('leg', face, px, 2, PITCH_L)
+            one.put('leg', face, px, 3, shade(PITCH_L, 0.85))
+            one.put('leg', face, px, 11, (28, 26, 26))
+    for py in (5, 8):
+        one.put('leg', 'front', 1, py, shade(PITCH_L, 1.15))            # the wet on them
+    # the trousers: the same cloth, darker with wear, wide, the seat doubled
+    two.fill('body', dull, faces=SIDES, rows=(7, 11))
+    two.fill('leg', dull, faces=SIDES, rows=(0, 8))
+    for face in SIDES:
+        for px in range(4):
+            two.put('leg', face, px, 4, shade(OIL_D, 0.74))             # a patch across the knee
+    for px in range(8):
+        two.put('body', 'back', px, 9, shade(OIL_D, 0.78))
+    return one, two
+
+
+WORN = {'prisoner': prisoner, 'guard': guard, 'rust': rust, 'chaplain': chaplain, 'vigil': vigil, 'mason': mason, 'scale': scale, 'oilskin': oilskin}
 
 # ---------------------------------------------------------------------------------------------------- the icons
 
@@ -673,6 +754,23 @@ HELMETS = {
         "..oooo....oooo..",
         "................",
         "................"], dict(L=BONE_L, B=BONE, D=BONE_D, H=HIDE, h=HIDE_D)),
+    'oilskin': ([
+        "................",
+        "................",
+        "......oooo......",
+        "....ooLLBBoo....",
+        "...oLLBBDBBBo...",
+        "...oLBBBDBBDo...",
+        "..oLBBBBDBBBDo..",
+        ".ooooooooooooo..",
+        "oLLBBBBBBBBBDDo.",
+        ".ooBBo....oBDDo.",
+        "..oBDo....oDDDoo",
+        "..oHo......oDDDo",
+        "..oho.......oooo",
+        "...o............",
+        "................",
+        "................"], dict(L=OIL_L, B=OIL, D=OIL_D, H=HEMP, h=shade(HEMP, 0.74))),
 }
 
 CHEST = [
@@ -752,6 +850,9 @@ OVER = {
                    (2, 3, ["LL"]), (12, 3, ["LL"]), (2, 4, ["ED"]), (12, 4, ["DE"])],
     'scale_leggings': [(4, 2, ["LLLLLLL", "EDEDEDE", "LLLLLLL", "DED.DED"]), (4, 6, ["LL"]), (10, 6, ["LL"]), (4, 7, ["ED"]), (10, 7, ["DE"])],
     'scale_waders': [(3, 5, ["VV"]), (11, 5, ["VV"]), (3, 8, ["Vv"]), (11, 8, ["vV"]), (2, 11, ["PPP"]), (10, 11, ["PPP"])],
+    'oilskin_smock': [(4, 5, ["CCCCCCC"]), (7, 3, ["C", "P"]), (3, 10, ["HhHhHhHhH"]), (10, 11, ["H", "h"]), (2, 5, ["h"]), (13, 5, ["h"])],
+    'oilskin_trousers': [(4, 2, ["hHhHhHh"]), (4, 8, ["CC"]), (10, 8, ["CC"]), (7, 3, ["C"])],
+    'oilskin_boots': [(3, 5, ["LL"]), (11, 5, ["LL"]), (3, 6, ["ll"]), (11, 6, ["ll"]), (2, 12, ["PPP"]), (10, 12, ["PPP"]), (3, 8, ["L"]), (12, 9, ["L"])],
 }
 
 PALETTES = {
@@ -762,6 +863,7 @@ PALETTES = {
     'vigil': dict(A=LINEN_L, B=LINEN, C=LINEN_D, N=THREAD, n=THREAD_D, R=shade(LINEN_D, 0.78)),
     'mason': dict(A=FELT_L, B=FELT, C=FELT_D, L=APRON, l=APRON_D, P=APRON_L, W=DUST, S=STEEL),
     'scale': dict(A=HIDE_L, B=HIDE, C=HIDE_D, L=BONE_L, E=BONE, D=BONE_D, V=WITHE, v=shade(WITHE, 0.72), P=(36, 36, 32)),
+    'oilskin': dict(A=OIL_L, B=OIL, C=OIL_D, H=HEMP, h=shade(HEMP, 0.74), P=(26, 24, 24), L=PITCH_L, l=PITCH),
 }
 # pieces whose base colours differ from the suit's
 PIECE_PALETTE = {
@@ -770,6 +872,8 @@ PIECE_PALETTE = {
     'guard_boots': dict(A=shade(LEATHER, 1.25), B=LEATHER, C=LEATHER_D),
     'chaplain_shoes': dict(A=(64, 56, 62), B=BLACK, C=(22, 18, 22)),
     'mason_boots': dict(A=APRON_L, B=APRON, C=APRON_D),
+    'oilskin_trousers': dict(A=OIL, B=OIL_D, C=shade(OIL_D, 0.78)),
+    'oilskin_boots': dict(A=PITCH_L, B=PITCH, C=(28, 26, 26)),
 }
 
 

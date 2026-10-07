@@ -113,6 +113,14 @@ public final class SelfTest {
         types.add(Dushi.SLEEP_MOTH.get());
         types.add(Dushi.SHATUN.get());
         types.add(Dushi.ELDER.get());
+        types.add(Dushi.DOCKHAND.get());
+        types.add(Dushi.HARPOONER.get());
+        types.add(Dushi.OARSMAN.get());
+        types.add(Dushi.PILOT.get());
+        types.add(Dushi.SAND_CRAB.get());
+        types.add(Dushi.SKUA.get());
+        types.add(Dushi.HELMSMAN.get());
+        types.add(Dushi.CAPSIZED.get());
         types.add(Dushi.KEYKEEPER.get());
         types.add(Dushi.OVERSEER.get());
         types.add(Dushi.CHAPLAIN.get());
@@ -302,7 +310,7 @@ public final class SelfTest {
         }
         int index = 0;
         for (Map.Entry<EntityType<? extends SoulsMob>, int[]> entry : drillPlan().entrySet()) {
-            BlockPos at = new BlockPos(-30 + (index % 6) * 12, FLOOR_Y + 1, -34 + (index / 6) * 13);
+            BlockPos at = new BlockPos(-30 + (index % 7) * 10, FLOOR_Y + 1, -34 + (index / 7) * 13);
             if (entry.getKey() == Dushi.BONE_PIKE.get()) {
                 // a pike is drilled in water: on a dry floor all it does is flounder
                 for (BlockPos pos : BlockPos.betweenClosed(at.offset(-2, -2, -2), at.offset(2, -1, 9))) {
@@ -326,6 +334,15 @@ public final class SelfTest {
             }
             if (mob instanceof com.keykeeper.dushi.entity.SleepMothEntity moth) {
                 moth.startle(dummy);
+            }
+            if (mob instanceof com.keykeeper.dushi.entity.SandCrabEntity crab) {
+                crab.emerge(dummy);                              // (it would lie in the sand through it)
+            }
+            if (mob instanceof com.keykeeper.dushi.entity.SkuaEntity skua) {
+                skua.startle(dummy);
+            }
+            if (mob instanceof com.keykeeper.dushi.entity.CapsizedEntity boat) {
+                boat.rise(dummy);
             }
             mob.setTarget(dummy);
             DRILL.add(new Drill(EntityType.getKey(entry.getKey()).getPath(), mob, dummy, entry.getValue()));
@@ -366,6 +383,15 @@ public final class SelfTest {
         plan.put(Dushi.SLEEP_MOTH.get(), new int[] {1});
         plan.put(Dushi.SHATUN.get(), new int[] {1, 2, 3, 4, 5, 6, 7});
         plan.put(Dushi.ELDER.get(), new int[] {1, 2, 3, 4, 5, 6, 7, 8});
+        // the Morning Wharf (the crab's first move is its coming up, the Capsized's its getting up)
+        plan.put(Dushi.DOCKHAND.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.HARPOONER.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.OARSMAN.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.PILOT.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.SAND_CRAB.get(), new int[] {2, 3});
+        plan.put(Dushi.SKUA.get(), new int[] {1});
+        plan.put(Dushi.HELMSMAN.get(), new int[] {1, 2, 3, 4, 5, 6});
+        plan.put(Dushi.CAPSIZED.get(), new int[] {2, 3, 4, 5, 6, 7});
         return plan;
     }
 

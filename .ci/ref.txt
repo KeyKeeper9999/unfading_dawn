@@ -1,0 +1,5 @@
+data/minecraft/worldgen/biome/beach.json
+data/minecraft/worldgen/biome/basalt_deltas.json
+data/minecraft/worldgen/biome/swamp.json
+data/minecraft/timeline/day.json
+data/minecraft/dimension_type/overworld.json

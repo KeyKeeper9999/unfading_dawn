@@ -309,6 +309,11 @@ public final class SoulMechanics {
                 wade(serverPlayer);
             }
             ground(serverPlayer, soul);
+            undertow(serverPlayer, soul);
+            if (player.tickCount % (20 * Charm.TIDE_PEARL.amount) == 0 && Charm.TIDE_PEARL.on(player) && player.isAlive()
+                    && player.getHealth() < player.getMaxHealth()) {
+                player.heal(1.0F);
+            }
             if (player.tickCount % 10 == 0) {
                 soul.atHearth = nearHearth(serverPlayer);
             }
@@ -354,7 +359,7 @@ public final class SoulMechanics {
      */
     private static void ground(ServerPlayer player, PlayerSoul soul) {
         ServerLevel level = player.level();
-        if (player.onGround() && !player.isSpectator()) {
+        if (player.onGround() && !player.isSpectator() && soul.undertow == 0) {
             soul.groundX = player.getX();
             soul.groundY = player.getY();
             soul.groundZ = player.getZ();
@@ -369,10 +374,70 @@ public final class SoulMechanics {
         }
     }
 
+    public static final net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome> SHORE = net.minecraft.resources.ResourceKey.create(
+            net.minecraft.core.registries.Registries.BIOME, Dushi.id("shore"));
+    /** How long the sea lets somebody be before it begins to take them, in ticks; and how often it takes after that. */
+    public static final int UNDERTOW_GRACE = 30;
+    private static final int UNDERTOW_EVERY = 10;
+    /** The share of a player's health the sea takes each time. */
+    private static final float UNDERTOW_TAKES = 0.17F;
+
+    private static boolean wet(net.minecraft.world.level.Level level, BlockPos pos) {
+        net.minecraft.world.level.material.Fluid fluid = level.getFluidState(pos).getType();
+        return fluid == net.minecraft.world.level.material.Fluids.WATER || fluid == net.minecraft.world.level.material.Fluids.FLOWING_WATER;
+    }
+
+    /** How many blocks of water stand in the column {@code pos} is in, counted from the block itself both ways. */
+    public static int waterDepth(net.minecraft.world.level.Level level, BlockPos pos) {
+        if (!wet(level, pos)) {
+            return 0;
+        }
+        int depth = 1;
+        BlockPos.MutableBlockPos at = pos.mutable();
+        while (depth < 8 && wet(level, at.move(0, -1, 0))) {
+            depth++;
+        }
+        at.set(pos);
+        while (depth < 8 && wet(level, at.move(0, 1, 0))) {
+            depth++;
+        }
+        return depth;
+    }
+
+    /**
+     * The sea of the Morning Wharf is waded and not swum: the tide has stood at the turn since the day was stopped, and where
+     * the water is deeper than the knee it takes whoever is in it under - after a moment's warning, and quickly. It is
+     * what keeps the ships out and what keeps a newcomer on the piers, the sand and the stones. (Only in that place: by
+     * its biome. The Mire's water is swum as before.)
+     */
+    private static void undertow(ServerPlayer player, PlayerSoul soul) {
+        ServerLevel level = player.level();
+        boolean taken = plays(player) && player.isAlive() && player.isInWater() && level.getBiome(player.blockPosition()).is(SHORE)
+                && waterDepth(level, player.blockPosition()) >= 2;
+        if (!taken) {
+            soul.undertow = 0;
+            return;
+        }
+        if (++soul.undertow == 1) {
+            player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.undertow"));
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), Dushi.sound("player.undertow"), net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+        }
+        Vec3 motion = player.getDeltaMovement();
+        if (soul.undertow > UNDERTOW_GRACE / 2) {
+            // down, and held: the legs do nothing against it
+            player.setDeltaMovement(motion.x * 0.5, Math.min(motion.y, -0.12), motion.z * 0.5);
+            player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(player));
+        }
+        if (soul.undertow >= UNDERTOW_GRACE && (soul.undertow - UNDERTOW_GRACE) % UNDERTOW_EVERY == 0) {
+            player.hurtServer(level, level.damageSources().drown(), Math.max(2.0F, player.getMaxHealth() * UNDERTOW_TAKES));
+            level.sendParticles(ParticleTypes.BUBBLE_COLUMN_UP, player.getX(), player.getY() + 1.0, player.getZ(), 16, 0.3, 0.5, 0.3, 0.02);
+        }
+    }
+
     /** Where a stain or a reset should be centred for a player who has just died: where they last stood, if they fell. */
     public static Vec3 deathPlace(ServerPlayer player) {
         PlayerSoul soul = PlayerSoul.of(player);
-        if (soul.hasGround && (player.getY() < soul.groundY - 4.0 || player.getY() < player.level().getMinY() + 2)) {
+        if (soul.hasGround && (soul.undertow > 0 || player.getY() < soul.groundY - 4.0 || player.getY() < player.level().getMinY() + 2)) {
             return new Vec3(soul.groundX, soul.groundY, soul.groundZ);
         }
         return player.position();
@@ -421,7 +486,7 @@ public final class SoulMechanics {
         }
         PlayerSoul soul = PlayerSoul.of(player);
         Gear.Weapon weapon = Gear.weapon(player.getMainHandItem());
-        float cost = weapon != null ? weapon.stamina() : DEFAULT_SWING_COST;
+        float cost = Gear.swingCost(player, weapon != null ? weapon.stamina() : DEFAULT_SWING_COST);
         // Only a full swing counts: tapping the button does not drain the bar.
         if (player.getAttackStrengthScale(0.5F) < 0.5F) {
             cost *= 0.35F;

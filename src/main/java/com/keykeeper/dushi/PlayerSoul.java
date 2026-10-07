@@ -183,6 +183,8 @@ public final class PlayerSoul {
     public double groundY;
     public double groundZ;
     public boolean hasGround;
+    /** For how many ticks the sea of the Morning Wharf has had hold of the player (the server's count; not saved). */
+    public int undertow;
 
     /** Ticks of the roll still to go; the first part of it cannot be hurt. Not saved. */
     public int rollTicks;

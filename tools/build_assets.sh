@@ -28,6 +28,10 @@ python3 tools/gen_waxen.py ${P:+$P/waxen.png}
 python3 tools/gen_moth.py ${P:+$P/moth.png}
 python3 tools/gen_shatun.py ${P:+$P/shatun.png}
 python3 tools/gen_elder.py ${P:+$P/elder.png}
+python3 tools/gen_sailor.py ${P:+$P/sailor.png}
+python3 tools/gen_crab.py ${P:+$P/crab.png}
+python3 tools/gen_skua.py ${P:+$P/skua.png}
+python3 tools/gen_capsized.py ${P:+$P/capsized.png}
 python3 tools/gen_items.py ${P:+$P/items.png}
 python3 tools/gen_shields.py ${P:+$P/shields.png}
 python3 tools/gen_armor.py ${P:+$P/armor.png}

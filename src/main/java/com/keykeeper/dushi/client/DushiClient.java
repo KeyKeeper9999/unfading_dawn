@@ -85,6 +85,24 @@ public final class DushiClient {
                 context -> new QuarryRenderer<>(context, new ShatunModel(context.bakeLayer(ShatunModel.LAYER)), "shatun", 1.6F, true, true));
         event.registerEntityRenderer(Dushi.ELDER.get(),
                 context -> new QuarryRenderer<>(context, new ElderModel(context.bakeLayer(ElderModel.LAYER)), "elder", 0.8F, "elder_glow", "elder_asleep_glow"));
+        event.registerEntityRenderer(Dushi.DOCKHAND.get(), context -> new QuarryRenderer<>(context,
+                new SailorModel(context.bakeLayer(SailorModel.LAYER), SailorModel.Kind.DOCKHAND), "dockhand", 0.5F, false, false));
+        event.registerEntityRenderer(Dushi.HARPOONER.get(), context -> new QuarryRenderer<>(context,
+                new SailorModel(context.bakeLayer(SailorModel.LAYER), SailorModel.Kind.HARPOONER), "harpooner", 0.5F, false, false));
+        event.registerEntityRenderer(Dushi.OARSMAN.get(), context -> new QuarryRenderer<>(context,
+                new SailorModel(context.bakeLayer(SailorModel.BIG), SailorModel.Kind.OARSMAN), "oarsman", 0.65F, false, false));
+        event.registerEntityRenderer(Dushi.PILOT.get(), context -> new QuarryRenderer<>(context,
+                new SailorModel(context.bakeLayer(SailorModel.BIG), SailorModel.Kind.PILOT), "pilot", 0.65F, true, true));
+        event.registerEntityRenderer(Dushi.HELMSMAN.get(), context -> new QuarryRenderer<>(context,
+                new SailorModel(context.bakeLayer(SailorModel.HUGE), SailorModel.Kind.HELMSMAN), "helmsman", 0.9F, true, true));
+        event.registerEntityRenderer(Dushi.SAND_CRAB.get(),
+                context -> new QuarryRenderer<>(context, new CrabModel(context.bakeLayer(CrabModel.LAYER)), "sand_crab", 0.5F, false, false));
+        event.registerEntityRenderer(Dushi.SKUA.get(),
+                context -> new QuarryRenderer<>(context, new SkuaModel(context.bakeLayer(SkuaModel.LAYER)), "skua", 0.3F, false, false));
+        event.registerEntityRenderer(Dushi.CAPSIZED.get(),
+                context -> new QuarryRenderer<>(context, new CapsizedModel(context.bakeLayer(CapsizedModel.LAYER)), "capsized", 2.0F, false, true));
+        event.registerEntityRenderer(Dushi.HARPOON_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.6F, false));
+        event.registerEntityRenderer(Dushi.ANCHOR_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.6F, false));
         Dushi.WITHERED.forEach((kind, type) -> event.registerEntityRenderer(type.get(), context -> new WitheredRenderer(context, kind)));
         event.registerEntityRenderer(Dushi.RUST_KNIGHT.get(), context -> new RustKnightRenderer(context, "rust_knight"));
         event.registerEntityRenderer(Dushi.GILDED_KNIGHT.get(), context -> new RustKnightRenderer(context, "gilded_knight"));
@@ -116,6 +134,12 @@ public final class DushiClient {
         event.registerLayerDefinition(MothModel.LAYER, MothModel::createLayer);
         event.registerLayerDefinition(ShatunModel.LAYER, ShatunModel::createLayer);
         event.registerLayerDefinition(ElderModel.LAYER, ElderModel::createLayer);
+        event.registerLayerDefinition(SailorModel.LAYER, SailorModel::createLayer);
+        event.registerLayerDefinition(SailorModel.BIG, SailorModel::createBigLayer);
+        event.registerLayerDefinition(SailorModel.HUGE, SailorModel::createHugeLayer);
+        event.registerLayerDefinition(CrabModel.LAYER, CrabModel::createLayer);
+        event.registerLayerDefinition(SkuaModel.LAYER, SkuaModel::createLayer);
+        event.registerLayerDefinition(CapsizedModel.LAYER, CapsizedModel::createLayer);
         event.registerLayerDefinition(KeykeeperModel.LAYER, KeykeeperModel::createLayer);
         event.registerLayerDefinition(OverseerModel.LAYER, OverseerModel::createLayer);
         event.registerLayerDefinition(ChaplainModel.LAYER, ChaplainModel::createLayer);

@@ -22,7 +22,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * The seven suits of armour of the mod. Besides protection every suit has a weight (see {@link Gear}) and a small gift of its
+ * The eight suits of armour of the mod. Besides protection every suit has a weight (see {@link Gear}) and a small gift of its
  * own that grows with every piece worn.
  */
 public enum ArmorSet {
@@ -52,7 +52,14 @@ public enum ArmorSet {
      * weight; water holds the wearer's legs less.
      */
     SCALE("scale", new String[] {"scale_hood", "scale_coat", "scale_leggings", "scale_waders"}, 17.0F, 0.25F,
-            15, new int[] {2, 5, 3, 2}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_CHAIN, "repairs_scrap", Rarity.UNCOMMON);
+            15, new int[] {2, 5, 3, 2}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_CHAIN, "repairs_scrap", Rarity.UNCOMMON),
+    /**
+     * A seaman's oilskins - a sou'wester, a smock and trousers of sailcloth boiled in oil, sea boots to the thigh: a little
+     * better than mail and no heavier than the Mire's coat; whoever wears them keeps his feet on a deck, and a blow throws
+     * him less far.
+     */
+    OILSKIN("oilskin", new String[] {"oilskin_souwester", "oilskin_smock", "oilskin_trousers", "oilskin_boots"}, 19.0F, 0.15F,
+            15, new int[] {2, 6, 4, 2}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_LEATHER, "repairs_cloth", Rarity.UNCOMMON);
 
     public static final EquipmentSlot[] SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
     private static final ArmorType[] TYPES = {ArmorType.HELMET, ArmorType.CHESTPLATE, ArmorType.LEGGINGS, ArmorType.BOOTS};

@@ -48,6 +48,8 @@ public class LockedGateBlock extends Block {
         MIRE("mire", () -> Dushi.MIRE_KEY.get()),
         /** The Wood Wicket in the cliff of the yard before the town's north gate; its key lies in the grove behind the Weeping Mother. */
         FIRWOOD("firwood", () -> Dushi.FIRWOOD_KEY.get()),
+        /** The Sea Gate, the old south gate of the yard of the first hearth; its key lies in the candle store behind the Elder. */
+        SHORE("shore", () -> Dushi.SHORE_KEY.get()),
         /** A gate whose key is not in the map yet: a way that is being kept for a place still to come. Nothing opens it. */
         NONE("none", () -> null);
 

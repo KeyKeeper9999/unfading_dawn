@@ -868,7 +868,171 @@ public final class ClientSelfTest {
         rest();
         command(look(5.5, 11.0, 140, -6));
         shot("g2_elder_back");
-        command(gone, clear);
+        command(gone);
+
+        // the Morning Wharf: the seamen, three and three quarters from the front
+        command(look(0.5, 0.5, 0, 0), summon("dockhand", -2.5, 4.5, ""), summon("harpooner", 0.5, 4.5, ""), summon("oarsman", 3.5, 4.5, ""));
+        shot("h1_seamen", 20);
+        attack(com.keykeeper.dushi.entity.DockhandEntity.class, com.keykeeper.dushi.entity.DockhandEntity.HOOK, 12);
+        shot("h1_hook_up");
+        attack(com.keykeeper.dushi.entity.DockhandEntity.class, com.keykeeper.dushi.entity.DockhandEntity.HOOK, 17);
+        shot("h1_hook_down");
+        attack(com.keykeeper.dushi.entity.DockhandEntity.class, com.keykeeper.dushi.entity.DockhandEntity.RIPS, 13);
+        shot("h1_rip");
+        rest();
+        attack(com.keykeeper.dushi.entity.HarpoonerEntity.class, com.keykeeper.dushi.entity.HarpoonerEntity.THROW, 20);
+        shot("h2_throw_back");
+        attack(com.keykeeper.dushi.entity.HarpoonerEntity.class, com.keykeeper.dushi.entity.HarpoonerEntity.THROW, 27);
+        shot("h2_thrown");
+        attack(com.keykeeper.dushi.entity.HarpoonerEntity.class, com.keykeeper.dushi.entity.HarpoonerEntity.STAB, 14);
+        shot("h2_stab");
+        rest();
+        attack(com.keykeeper.dushi.entity.OarsmanEntity.class, com.keykeeper.dushi.entity.OarsmanEntity.SWEEP, 19);
+        shot("h3_sweep_drawn");
+        attack(com.keykeeper.dushi.entity.OarsmanEntity.class, com.keykeeper.dushi.entity.OarsmanEntity.SWEEP, 26);
+        shot("h3_sweep");
+        attack(com.keykeeper.dushi.entity.OarsmanEntity.class, com.keykeeper.dushi.entity.OarsmanEntity.SLAM, 24);
+        shot("h3_slam_up");
+        attack(com.keykeeper.dushi.entity.OarsmanEntity.class, com.keykeeper.dushi.entity.OarsmanEntity.SLAM, 32);
+        shot("h3_slam");
+        attack(com.keykeeper.dushi.entity.OarsmanEntity.class, com.keykeeper.dushi.entity.OarsmanEntity.PROD, 19);
+        shot("h3_prod");
+        rest();
+        command(look(-6.0, 4.5, -90, 0));
+        shot("h3_seamen_side", 20);
+        attack(com.keykeeper.dushi.entity.OarsmanEntity.class, com.keykeeper.dushi.entity.OarsmanEntity.SWEEP, 26);
+        shot("h3_side_sweep");
+        attack(com.keykeeper.dushi.entity.OarsmanEntity.class, com.keykeeper.dushi.entity.OarsmanEntity.SLAM, 32);
+        shot("h3_side_slam");
+        rest();
+        command(gone, look(0.5, 0.5, 0, 0), summon("pilot", 0.5, 4.5, ""), "time set 18000");
+        shot("h4_pilot_night", 30);
+        command("time set 6000");
+        shot("h4_pilot", 20);
+        attack(com.keykeeper.dushi.entity.PilotEntity.class, com.keykeeper.dushi.entity.PilotEntity.WHIRL, 28);
+        shot("h4_whirl");
+        attack(com.keykeeper.dushi.entity.PilotEntity.class, com.keykeeper.dushi.entity.PilotEntity.CAST, 16);
+        shot("h4_cast_back");
+        attack(com.keykeeper.dushi.entity.PilotEntity.class, com.keykeeper.dushi.entity.PilotEntity.CAST, 23);
+        shot("h4_cast");
+        attack(com.keykeeper.dushi.entity.PilotEntity.class, com.keykeeper.dushi.entity.PilotEntity.SOUND, 20);
+        shot("h4_sound_up");
+        attack(com.keykeeper.dushi.entity.PilotEntity.class, com.keykeeper.dushi.entity.PilotEntity.SOUND, 28);
+        shot("h4_sound");
+        rest();
+        command(look(-5.0, 4.5, -90, 0));
+        attack(com.keykeeper.dushi.entity.PilotEntity.class, com.keykeeper.dushi.entity.PilotEntity.CAST, 23);
+        shot("h4_side_cast");
+        attack(com.keykeeper.dushi.entity.PilotEntity.class, com.keykeeper.dushi.entity.PilotEntity.SOUND, 28);
+        shot("h4_side_sound");
+        rest();
+        // what lives in the sand and over it
+        command(gone, look(0.5, 1.5, 0, 14), summon("sand_crab", -1.5, 4.5, ""), summon("skua", 2.0, 4.5, ""),
+                "fill -3 " + (GROUND - 1) + " 3 4 " + (GROUND - 1) + " 6 minecraft:sand");
+        shot("h5_buried_and_sitting", 20);
+        phase(2);
+        shot("h5_up_and_flying", 16);
+        attack(com.keykeeper.dushi.entity.SandCrabEntity.class, com.keykeeper.dushi.entity.SandCrabEntity.PINCH, 11);
+        shot("h5_pinch");
+        attack(com.keykeeper.dushi.entity.SkuaEntity.class, com.keykeeper.dushi.entity.SkuaEntity.STOOP, 14);
+        shot("h5_stoop_hangs");
+        attack(com.keykeeper.dushi.entity.SkuaEntity.class, com.keykeeper.dushi.entity.SkuaEntity.STOOP, 28);
+        shot("h5_stoop_falls");
+        rest();
+        command(look(-3.5, 4.5, -90, 8));
+        shot("h5_side", 16);
+        command(gone, "fill -3 " + (GROUND - 1) + " 3 4 " + (GROUND - 1) + " 6 minecraft:stone_bricks");
+
+        // the Helmsman
+        command(look(0.5, -1.0, 0, -6), summon("helmsman", 0.5, 6.0, ""), "time set 18000");
+        shot("h6_helmsman_night", 30);
+        command("time set 6000");
+        shot("h6_helmsman", 20);
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.SWEEP, 18);
+        shot("h6_sweep_drawn");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.SWEEP, 26);
+        shot("h6_sweep");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.SLAM, 24);
+        shot("h6_slam_up");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.SLAM, 33);
+        shot("h6_slam");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.CAST, 22);
+        shot("h6_cast_back");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.CAST, 34);
+        shot("h6_cast_gone");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.CAST, 64);
+        shot("h6_haul");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.SHOULDER, 18);
+        shot("h6_shoulder");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.BELLOW, 16);
+        shot("h6_bellow");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.WHIRL, 35);
+        shot("h6_whirl");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.WHIRL, 84);
+        shot("h6_giddy");
+        rest();
+        command(look(-8.0, 6.0, -90, -4));
+        shot("h7_helmsman_side", 16);
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.SWEEP, 26);
+        shot("h7_side_sweep");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.SLAM, 24);
+        shot("h7_side_slam_up");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.SLAM, 33);
+        shot("h7_side_slam");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.CAST, 22);
+        shot("h7_side_cast_back");
+        attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.CAST, 64);
+        shot("h7_side_haul");
+        rest();
+        command(look(5.5, 11.0, 140, -4));
+        shot("h7_helmsman_back", 16);
+        command(gone);
+
+        // the Capsized: a boat on the sand, and then not
+        command(look(0.5, -1.0, 0, 6), summon("capsized", 0.5, 6.0, ""), "fill -5 " + (GROUND - 1) + " 1 6 " + (GROUND - 1) + " 11 minecraft:sand");
+        shot("h8_boat", 30);
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.RISE, 12);
+        shot("h8_rising");
+        rest();
+        phase(2);
+        shot("h8_capsized", 20);
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.SNAP, 15);
+        shot("h8_snap_drawn");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.SNAP, 21);
+        shot("h8_snap");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.SWEEP, 17);
+        shot("h8_sweep_drawn");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.SWEEP, 25);
+        shot("h8_sweep");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.SLAM, 28);
+        shot("h8_slam_reared");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.SLAM, 42);
+        shot("h8_slam");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.SPIN, 34);
+        shot("h8_spin");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.SPIN, 76);
+        shot("h8_giddy");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.TUCK, 40);
+        shot("h8_tucked");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.TUCK, 75);
+        shot("h8_burst");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.BROOD, 19);
+        shot("h8_brood");
+        rest();
+        command(look(-8.0, 6.0, -90, 4));
+        shot("h9_capsized_side", 16);
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.SNAP, 21);
+        shot("h9_side_snap");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.SLAM, 28);
+        shot("h9_side_slam_reared");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.SLAM, 42);
+        shot("h9_side_slam");
+        attack(com.keykeeper.dushi.entity.CapsizedEntity.class, com.keykeeper.dushi.entity.CapsizedEntity.BROOD, 19);
+        shot("h9_side_brood");
+        rest();
+        command(look(6.5, 12.0, 135, 8), "time set 18000");
+        shot("h9_capsized_back_night", 20);
+        command("time set 6000", gone, "fill -5 " + (GROUND - 1) + " 1 6 " + (GROUND - 1) + " 11 minecraft:stone_bricks", clear);
 
         // 5. every item of the mod as a picture in the air
         List<String> items = new ArrayList<>();
@@ -926,7 +1090,9 @@ public final class ClientSelfTest {
         client(() -> Minecraft.getInstance().options.keyUse.setDown(false));
         for (String[] set : new String[][] {{"great_key", "tower_shield"}, {"rust_greatsword", "round_shield"}, {"scholar_staff", "soul_shard"},
                 {"battle_axe", "plank_shield"}, {"short_bow", "prayer_beads"}, {"bear_spear", "guard_shield"}, {"great_candle", "vigil_staff"},
-                {"waker_mallet", "round_shield"}, {"stone_hammer", "carver_buckler"}, {"fish_knife", "scale_shield"}, {"longsword", "waker_board"}}) {
+                {"waker_mallet", "round_shield"}, {"stone_hammer", "carver_buckler"}, {"fish_knife", "scale_shield"}, {"longsword", "waker_board"},
+                {"cargo_hook", "round_shield"}, {"harpoon", "guard_shield"}, {"oar", "plank_shield"}, {"lead_line", "carver_buckler"},
+                {"ship_anchor", "tower_shield"}, {"capsized_claw", "scale_shield"}}) {
             command("item replace entity @p weapon.mainhand with vsratie_dushi:" + set[0], "item replace entity @p weapon.offhand with vsratie_dushi:" + set[1]);
             camera(CameraType.THIRD_PERSON_FRONT);
             shot("31_held_" + set[0] + "_front", 20);

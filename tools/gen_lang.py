@@ -77,6 +77,14 @@ for key, ru, en in (
         ('mason_breeches', 'Порты каменотёса', "Stonecutter's Breeches"), ('mason_boots', 'Сапоги каменотёса', "Stonecutter's Boots"),
         ('scale_hood', 'Чешуйчатый куколь', 'Scale Hood'), ('scale_coat', 'Чешуйчатая рубаха', 'Scale Coat'),
         ('scale_leggings', 'Чешуйчатые порты', 'Scale Leggings'), ('scale_waders', 'Бродни', 'Waders'),
+        ('shore_key', 'Ключ от Морских ворот', 'Key to the Sea Gate'),
+        ('sailcloth', 'Парусина', 'Sailcloth'), ('tarred_rope', 'Смолёный канат', 'Tarred Rope'), ('crab_shell', 'Панцирь клешняка', "Sand Crab's Shell"),
+        ('cargo_hook', 'Крюк крючника', "Dockhand's Hook"), ('harpoon', 'Гарпун', 'Harpoon'), ('oar', 'Весло карбаса', "Karbas Oar"),
+        ('lead_line', 'Лот лоцмана', "Pilot's Sounding Lead"), ('ship_anchor', 'Якорь «Зари»', 'Anchor of the Daybreak'),
+        ('capsized_claw', 'Клешня Перевёртыша', 'Claw of the Capsized'),
+        ('helmsman_soul', 'Душа Кормчего', 'Soul of the Helmsman'), ('capsized_soul', 'Душа Перевёртыша', 'Soul of the Capsized'),
+        ('oilskin_souwester', 'Зюйдвестка', "Sou'wester"), ('oilskin_smock', 'Промасленная роба', 'Oilskin Smock'),
+        ('oilskin_trousers', 'Промасленные порты', 'Oilskin Trousers'), ('oilskin_boots', 'Бахилы', 'Sea Boots'),
         ('tattered_cloth', 'Ветошь', 'Tattered Cloth'), ('rust_scrap', 'Ржавый лом', 'Rust Scrap')):
     t(f'item.{M}.{key}', ru, en)
 
@@ -89,7 +97,10 @@ CHARMS = (('coffin_nail', 'Гробовой гвоздь', 'Coffin Nail', 'Мё�
           ('pike_tooth', 'Щучий зуб', "Pike's Tooth", 'Удар в спину сильнее на %s%%', 'A blow in the back is %s%% harder'),
           ('weeping_herb', 'Плакун-трава', 'Weeping Herb', 'Силы возвращаются на %s%% быстрее', 'Stamina comes back %s%% faster'),
           ('vigil_wax', 'Воск бдения', 'Wax of the Vigil', 'Перекат стоит на %s%% меньше сил', 'A roll costs %s%% less stamina'),
-          ('shatun_claw', 'Коготь шатуна', "Shatun's Claw", 'Здоровья больше на %s сердца', '%s hearts more'))
+          ('shatun_claw', 'Коготь шатуна', "Shatun's Claw", 'Здоровья больше на %s сердца', '%s hearts more'),
+          ('sea_knot', 'Морской узел', "Seaman's Knot", 'Удар оружием стоит на %s%% меньше сил', 'A swing costs %s%% less stamina'),
+          ('tide_pearl', 'Жемчужина стоячей воды', 'Pearl of the Slack Tide', 'Здоровье возвращается само: полсердца раз в %s с',
+           'Health comes back by itself: half a heart every %s s'))
 for key, ru, en, ru_d, en_d in CHARMS:
     t(f'item.{M}.{key}', ru, en)
     t(f'tooltip.{M}.charm.{key}', ru_d, en_d)
@@ -113,6 +124,9 @@ MOBS = (('withered_prisoner', 'Истлевший узник', 'Withered Prisone
         ('wakeful', 'Бдящий', 'The Wakeful'), ('waker', 'Будильщик', 'The Waker'), ('sleeper', 'Задремавший', 'The Dozer'),
         ('waxen', 'Восковик', 'The Waxen'), ('sleep_moth', 'Сонница', 'Sleep Moth'), ('shatun', 'Шатун', 'The Shatun'),
         ('elder', 'Старец Неусыпающих', 'Elder of the Unsleeping'),
+        ('dockhand', 'Крючник', 'The Dockhand'), ('harpooner', 'Гарпунщик', 'The Harpooner'), ('oarsman', 'Вёсельник', 'The Oarsman'),
+        ('pilot', 'Лоцман', 'The Pilot'), ('sand_crab', 'Клешняк', 'Sand Crab'), ('skua', 'Поморник', 'Skua'),
+        ('helmsman', 'Кормчий «Зари»', 'Helmsman of the Daybreak'), ('capsized', 'Перевёртыш', 'The Capsized'),
         ('gilded_knight', 'Золочёный рыцарь', 'Gilded Knight'), ('rust_knight', 'Ржавый рыцарь', 'Rust Knight'),
         ('keykeeper', 'Слепой ключник', 'Blind Keykeeper'), ('overseer', 'Надзиратель Острога', 'Overseer of the Stockade'),
         ('chaplain', 'Капеллан Острога', 'Chaplain of the Stockade'))
@@ -124,6 +138,8 @@ t(f'entity.{M}.spell_bolt', 'Заклинание', 'Spell')
 t(f'entity.{M}.tar_pot', 'Горшок смолы', 'Tar Pot')
 t(f'entity.{M}.powder_pot', 'Пороховой горшок', 'Powder Pot')
 t(f'entity.{M}.thrown_wedge', 'Железный клин', 'Iron Wedge')
+t(f'entity.{M}.thrown_harpoon', 'Гарпун', 'Harpoon')
+t(f'entity.{M}.thrown_anchor', 'Якорь «Зари»', 'Anchor of the Daybreak')
 
 t(f'tooltip.{M}.scaling', 'Сила: %s   Ловкость: %s', 'Strength: %s   Dexterity: %s')
 t(f'tooltip.{M}.stamina', 'Расход сил: %s', 'Stamina cost: %s')
@@ -156,6 +172,7 @@ t(f'tooltip.{M}.set.chaplain', 'Заклинания сильнее: +%s%% за 
 t(f'tooltip.{M}.set.vigil', 'Сон и морок отпускают раньше: −%s%% за вещь', 'Sleep and murk let go sooner: −%s%% per piece')
 t(f'tooltip.{M}.set.mason', 'Взрыв и падающий камень бьют слабее: −%s%% за вещь', 'Blasts and falling rock hurt less: −%s%% per piece')
 t(f'tooltip.{M}.set.scale', 'Вода меньше держит ноги: −%s%% за вещь', 'Water holds the legs less: −%s%% per piece')
+t(f'tooltip.{M}.set.oilskin', 'Удар отбрасывает слабее: −%s%% за вещь', 'A blow throws you less far: −%s%% per piece')
 t(f'tooltip.{M}.great_candle', 'Горит: кого ударит, тот в огне %s с', 'It is alight: what it strikes burns for %s s')
 
 t(f'spell.{M}.soul_shard.desc', 'Быстрый сгусток бледного света', 'A quick bolt of pale light')
@@ -226,6 +243,19 @@ t(f'place.{M}.white_tent', 'БЕЛЫЙ ШАТЁР', 'THE WHITE TENT')
 t(f'message.{M}.gate_locked.firwood', 'Заперто. Из-за решётки тянет хвоей и воском. Ключ унесли на казнь — и назад не принесли.',
   'Locked. It smells of fir and wax beyond the grate. The key was carried off to a hanging, and never brought back.')
 t(f'message.{M}.gate_opened.firwood', 'Лесная калитка отперта', 'The Wood Wicket is unlocked')
+# the Morning Wharf, south of the yard of the first hearth: the sun just clear of the sea, and it does not climb. (The
+# one dawn of this country that is one - nobody at the Stockade calls it that.)
+t(f'place.{M}.wharf', 'УТРЕННЯЯ ПРИСТАНЬ', 'THE MORNING WHARF')
+t(f'place.{M}.ship', 'КОЧ «ЗАРЯ»', 'THE COG "DAYBREAK"')
+t(f'place.{M}.mole', 'СТАРЫЙ МОЛ', 'THE OLD MOLE')
+t(f'place.{M}.spit', 'ДОЛГАЯ КОСА', 'THE LONG SPIT')
+t(f'place.{M}.boulders', 'КАМЕННАЯ ГРЯДА', 'THE BOULDER STRAND')
+t(f'place.{M}.shoal', 'ОТМЕЛЬ', 'THE SHOAL')
+t(f'place.{M}.lighthouse', 'МАЯК', 'THE LIGHTHOUSE')
+t(f'message.{M}.gate_locked.shore', 'Заперто. Из-под створок тянет солью и смолой. Ключ хранили там, где не спят.',
+  'Locked. Salt and tar on the draught under the leaves. The key was kept where nobody sleeps.')
+t(f'message.{M}.gate_opened.shore', 'Морские ворота отперты', 'The Sea Gate is unlocked')
+t(f'message.{M}.undertow', 'Тянет на дно', 'The sea is taking you under')
 t(f'block.{M}.shallows', 'Мелкая вода', 'Shallows')
 t(f'block.{M}.sludge', 'Тина', 'Sludge')
 t(f'entity.{M}.mud_glob', 'Ком тины', 'Clot of Sludge')
@@ -260,6 +290,8 @@ for key, ru, en in (('none', 'Очаг (%s, %s, %s)', 'A hearth (%s, %s, %s)'), 
                     ('terrace', 'Терраса над долиной', 'The Terrace above the Vale'), ('maw', 'Под Зевом', 'Under the Maw'),
                     ('sump', 'Зумпф', 'The Sump'), ('ferry', 'Изба перевозчика', "The Ferryman's Hut"), ('mill', 'Мельница на запруде', 'The Mill on the Weir'),
                     ('old_fir', 'Под старой елью', 'Under the Old Fir'), ('skete', 'Околица скита', "The Skete's Edge"),
+                    ('harbour', 'Портовая контора', 'The Harbour Office'), ('karbas', 'Под перевёрнутым карбасом', 'Under the Upturned Karbas'),
+                    ('lighthouse', 'Маяк', 'The Lighthouse'),
                     ('reliquary', 'Свечная кладовая', 'The Candle Store')):
     t(f'hearth.{M}.{key}', ru, en)
 t(f'screen.{M}.hearth.level', 'Уровень: %s', 'Level: %s')
@@ -386,6 +418,26 @@ SUBTITLES = {
     'entity.elder.chant': ('Старец возглашает', 'Elder intones'), 'entity.elder.knock': ('Посох бьёт в землю', 'A staff strikes the ground'),
     'entity.elder.call': ('Старец будит своих', 'Elder wakes his own'), 'entity.elder.slumber': ('Старец зевает', 'Elder yawns'),
     'entity.elder.dream': ('Наползает сон', 'A dream creeps in'), 'entity.elder.snore': ('Старец храпит', 'Elder snores'),
+    'entity.sailor.ambient': ('Моряк хрипит', 'Seaman wheezes'), 'entity.sailor.hurt': ('Моряк охает', 'Seaman grunts'),
+    'entity.sailor.death': ('Моряк идёт ко дну', 'Seaman goes under'), 'entity.sailor.hook': ('Цепляет крюк', 'A hook bites'),
+    'entity.sailor.throw': ('Летит гарпун', 'A harpoon flies'), 'entity.sailor.oar': ('Свистит весло', 'An oar whistles'),
+    'entity.harpoon.hit': ('Гарпун втыкается', 'A harpoon strikes'), 'entity.pilot.whirl': ('Гудит лотлинь', 'A lead line hums'),
+    'entity.pilot.lead': ('Лот бьёт оземь', 'A sounding lead lands'),
+    'entity.sand_crab.dig': ('Шевелится песок', 'Sand stirs'), 'entity.sand_crab.snap': ('Щёлкает клешня', 'A claw snaps'),
+    'entity.sand_crab.click': ('Стучат ножки', 'Legs click'), 'entity.sand_crab.hurt': ('Трещит панцирь', 'A shell cracks'),
+    'entity.sand_crab.death': ('Клешняк лопается', 'Sand crab bursts'),
+    'entity.skua.cry': ('Кричит поморник', 'Skua cries'), 'entity.skua.stoop': ('Поморник падает камнем', 'Skua stoops'),
+    'entity.skua.hurt': ('Поморник вскрикивает', 'Skua shrieks'), 'entity.skua.death': ('Поморник падает', 'Skua drops'),
+    'entity.helmsman.ambient': ('Кормчий дышит', 'Helmsman breathes'), 'entity.helmsman.hurt': ('Кормчий рычит', 'Helmsman growls'),
+    'entity.helmsman.death': ('Кормчий падает на палубу', 'Helmsman falls to the deck'), 'entity.helmsman.swing': ('Якорь идёт по кругу', 'An anchor comes round'),
+    'entity.helmsman.anchor': ('Якорь бьёт в палубу', 'An anchor strikes the deck'), 'entity.helmsman.chain': ('Гремит якорная цепь', 'An anchor chain rattles'),
+    'entity.helmsman.shout': ('Кормчий командует', 'Helmsman gives the order'),
+    'entity.capsized.ambient': ('Скрипит старая лодка', 'An old boat creaks'), 'entity.capsized.hurt': ('Трещат доски', 'Planks crack'),
+    'entity.capsized.death': ('Лодка разваливается', 'A boat falls apart'), 'entity.capsized.rise': ('Лодка встаёт на ноги', 'A boat gets up on legs'),
+    'entity.capsized.snap': ('Клацает большая клешня', 'A great claw snaps'), 'entity.capsized.creak': ('Скрипит днище', 'A hull creaks'),
+    'entity.capsized.slam': ('Лодка бьёт оземь', 'A boat comes down'), 'entity.capsized.knock': ('Стук по днищу', 'A knock on a hull'),
+    'ambient.shore.surf': ('Шумит прибой', 'Surf'), 'ambient.shore.gull': ('Кричат чайки', 'Gulls cry'),
+    'player.undertow': ('Тянет на дно', 'The sea pulls under'),
     'entity.keykeeper.ambient': ('Ключник кашляет', 'Keykeeper coughs'), 'entity.keykeeper.give': ('Звенят ключи', 'Keys jingle'),
     'ui.death': ('Ты помер', 'You croaked'), 'ui.boss_defeated': ('Гад повержен', 'Fiend felled'), 'ui.hearth_lit': ('Очаг разгорается', 'Hearth flares up'),
     'ui.level_up': ('Сила прибывает', 'Strength grows'), 'ui.souls_gain': ('Души стекаются', 'Souls gather'),

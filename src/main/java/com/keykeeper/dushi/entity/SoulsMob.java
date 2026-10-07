@@ -372,7 +372,7 @@ public abstract class SoulsMob extends Monster {
             if (victim.hurtServer(level, source, dealt)) {
                 hits++;
                 if (knockback > 0.0) {
-                    victim.knockback(knockback, this.getX() - victim.getX(), this.getZ() - victim.getZ(), source, damage);
+                    victim.knockback(knockback * com.keykeeper.dushi.Gear.thrown(victim), this.getX() - victim.getX(), this.getZ() - victim.getZ(), source, damage);
                 }
                 this.struck(level, victim);
             }
@@ -493,7 +493,7 @@ public abstract class SoulsMob extends Monster {
             if (victim.hurtServer(level, source, damage)) {
                 hits++;
                 if (knockback > 0.0) {
-                    victim.knockback(knockback, centre.x - victim.getX(), centre.z - victim.getZ(), source, damage);
+                    victim.knockback(knockback * com.keykeeper.dushi.Gear.thrown(victim), centre.x - victim.getX(), centre.z - victim.getZ(), source, damage);
                 }
                 this.struck(level, victim);
             }
@@ -503,7 +503,8 @@ public abstract class SoulsMob extends Monster {
 
     /** Throws {@code victim} with the given velocity; a player's own client is told at once. */
     protected static void shove(LivingEntity victim, Vec3 velocity) {
-        victim.setDeltaMovement(velocity);
+        float share = com.keykeeper.dushi.Gear.thrown(victim);
+        victim.setDeltaMovement(share < 1.0F ? new Vec3(velocity.x * share, velocity.y, velocity.z * share) : velocity);
         victim.needsSync = true;
         if (victim instanceof ServerPlayer player) {
             player.connection.send(new ClientboundSetEntityMotionPacket(player));

@@ -574,6 +574,89 @@ for xx, yy, col in ((30, 1, b), (30, 0, f), (31, 0, F), (31, 1, e)):
     sp.px(xx, yy, col, lock=True)
 sp.outline(0.45, inner=False)
 
+# ---- the Morning Wharf
+TAR, TARD = (58, 48, 44), (36, 30, 30)
+CANVAS, CANVASM, CANVASD = (214, 202, 170), (176, 162, 130), (128, 116, 92)
+SHELL, SHELLM, SHELLD = (190, 88, 60), (142, 58, 44), (92, 38, 34)
+
+# an oar of a karbas: ash, as long as the boat is wide twice over, the blade worn pale and split at the tip
+sp = icon('oar', 32, big=True)
+for i in range(18):
+    xx, yy = 2 + i, 29 - i
+    sp.px(xx, yy, W if i % 6 else w)
+    sp.px(xx + 1, yy, w)
+    sp.px(xx + 1, yy + 1, b)
+for i in range(3):                                       # the leather where it lay in the thole
+    sp.px(11 + i, 20 - i, R)
+    sp.px(12 + i, 20 - i, r)
+    sp.px(12 + i, 21 - i, q)
+for uu, half in enumerate((1, 2, 2, 3, 3, 3, 3, 3, 3, 2, 1)):   # the blade: along it, and across
+    for vv in range(-half, half + 1):
+        xx, yy = 20 + uu + vv, 11 - uu + vv
+        col = C if vv < -1 else (c if vv < 1 else (W if vv < half else w))
+        if uu > 7 and vv == 0:
+            col = b                                      # the split
+        sp.px(xx, yy, col)
+        if xx + 1 < 32:
+            sp.px(xx + 1, yy, c if vv < 0 else (w if vv < half else b))
+sp.pts([(4, 27), (6, 25)], C)                            # where the hands have polished it
+sp.outline(0.45, inner=False)
+
+# a harpoon: a long shaft, an iron foreshaft, a head with one barb turned back, and a becket for the line
+sp = icon('harpoon', 32, big=True)
+for i in range(19):
+    xx, yy = 2 + i, 29 - i
+    sp.px(xx, yy, W if i % 7 else w)
+    sp.px(xx + 1, yy, w)
+    sp.px(xx + 1, yy + 1, b)
+for i in range(3):                                       # turns of tarred line where the iron is seized on
+    sp.px(19 + i, 12 - i, TAR)
+    sp.px(20 + i, 12 - i, TARD)
+for i in range(6):                                       # the foreshaft
+    sp.px(22 + i, 9 - i, s if i % 2 else S)
+    sp.px(23 + i, 9 - i, d)
+for xx, yy, col in ((28, 3, S), (29, 2, S), (30, 1, S), (29, 3, s), (30, 2, s), (31, 0, S), (30, 3, d), (31, 1, s),
+                    (28, 5, s), (28, 6, d), (29, 6, d), (29, 5, s), (30, 4, d)):   # the head, and the barb back from it
+    sp.px(xx, yy, col)
+sp.pts([(18, 14), (17, 16), (18, 16), (19, 15)], CANVASM)   # the becket
+sp.pts([(24, 8), (26, 6)], R)
+sp.outline(0.45, inner=False)
+
+# the anchor of the Daybreak: carried by its ring, the stock across under the hands, the arms and their flukes at the far end
+sp = icon('ship_anchor', 32, big=True)
+
+
+def anchor_px(au, av, col):
+    """A point of the anchor: au along the shank from the ring, av across it (to the lower right)."""
+    xx, yy = 4 + au + av, 27 - au + av
+    if not sp.solid(xx, yy + 1):
+        sp.px(xx, yy + 1, shade(col, 0.62))
+    sp.px(xx, yy, col)
+    sp.px(xx + 1, yy, shade(col, 0.8))
+
+
+for au in range(1, 18):                                  # the shank
+    anchor_px(au, 0, s if au % 5 else d)
+    anchor_px(au, 1, M)
+for av in range(-5, 6):                                  # the stock: oak, banded with iron
+    anchor_px(3, av, M if abs(av) in (2, 5) else (W if av < 0 else w))
+ARMS = ((17, 1), (17, 2), (16, 3), (16, 4), (15, 5), (14, 6), (13, 7), (12, 7))   # out from the crown and back towards the ring
+for au, av in ARMS:
+    anchor_px(au, -av, s)
+    anchor_px(au - 1, -av, d)
+    anchor_px(au, av, d)
+    anchor_px(au - 1, av, M)
+for au, av, col in ((11, 7, s), (11, 6, s), (12, 6, S), (12, 8, d), (11, 8, d), (10, 7, d), (13, 8, d)):   # the flukes
+    anchor_px(au, -av, col)
+    anchor_px(au, av, shade(col, 0.75))
+anchor_px(18, 0, s)                                      # the crown
+anchor_px(18, 1, d)
+for xx, yy, col in ((4, 28, d), (3, 28, s), (2, 29, s), (2, 30, d), (3, 31, d), (4, 31, M), (5, 30, M), (5, 29, d)):   # the ring
+    sp.px(xx, yy, col)
+sp.pts([pt for pt in ((11, 21), (16, 16), (20, 12), (26, 15), (18, 5)) if sp.solid(*pt)], R)   # rust
+sp.pts([(13, 19), (19, 13)], (88, 128, 92))                    # and weed
+sp.outline(0.45, inner=False)
+
 # ---------------------------------------------------------------------------------------------------- bow
 
 def bow(name, pull):
@@ -1175,6 +1258,132 @@ ascii_icon('firwood_key', [
 ascii_icon('shatun_soul', SOUL_ROWS, {'1': (255, 196, 116), '2': (206, 122, 56), 'd': (122, 66, 38), 'M': (40, 22, 16), 'D': (84, 48, 32)}, lock='12dMD')
 ascii_icon('elder_soul', SOUL_ROWS, {'1': (255, 248, 222), '2': (228, 204, 140), 'd': (156, 130, 84), 'M': (52, 40, 26), 'D': (110, 92, 62)}, lock='12dMD')
 
+
+# ---- the Morning Wharf: what its dead leave, what is made of them, the key to it, and its two charms
+ascii_icon('cargo_hook', [
+    "................",
+    ".........oooo...",
+    "........oSssdo..",
+    ".......oso..odo.",
+    ".......oo...odo.",
+    "...........osdo.",
+    "..........osdo..",
+    ".........osdo...",
+    "........osdo....",
+    "....o..osdo.....",
+    "...oWoosdo......",
+    "..oWwWodo.......",
+    "...owWwo........",
+    "....owWwo.......",
+    ".....owbo.......",
+    "......oo........"], handheld=True)
+ascii_icon('capsized_claw', [
+    "................",
+    "..........oo....",
+    ".........o1Co...",
+    "........o12Co...",
+    ".......o112co.oo",
+    ".......o122ooCco",
+    "......o1122o1Co.",
+    "......o12231120.",
+    ".....o112222230.",
+    ".....o12222330..",
+    "....o11222330...",
+    "...oTo122300....",
+    "..oTtTo330......",
+    ".oTtTto.o.......",
+    ".otTto..........",
+    "..ooo..........."], {'1': SHELL, '2': SHELLM, '3': SHELLD, '0': O, 'T': (96, 80, 66), 't': TAR}, handheld=True)
+ascii_icon('lead_line', [
+    "................",
+    "...oooooo.......",
+    "..o1212121o.....",
+    ".o1o....o2o.....",
+    ".o2o....o1o.....",
+    ".o1o....o2o.....",
+    "..o2121212oo....",
+    "...oooooo21o....",
+    ".........o12o...",
+    "..........o1o...",
+    "..........oMo...",
+    ".........oMsMo..",
+    ".........oMsmo..",
+    "........oMssmmo.",
+    "........oMmmmmo.",
+    ".........ooooo.."], {'1': CANVAS, '2': CANVASD}, handheld=True)
+ascii_icon('sailcloth', [
+    "................",
+    "................",
+    "..ooooooooooo...",
+    ".o11111111112o..",
+    ".o1G111111122o..",
+    ".o11111111122o..",
+    ".o3232323232233o",
+    ".o11111111122o3o",
+    ".o11111112223oo.",
+    ".o22222222233o..",
+    ".o11111111122o..",
+    ".o1111112G223o..",
+    ".o22222222333o..",
+    "..ooooooooooo...",
+    "................",
+    "................"], {'1': CANVAS, '2': CANVASM, '3': CANVASD})
+ascii_icon('tarred_rope', [
+    "................",
+    "................",
+    "....oooooo......",
+    "...o121212o.....",
+    "..o12oooo21o....",
+    ".o21o....o12o...",
+    ".o12o....o21o...",
+    ".o21o....o12o...",
+    ".o12oooooo21o...",
+    "..o21212121ooo..",
+    "...ooooooo2121o.",
+    "..........oo212o",
+    "............o12o",
+    ".............oo.",
+    "................",
+    "................"], {'1': (104, 84, 66), '2': TARD})
+ascii_icon('crab_shell', [
+    "................",
+    "................",
+    "....o.oooo.o....",
+    "...o1o1111o1o...",
+    "..o1111C1111o...",
+    ".o111C11111122o.",
+    ".o11111111C122o.",
+    "o1111C111112223o",
+    "o11111111122223o",
+    ".o1111C1122223o.",
+    ".o222111222233o.",
+    "..o3222222333o..",
+    "...oo333333oo...",
+    ".....oooooo.....",
+    "................",
+    "................"], {'1': SHELL, '2': SHELLM, '3': SHELLD})
+# the key of the Sea Gate: the same make as the others; it lay among candles, and before that long in salt air
+ascii_icon('shore_key', [
+    "................",
+    "..........ooo...",
+    ".........oSsdo..",
+    "........oSo.odo.",
+    "........oso.odo.",
+    "........o1dodo..",
+    ".......o112do...",
+    "......oS12oo....",
+    ".....oSs2o......",
+    "....oSs2o.......",
+    "...oSsdoo.......",
+    "..oSsdoso.......",
+    ".oSsdos2o.......",
+    ".osdo.oo........",
+    "..oo............",
+    "................"], {'1': (132, 196, 176), '2': (78, 132, 122)})
+# the Helmsman's: the green of deep water with the morning on it; the Capsized's: the red of a boiled shell
+ascii_icon('helmsman_soul', SOUL_ROWS, {'1': (196, 244, 228), '2': (92, 176, 164), 'd': (48, 102, 106), 'M': (18, 36, 44), 'D': (34, 66, 74)}, lock='12dMD')
+ascii_icon('capsized_soul', SOUL_ROWS, {'1': (255, 196, 164), '2': (216, 100, 72), 'd': (132, 54, 46), 'M': (44, 20, 20), 'D': (86, 36, 32)}, lock='12dMD')
+
 # ---------------------------------------------------------------------------------------------------- flying spells
 
 def bolt(name, core, mid, edge, rows):
@@ -1372,6 +1581,41 @@ ascii_icon('shatun_claw', [
     ".........oo.....",
     "................"], {'1': (122, 110, 104), '2': (74, 64, 62), '3': (44, 36, 38)})
 
+ascii_icon('sea_knot', [
+    "................",
+    "......ollo......",
+    ".....ol..lo.....",
+    "......olLo......",
+    "......o12o......",
+    "...ooo1221ooo...",
+    "..o1212oo2121o..",
+    ".o12oo1221oo21o.",
+    ".o21o12oo21o12o.",
+    ".o12oo2112oo21o.",
+    "..o2121oo1212o..",
+    "...ooo1221ooo...",
+    ".....o1oo2o.....",
+    ".....o2o.o1o....",
+    "......o...o.....",
+    "................"], {'1': CANVAS, '2': CANVASD})
+ascii_icon('tide_pearl', [
+    "................",
+    "................",
+    "................",
+    "....oooooooo....",
+    "...o22323232o...",
+    "..o2323232323o..",
+    ".o233o1111o332o.",
+    ".o23o1WW111o32o.",
+    ".o23o1W1112o32o.",
+    ".o32o111122o23o.",
+    "..o33o1222o33o..",
+    "...o33oooo33o...",
+    "....o333333o....",
+    ".....oooooo.....",
+    "................",
+    "................"], {'1': (236, 240, 244), '2': (176, 186, 204), '3': (96, 104, 122), 'W': (255, 255, 255)}, lock='W')
+
 EGG = [
     "................",
     "......1111......",
@@ -1446,6 +1690,15 @@ egg('sleep_moth', (120, 108, 100), (220, 214, 200), ((5, 7, F), (5, 8, O), (10, 
 egg('shatun', (70, 52, 40), (110, 84, 60), ((6, 7, EMB), (9, 7, EMB), (6, 10, C), (7, 11, C), (8, 11, C), (9, 10, C), (4, 12, M), (5, 13, M)))
 egg('elder', (214, 208, 192), (128, 124, 128), ((5, 3, F), (7, 2, F), (10, 3, F), (6, 7, F), (9, 7, F), (7, 9, k), (8, 9, k), (7, 10, k), (8, 10, k),
                                                  (7, 11, k), (8, 11, k)))
+SALT_BLUE = (150, 196, 204)
+egg('dockhand', (150, 134, 104), (58, 48, 44), ((6, 8, SALT_BLUE), (9, 8, SALT_BLUE), (10, 11, s), (11, 10, s), (11, 9, s)))
+egg('harpooner', (196, 170, 80), (58, 48, 44), ((6, 8, SALT_BLUE), (9, 8, SALT_BLUE), (11, 5, s), (11, 6, W), (11, 7, W), (11, 8, W)))
+egg('oarsman', (124, 100, 78), (176, 162, 130), ((6, 8, SALT_BLUE), (9, 8, SALT_BLUE), (6, 10, C), (7, 11, C), (8, 11, C), (9, 10, C)))
+egg('pilot', (206, 176, 70), (44, 50, 66), ((6, 7, SALT_BLUE), (9, 7, SALT_BLUE), (7, 11, F), (8, 11, f), (7, 12, f)))
+egg('sand_crab', (214, 196, 150), (190, 88, 60), ((6, 6, O), (9, 6, O), (4, 9, (142, 58, 44)), (11, 9, (142, 58, 44)), (3, 8, (190, 88, 60)), (12, 8, (190, 88, 60))))
+egg('skua', (92, 78, 68), (226, 222, 210), ((7, 6, O), (8, 7, F), (9, 7, f)))
+egg('helmsman', (44, 52, 70), (176, 140, 62), ((6, 7, SALT_BLUE), (9, 7, SALT_BLUE), (5, 10, s), (6, 11, s), (7, 11, d), (8, 11, s), (9, 11, d), (10, 10, s)))
+egg('capsized', (110, 104, 96), (190, 88, 60), ((4, 8, M), (5, 8, M), (6, 8, M), (7, 8, M), (8, 8, M), (9, 8, M), (10, 8, M), (11, 8, M), (6, 11, F), (9, 11, F)))
 egg('gilded_knight', (176, 176, 186), (214, 184, 106), ((5, 8, O), (6, 8, EMB), (7, 8, O), (8, 8, O), (9, 8, EMB), (10, 8, O)))
 egg('rust_knight', (84, 76, 76), (150, 90, 52), ((5, 8, O), (6, 8, EMB), (7, 8, O), (8, 8, O), (9, 8, EMB), (10, 8, O)))
 egg('keykeeper', (72, 76, 88), (196, 160, 72), ((5, 8, C), (6, 8, C), (7, 8, C), (8, 8, C), (9, 8, C), (10, 8, C)))
@@ -1483,7 +1736,8 @@ def big_display(grip):
 
 
 BIG_GRIP = {'rust_greatsword': 5.5, 'great_key': 10.5, 'grave_spade': 8.0, 'pitchfork': 10.0, 'quarry_pick': 9.0, 'great_maul': 8.0, 'boat_hook': 10.0,
-            'vigil_staff': 10.0, 'bear_spear': 10.0, 'great_candle': 9.0}
+            'vigil_staff': 10.0, 'bear_spear': 10.0, 'great_candle': 9.0,
+            'oar': 9.0, 'harpoon': 10.0, 'ship_anchor': 6.0}
 
 if __name__ == '__main__':
     os.makedirs(f'{A}/textures/item', exist_ok=True)

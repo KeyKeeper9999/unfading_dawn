@@ -52,7 +52,8 @@ public class HearthBlock extends Block {
         /** A hearth somebody set down themselves: it is told from others by where it stands. */
         NONE("none"),
         YARD("yard"), LODGE("lodge"), KEEPER("keeper"), SMITHY("smithy"), SACRISTY("sacristy"), TERRACE("terrace"), MAW("maw"), SUMP("sump"),
-        FERRY("ferry"), MILL("mill"), OLD_FIR("old_fir"), SKETE("skete"), RELIQUARY("reliquary");
+        FERRY("ferry"), MILL("mill"), OLD_FIR("old_fir"), SKETE("skete"), RELIQUARY("reliquary"),
+        HARBOUR("harbour"), KARBAS("karbas"), LIGHTHOUSE("lighthouse");
 
         public final String id;
 
