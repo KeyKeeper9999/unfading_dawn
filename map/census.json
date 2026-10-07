@@ -1,0 +1,207 @@
+{
+ "capsized": {
+  "chests": [
+   "spit_wreck",
+   "mole_end",
+   "boulders_cache"
+  ],
+  "mobs": {
+   "capsized:0": 1,
+   "dockhand:0": 3,
+   "harpooner:0": 2,
+   "oarsman:0": 3,
+   "sand_crab:0": 16,
+   "skua:0": 7
+  },
+  "shards": 2,
+  "tier": 0
+ },
+ "chaplain": {
+  "chests": [
+   "smithy",
+   "chapter",
+   "chapter_arms",
+   "belfry",
+   "tower_nook",
+   "west_gallery",
+   "sacristy",
+   "crypt",
+   "crypt_side"
+  ],
+  "mobs": {
+   "acolyte:2": 13,
+   "archer:2": 2,
+   "chaplain:2": 1,
+   "gilded:2": 3,
+   "guard:2": 9,
+   "knight:2": 2,
+   "prisoner:2": 3
+  },
+  "shards": 2,
+  "tier": 2
+ },
+ "elder": {
+  "chests": [
+   "skete_tent",
+   "skete_altar",
+   "skete_wax_yard"
+  ],
+  "mobs": {
+   "elder:0": 1,
+   "moth:0": 3,
+   "sleeper:0": 5,
+   "wakeful:0": 23,
+   "waker:0": 6,
+   "waxen:0": 3
+  },
+  "shards": 0,
+  "tier": 0
+ },
+ "gravedigger": {
+  "chests": [
+   "start",
+   "market",
+   "chapel",
+   "butchers",
+   "borough_house",
+   "borough_nook",
+   "borough_yard",
+   "borough_alley",
+   "tanners",
+   "shambles_yard"
+  ],
+  "mobs": {
+   "butcher:0": 8,
+   "gravedigger:0": 1,
+   "hound:0": 11,
+   "keykeeper:0": 1,
+   "townsman:0": 25,
+   "watchman:0": 5
+  },
+  "shards": 1,
+  "tier": 0
+ },
+ "helmsman": {
+  "chests": [
+   "skete_store",
+   "wharf_office",
+   "wharf_loft",
+   "wharf_shed",
+   "ship_hold"
+  ],
+  "mobs": {
+   "dockhand:0": 14,
+   "harpooner:0": 5,
+   "helmsman:0": 1,
+   "oarsman:0": 4,
+   "sand_crab:0": 2,
+   "skua:0": 7
+  },
+  "shards": 2,
+  "tier": 0
+ },
+ "overseer": {
+  "chests": [
+   "gatehouse",
+   "cells",
+   "store",
+   "bridge_tower",
+   "far_tower"
+  ],
+  "mobs": {
+   "archer:1": 7,
+   "guard:1": 11,
+   "knight:1": 1,
+   "overseer:1": 1,
+   "prisoner:1": 12
+  },
+  "shards": 1,
+  "tier": 1
+ },
+ "shatun": {
+  "chests": [
+   "mire_grove",
+   "firwood_stakes",
+   "firwood_shrine",
+   "firwood_den"
+  ],
+  "mobs": {
+   "moth:0": 6,
+   "shatun:0": 1,
+   "sleeper:0": 5,
+   "wakeful:0": 2,
+   "waker:0": 1,
+   "waxen:0": 2
+  },
+  "shards": 2,
+  "tier": 0
+ },
+ "stone_eater": {
+  "chests": [
+   "quarry_workings",
+   "quarry_stall"
+  ],
+  "mobs": {
+   "crawler:0": 6,
+   "digger:0": 1,
+   "stone_eater:0": 1,
+   "unhewn:0": 1
+  },
+  "shards": 1,
+  "tier": 0
+ },
+ "taskmaster": {
+  "chests": [
+   "treasury",
+   "treasury_arms",
+   "quarry_shed",
+   "quarry_field",
+   "quarry_shop",
+   "quarry_eyes",
+   "quarry_rim"
+  ],
+  "mobs": {
+   "barrowman:0": 3,
+   "digger:0": 11,
+   "sapper:0": 4,
+   "taskmaster:0": 1,
+   "unhewn:0": 4
+  },
+  "shards": 2,
+  "tier": 0
+ },
+ "wallower": {
+  "chests": [
+   "quarry_breach",
+   "mire_end",
+   "mire_loft",
+   "mire_gallows",
+   "mire_stage",
+   "mire_cove"
+  ],
+  "mobs": {
+   "drowned:0": 11,
+   "lanky:0": 3,
+   "pike:0": 9,
+   "wallower:0": 1,
+   "wisp:0": 4
+  },
+  "shards": 3,
+  "tier": 0
+ },
+ "weeping_mother": {
+  "chests": [
+   "mire_mill",
+   "mire_hollow"
+  ],
+  "mobs": {
+   "drowned:0": 3,
+   "lanky:0": 4,
+   "pike:0": 3,
+   "weeping_mother:0": 1,
+   "wisp:0": 5
+  },
+  "shards": 1,
+  "tier": 0
+ }
+}

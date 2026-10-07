@@ -261,6 +261,8 @@ SHORE = {
         'minecraft:visual/sky_fog_end_distance': 120.0,
         'minecraft:visual/water_fog_color': '#1d3b42',
         'minecraft:visual/water_fog_end_distance': {'argument': 0.7, 'modifier': 'multiply'},
+        # the surf, all the time, and gulls now and then (the shape is the game's own: see its basalt deltas)
+        'minecraft:audio/ambient_sounds': {'loop': f'{MOD}:ambient.shore.surf', 'additions': {'sound': f'{MOD}:ambient.shore.gull', 'tick_chance': 0.003}},
     },
     'carvers': [],
     'downfall': 0.5,

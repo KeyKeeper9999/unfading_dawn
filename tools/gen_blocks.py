@@ -206,7 +206,7 @@ def fog_texture(frames=16, tint=(1.0, 1.0, 1.0), thick=0):
     return img
 
 
-def shallows_texture(frames=16):
+def shallows_texture(frames=16, sea=False):
     """Still water with something growing in it: dark green, lighter where the light catches a ripple, the ripples
     drifting. It tiles and its animation closes on itself."""
     size = 16
@@ -223,6 +223,11 @@ def shallows_texture(frames=16):
                     return a * (1 - ty) + b * ty
                 n = 0.55 * wrapped('film1', phase, 0.0, 4.0) + 0.45 * wrapped('film2', 0.0, 1 - phase, 2.6)
                 ripple = max(0.0, n - 0.58) * 3.2
+                if sea:
+                    foam = max(0.0, n - 0.7) * 6.0
+                    c = (int(min(255, 112 + 90 * ripple + 60 * foam)), int(min(255, 150 + 70 * ripple + 50 * foam)), int(min(255, 158 + 60 * ripple + 44 * foam)))
+                    img.putpixel((x, f * size + y), c + (int(min(255, 96 + 70 * ripple + 80 * foam)),))
+                    continue
                 c = (int(58 + 70 * ripple), int(92 + 80 * ripple), int(66 + 60 * ripple))
                 img.putpixel((x, f * size + y), c + (int(150 + 60 * ripple),))
     return img
@@ -337,8 +342,8 @@ if __name__ == '__main__':
                       'faces': {'north': dict(face), 'south': dict(face), 'up': {'uv': [0, 2, 16, 4], 'texture': '#t'},
                                 'down': {'uv': [0, 12, 16, 14], 'texture': '#t'}}}]})
     write_json(f'{A}/blockstates/locked_gate.json', {'variants': {
-        f'axis={axis},lock={lock}': ({'model': f'{MOD}:block/locked_gate'} if axis == 'x' else {'model': f'{MOD}:block/locked_gate', 'y': 90})
-        for axis in 'xz' for lock in ('quarry', 'mire', 'firwood', 'none')}})
+        f'axis={axis}': ({'model': f'{MOD}:block/locked_gate'} if axis == 'x' else {'model': f'{MOD}:block/locked_gate', 'y': 90})
+        for axis in 'xz'}})                                      # (whatever its lock: a new gate needs nothing here)
 
     # a hand's depth of water over a floor (ShallowsBlock): a film as thick as two of a block's sixteen parts, murky
     # green, moving slowly. Its picture has see-through parts, which is what makes the game draw it like water.
@@ -354,6 +359,14 @@ if __name__ == '__main__':
                                 'west': {'uv': [0, 0, 16, 1.6], 'texture': '#t', 'cullface': 'west'},
                                 'east': {'uv': [0, 0, 16, 1.6], 'texture': '#t', 'cullface': 'east'}}}]})
     write_json(f'{A}/blockstates/shallows.json', {'variants': {'': {'model': f'{MOD}:block/shallows'}}})
+    # the same film on the sands of the Morning Wharf: the sea's grey, thinner, with a little foam drifting on it
+    film = shallows_texture(sea=True)
+    film.save(f'{A}/textures/block/sea_shallows.png')
+    write_json(f'{A}/textures/block/sea_shallows.png.mcmeta', {'animation': {'frametime': 5, 'interpolate': True}})
+    model = json.load(open(f'{A}/models/block/shallows.json'))
+    model['textures'] = {'t': f'{MOD}:block/sea_shallows', 'particle': f'{MOD}:block/sea_shallows'}
+    write_json(f'{A}/models/block/sea_shallows.json', model)
+    write_json(f'{A}/blockstates/sea_shallows.json', {'variants': {'': {'model': f'{MOD}:block/sea_shallows'}}})
 
     # a pool of sludge (SludgeBlock): thicker than the film it may lie in, so that it shows over it
     sludge = sludge_texture()

@@ -73,7 +73,7 @@ public class SkuaModel extends EntityModel<BossRenderState> {
         PartDefinition wing_l = body.addOrReplaceChild("wing_l", CubeListBuilder.create()
                 .texOffs(26, 7).addBox(0.0F, -0.5F, -3.0F, 7.0F, 1.0F, 6.0F),
                 PartPose.offset(2.5F, -2.0F, -1.0F));
-        PartDefinition tip_l = wing_r.addOrReplaceChild("tip_l", CubeListBuilder.create()
+        PartDefinition tip_l = wing_l.addOrReplaceChild("tip_l", CubeListBuilder.create()
                 .texOffs(24, 14).addBox(0.0F, -0.5F, -2.5F, 7.0F, 1.0F, 5.0F),
                 PartPose.offset(7.0F, 0.0F, 0.0F));
         PartDefinition legs = all.addOrReplaceChild("legs", CubeListBuilder.create()

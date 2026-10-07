@@ -9,6 +9,13 @@
     "minecraft:visual/water_fog_end_distance": {
       "argument": 0.7,
       "modifier": "multiply"
+    },
+    "minecraft:audio/ambient_sounds": {
+      "loop": "vsratie_dushi:ambient.shore.surf",
+      "additions": {
+        "sound": "vsratie_dushi:ambient.shore.gull",
+        "tick_chance": 0.003
+      }
     }
   },
   "carvers": [],

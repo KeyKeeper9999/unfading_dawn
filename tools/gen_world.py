@@ -9,6 +9,7 @@ layer GY), map/views.txt and map/light.txt, and, given a directory, preview pict
 a place to play (see gen_map.analyse). Every further place of the map gets its own file and is joined on here.
 
 Run from the repo root: PYTHONPATH=tools python3 tools/gen_world.py [preview dir]"""
+import json
 import math
 import os
 import sys
@@ -16,6 +17,7 @@ from collections import deque
 
 import gen_map as castle
 import gen_quarry
+import gen_shore
 import gen_skete
 import gen_swamp
 import gen_village
@@ -27,7 +29,7 @@ GY = 16                             # the ground block of the valley; the flat w
                                     # under it: the quarry goes down thirteen)
 OX, OZ = 138, 42                    # where the fortress's own plan lies in this one
 DY = GY - castle.GROUND             # and how much lower: its ground is the valley's
-W, H, D = 492, 138, 640                 # (grown east and a little south for the Mire; the origin is the place of waking, so nothing moved)
+W, H, D = 492, 138, 1012                # (grown east for the Mire, and far south for the sea; the origin is the place of waking, so nothing moved)
 AX = OX + castle.CX                 # the axis of the fortress: its bridge, the causeway, the road
 TX = AX + 16                        # the tunnel comes out this much further east: the bend
 VX, VZ = TX - 62, 408               # the corner of the village's grid of tiles; its north gate is on the tunnel's line
@@ -119,13 +121,14 @@ class World:
         self.quarry = gen_quarry.Quarry(self.b, GY, self.village)
         self.swamp = gen_swamp.Swamp(self.b, GY, self.village)
         self.skete = gen_skete.Skete(self.b, GY)
+        self.shore = gen_shore.Shore(self.b, GY, D, W)
         self.keep = set()                # columns of the valley where nothing may grow: roads, the feet of walls
 
     # ------------------------------------------------------------------ the shape of the gorge
 
     def in_gorge(self, x, z):
         """The floor of the gorge: round the fortress, the yard before the tunnel, and the town."""
-        if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z):
+        if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z) or self.shore.inside(x, z):
             return True
         wob = (smooth(x, z, 13, 310) - 0.5) * 8
         if OX - 15 + wob <= x <= OX + 128 + 15 - wob and OZ - 15 + wob <= z <= SPUR[0] - wob * 0.5:
@@ -195,8 +198,8 @@ class World:
         far = {}
         queue = deque()
         for (x, z) in self.inside:
-            if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z):
-                continue                                         # (the Mire and the Firwood plant their own)
+            if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z) or self.shore.inside(x, z):
+                continue                                         # (the Mire and the Firwood plant their own; nothing grows on the shore)
             hard = (x, z) in self.keep or any(self.height.get((x + dx, z + dz), 1) > 0 for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)))
             if hard:
                 far[(x, z)] = 0
@@ -206,7 +209,8 @@ class World:
             for dx in (-1, 0, 1):
                 for dz in (-1, 0, 1):
                     n = (x + dx, z + dz)
-                    if n in self.inside and n not in far and not self.village.inside(*n) and not self.swamp.inside(*n) and not self.skete.inside(*n):
+                    if n in self.inside and n not in far and not self.village.inside(*n) and not self.swamp.inside(*n) and not self.skete.inside(*n) \
+                            and not self.shore.inside(*n):
                         far[n] = far[(x, z)] + 1
                         queue.append(n)
         trees = []
@@ -417,6 +421,8 @@ class World:
         self.swamp.build()
         b.zone = 'firwood'
         self.skete.build(self.height)
+        b.zone = 'wharf'
+        self.shore.build(self.height)
         self.woods()
         self.tiers()
         return b
@@ -506,7 +512,19 @@ def views(w):
         out.append(('time', hour))
         out += [(f'{name}_at_{hour}', eye, look) for name, eye, look in fir if name in ('firwood_track', 'skete_vigil_from_behind', 'skete_white_tent_from_above')]
     out.append(('time', 18000))
+    sea = w.shore.views()
+    out += sea[:1]                                               # the Sea Gate, from the yard, in the town's night
+    out.append(('time', SUNRISE))
+    out += sea[1:]
+    for hour in SUNRISE_TRIED:                                   # the same places at other hours, to choose by
+        out.append(('time', hour))
+        out += [(f'{name}_at_{hour}', eye, look) for name, eye, look in sea if name in ('shore_long_pier', 'shore_spit_from_its_root', 'shore_quay_east')]
+    out.append(('time', 18000))
     return out
+
+
+SUNRISE = 23600                     # the hour of the Morning Wharf: see PlaceNameBlock.SUNRISE
+SUNRISE_TRIED = (23250, 23950, 450)
 
 
 FOREDAWN = 22600                    # the hour of the Firwood: see PlaceNameBlock.FOREDAWN
@@ -532,6 +550,7 @@ def probes(w):
     out += w.quarry.probes()
     out += w.swamp.probes()
     out += w.skete.probes()
+    out += w.shore.probes()
     return out
 
 
@@ -543,6 +562,8 @@ EXTRA_COLOURS = castle.EXTRA_COLOURS + [
     ('dripstone', (132, 104, 88)), ('glow_lichen', (110, 220, 190)), ('rail', (150, 120, 80)), ('spruce', (104, 78, 48)),
     ('white_wool', (232, 232, 226)), ('light_gray_wool', (176, 176, 170)), ('red_wool', (160, 40, 36)), ('mushroom_stem', (226, 216, 180)),
     ('candle', (255, 214, 120)), ('packed_mud', (140, 106, 80)), ('rooted_dirt', (124, 90, 62)), ('coarse_dirt', (112, 80, 54)), ('bone_block', (220, 214, 190)),
+    ('sea_shallows', (150, 196, 204)), ('sandstone', (204, 190, 146)), ('sand', (222, 208, 162)), ('clay', (150, 156, 168)), ('seagrass', (60, 120, 90)),
+    ('bricks', (150, 90, 74)), ('granite', (150, 104, 86)), ('glass', (190, 220, 230)), ('froglight', (250, 220, 120)),
 ]
 
 if __name__ == '__main__':
@@ -562,9 +583,40 @@ if __name__ == '__main__':
             print('UNKNOWN BLOCKS:', unknown)
     report, problems, seen = analyse(b)
     spawn = b.spawn
+    # what comes into reach before each lord falls - the dead (with their tiers), the chests, the shards: written down
+    # for tools/balance.py, which then has no need to build the world again
+    census, known_marks, known_chests, known_shards = {}, set(), set(), set()
+    reached = {opened: stage_seen for opened, stage_seen in analyse.seen_at}
+    names = [name for name, label in castle.STAGES if name in b.seals]
+    for i, name in enumerate(names):
+        if not any(kind == name for kind, x, y, z in b.marks):
+            continue                                             # (a key, not a lord)
+        before = reached[names[i - 1] if i else None]
+        entry = {'mobs': {}, 'chests': [], 'shards': 0}
+        for kind, x, y, z in b.marks:
+            state = b.cells[(x, y, z)]
+            tier = int(state.split('tier=')[1][0]) if 'tier=' in state else 0
+            if kind == name:
+                entry['tier'] = tier
+            if (x, y, z) in before and (x, y, z) not in known_marks:
+                known_marks.add((x, y, z))
+                entry['mobs'][f'{kind}:{tier}'] = entry['mobs'].get(f'{kind}:{tier}', 0) + 1
+        for chest, x, y, z in b.chests:
+            if chest not in known_chests and any((x + dx, y + dy, z + dz) in before for dx in range(-2, 3) for dy in (-1, 0, 1) for dz in range(-2, 3)):
+                known_chests.add(chest)
+                entry['chests'].append(chest)
+        for sx, sy, sz in b.shards:
+            if (sx, sy, sz) not in known_shards and any((sx + dx, sy, sz + dz) in before for dx in (-1, 0, 1) for dz in (-1, 0, 1)):
+                known_shards.add((sx, sy, sz))
+                entry['shards'] += 1
+        census[name] = entry
+    with open('map/census.json', 'w') as f:
+        json.dump(census, f, indent=1, sort_keys=True)
+        f.write('\n')
     for kind, x, y, z in b.marks:
         tall = 6 if kind == 'weeping_mother' else 4 if kind in ('lanky', 'elder') else 3 if kind in (
-            'gravedigger', 'overseer', 'chaplain', 'knight', 'gilded', 'unhewn', 'taskmaster', 'stone_eater', 'shatun', 'waxen') else 2
+            'gravedigger', 'overseer', 'chaplain', 'knight', 'gilded', 'unhewn', 'taskmaster', 'stone_eater', 'shatun', 'waxen', 'helmsman', 'capsized',
+            'pilot', 'oarsman') else 2
         for h in range(tall):
             above = b.get(x, y + h, z)
             if h and above not in (None, AIR) and not any(k in str(above) for k in castle.PASSABLE) and not castle.is_water(above):
@@ -592,27 +644,30 @@ if __name__ == '__main__':
                                 ('wallower', (gen_swamp.WEIR[0] - 9, GY + 4, gen_swamp.WEIR[1] + 3), (gen_swamp.WEIR[0], GY + 2, gen_swamp.WEIR[1])),
                                 ('weeping_mother', (gen_swamp.ISLE[0] + 2, GY + 5, gen_swamp.ISLE[1] - 10), (gen_swamp.ISLE[0], GY + 4, gen_swamp.ISLE[1])),
                                 ('shatun', (gen_skete.DEN[0] - 3, GY + 4, gen_skete.DEN[1] + 11), (gen_skete.DEN[0], GY + 2, gen_skete.DEN[1] - 6)),
-                                ('elder', (gen_skete.TENT[0] + 1, GY + 4, gen_skete.TENT[1] - 9), (gen_skete.TENT[0], GY + 3, gen_skete.TENT[1] + 4))):
+                                ('elder', (gen_skete.TENT[0] + 1, GY + 4, gen_skete.TENT[1] - 9), (gen_skete.TENT[0], GY + 3, gen_skete.TENT[1] + 4)),
+                                ('helmsman', (gen_shore.SHIP[0] - 3, GY + 5, gen_shore.SHIP[1] + 34), (gen_shore.SHIP[0], GY + 5, gen_shore.SHIP[1] + 12)),
+                                ('capsized', (gen_shore.SHOAL[0] + 9, GY + 3, gen_shore.SHOAL[1] + 5), (gen_shore.SHOAL[0], GY + 1, gen_shore.SHOAL[1] - 4))):
             f.write(f'near_the_{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')
         # and tries the locked gate without its key and with it
-        for key in ('quarry_key', 'mire_key', 'firwood_key'):
+        for key in ('quarry_key', 'mire_key', 'firwood_key', 'shore_key'):
             f.write('gate ' + ' '.join(f'{v_:.2f}' for v_ in world(*sorted(b.seals[key])[0], spawn)) + '\n')
     # the columns that get a biome of their own (MapBuilder lays it): boxes of the world, four blocks wide - the game
     # keeps a biome for every four blocks each way - a line each
-    quarts = {}
-    for (x, z) in w.swamp.biome_columns():
-        wx, _, wz = world(x, GY, z, spawn)
-        quarts.setdefault(math.floor(wx) >> 2, set()).add(math.floor(wz) >> 2)
     with open('map/biomes.txt', 'w') as f:
-        for qx in sorted(quarts):
-            run = sorted(quarts[qx])
-            start = prev = run[0]
-            for qz in run[1:] + [None]:
-                if qz is None or qz != prev + 1:
-                    f.write(f'{MOD}:mire {qx * 4} {start * 4} {qx * 4 + 3} {prev * 4 + 3}\n')
-                    start = qz
-                prev = qz
+        for biome, columns in (('mire', w.swamp.biome_columns()), ('shore', w.shore.biome_columns())):
+            quarts = {}
+            for (x, z) in columns:
+                wx, _, wz = world(x, GY, z, spawn)
+                quarts.setdefault(math.floor(wx) >> 2, set()).add(math.floor(wz) >> 2)
+            for qx in sorted(quarts):
+                run = sorted(quarts[qx])
+                start = prev = run[0]
+                for qz in run[1:] + [None]:
+                    if qz is None or qz != prev + 1:
+                        f.write(f'{MOD}:{biome} {qx * 4} {start * 4} {qx * 4 + 3} {prev * 4 + 3}\n')
+                        start = qz
+                    prev = qz
     with open('map/light.txt', 'w') as f:
         for name, at in probes(w):
             if b.get(*at) not in (None, AIR) and not any(k in str(b.get(*at)) for k in castle.PASSABLE):
@@ -715,7 +770,7 @@ if __name__ == '__main__':
         sub.cells = {c: s for c, s in b.cells.items() if vx0 <= c[0] < vx1 and VZ - 4 <= c[2] < vz1 and c[1] >= GY}
         sub.iso(scale=5).save(f'{out}/town_iso.png')
         # the Mire: its ground with a dot on every place a player can be (blue in the water), and from above
-        mx0, mx1, mz0, mz1 = 266, W - 8, 462, D - 8
+        mx0, mx1, mz0, mz1 = 266, W - 8, 462, 632
         for name, top in (('mire_ground', GY + 3), ('mire_roofs', H - 1)):
             img = b.top_down(top, scale=6).crop((mx0 * 6, mz0 * 6, mx1 * 6, mz1 * 6))
             if name == 'mire_ground':
@@ -736,6 +791,14 @@ if __name__ == '__main__':
                         px, pz = (x - fx0) * 6 + 2, (z - fz0) * 6 + 2
                         draw.rectangle([px, pz, px + 1, pz + 1], fill=(255, 235, 90))
             img.save(f'{out}/{name}.png')
+        # the shore: from above, with a dot on every place a player can be (blue where they wade)
+        img = b.top_down(H - 1, scale=4).crop((120 * 4, 540 * 4, 440 * 4, 900 * 4))
+        draw = ImageDraw.Draw(img)
+        for (x, y, z) in seen:
+            if 120 <= x < 440 and 540 <= z < 900:
+                px, pz = (x - 120) * 4 + 1, (z - 540) * 4 + 1
+                draw.rectangle([px, pz, px + 1, pz + 1], fill=(120, 200, 255) if castle.is_water(b.get(x, y, z)) else (255, 90, 60))
+        img.save(f'{out}/shore_ground.png')
         sub = Map('part', W, H, D)
         sub.cells = {c: s for c, s in b.cells.items() if 388 <= c[0] < 474 and 326 <= c[2] < 450 and c[1] >= GY and 'spruce_leaves' not in str(s)}
         sub.iso(scale=5).save(f'{out}/skete_iso.png')

@@ -204,6 +204,10 @@ public class Dushi {
     public static final DeferredBlock<com.keykeeper.dushi.block.ShallowsBlock> SHALLOWS = BLOCKS.registerBlock("shallows", com.keykeeper.dushi.block.ShallowsBlock::new,
             props -> props.mapColor(MapColor.WATER).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
                     .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.WET_GRASS));
+    /** The same thing on the sands of the Morning Wharf: the sea's own grey, with foam on it. */
+    public static final DeferredBlock<com.keykeeper.dushi.block.ShallowsBlock> SEA_SHALLOWS = BLOCKS.registerBlock("sea_shallows", com.keykeeper.dushi.block.ShallowsBlock::new,
+            props -> props.mapColor(MapColor.WATER).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
+                    .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.WET_GRASS));
     /** A pool of sludge that lies a while and is gone: see {@link com.keykeeper.dushi.block.SludgeBlock}. No item; the Wallower spits it. */
     public static final DeferredBlock<com.keykeeper.dushi.block.SludgeBlock> SLUDGE = BLOCKS.registerBlock("sludge", com.keykeeper.dushi.block.SludgeBlock::new,
             props -> props.mapColor(MapColor.COLOR_BROWN).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()

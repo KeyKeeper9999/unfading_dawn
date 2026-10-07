@@ -257,6 +257,7 @@ t(f'message.{M}.gate_locked.shore', 'Заперто. Из-под створок 
 t(f'message.{M}.gate_opened.shore', 'Морские ворота отперты', 'The Sea Gate is unlocked')
 t(f'message.{M}.undertow', 'Тянет на дно', 'The sea is taking you under')
 t(f'block.{M}.shallows', 'Мелкая вода', 'Shallows')
+t(f'block.{M}.sea_shallows', 'Вода на песке', 'Water on the Sand')
 t(f'block.{M}.sludge', 'Тина', 'Sludge')
 t(f'entity.{M}.mud_glob', 'Ком тины', 'Clot of Sludge')
 t(f'entity.{M}.root', 'Корень Плакучей', 'Root of the Weeping Mother')

@@ -360,6 +360,7 @@
   "message.vsratie_dushi.gate_opened.shore": "Морские ворота отперты",
   "message.vsratie_dushi.undertow": "Тянет на дно",
   "block.vsratie_dushi.shallows": "Мелкая вода",
+  "block.vsratie_dushi.sea_shallows": "Вода на песке",
   "block.vsratie_dushi.sludge": "Тина",
   "entity.vsratie_dushi.mud_glob": "Ком тины",
   "entity.vsratie_dushi.root": "Корень Плакучей",

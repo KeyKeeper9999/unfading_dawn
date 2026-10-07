@@ -134,6 +134,56 @@ skete_in_the_white_tent -152.50 -44.40 -209.00 -135.50 -43.00 -209.00
 skete_white_tent_roof -146.50 -44.40 -204.50 -139.50 -29.00 -210.50
 skete_candle_store -125.50 -44.40 -209.00 -112.50 -44.40 -209.00
 time 18000
+shore_sea_gate_from_the_yard -5.50 -44.40 0.00 6.50 -44.40 0.00
+time 23600
+shore_passage_bend 49.00 -44.40 -5.50 49.00 -44.40 -17.50
+shore_out_of_the_passage 89.50 -44.40 -18.00 140.50 -44.00 -18.00
+shore_sea_lane 103.50 -44.40 -20.00 208.50 -44.00 -20.00
+shore_back_street 115.00 -44.40 12.50 115.00 -44.00 -27.50
+shore_quay_east 138.50 -44.40 -1.50 146.50 -43.00 -57.50
+shore_quay_west 138.50 -44.40 -41.50 148.50 -43.00 22.50
+shore_port_from_above 193.50 -3.00 -81.50 119.50 -45.00 -17.50
+shore_harbour_office 125.00 -44.40 -24.50 125.00 -45.00 -31.50
+shore_long_pier 145.50 -44.40 -20.00 208.50 -43.00 -20.00
+shore_pier_looking_back 196.50 -44.40 -20.00 130.50 -41.00 -20.00
+shore_the_daybreak_from_the_pier 185.50 -44.40 -20.00 194.50 -37.00 -30.50
+shore_the_daybreak_gangway 202.00 -44.40 -22.00 195.50 -42.00 -30.50
+shore_the_daybreak_deck 204.50 -42.40 -27.00 179.50 -42.00 -30.50
+shore_the_daybreak_deck_to_the_bow 181.50 -42.40 -33.00 216.50 -40.00 -30.50
+shore_the_daybreak_from_above 224.50 -13.00 -64.50 190.50 -43.00 -30.50
+shore_roads 205.50 -44.40 -20.00 258.50 -39.00 -51.50
+shore_mole 184.00 -43.40 -43.00 184.00 -44.00 -128.50
+shore_mole_gap 184.00 -43.40 -56.00 184.00 -44.50 -74.50
+shore_karbas 176.50 -44.40 -139.50 170.50 -44.50 -147.50
+shore_spit_from_its_root 193.00 -44.40 -146.00 248.50 -45.00 -135.50
+shore_spit_wet_sand 249.00 -45.40 -134.00 284.50 -46.50 -117.50
+shore_spit_from_above 314.50 3.00 -177.50 258.50 -47.00 -111.50
+shore_spit_far_arm 307.00 -45.40 -82.00 306.50 -46.00 -17.50
+shore_strand 305.00 -45.40 -10.00 282.50 -45.50 10.50
+shore_strand_to_the_arch 281.00 -45.40 9.00 273.50 -45.00 16.50
+shore_shoal 274.00 -45.40 18.00 270.50 -46.00 32.50
+shore_shoal_from_above 299.50 -17.00 6.50 273.50 -48.00 28.50
+shore_causeway 257.50 -45.40 28.00 244.50 -35.00 52.50
+shore_lighthouse_foot 248.00 -42.40 43.00 244.50 -36.00 52.50
+shore_lighthouse_inside 245.00 -42.40 50.00 243.50 -38.00 54.50
+shore_lamp_room 246.00 -18.40 51.00 243.50 -18.50 53.50
+shore_from_the_gallery 249.10 -18.40 52.00 304.50 -45.00 22.50
+shore_from_the_gallery_to_the_port 242.00 -18.40 47.90 143.50 -45.00 -17.50
+shore_lighthouse_from_the_pier 207.00 -44.40 -19.00 244.50 -33.00 52.50
+shore_whole_from_above 378.50 63.00 -81.50 228.50 -47.00 -51.50
+time 23250
+shore_quay_east_at_23250 138.50 -44.40 -1.50 146.50 -43.00 -57.50
+shore_long_pier_at_23250 145.50 -44.40 -20.00 208.50 -43.00 -20.00
+shore_spit_from_its_root_at_23250 193.00 -44.40 -146.00 248.50 -45.00 -135.50
+time 23950
+shore_quay_east_at_23950 138.50 -44.40 -1.50 146.50 -43.00 -57.50
+shore_long_pier_at_23950 145.50 -44.40 -20.00 208.50 -43.00 -20.00
+shore_spit_from_its_root_at_23950 193.00 -44.40 -146.00 248.50 -45.00 -135.50
+time 450
+shore_quay_east_at_450 138.50 -44.40 -1.50 146.50 -43.00 -57.50
+shore_long_pier_at_450 145.50 -44.40 -20.00 208.50 -43.00 -20.00
+shore_spit_from_its_root_at_450 193.00 -44.40 -146.00 248.50 -45.00 -135.50
+time 18000
 hearth yard -6.50 -46.00 0.50
 hearth lodge -101.50 -46.00 -10.50
 hearth keeper -269.50 -38.00 3.50
@@ -147,6 +197,9 @@ hearth mill -55.50 -46.00 -206.50
 hearth old_fir -162.50 -46.00 -65.50
 hearth skete -232.50 -46.00 -183.50
 hearth reliquary -111.50 -46.00 -208.50
+hearth harbour 124.50 -46.00 -29.50
+hearth karbas 170.50 -46.00 -147.50
+hearth lighthouse 244.50 -44.00 52.50
 lever -24.50 -45.00 -0.50 -23.50 -46.00 0.50
 lever -316.50 -37.00 15.50 -315.50 -38.00 16.50
 lever -433.50 -20.00 9.50 -432.50 -21.00 10.50
@@ -172,6 +225,11 @@ near_the_shatun -245.50 -43.00 -142.50 -262.50 -45.00 -145.50
 kill vsratie_dushi:shatun -257.50 -46.00 -166.50
 near_the_elder -150.50 -43.00 -209.50 -137.50 -44.00 -208.50
 kill vsratie_dushi:elder -128.50 -46.00 -207.50
+near_the_helmsman 204.50 -42.00 -27.50 182.50 -42.00 -30.50
+kill vsratie_dushi:helmsman 182.50 -44.00 -36.50
+near_the_capsized 278.50 -44.00 19.50 269.50 -46.00 28.50
+kill vsratie_dushi:capsized 259.50 -47.00 29.50
 gate -17.50 -46.00 55.50
 gate -17.50 -46.00 -55.50
 gate -150.50 -46.00 -7.50
+gate 4.50 -46.00 1.50

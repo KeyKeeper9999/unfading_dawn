@@ -443,8 +443,9 @@ class Village:
     # ------------------------------------------------------------------ the places built by hand
 
     def hub(self):
-        """The yard where the newcomer wakes: the old south gate, shut by a fall of rock; a hearth; the blind keykeeper
-        under his lean-to; an anvil; and, by the way to the fire, a chest somebody left."""
+        """The yard where the newcomer wakes: the old south gate - the Sea Gate, an iron grate across it and its key far
+        away; a hearth; the blind keykeeper under his lean-to; an anvil; and, by the way to the fire, a chest somebody
+        left."""
         b, gy = self.b, self.gy
         b.zone = 'yard'
         x0, z0 = self.at(16, 44, 0, 0)
@@ -453,17 +454,23 @@ class Village:
         for x in range(x0, x1 + 1):
             for z in range(z0, z1 + 1):
                 b.set(x, gy, z, cobble(x, gy, z) if abs(x - cx) <= 2 or hsh(x, 0, z, 250) < 0.35 else mud(x, gy, z))
-        # the south gate: an arch in the wall, and the rock that came down in it
+        # the south gate: an arch in the wall three wide, and the grate across the middle of it (the key of the shore:
+        # it lies in the candle store of the skete). The way behind it goes down under the plateau to the sea.
         gz = z1 + 1
-        for x in range(cx - 2, cx + 3):
+        for x in range(cx - 1, cx + 2):
             for z in range(gz, gz + T):
-                for y in range(gy + 1, gy + 5):
-                    n = hsh(x, y, z, 251)
-                    fallen = y - gy <= 4 - abs(x - cx) * 0.4 + (z - gz) * 1.2 - n * 1.5
-                    b.set(x, y, z, ('minecraft:cobblestone' if n < 0.4 else ('minecraft:andesite' if n < 0.7 else 'minecraft:stone')) if fallen else AIR)
-                if z == gz:
-                    b.set(x, gy + 1, z, 'minecraft:cobblestone' if hsh(x, 1, z, 252) < 0.7 else 'minecraft:mossy_cobblestone')
-                    b.set(x, gy + 2, z, 'minecraft:andesite')
+                b.fill(x, gy + 1, z, x, gy + 4, z, AIR)
+                b.set(x, gy, z, cobble(x, gy, z))
+        for z in range(gz, gz + T):
+            b.set(cx - 1, gy + 4, z, stairs('stone_brick', 'east', 'top'))
+            b.set(cx + 1, gy + 4, z, stairs('stone_brick', 'west', 'top'))
+        grate = [(x, y, gz + 1) for x in range(cx - 1, cx + 2) for y in range(gy + 1, gy + 5) if b.free(x, y, gz + 1)]
+        for cell in grate:
+            b.set(*cell, 'vsratie_dushi:locked_gate[axis=x,lock=shore]')
+        b.seals['shore_key'] = grate
+        for x in (cx - 2, cx + 2):                               # a lamp either side of it, on the yard's face of the wall
+            b.set(x, gy + 4, gz - 1, 'minecraft:spruce_fence')
+            b.set(x, gy + 3, gz - 1, LANTERN)
         self.spawn = (cx, gy + 1, z1 - 2)
         # the gate to the town, open: an arch four wide through the wall
         gx0, gzn = self.at(20, 43, 1, 0)

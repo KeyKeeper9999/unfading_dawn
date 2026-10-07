@@ -65,7 +65,7 @@ public class DockhandEntity extends ShoremanEntity {
 
     @Override
     public int soulReward() {
-        return 1000;
+        return 800;
     }
 
     @Override

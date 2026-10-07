@@ -360,6 +360,7 @@
   "message.vsratie_dushi.gate_opened.shore": "The Sea Gate is unlocked",
   "message.vsratie_dushi.undertow": "The sea is taking you under",
   "block.vsratie_dushi.shallows": "Shallows",
+  "block.vsratie_dushi.sea_shallows": "Water on the Sand",
   "block.vsratie_dushi.sludge": "Sludge",
   "entity.vsratie_dushi.mud_glob": "Clot of Sludge",
   "entity.vsratie_dushi.root": "Root of the Weeping Mother",

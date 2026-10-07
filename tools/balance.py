@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """How the map plays out in numbers: what a player earns on the way to each lord, what level that buys, and how the
 fights look at that level. The numbers of the mobs and weapons are read from the Java sources, the enemies of each part
-of the map (and their tiers) from the plan tools/gen_world.py builds. Run from the repo root:
+of the map (and their tiers) from map/census.json, which tools/gen_world.py writes whenever it builds the map (so this
+takes a second, and is run after gen_world.py when the map has changed). Run from the repo root:
 PYTHONPATH=tools python3 tools/balance.py
 
 Nothing here is a test: it is the sum a designer would do on paper, kept next to the map so that it is redone whenever
 the map or the mobs change."""
+import json
 import math
 import re
 
 import gen_data
-import gen_map
-import gen_world
 
 JAVA = 'src/main/java/com/keykeeper/dushi/'
 
@@ -43,9 +43,11 @@ def mobs():
                        ('wallower', 'entity/WallowerEntity.java'), ('weeping_mother', 'entity/WeepingMotherEntity.java'),
                        ('wakeful', 'entity/WakefulEntity.java'), ('waker', 'entity/WakerEntity.java'), ('sleeper', 'entity/SleeperEntity.java'),
                        ('waxen', 'entity/WaxenEntity.java'), ('moth', 'entity/SleepMothEntity.java'), ('shatun', 'entity/ShatunEntity.java'),
-                       ('elder', 'entity/ElderEntity.java')):
+                       ('elder', 'entity/ElderEntity.java'), ('dockhand', 'entity/DockhandEntity.java'), ('harpooner', 'entity/HarpoonerEntity.java'),
+                       ('oarsman', 'entity/OarsmanEntity.java'), ('pilot', 'entity/PilotEntity.java'), ('sand_crab', 'entity/SandCrabEntity.java'),
+                       ('skua', 'entity/SkuaEntity.java'), ('helmsman', 'entity/HelmsmanEntity.java'), ('capsized', 'entity/CapsizedEntity.java')):
         text = read(path)
-        out[name] = dict(attributes(text, 'createAttributes'), souls=int(re.search(r'soulReward\(\) \{\s+return (?:[\w.]+ > 0 \? 0 : )?(\d+);', text).group(1)))
+        out[name] = dict(attributes(text, 'createAttributes'), souls=int(re.search(r'soulReward\(\) \{\s+return (?:[\w.]+(?: > 0)? \? 0 : )?(\d+);', text).group(1)))
         hide = re.search(r'HIDE = ([0-9.]+)F', text)
         if hide:                                             # (nothing has more than 1024 health: the rest is in its hide)
             out[name]['health'] = round(out[name]['health'] / float(hide.group(1)))
@@ -94,11 +96,7 @@ VITALITY = float(re.search(r'HEALTH_PER_VITALITY = ([0-9.]+)', PLAYER).group(1))
 WRATH = float(re.search(r'WRATH_DAMAGE = ([0-9.]+)F', read('entity/ChaplainEntity.java')).group(1))
 DROP = 1 / 14          # a nameless soul from any of the withered
 KNIGHT_GREAT = 0.35
-BOSSES = ('gravedigger', 'overseer', 'chaplain', 'taskmaster', 'stone_eater', 'wallower', 'weeping_mother', 'shatun', 'elder')
-# what opens the map, in order: the lords' seals, and the gates whose keys lie behind the Chaplain, the Stone-Eater
-# and the Weeping Mother
-ORDER = ('gravedigger', 'overseer', 'chaplain', 'quarry_key', 'taskmaster', 'stone_eater', 'mire_key', 'wallower', 'weeping_mother',
-         'firwood_key', 'shatun', 'elder')
+BOSSES = ('gravedigger', 'overseer', 'chaplain', 'taskmaster', 'stone_eater', 'wallower', 'weeping_mother', 'shatun', 'elder', 'helmsman', 'capsized')
 WITHERED = ('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman', 'digger', 'barrowman', 'sapper', 'drowned')
 # those of the skete who kneel: nobody fights all of them (a clearing is counted with a third of them woken)
 KNEELING = 1 / 3
@@ -111,7 +109,7 @@ FARM = 0.25                                                 # and a quarter of a
 # What a player is meant to come to each lord with. The places pay for nine tenths of it played as above; the rest is a
 # little farming (FARM: a quarter of a clearing of that part), or a level short.
 TARGET = {'gravedigger': 12, 'overseer': 18, 'chaplain': 29, 'taskmaster': 35, 'stone_eater': 39, 'wallower': 46, 'weeping_mother': 50,
-          'shatun': 55, 'elder': 60}
+          'shatun': 55, 'elder': 60, 'helmsman': 66, 'capsized': 70}
 # A lord leaves about two and a half times what a level costs at the level he is met at; the dead of his place are
 # priced so that the sums above come out. A new place: ten levels, six before its first lord and four before its second.
 
@@ -126,56 +124,36 @@ def build_of(level):
 if __name__ == '__main__':
     M, WPN = mobs(), weapons()
     TH, TD, TS = tier_table('TIER_HEALTH'), tier_table('TIER_DAMAGE'), tier_table('TIER_SOULS')
-    w = gen_world.World()
-    b = w.build()
-    gen_map.PASSABLE = gen_map.PASSABLE + ('fern', 'short_grass', 'hanging_roots')
-    tier_at = {}
-    for kind, x, y, z in b.marks:
-        state = b.cells[(x, y, z)]
-        tier_at[(x, y, z)] = int(state.split('tier=')[1][0]) if 'tier=' in state else 0
-    # what is in reach before each lord falls
-    seen_before = []
-    shut = set()
-    for boss in BOSSES:
-        at = ORDER.index(boss)
-        blocked = frozenset(c for name in ORDER[at:] for c in b.seals[name])
-        _, _, seen = gen_map.analyse(b, blocked=blocked, stages=[('x', None)] + [(name, name) for name in ORDER[:at]])
-        seen_before.append(seen)
+    census = json.load(open('map/census.json'))
     print('levels: one more point costs', ', '.join(f'{lv}->{lv + 1}: {level_cost(lv)}' for lv in (1, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80)))
     print('tiers: health x', TH, ' damage x', TD, ' souls x', TS)
     total = 0.0
-    done_marks, done_chests, done_shards = set(), set(), set()
     gulps = 5
     for i, boss in enumerate(BOSSES):
-        seen = seen_before[i]
+        part = census[boss]
         kinds, souls, withered, knights = {}, 0.0, 0, 0
-        for kind, x, y, z in b.marks:
-            if kind in BOSSES or kind == 'keykeeper' or (x, y, z) in done_marks or (x, y, z) not in seen:
+        for key, n in part['mobs'].items():
+            kind, t = key.split(':')
+            t = int(t)
+            if kind in BOSSES or kind == 'keykeeper':
                 continue
-            done_marks.add((x, y, z))
-            t = tier_at[(x, y, z)]
-            kinds[(kind, t)] = kinds.get((kind, t), 0) + 1
-            souls += M[kind]['souls'] * TS[t] * (KNEELING if kind == 'wakeful' else 1.0)
-            withered += kind in WITHERED
-            knights += kind in ('knight', 'gilded')
+            kinds[(kind, t)] = n
+            souls += n * M[kind]['souls'] * TS[t] * (KNEELING if kind == 'wakeful' else 1.0)
+            withered += n * (kind in WITHERED)
+            knights += n * (kind in ('knight', 'gilded'))
         chest_souls = chest_great = 0
-        for name, x, y, z in b.chests:
-            if name in done_chests or not any((x + dx, y + dy, z + dz) in seen for dx in range(-2, 3) for dy in (-1, 0, 1) for dz in range(-2, 3)):
-                continue
-            done_chests.add(name)
+        for name in part['chests']:
             for item, count in gen_data.MAP_CHESTS[name]:
                 chest_souls += count * SOUL if item == gen_data.SOUL else 0
                 chest_great += count * GREAT if item == gen_data.GREAT else 0
-        found = {s for s in b.shards if s not in done_shards and any((s[0] + dx, s[1], s[2] + dz) in seen for dx in (-1, 0, 1) for dz in (-1, 0, 1))}
-        done_shards |= found
-        shards = len(found)
+        shards = part['shards']
         drops = withered * DROP * SOUL + knights * KNIGHT_GREAT * GREAT * 0.5
-        bt = tier_at[next((x, y, z) for k, x, y, z in b.marks if k == boss)]
+        bt = part['tier']
         boss_mob = dict(M[boss], health=M[boss]['health'] * TH[bt], damage=M[boss]['damage'] * TD[bt])
         print()
         print(f'before the {boss.replace("_", "-").title()}: ' + ', '.join(f'{n} {k}' + (f' (tier {t})' if t else '') for (k, t), n in sorted(kinds.items())))
         print(f'  one clearing: {souls:.0f} for kills, about {drops:.0f} in souls dropped, {chest_souls} in chests (+{chest_great} in great souls, if not kept for the anvil)')
-        spent = (350, 1500, 2500, 2500, 1500, 2000, 1500, 2500, 2000)[i]  # arms and armour bought or forged on the way
+        spent = (350, 1500, 2500, 2500, 1500, 2000, 1500, 2500, 2000, 3000, 2000)[i]  # arms and armour bought or forged on the way
         played = total + (souls + drops) * PLAYED + chest_souls + chest_great * 0.5 - spent
         for label, have in (('one clean clearing', total + souls + drops + chest_souls + chest_great * 0.5 - spent), ('as it is played', played),
                             ('with a quarter of a clearing of farming', played + (souls + drops) * FARM)):
@@ -194,7 +172,9 @@ if __name__ == '__main__':
                 ('longsword', 'broadsword', 'rust_greatsword', 'great_key', 'censer_flail'), ('broadsword', 'quarry_pick', 'great_key', 'censer_flail', 'great_maul'),
                 ('broadsword', 'boat_hook', 'great_maul', 'eater_claw', 'censer_flail'), ('broadsword', 'boat_hook', 'great_maul', 'eater_claw', 'wallower_fang'),
                 ('broadsword', 'vigil_staff', 'waker_mallet', 'great_maul', 'wallower_fang', 'withe_scourge'),
-                ('broadsword', 'vigil_staff', 'waker_mallet', 'great_maul', 'wallower_fang', 'bear_spear'))[i]
+                ('broadsword', 'vigil_staff', 'waker_mallet', 'great_maul', 'wallower_fang', 'bear_spear'),
+                ('broadsword', 'cargo_hook', 'harpoon', 'oar', 'great_maul', 'bear_spear', 'great_candle'),
+                ('broadsword', 'cargo_hook', 'harpoon', 'oar', 'bear_spear', 'great_candle', 'ship_anchor'))[i]
         for wname in arms:
             n, blow = hits(WPN[wname], st, 0, boss_mob)
             print(f'    {wname}: {blow:.1f} a blow, {n} blows, {n / WPN[wname]["speed"]:.0f} s of pure striking')

@@ -89,7 +89,7 @@ public class SandCrabEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return this.called ? 0 : 420;
+        return this.called ? 0 : 250;
     }
 
     @Override

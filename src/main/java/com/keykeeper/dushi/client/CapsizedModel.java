@@ -110,7 +110,7 @@ public class CapsizedModel extends EntityModel<BossRenderState> {
         PartDefinition leg_l1 = body.addOrReplaceChild("leg_l1", CubeListBuilder.create()
                 .texOffs(128, 115).addBox(0.0F, -2.0F, -2.0F, 13.0F, 4.0F, 4.0F),
                 PartPose.offsetAndRotation(9.0F, 0.0F, -6.0F, 0.0F, 0.3F, -0.5F));
-        PartDefinition shin_l1 = leg_r1.addOrReplaceChild("shin_l1", CubeListBuilder.create()
+        PartDefinition shin_l1 = leg_l1.addOrReplaceChild("shin_l1", CubeListBuilder.create()
                 .texOffs(224, 36).addBox(-2.0F, -1.0F, -2.0F, 4.0F, 13.0F, 4.0F)
                 .texOffs(216, 64).addBox(-1.0F, 12.0F, -1.0F, 2.0F, 2.0F, 2.0F),
                 PartPose.offsetAndRotation(13.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.5F));
@@ -124,7 +124,7 @@ public class CapsizedModel extends EntityModel<BossRenderState> {
         PartDefinition leg_l2 = body.addOrReplaceChild("leg_l2", CubeListBuilder.create()
                 .texOffs(162, 121).addBox(0.0F, -2.0F, -2.0F, 13.0F, 4.0F, 4.0F),
                 PartPose.offsetAndRotation(9.0F, 0.0F, 5.0F, 0.0F, -0.0F, -0.5F));
-        PartDefinition shin_l2 = leg_r2.addOrReplaceChild("shin_l2", CubeListBuilder.create()
+        PartDefinition shin_l2 = leg_l2.addOrReplaceChild("shin_l2", CubeListBuilder.create()
                 .texOffs(224, 53).addBox(-2.0F, -1.0F, -2.0F, 4.0F, 13.0F, 4.0F)
                 .texOffs(248, 76).addBox(-1.0F, 12.0F, -1.0F, 2.0F, 2.0F, 2.0F),
                 PartPose.offsetAndRotation(13.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.5F));
@@ -138,7 +138,7 @@ public class CapsizedModel extends EntityModel<BossRenderState> {
         PartDefinition leg_l3 = body.addOrReplaceChild("leg_l3", CubeListBuilder.create()
                 .texOffs(164, 136).addBox(0.0F, -2.0F, -2.0F, 13.0F, 4.0F, 4.0F),
                 PartPose.offsetAndRotation(9.0F, 0.0F, 16.0F, 0.0F, -0.3F, -0.5F));
-        PartDefinition shin_l3 = leg_r3.addOrReplaceChild("shin_l3", CubeListBuilder.create()
+        PartDefinition shin_l3 = leg_l3.addOrReplaceChild("shin_l3", CubeListBuilder.create()
                 .texOffs(216, 70).addBox(-2.0F, -1.0F, -2.0F, 4.0F, 13.0F, 4.0F)
                 .texOffs(248, 80).addBox(-1.0F, 12.0F, -1.0F, 2.0F, 2.0F, 2.0F),
                 PartPose.offsetAndRotation(13.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.5F));

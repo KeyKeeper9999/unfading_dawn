@@ -33,7 +33,7 @@ for i, z in enumerate((-6, 5, 16)):
     M.part(f'leg_r{i + 1}', 'body', (-9, 0, z), (0, (i - 1) * 0.3, 0.5), boxes=[Box(-13, -2, -2, 13, 4, 4, 'shell', 'thigh')])
     M.part(f'shin_r{i + 1}', f'leg_r{i + 1}', (-13, 0, 0), (0, 0, -0.5), boxes=[Box(-2, -1, -2, 4, 13, 4, 'shell', 'shin'), Box(-1, 12, -1, 2, 2, 2, 'claw', 'tip')])
     M.mirror(f'leg_r{i + 1}', f'leg_l{i + 1}', parent='body')
-    M.mirror(f'shin_r{i + 1}', f'shin_l{i + 1}')
+    M.mirror(f'shin_r{i + 1}', f'shin_l{i + 1}', parent=f'leg_l{i + 1}')
 M.pack()
 
 PLANK = (112, 102, 88)

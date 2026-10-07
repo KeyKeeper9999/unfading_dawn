@@ -1,30 +1,9 @@
 {
   "variants": {
-    "axis=x,lock=quarry": {
+    "axis=x": {
       "model": "vsratie_dushi:block/locked_gate"
     },
-    "axis=x,lock=mire": {
-      "model": "vsratie_dushi:block/locked_gate"
-    },
-    "axis=x,lock=firwood": {
-      "model": "vsratie_dushi:block/locked_gate"
-    },
-    "axis=x,lock=none": {
-      "model": "vsratie_dushi:block/locked_gate"
-    },
-    "axis=z,lock=quarry": {
-      "model": "vsratie_dushi:block/locked_gate",
-      "y": 90
-    },
-    "axis=z,lock=mire": {
-      "model": "vsratie_dushi:block/locked_gate",
-      "y": 90
-    },
-    "axis=z,lock=firwood": {
-      "model": "vsratie_dushi:block/locked_gate",
-      "y": 90
-    },
-    "axis=z,lock=none": {
+    "axis=z": {
       "model": "vsratie_dushi:block/locked_gate",
       "y": 90
     }

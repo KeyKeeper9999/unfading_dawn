@@ -63,7 +63,7 @@ public class OarsmanEntity extends ShoremanEntity {
 
     @Override
     public int soulReward() {
-        return 1500;
+        return 1200;
     }
 
     @Override

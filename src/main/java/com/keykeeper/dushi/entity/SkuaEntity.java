@@ -67,7 +67,7 @@ public class SkuaEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 380;
+        return 250;
     }
 
     @Override

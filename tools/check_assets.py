@@ -23,7 +23,7 @@ charms = re.findall(r'^\s+[A-Z_]+\("(\w+)", \d+\)', open(f'{J}/Charm.java').read
 armour = re.findall(r'"((?:prisoner|guard|rust|chaplain|vigil|mason|scale|oilskin)_\w+)"', open(f'{J}/ArmorSet.java').read())
 items |= set(armour)
 items |= set(charms) | set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate', 'mob_mark', 'forge'}
-blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name', 'shard_heap', 'locked_gate', 'shallows', 'sludge'}
+blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name', 'shard_heap', 'locked_gate', 'shallows', 'sludge', 'sea_shallows'}
 entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot', 'powder_pot', 'thrown_wedge', 'mud_glob', 'root', 'thrown_harpoon', 'thrown_anchor'}
 lang = {l: json.load(open(f'{A}/lang/{l}.json', encoding='utf-8')) for l in ('ru_ru', 'en_us')}
 

@@ -62,7 +62,7 @@ public class HarpoonerEntity extends ShoremanEntity {
 
     @Override
     public int soulReward() {
-        return 950;
+        return 760;
     }
 
     @Override

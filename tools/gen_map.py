@@ -163,6 +163,7 @@ class Map(Build):
         self.fogs = {}
         self.census = {}               # zone -> {kind: count}
         self.flights = []              # every cell of every stair a player climbs
+        self.undertow = set()          # the cells of a sea that takes whoever is in it (gen_shore.py): nothing is reached through them
         self.zone = '?'
 
     # ------------------------------------------------------------------ building blocks
@@ -1639,7 +1640,8 @@ NO_FOOTING = ('mob_mark', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', '
 STAGES = (('gravedigger', 'after the Gravedigger'), ('overseer', 'after the Overseer'), ('chaplain', 'after the Chaplain'),
           ('quarry_key', "with the key of the Quarrymen's Gate"), ('taskmaster', 'after the Taskmaster'), ('stone_eater', 'after the Stone-Eater'),
           ('mire_key', 'with the key of the Mire Gate'), ('wallower', 'after the Wallower'), ('weeping_mother', 'after the Weeping Mother'),
-          ('firwood_key', 'with the key of the Wood Wicket'), ('shatun', 'after the Shatun'), ('elder', 'after the Elder'))
+          ('firwood_key', 'with the key of the Wood Wicket'), ('shatun', 'after the Shatun'), ('elder', 'after the Elder'),
+          ('shore_key', 'with the key of the Sea Gate'), ('helmsman', 'after the Helmsman'), ('capsized', 'after the Capsized'))
 
 
 def is_water(state):
@@ -1654,12 +1656,14 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
     """Walks the map the way a player can: step, jump one block up, drop any distance, jump a gap of up to three, climb a
     ladder, swim. Water is like a ladder that fills its cell: one is in it wherever it is, goes up and down in it, and
     climbs out of it onto whatever is level with its top - not higher - and jumps no gaps from it. The leaf of a lily
-    is stood on in its own cell. A locked gate is a seal that its key lifts (the seal named after the key). Reports
+    is stood on in its own cell. The sea of the Morning Wharf (b.undertow: its cells deeper than the knee) is not swum
+    at all: whoever is in it is taken, so nothing is reached through it. A locked gate is a seal that its key lifts (the seal named after the key). Reports
     what is reached at each stage of the game, and any place that can be reached but not left towards a hearth."""
     cells = b.cells
     doors = {c for door, lever in b.doors for c in door}
     seals = {name: set(c) for name, c in b.seals.items()}
     all_seals = set().union(*seals.values()) if seals else set()
+    taken = getattr(b, 'undertow', None) or frozenset()
 
     def solid(c, open_doors, open_seals):
         if c in blocked:
@@ -1687,6 +1691,8 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
 
     def stands(c, od, os_):
         x, y, z = c
+        if c in taken:
+            return False
         if ladder(c) or wet(c) or 'lily_pad' in str(cells.get(c)):
             return not solid((x, y + 1, z), od, os_)           # on a ladder one hangs wherever there is room for the head
         below = cells.get((x, y - 1, z))
@@ -1760,6 +1766,7 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
     marks = [(k, x, y, z) for k, x, y, z in b.marks]
     problems = []
     final = None
+    analyse.seen_at = []               # (what was opened last, everything reached by then): kept for the sums of tools/balance.py
     for label, opened in stages:
         if opened:
             os_ |= seals[opened]
@@ -1782,6 +1789,7 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
         report.append(f'{label}: {len(seen)} places, hearths {hearths}, chests {len(chests)}/{len(b.chests)}, shards {shards}/{len(b.shards)}, doors opened {doors_open}/{len(b.doors)}, '
                       f'enemies in reach {dict(sorted(mobs.items()))}')
         final = (seen, edges, chests)
+        analyse.seen_at.append((opened, seen))
     seen, edges, chests = final
     for n, x, y, z in b.chests:
         if n not in chests:

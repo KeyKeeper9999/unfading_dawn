@@ -20,7 +20,7 @@ M.part('head', 'body', (0, -1.5, -4), (0.25, 0, 0), boxes=[Box(-1.5, -3, -2.5, 3
 M.part('wing_r', 'body', (-2.5, -2, -1), boxes=[Box(-7, -0.5, -3, 7, 1, 6, 'wing', 'inner')])
 M.part('tip_r', 'wing_r', (-7, 0, 0), boxes=[Box(-7, -0.5, -2.5, 7, 1, 5, 'wing', 'outer')])
 M.mirror('wing_r', 'wing_l', parent='body')
-M.mirror('tip_r', 'tip_l')
+M.mirror('tip_r', 'tip_l', parent='wing_l')
 M.part('legs', 'all', (0, 1, 1), boxes=[Box(-1.5, 0, -0.5, 1, 4, 1, 'leg', 'leg_a'), Box(0.5, 0, -0.5, 1, 4, 1, 'leg', 'leg_b'), Box(-2, 3.5, -2, 2, 0.5, 2, 'leg', 'foot_a'),
                                          Box(0, 3.5, -2, 2, 0.5, 2, 'leg', 'foot_b')])
 M.pack()
