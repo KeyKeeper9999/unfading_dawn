@@ -38,6 +38,9 @@ public class RootEntity extends Entity {
     private static final int STANDS_ALONE = 400;
 
     private WeepingMotherEntity sender;
+    /** A root somebody called with a prayer: whose it is, and what it does to what stands over it. */
+    private net.minecraft.world.entity.LivingEntity caster;
+    private float damage;
 
     public RootEntity(EntityType<? extends RootEntity> type, Level level) {
         super(type, level);
@@ -55,6 +58,37 @@ public class RootEntity extends Entity {
         root.setYRot(level.getRandom().nextFloat() * 360.0F);
         level.addFreshEntity(root);
         return root;
+    }
+
+    /** A root called by {@code caster}'s prayer: it strikes whatever stands over it but the caster, throws it and holds it. */
+    public static RootEntity rise(ServerLevel level, net.minecraft.world.entity.LivingEntity caster, Vec3 at, int warning, float damage) {
+        RootEntity root = rise(level, (WeepingMotherEntity) null, at, warning);
+        root.caster = caster;
+        root.damage = damage;
+        return root;
+    }
+
+    /** What a called root does when it comes up. */
+    private void snare(ServerLevel level) {
+        double r = WeepingMotherEntity.ROOT_RADIUS;
+        DamageSource source = this.damageSources().indirectMagic(this, this.caster);
+        for (net.minecraft.world.entity.LivingEntity victim : level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,
+                new net.minecraft.world.phys.AABB(this.position(), this.position()).inflate(r + 1.0, WeepingMotherEntity.ROOT_HEIGHT + 1.0, r + 1.0),
+                e -> e != this.caster && e.isAlive() && !(e instanceof net.minecraft.world.entity.decoration.ArmorStand))) {
+            double dx = victim.getX() - this.getX();
+            double dz = victim.getZ() - this.getZ();
+            double far = Math.sqrt(dx * dx + dz * dz) - victim.getBbWidth() * 0.5;
+            if (far > r || victim.getY() < this.getY() - 1.0 || victim.getY() > this.getY() + WeepingMotherEntity.ROOT_HEIGHT) {
+                continue;
+            }
+            if (this.caster instanceof net.minecraft.world.entity.player.Player player && victim instanceof net.minecraft.world.entity.player.Player other
+                    && !player.canHarmPlayer(other)) {
+                continue;
+            }
+            if (victim.hurtServer(level, source, this.damage)) {
+                victim.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SLOWNESS, 50, 4, false, true, true), this.caster);
+            }
+        }
     }
 
     /**
@@ -127,6 +161,8 @@ public class RootEntity extends Entity {
         } else if (this.tickCount == warning) {
             if (this.sender != null && this.sender.isAlive()) {
                 this.sender.rootStrikes(level, this.position());
+            } else if (this.caster != null && this.caster.isAlive()) {
+                this.snare(level);
             }
             level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MANGROVE_ROOTS.defaultBlockState()), this.getX(), this.getY() + 0.8, this.getZ(), 30,
                     WeepingMotherEntity.ROOT_RADIUS * 0.35, 0.9, WeepingMotherEntity.ROOT_RADIUS * 0.35, 0.1);

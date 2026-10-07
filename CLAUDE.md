@@ -92,6 +92,17 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   a hearth (`HearthScreen`) and shown beside the flask (`SoulsHud`). What each gives is asked of the enum where the thing
   happens (`Charm.X.more(player)`, `.less(player)`, `.on(player)`). A new charm is an entry there, an icon, its two texts
   and a source: a chest of its place (`gen_data.py`), a lord's drop, or the keykeeper.
+- `Spell` - every spell: what it costs, and in `cast` what it does. What pours from a palm (`FLARE`, `HOT_WAX`) is a jet:
+  `jetTouches` asks, a quarter of a pace at a time along it, for the nearest point of a thing's box - not for its middle,
+  which for a thing as wide as a wagon is out of reach when its side is in one's face - and `lick` takes its shield down
+  and its moment of grace after another blow away, so that the flame lands on what it visibly covers. `ROOT_SNARE` is a
+  `RootEntity` called by a player (`aimed` picks whom the eyes are on); `MARSH_FIRE` is a wisp's flame that, thrown by a
+  player, bends towards what is near its way (`SpellBoltEntity.seek`) and clings. A new spell is an entry, its `cast`,
+  a glyph in `gen_items.py`, two texts, a recipe and a place it is found.
+- Shields are `item/GuardShieldItem` (`Dushi.shield`): how much of a blow they take, how much of it costs no stamina, and,
+  for those that are more than their numbers, a weight of their own and a trait - the carver's buckler does not slow the
+  return of stamina while it is up (`Gear.tiresTheArm`), the scale shield weighs half of what its stability would make
+  it, a waker's board throws back whoever struck it (`SoulMechanics.onShieldBlock`).
 - `block/MobMarkBlock` + `MobMarkBlockEntity` - a ring of ash where a mob of a building rises: when a player comes near,
   and again after any rest at a hearth or death within 96 blocks. A slain boss stays slain; a living one goes back and heals.
   A mark has a `tier` (0-3): the same mob with more health, harder blows and more souls (`SoulsMob.TIER_*`), so that a
@@ -350,9 +361,18 @@ Things learnt the hard way:
 - A lord whose charge ends against what does not give needs something in his arena that does not give: the Shatun's
   hollow was a bare ring, with nothing but its walls to lead him into.
 
+Souls and levels. A level costs `100 + 20 n + 2 n^2` souls, `n` being the level less one (`PlayerSoul.levelCost`): it grows
+with the square of the level. (It used to grow by a tenth of itself each level, which is the same to the thirties and
+past the fifties outran anything the dead could leave: 140 thousand for one level in the seventies.) What a place pays
+is tuned to that in `tools/balance.py`, which says how a part of the map is taken to be played (`CLEARED`, `PASSES`,
+`LOST`: three quarters of it fought, more than once because of the vain tries, a tenth lost in stains; and `FARM`, a
+quarter of a clearing more) and what level each lord is meant to be met at (`TARGET`). The rule for a new place: ten
+levels, six before its first lord and four before its second; a lord leaves about two and a half times the cost of the
+level he is met at; the dead of the place are priced so that the script's "meant" line wants about nothing more.
+
 Balance (see `tools/balance.py`): one clearing of the town brings a player to about level 10-12 before the Gravedigger;
 the lower fortress to about 18 before the Overseer; the upper city to about 29 before the Chaplain; the quarry to
-about 35 before the Taskmaster and 38 before the Stone-Eater; the Mire to about 44 before the Wallower and 47 before
-the Weeping Mother; the Firwood to about 51 before the Shatun and 54 before the Elder. The fortress was
+about 35 before the Taskmaster and 39 before the Stone-Eater; the Mire to about 46 before the Wallower and 50 before
+the Weeping Mother; the Firwood to about 55 before the Shatun and 60 before the Elder. The fortress was
 first tuned for a newcomer; its tiers make up for the levels a player now brings to it. When mobs, weapons, tiers or
 the map change, run it again.

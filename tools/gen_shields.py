@@ -316,10 +316,106 @@ def tower_shield():
     return m
 
 
+DUST = (204, 198, 184)
+BONE, BONE_D, BONE_L = (198, 192, 166), (140, 134, 112), (230, 226, 204)
+HIDE, HIDE_D = (72, 80, 62), (48, 56, 44)
+WITHE = (118, 128, 72)
+SPRUCE, SPRUCE_D, SPRUCE_L = (112, 80, 52), (80, 56, 38), (150, 112, 74)
+
+
+def whole(e, d, px, py):
+    """Where a pixel of a slab's front or back is on the whole shield, so that several slabs carry one picture."""
+    gx = (e.frm[0] + px) if d == 'south' else (e.to[0] - 1 - px)
+    return gx, (16 - e.to[1]) + py
+
+
+def carver_buckler():
+    m = JsonModel(64, 'carver_buckler')
+    # a carver's buckler: a plate of iron no bigger than a dish, a boss over the fist, the pit's dust in every dent
+    m.add(6, 4, 7.6, 10, 12, 8.4, 'plate', 'tall')
+    m.add(5, 5, 7.6, 11, 11, 8.4, 'plate', 'mid')
+    m.add(4, 6, 7.6, 12, 10, 8.4, 'plate', 'wide')
+    m.add(7, 7, 8.4, 9, 9, 9.5, 'boss', 'boss')
+    m.add(7.4, 6, 6.4, 8.6, 10, 7.6, 'leather', 'grip')
+    m.pack()
+
+    def paint(e, d, px, py, w, h, rnd):
+        if e.mat == 'plate':
+            if d not in ('south', 'north'):
+                return IRON_D
+            gx, gy = whole(e, d, px, py)
+            dist = math.hypot(gx - 7.5, gy - 7.5)
+            if d == 'north':
+                return shade(IRON_D, 1.0 if (gx + gy) % 2 else 0.88)
+            if dist > 3.4:
+                return IRON_L if (gx + gy) % 3 == 0 else IRON
+            c = IRON if blotch('buckler', gx, gy, 2.0) < 0.6 else IRON_D
+            if blotch('bdust', gx, gy, 1.3) < 0.22:
+                c = mix(c, DUST, 0.6)
+            return shade(c, 1.08 - 0.14 * gy / 15)
+        if e.mat == 'boss':
+            return IRON_L if d == 'south' and (px, py) in ((0, 0), (1, 0), (0, 1)) else (IRON if d == 'south' else IRON_D)
+        return LEATHER
+    m.paint(paint, 7)
+    return m
+
+
+def scale_shield():
+    m = JsonModel(64, 'scale_shield')
+    # the Mire's: an oval frame of withe, the pike's hide stretched on it and its scales sewn on in rows
+    m.add(5, 0, 7.5, 11, 16, 8.5, 'face', 'tall')
+    m.add(4, 2, 7.5, 12, 14, 8.5, 'face', 'mid')
+    m.add(3, 4, 7.5, 13, 12, 8.5, 'face', 'wide')
+    m.add(7, 6, 6.2, 9, 10, 7.5, 'leather', 'grip')
+    m.pack()
+
+    def paint(e, d, px, py, w, h, rnd):
+        if e.mat == 'face':
+            if d not in ('south', 'north'):
+                return shade(WITHE, 0.8)
+            gx, gy = whole(e, d, px, py)
+            edge = ((gx - 7.5) / 5.0) ** 2 + ((gy - 7.5) / 8.0) ** 2 > 0.72
+            if d == 'north':
+                return shade(WITHE, 0.9) if edge else (HIDE if blotch('sback', gx, gy, 2.2) < 0.65 else HIDE_D)
+            if edge:
+                return shade(WITHE, 1.0 if (gx + gy) % 2 else 0.78)
+            row = gy // 2
+            c = BONE_L if gy % 2 == 0 else (BONE if (gx + row) % 2 == 0 else BONE_D)
+            return shade(c, 1.06 - 0.16 * gy / 15)
+        return LEATHER
+    m.paint(paint, 8)
+    return m
+
+
+def waker_board():
+    m = JsonModel(64, 'waker_board')
+    # a waker's board: a plank as long as an arm and a half, bound with iron at both ends, beaten pale in the middle
+    m.add(5.5, -3, 7.4, 10.5, 19, 8.6, 'wood', 'plank')
+    m.add(5.2, -2, 7.2, 10.8, -0.8, 8.8, 'iron', 'band_a')
+    m.add(5.2, 16.8, 7.2, 10.8, 18, 8.8, 'iron', 'band_b')
+    m.add(7, 5, 6.2, 9, 11, 7.4, 'leather', 'grip')
+    m.pack()
+
+    def paint(e, d, px, py, w, h, rnd):
+        if e.mat == 'wood':
+            if d not in ('south', 'north'):
+                return SPRUCE_D
+            c = SPRUCE_D if px == 2 else (SPRUCE_L if (px * 5 + py * 3) % 13 == 0 else SPRUCE)
+            if d == 'south' and 8 <= py <= 14 and 1 <= px <= 3 and blotch('beaten', px, py, 1.4) < 0.7:
+                c = mix(SPRUCE_L, (214, 190, 150), 0.5)      # where the mallet lands
+            return shade(c, 1.06 - 0.14 * py / max(1, h - 1))
+        if e.mat == 'iron':
+            return iron(e, d, px, py, w, h, rnd)
+        return LEATHER
+    m.paint(paint, 9)
+    return m
+
+
 if __name__ == '__main__':
     shots = []
     held = []
-    for name, build in (('plank_shield', plank_shield), ('round_shield', round_shield), ('guard_shield', guard_shield), ('tower_shield', tower_shield)):
+    for name, build in (('plank_shield', plank_shield), ('round_shield', round_shield), ('guard_shield', guard_shield), ('tower_shield', tower_shield),
+                        ('carver_buckler', carver_buckler), ('scale_shield', scale_shield), ('waker_board', waker_board)):
         m = build()
         m.display = DISPLAY
         m.gui_light = 'front'

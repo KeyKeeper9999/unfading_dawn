@@ -118,7 +118,7 @@ public class WeepingMotherEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 24000;
+        return 14000;
     }
 
     @Override

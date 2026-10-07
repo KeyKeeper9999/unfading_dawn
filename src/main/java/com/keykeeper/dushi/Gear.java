@@ -135,6 +135,9 @@ public final class Gear {
         if (weapon != null) {
             return Math.round(weapon.stamina * 3.0F) / 10.0F;
         }
+        if (stack.getItem() instanceof GuardShieldItem shield && shield.weight >= 0.0F) {
+            return shield.weight;
+        }
         float stability = stability(stack);
         if (stability >= 0.0F) {
             return 2.0F + Math.round(stability * 100.0F) / 10.0F;
@@ -226,6 +229,14 @@ public final class Gear {
     public static float blockCost(Player player) {
         return (1.0F - ArmorSet.GUARD.bonus * worn(player, ArmorSet.GUARD)) * Charm.WEDGE_CORD.less(player);
     }
+
+    /** Whether holding this shield up slows the return of stamina: every shield but the carver's buckler. */
+    public static boolean tiresTheArm(ItemStack shield) {
+        return shield == null || !shield.is(Dushi.CARVER_BUCKLER.get());
+    }
+
+    /** How hard a waker's board throws back whoever struck it. */
+    public static final double BOARD_THROWS = 0.9;
 
     /** The share of a blast, or of rock coming down, that reaches somebody in a stonecutter's felt and leather. */
     public static float blastShare(Player player) {

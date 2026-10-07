@@ -98,7 +98,7 @@ public class ShatunEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 30000;
+        return 16000;
     }
 
     @Override

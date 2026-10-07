@@ -294,7 +294,8 @@ public final class SoulMechanics {
             soul.regenPause = 0;
             soul.tickStamina(false, false, 1.0F);
         } else {
-            soul.tickStamina(player.isSprinting() && !player.isPassenger(), player.isBlocking(), Gear.staminaRegen(player));
+            soul.tickStamina(player.isSprinting() && !player.isPassenger(), player.isBlocking() && Gear.tiresTheArm(player.getItemBlockingWith()),
+                    Gear.staminaRegen(player));
             if (soul.stamina <= 0.0F && player.isSprinting()) {
                 player.setSprinting(false);
             }
@@ -502,6 +503,12 @@ public final class SoulMechanics {
         float cost = Math.max(4.0F, event.getBlockedDamage() * 5.0F * (1.0F - stability) * Gear.blockCost(player));
         boolean held = soul.spend(cost);
         player.syncData(Dushi.PLAYER_SOUL);
+        // A waker's board answers a blow: whoever struck it is thrown back.
+        if (held && shield != null && shield.is(Dushi.WAKER_BOARD.get()) && event.getDamageSource().getDirectEntity() instanceof LivingEntity striker
+                && striker != player && striker.distanceToSqr(player) < 16.0) {
+            striker.knockback(Gear.BOARD_THROWS, player.getX() - striker.getX(), player.getZ() - striker.getZ(), event.getDamageSource(), 3.0F);
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), Dushi.sound("entity.waker.knock"), SoundSource.PLAYERS, 0.9F, 1.2F);
+        }
         if (!held && shield != null) {
             BlocksAttacks blocks = shield.get(DataComponents.BLOCKS_ATTACKS);
             if (blocks != null) {

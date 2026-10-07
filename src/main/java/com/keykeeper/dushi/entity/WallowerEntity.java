@@ -111,7 +111,7 @@ public class WallowerEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 18000;
+        return 12000;
     }
 
     @Override

@@ -121,7 +121,7 @@ public class ElderEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 38000;
+        return 20000;
     }
 
     @Override

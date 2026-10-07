@@ -82,6 +82,12 @@ final class WorldTest {
             say("firwood: FAILED: " + e);
             e.printStackTrace(System.out);
         }
+        try {
+            magic(level);
+        } catch (RuntimeException e) {
+            say("magic: FAILED: " + e);
+            e.printStackTrace(System.out);
+        }
         for (String name : new String[] {"outpost", "stockade"}) {
             try {
                 found(level, name);
@@ -350,6 +356,90 @@ final class WorldTest {
         far.discard();
         bear.discard();
         elder.discard();
+    }
+
+    /**
+     * What pours from a palm reaches as far as it says and whatever is that near, a wide thing as well as a narrow one; a
+     * root comes up for whoever is looked at; the shields that are more than their numbers; what a level costs.
+     */
+    private static void magic(ServerLevel level) {
+        BlockPos at = new BlockPos(40, 240, 40);
+        FakePlayer player = FakePlayerFactory.getMinecraft(level);
+        player.setPos(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
+        player.setYRot(0.0F);
+        player.setXRot(0.0F);                                    // looking south, level
+        var spawn = net.minecraft.world.entity.EntitySpawnReason.COMMAND;
+        var near = net.minecraft.world.entity.EntityTypes.IRON_GOLEM.spawn(level, at.offset(0, 0, 3), spawn);
+        var beyond = net.minecraft.world.entity.EntityTypes.IRON_GOLEM.spawn(level, at.offset(0, 0, 6), spawn);
+        var beside = net.minecraft.world.entity.EntityTypes.IRON_GOLEM.spawn(level, at.offset(4, 0, 0), spawn);
+        var behind = net.minecraft.world.entity.EntityTypes.IRON_GOLEM.spawn(level, at.offset(0, 0, -2), spawn);
+        if (near == null || beyond == null || beside == null || behind == null) {
+            say("magic: something did not spawn FAILED");
+            return;
+        }
+        for (var golem : new net.minecraft.world.entity.Mob[] {near, beyond, beside, behind}) {
+            golem.setNoAi(true);
+        }
+        float whole = near.getHealth();
+        Spell.FLARE.cast(level, player, 1.0F);
+        float once = near.getHealth();
+        Spell.FLARE.cast(level, player, 1.0F);                   // at once: a blow a moment ago does not put it off
+        float twice = near.getHealth();
+        boolean reaches = once < whole && twice < once && beyond.getHealth() == beyond.getMaxHealth() && beside.getHealth() == beside.getMaxHealth()
+                && behind.getHealth() == behind.getMaxHealth();
+        // by its own rule: a thing a pace wide whose near side is at 3.4, and at 3.9; one as wide as a wagon whose middle is 5 off
+        net.minecraft.world.phys.Vec3 eye = new net.minecraft.world.phys.Vec3(0.0, 1.4, 0.0);
+        net.minecraft.world.phys.Vec3 south = new net.minecraft.world.phys.Vec3(0.0, 0.0, 1.0);
+        boolean rule = Spell.jetTouches(eye, south, Spell.FLARE_REACH, new net.minecraft.world.phys.AABB(-0.5, 0.0, 3.4, 0.5, 2.0, 4.4))
+                && !Spell.jetTouches(eye, south, Spell.FLARE_REACH, new net.minecraft.world.phys.AABB(-0.5, 0.0, 3.9, 0.5, 2.0, 4.9))
+                && Spell.jetTouches(eye, south, Spell.FLARE_REACH, new net.minecraft.world.phys.AABB(-1.6, 0.0, 3.4, 1.6, 2.0, 6.6))
+                && Spell.jetTouches(eye, south, Spell.FLARE_REACH, new net.minecraft.world.phys.AABB(0.8, 0.0, 2.5, 1.8, 2.0, 3.5))
+                && !Spell.jetTouches(eye, south, Spell.FLARE_REACH, new net.minecraft.world.phys.AABB(2.5, 0.0, 2.5, 3.5, 2.0, 3.5))
+                && !Spell.jetTouches(eye, south, Spell.FLARE_REACH, new net.minecraft.world.phys.AABB(-0.5, 0.0, -2.5, 0.5, 2.0, -1.5));
+        say("magic: the palm's flame: of the one two paces off " + whole + " -> " + once + " -> " + twice + ", none of those beyond, beside or behind=" + reaches
+                + ", its reach by rule=" + rule + (reaches && rule ? "" : " FAILED"));
+        // hot wax: further, weaker, and it sets
+        near.setHealth(near.getMaxHealth());
+        Spell.HOT_WAX.cast(level, player, 1.0F);
+        boolean waxed = near.getHealth() < near.getMaxHealth() && near.hasEffect(net.minecraft.world.effect.MobEffects.SLOWNESS)
+                && beside.getHealth() == beside.getMaxHealth();
+        // the scatter: five shards
+        Spell.SOUL_SCATTER.cast(level, player, 1.0F);
+        int shards = level.getEntitiesOfClass(com.keykeeper.dushi.entity.SpellBoltEntity.class, player.getBoundingBox().inflate(4.0)).size();
+        level.getEntitiesOfClass(com.keykeeper.dushi.entity.SpellBoltEntity.class, player.getBoundingBox().inflate(4.0)).forEach(net.minecraft.world.entity.Entity::discard);
+        // the root: for whoever is looked at, out of the ground under them; it strikes them and not its caster
+        near.removeAllEffects();
+        near.setHealth(near.getMaxHealth());
+        near.setInvulnerableTime(0);
+        boolean picked = Spell.aimed(level, player, Spell.SNARE_RANGE) == near;
+        net.minecraft.world.phys.Vec3 ground = com.keykeeper.dushi.entity.RootEntity.ground(level, near.getX(), near.getY(), near.getZ());
+        boolean snared = false;
+        if (ground != null) {
+            com.keykeeper.dushi.entity.RootEntity root = com.keykeeper.dushi.entity.RootEntity.rise(level, player, ground, Spell.SNARE_WARNING, 11.0F);
+            root.tickCount = Spell.SNARE_WARNING;
+            root.tick();
+            snared = near.getHealth() == near.getMaxHealth() - 11.0F && near.hasEffect(net.minecraft.world.effect.MobEffects.SLOWNESS);
+            root.discard();
+        }
+        say("magic: hot wax burns and sets=" + waxed + ", the scatter is of " + shards + " shards, the root: picks out whom the eyes are on=" + picked
+                + ", strikes and holds them=" + snared + (waxed && shards == 5 && picked && snared ? "" : " FAILED"));
+        for (var golem : new net.minecraft.world.entity.Mob[] {near, beyond, beside, behind}) {
+            golem.discard();
+        }
+        // the shields that are more than their numbers
+        float guard = Gear.weight(new ItemStack(Dushi.GUARD_SHIELD.get()));
+        float scale = Gear.weight(new ItemStack(Dushi.SCALE_SHIELD.get()));
+        boolean shields = scale == 4.0F && guard == 8.0F && !Gear.tiresTheArm(new ItemStack(Dushi.CARVER_BUCKLER.get()))
+                && Gear.tiresTheArm(new ItemStack(Dushi.GUARD_SHIELD.get())) && Gear.tiresTheArm(null);
+        say("magic: shields: the scale shield weighs " + scale + " to the guard's " + guard + ", the buckler alone does not tire the arm=" + shields
+                + (shields ? "" : " FAILED"));
+        // what a level costs
+        int first = PlayerSoul.levelCost(1);
+        int thirty = PlayerSoul.levelCost(30);
+        int sixty = PlayerSoul.levelCost(60);
+        int eighty = PlayerSoul.levelCost(80);
+        boolean costs = first == 100 && thirty == 2362 && sixty == 8242 && eighty == 14162;
+        say("magic: a level costs " + first + " at 1, " + thirty + " at 30, " + sixty + " at 60, " + eighty + " at 80" + (costs ? "" : " FAILED"));
     }
 
     // ------------------------------------------------------------------ gear

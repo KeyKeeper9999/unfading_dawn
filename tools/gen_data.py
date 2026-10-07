@@ -154,9 +154,9 @@ MAP_CHESTS = {
     'treasury_arms': [(M + 'chaplain_skirt', 1), (M + 'chaplain_shoes', 1), (M + 'tower_shield', 1)],
     # the White Pit (tools/gen_quarry.py)
     'quarry_shed': [(M + 'powder_pot', 4), (M + 'iron_wedge', 2), (SCRAP, 3), (M + 'stone_hammer', 1)],
-    'quarry_field': [(M + 'iron_wedge', 3), (SOUL, 2), (M + 'return_ember', 1)],
+    'quarry_field': [(M + 'iron_wedge', 3), (SOUL, 2), (M + 'return_ember', 1), (M + 'carver_buckler', 1)],
     'quarry_shop': [(GREAT, 1), (M + 'iron_wedge', 2), (CLOTH, 4), (M + 'wedge_cord', 1)],
-    'quarry_eyes': [(GREAT, 2), (M + 'powder_pot', 3)],
+    'quarry_eyes': [(GREAT, 2), (M + 'powder_pot', 3), (M + 'soul_scatter', 1)],
     'quarry_rim': [(M + 'powder_pot', 4), (M + 'return_ember', 2), (SOUL, 2)],
     'quarry_workings': [(GREAT, 2), (M + 'iron_wedge', 3)],
     'quarry_stall': [(GREAT, 1), (M + 'rust_helm', 1), (SCRAP, 6), (M + 'mason_apron', 1)],                # a stonecutter's peg: what hung on it
@@ -164,19 +164,19 @@ MAP_CHESTS = {
     # the Mire (tools/gen_swamp.py)
     'mire_end': [(GREAT, 1), (M + 'tar_pot', 4), (CLOTH, 4), (M + 'fish_knife', 1)],
     'mire_loft': [(GREAT, 2), (M + 'return_ember', 2), (M + 'withe', 2), (M + 'scale_coat', 1)],
-    'mire_gallows': [(GREAT, 2), (SCRAP, 6), (M + 'withe', 3)],
+    'mire_gallows': [(GREAT, 2), (SCRAP, 6), (M + 'withe', 3), (M + 'marsh_fire', 1)],
     'mire_stage': [(M + 'boat_hook', 1), (M + 'bone_scale', 3), (M + 'return_ember', 1), (M + 'pike_tooth', 1)],      # the fishers' stage: what they fished with
     'mire_cove': [(GREAT, 3), (M + 'heavy_soul_shard', 1), (M + 'bone_scale', 2)],
-    'mire_mill': [(GREAT, 2), (M + 'return_ember', 3), (SCRAP, 6)],
-    'mire_hollow': [(GREAT, 3), (M + 'tar_pot', 4), (M + 'withe', 3)],
+    'mire_mill': [(GREAT, 2), (M + 'return_ember', 3), (SCRAP, 6), (M + 'scale_shield', 1)],
+    'mire_hollow': [(GREAT, 3), (M + 'tar_pot', 4), (M + 'withe', 3), (M + 'root_snare', 1)],
     'mire_grove': [(GREAT, 5), (M + 'return_ember', 3), (M + 'bone_scale', 4), (M + 'weeping_herb', 1), (M + 'firwood_key', 1)],      # the key of the Wood Wicket
     # the Black Firwood and the skete (tools/gen_skete.py)
-    'firwood_stakes': [(GREAT, 2), (M + 'bleached_linen', 4), (M + 'return_ember', 2)],
+    'firwood_stakes': [(GREAT, 2), (M + 'bleached_linen', 4), (M + 'return_ember', 2), (M + 'waker_board', 1)],
     'firwood_shrine': [(M + 'waker_mallet', 1), (M + 'candle_wax', 4), (GREAT, 2)],                # what the waker of the shrine would have left to the next
     'firwood_den': [(GREAT, 4), (M + 'shatun_hide', 2), (SCRAP, 6)],
     'skete_tent': [(M + 'vigil_cowl', 1), (M + 'vigil_wraps', 1), (M + 'bleached_linen', 4)],
     'skete_altar': [(M + 'vigil_wax', 1), (M + 'candle_wax', 4), (GREAT, 2)],
-    'skete_wax_yard': [(M + 'vigil_staff', 1), (M + 'candle_wax', 8), (GREAT, 3)],
+    'skete_wax_yard': [(M + 'vigil_staff', 1), (M + 'candle_wax', 8), (GREAT, 3), (M + 'hot_wax', 1)],
     'skete_store': [(GREAT, 6), (M + 'return_ember', 3), (M + 'vigil_shift', 1), (M + 'vigil_skirt', 1)],
 }
 for _name, _items in MAP_CHESTS.items():

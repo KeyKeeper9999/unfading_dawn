@@ -52,6 +52,10 @@ public class SpellBoltEntity extends ThrowableItemProjectile {
 
     private static final EntityDataAccessor<Integer> KIND = SynchedEntityData.defineId(SpellBoltEntity.class, EntityDataSerializers.INT);
     private static final int LIFETIME = 80;
+    /** For how many seconds a player's marsh fire burns on what it found. */
+    public static final float MARSH_BURNS = 9.0F;
+    /** How near its way a thing must be for a player's marsh fire to bend towards it. */
+    private static final double MARSH_SEEKS = 7.0;
 
     private float damage = 4.0F;
 
@@ -111,6 +115,9 @@ public class SpellBoltEntity extends ThrowableItemProjectile {
                 return;
             }
             Kind kind = this.kind();
+            if (kind == Kind.WISP_FLAME && this.getOwner() instanceof Player caster) {
+                this.seek(level, caster);
+            }
             ParticleOptions trail = switch (kind) {
                 case SHARD, HEAVY_SHARD -> ParticleTypes.SOUL_FIRE_FLAME;
                 case FIRE_ORB -> ParticleTypes.FLAME;
@@ -119,6 +126,32 @@ public class SpellBoltEntity extends ThrowableItemProjectile {
                 case WISP_FLAME -> ParticleTypes.GLOW;
             };
             level.sendParticles(trail, this.getX(), this.getY() + 0.15, this.getZ(), kind == Kind.HEAVY_SHARD ? 3 : 1, 0.05, 0.05, 0.05, 0.0);
+        }
+    }
+
+    /** A player's marsh fire bends, a little every tick, towards the nearest living thing ahead of it. */
+    private void seek(ServerLevel level, Player caster) {
+        Vec3 way = this.getDeltaMovement();
+        double speed = way.length();
+        if (speed < 1.0E-3) {
+            return;
+        }
+        Vec3 heading = way.scale(1.0 / speed);
+        LivingEntity prey = null;
+        double nearest = MARSH_SEEKS * MARSH_SEEKS;
+        for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(MARSH_SEEKS),
+                c -> c != caster && c.isAlive() && !(c instanceof ArmorStand) && !(c instanceof Player other && !caster.canHarmPlayer(other)))) {
+            Vec3 to = e.getBoundingBox().getCenter().subtract(this.position());
+            double far = to.lengthSqr();
+            if (far < nearest && far > 1.0E-4 && to.normalize().dot(heading) > 0.35) {
+                nearest = far;
+                prey = e;
+            }
+        }
+        if (prey != null) {
+            Vec3 to = prey.getBoundingBox().getCenter().subtract(this.position()).normalize();
+            Vec3 bent = heading.scale(0.82).add(to.scale(0.18)).normalize().scale(speed);
+            this.setDeltaMovement(bent);
         }
     }
 
@@ -143,8 +176,12 @@ public class SpellBoltEntity extends ThrowableItemProjectile {
         Entity owner = this.getOwner();
         DamageSource source = this.damageSources().indirectMagic(this, owner);
         Kind kind = this.kind();
-        if (target.hurtServer(level, source, amount) && (kind == Kind.FIRE_ORB || kind == Kind.DARK_FLAME)) {
-            target.igniteForSeconds(4.0F);
+        if (target.hurtServer(level, source, amount)) {
+            if (kind == Kind.FIRE_ORB || kind == Kind.DARK_FLAME) {
+                target.igniteForSeconds(4.0F);
+            } else if (kind == Kind.WISP_FLAME && owner instanceof Player) {
+                target.igniteForSeconds(MARSH_BURNS);                // marsh fire thrown by a player: it clings
+            }
         }
     }
 

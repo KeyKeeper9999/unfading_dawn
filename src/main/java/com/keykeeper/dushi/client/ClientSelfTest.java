@@ -926,7 +926,7 @@ public final class ClientSelfTest {
         client(() -> Minecraft.getInstance().options.keyUse.setDown(false));
         for (String[] set : new String[][] {{"great_key", "tower_shield"}, {"rust_greatsword", "round_shield"}, {"scholar_staff", "soul_shard"},
                 {"battle_axe", "plank_shield"}, {"short_bow", "prayer_beads"}, {"bear_spear", "guard_shield"}, {"great_candle", "vigil_staff"},
-                {"waker_mallet", "round_shield"}}) {
+                {"waker_mallet", "round_shield"}, {"stone_hammer", "carver_buckler"}, {"fish_knife", "scale_shield"}, {"longsword", "waker_board"}}) {
             command("item replace entity @p weapon.mainhand with vsratie_dushi:" + set[0], "item replace entity @p weapon.offhand with vsratie_dushi:" + set[1]);
             camera(CameraType.THIRD_PERSON_FRONT);
             shot("31_held_" + set[0] + "_front", 20);

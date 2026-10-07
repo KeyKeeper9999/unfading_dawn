@@ -90,7 +90,7 @@ public class StoneEaterEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 14000;
+        return 10000;
     }
 
     @Override

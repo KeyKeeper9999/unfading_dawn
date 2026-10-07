@@ -65,7 +65,7 @@ def tier_table(name):
 
 
 def level_cost(level):
-    return math.floor(100 * 1.1 ** (level - 1)) + 25 * (level - 1)
+    return 100 + 20 * (level - 1) + 2 * (level - 1) ** 2      # PlayerSoul.levelCost
 
 
 def level_for(souls):
@@ -102,6 +102,18 @@ ORDER = ('gravedigger', 'overseer', 'chaplain', 'quarry_key', 'taskmaster', 'sto
 WITHERED = ('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman', 'digger', 'barrowman', 'sapper', 'drowned')
 # those of the skete who kneel: nobody fights all of them (a clearing is counted with a third of them woken)
 KNEELING = 1 / 3
+# How a part of the map is played, on the way to its lord: three quarters of what is in it are fought, not all; they are
+# fought more than once, because the player dies and comes back past them (a fresh place costs several vain tries); and
+# a tenth of what was gathered is left lying in stains nobody got back to.
+CLEARED, PASSES, LOST = 0.75, 1.65, 0.10
+PLAYED = CLEARED * PASSES * (1 - LOST)                      # 1.11 clearings' worth of souls
+FARM = 0.25                                                 # and a quarter of a clearing more, for the sake of it: the farming the sums count on
+# What a player is meant to come to each lord with. The places pay for nine tenths of it played as above; the rest is a
+# little farming (FARM: a quarter of a clearing of that part), or a level short.
+TARGET = {'gravedigger': 12, 'overseer': 18, 'chaplain': 29, 'taskmaster': 35, 'stone_eater': 39, 'wallower': 46, 'weeping_mother': 50,
+          'shatun': 55, 'elder': 60}
+# A lord leaves about two and a half times what a level costs at the level he is met at; the dead of his place are
+# priced so that the sums above come out. A new place: ten levels, six before its first lord and four before its second.
 
 
 def build_of(level):
@@ -129,7 +141,7 @@ if __name__ == '__main__':
         blocked = frozenset(c for name in ORDER[at:] for c in b.seals[name])
         _, _, seen = gen_map.analyse(b, blocked=blocked, stages=[('x', None)] + [(name, name) for name in ORDER[:at]])
         seen_before.append(seen)
-    print('levels: one more point costs', ', '.join(f'{lv}->{lv + 1}: {level_cost(lv)}' for lv in (1, 5, 10, 15, 20, 25, 30)))
+    print('levels: one more point costs', ', '.join(f'{lv}->{lv + 1}: {level_cost(lv)}' for lv in (1, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80)))
     print('tiers: health x', TH, ' damage x', TD, ' souls x', TS)
     total = 0.0
     done_marks, done_chests, done_shards = set(), set(), set()
@@ -164,10 +176,14 @@ if __name__ == '__main__':
         print(f'before the {boss.replace("_", "-").title()}: ' + ', '.join(f'{n} {k}' + (f' (tier {t})' if t else '') for (k, t), n in sorted(kinds.items())))
         print(f'  one clearing: {souls:.0f} for kills, about {drops:.0f} in souls dropped, {chest_souls} in chests (+{chest_great} in great souls, if not kept for the anvil)')
         spent = (350, 1500, 2500, 2500, 1500, 2000, 1500, 2500, 2000)[i]  # arms and armour bought or forged on the way
-        for label, clears in (('one clearing', 1.0), ('one and a half', 1.5)):
-            have = total + (souls + drops) * clears + chest_souls + chest_great * 0.5 - spent
+        played = total + (souls + drops) * PLAYED + chest_souls + chest_great * 0.5 - spent
+        for label, have in (('one clean clearing', total + souls + drops + chest_souls + chest_great * 0.5 - spent), ('as it is played', played),
+                            ('with a quarter of a clearing of farming', played + (souls + drops) * FARM)):
             print(f'  {label}: {have:.0f} souls for levels after {spent} more spent on gear -> level {level_for(have)}')
-        lv = level_for(total + (souls + drops) * 1.25 + chest_souls + chest_great * 0.5 - spent)
+        need = sum(level_cost(l) for l in range(1, TARGET[boss])) - played
+        print(f'  meant: level {TARGET[boss]}; played as above that wants {max(0, need):.0f} more: {max(0, need) / max(1, souls + drops):.2f} clearings of this part;'
+              f' the lord leaves {M[boss]["souls"]} = {M[boss]["souls"] / level_cost(TARGET[boss]):.1f} levels there')
+        lv = level_for(played + (souls + drops) * FARM)
         vit, end, st = build_of(lv)
         health = 20 + VITALITY * vit
         flask = gulps + shards
@@ -193,5 +209,5 @@ if __name__ == '__main__':
             wname = arms[1]
             nh, blow = hits(WPN[wname], st, 0, mob)
             print(f'    a {kind}: {mob["health"]:.0f} health, hits for {after_armor(mob["damage"], 5 if i == 0 else 12):.1f}; falls to {nh} blows of a {wname}')
-        total += (souls + drops) * 1.25 + chest_souls + chest_great * 0.5 - spent + M[boss]['souls'] * TS[bt]
+        total += (souls + drops) * (PLAYED + FARM) + chest_souls + chest_great * 0.5 - spent + M[boss]['souls'] * TS[bt]
         gulps = flask + 1                                     # each lord leaves a shard

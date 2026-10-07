@@ -186,6 +186,7 @@ public class WispEntity extends SoulsMob {
         super.dropCustomDeathLoot(level, source, killedByPlayer);
         if (this.burns == 0) {
             this.leaveMaybe(level, Dushi.NAMELESS_SOUL.get(), 0.2F);
+            this.leaveMaybe(level, Dushi.SPELLS.get(com.keykeeper.dushi.Spell.MARSH_FIRE).get(), 0.05F);
         }
     }
 

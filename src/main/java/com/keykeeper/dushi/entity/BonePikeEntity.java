@@ -258,6 +258,7 @@ public class BonePikeEntity extends SoulsMob {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean killedByPlayer) {
         super.dropCustomDeathLoot(level, source, killedByPlayer);
         this.leaveMaybe(level, Dushi.BONE_SCALE.get(), 0.6F);
+        this.leaveMaybe(level, Dushi.SCALE_SHIELD.get(), 0.03F);
         this.leaveMaybe(level, Dushi.NAMELESS_SOUL.get(), 0.12F);
     }
 

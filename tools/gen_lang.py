@@ -30,10 +30,14 @@ for key, ru, en in (
         ('great_key', 'Великий ключ', 'Great Key'), ('censer_flail', 'Кадило на цепи', 'Censer Flail'), ('short_bow', 'Короткий лук', 'Short Bow'),
         ('plank_shield', 'Щит из досок', 'Plank Shield'), ('round_shield', 'Круглый щит', 'Round Shield'),
         ('guard_shield', 'Щит стражника', "Guard's Shield"), ('tower_shield', 'Башенный щит', 'Tower Shield'),
+        ('carver_buckler', 'Кулачный щит тёсчика', "Carver's Buckler"), ('scale_shield', 'Щит из чешуи', 'Scale Shield'),
+        ('waker_board', 'Било будильщика', "Waker's Board"),
         ('scholar_staff', 'Посох школяра', "Scholar's Staff"), ('prayer_beads', 'Чётки', 'Prayer Beads'),
         ('ember_glove', 'Тлеющая рукавица', 'Ember Glove'),
         ('soul_shard', 'Осколок души', 'Soul Shard'), ('heavy_soul_shard', 'Тяжёлый осколок души', 'Heavy Soul Shard'), ('mend', 'Исцеление', 'Mend'),
-        ('rebuke', 'Отпор', 'Rebuke'), ('fire_orb', 'Огненный ком', 'Fire Orb'), ('flare', 'Вспышка', 'Flare'),
+        ('rebuke', 'Отпор', 'Rebuke'), ('fire_orb', 'Огненный ком', 'Fire Orb'), ('flare', 'Огненная ладонь', 'Burning Palm'),
+        ('soul_scatter', 'Россыпь душ', 'Soul Scatter'), ('root_snare', 'Корень из-под ног', 'Root from Underfoot'),
+        ('marsh_fire', 'Болотный огонь', 'Marsh Fire'), ('hot_wax', 'Горячий воск', 'Hot Wax'),
         ('warmth_flask', 'Фляга тепла', 'Flask of Warmth'), ('flask_shard', 'Осколок фляги', 'Flask Shard'),
         ('nameless_soul', 'Душа безымянного', 'Soul of a Nameless One'), ('great_soul', 'Большая душа', 'Great Soul'),
         ('overseer_soul', 'Душа Надзирателя', 'Soul of the Overseer'), ('chaplain_soul', 'Душа Капеллана', 'Soul of the Chaplain'),
@@ -125,6 +129,9 @@ t(f'tooltip.{M}.scaling', 'Сила: %s   Ловкость: %s', 'Strength: %s  
 t(f'tooltip.{M}.stamina', 'Расход сил: %s', 'Stamina cost: %s')
 t(f'tooltip.{M}.backstab', 'Удар в спину: ×%s', 'Backstab: ×%s')
 t(f'tooltip.{M}.stability', 'Устойчивость: %s%%', 'Stability: %s%%')
+t(f'tooltip.{M}.shield.buckler', 'Поднятый, не мешает силам возвращаться', 'Held up, it does not slow the return of stamina')
+t(f'tooltip.{M}.shield.light', 'Лёгкий: вдвое легче щита стражника', "Light: half the weight of a guard's shield")
+t(f'tooltip.{M}.shield.board', 'Отбрасывает того, кто по нему ударил', 'Throws back whoever strikes it')
 t(f'tooltip.{M}.catalyst.sorcery', 'Катализатор чародейства', 'Catalyst of sorcery')
 t(f'tooltip.{M}.catalyst.miracle', 'Катализатор чудес', 'Catalyst of miracles')
 t(f'tooltip.{M}.catalyst.pyromancy', 'Катализатор пиромантии', 'Catalyst of pyromancy')
@@ -156,7 +163,11 @@ t(f'spell.{M}.heavy_soul_shard.desc', 'Медленный и тяжёлый: б�
 t(f'spell.{M}.mend.desc', 'Лечит после короткой молитвы', 'Heals after a short prayer')
 t(f'spell.{M}.rebuke.desc', 'Отбрасывает всех, кто рядом', 'Throws back everyone nearby')
 t(f'spell.{M}.fire_orb.desc', 'Ком огня, рвётся там, где упадёт', 'A ball of fire that bursts where it lands')
-t(f'spell.{M}.flare.desc', 'Язык пламени прямо из ладони', 'A tongue of flame straight from the palm')
+t(f'spell.{M}.flare.desc', 'Язык пламени из ладони на три шага; обходит щит', 'A tongue of flame three paces from the palm; it goes round a shield')
+t(f'spell.{M}.soul_scatter.desc', 'Пять осколков веером: вблизи в цель идут все', 'Five shards in a fan: up close all of them land')
+t(f'spell.{M}.root_snare.desc', 'Корень выходит под тем, на кого смотришь: бьёт и держит', 'A root comes up under whoever you look at: it strikes and holds')
+t(f'spell.{M}.marsh_fire.desc', 'Медленный огонёк: сам сворачивает к врагу и долго горит на нём', 'A slow flame: it bends its own way to an enemy and burns on it for long')
+t(f'spell.{M}.hot_wax.desc', 'Струя воска из ладони: жжёт слабо, зато схватывается на ногах', 'A gush of wax from the palm: it burns little, but sets on the legs')
 
 t(f'message.{M}.need_catalyst.sorcery', 'Нужен посох в другой руке', 'You need a staff in the other hand')
 t(f'message.{M}.need_catalyst.miracle', 'Нужны чётки в другой руке', 'You need prayer beads in the other hand')

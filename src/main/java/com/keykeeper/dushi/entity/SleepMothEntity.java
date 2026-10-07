@@ -67,7 +67,7 @@ public class SleepMothEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 260;
+        return 310;
     }
 
     @Override

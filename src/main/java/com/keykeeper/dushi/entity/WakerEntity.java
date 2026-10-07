@@ -67,7 +67,7 @@ public class WakerEntity extends UnsleepingEntity {
 
     @Override
     public int soulReward() {
-        return 850;
+        return 1000;
     }
 
     @Override

@@ -69,7 +69,7 @@ public class WaxenEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 1100;
+        return 1300;
     }
 
     @Override

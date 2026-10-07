@@ -60,6 +60,16 @@
           ]
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:marsh_fire",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

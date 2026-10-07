@@ -40,6 +40,16 @@
           ]
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "vsratie_dushi:soul_scatter",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

@@ -294,13 +294,21 @@ public class Dushi {
      * @param stability share of the blow's force that does NOT cost stamina, 0..1
      */
     private static DeferredItem<Item> shield(String name, float reduction, float stability, int durability, Rarity rarity) {
+        return shield(name, reduction, stability, -1.0F, null, rarity);
+    }
+
+    /**
+     * @param weight what it weighs, or a negative number for the weight its stability gives it
+     * @param trait  what it does that other shields do not (the key of its line; the doing is in SoulMechanics), or null
+     */
+    private static DeferredItem<Item> shield(String name, float reduction, float stability, float weight, String trait, Rarity rarity) {
         DeferredItem<Item> item = ITEMS.registerItem(name, props -> new com.keykeeper.dushi.item.GuardShieldItem(props.stacksTo(1)
                 .rarity(rarity).equippableUnswappable(net.minecraft.world.entity.EquipmentSlot.OFFHAND).setNoCombineRepair()
                 .delayedComponent(DataComponents.BLOCKS_ATTACKS, lookup -> new BlocksAttacks(0.15F, 1.0F,
                         List.of(new BlocksAttacks.DamageReduction(100.0F, Optional.empty(), 0.0F, reduction)),
                         new BlocksAttacks.ItemDamageFunction(3.0F, 0.0F, 0.0F),
                         Optional.of(lookup.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypeTags.BYPASSES_SHIELD)),
-                        Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK))), stability));
+                        Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK))), stability, weight, trait));
         SHIELDS.add(item);
         return item;
     }
@@ -309,6 +317,12 @@ public class Dushi {
     public static final DeferredItem<Item> ROUND_SHIELD = shield("round_shield", 0.75F, 0.45F, 220, Rarity.COMMON);
     public static final DeferredItem<Item> GUARD_SHIELD = shield("guard_shield", 0.9F, 0.6F, 400, Rarity.COMMON);
     public static final DeferredItem<Item> TOWER_SHIELD = shield("tower_shield", 1.0F, 0.8F, 700, Rarity.UNCOMMON);
+    /** A carver's buckler, no bigger than a plate: it stops little, but an arm that holds it up does not tire - stamina comes back behind it as if it were down. */
+    public static final DeferredItem<Item> CARVER_BUCKLER = shield("carver_buckler", 0.7F, 0.4F, 3.0F, "buckler", Rarity.UNCOMMON);
+    /** The Mire's: pike scales on a frame of withe. Nearly a guard's shield, at half the weight. */
+    public static final DeferredItem<Item> SCALE_SHIELD = shield("scale_shield", 0.85F, 0.55F, 4.0F, "light", Rarity.UNCOMMON);
+    /** A waker's board, carried on the arm: whoever strikes it is thrown back by it. */
+    public static final DeferredItem<Item> WAKER_BOARD = shield("waker_board", 0.9F, 0.65F, -1.0F, "board", Rarity.UNCOMMON);
 
     // ------------------------------------------------------------------ armour
 

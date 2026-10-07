@@ -203,10 +203,18 @@ public final class PlayerSoul {
         return level;
     }
 
-    /** Souls needed to train one more point at the current level. */
+    /**
+     * Souls needed to train one more point at the current level: it grows with the square of the level, not by a share of
+     * itself. (It used to grow by a tenth every level: the same up to the thirties, and out of all reach of what the dead
+     * leave from the fifties on.) What the map's places pay is tuned to this: see tools/balance.py.
+     */
     public int levelCost() {
-        int level = this.level();
-        return (int) Math.floor(100.0 * Math.pow(1.1, level - 1)) + 25 * (level - 1);
+        return levelCost(this.level());
+    }
+
+    public static int levelCost(int level) {
+        int past = level - 1;
+        return 100 + 20 * past + 2 * past * past;
     }
 
     public float maxStamina() {

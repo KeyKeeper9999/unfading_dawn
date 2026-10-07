@@ -207,6 +207,7 @@ public class UnhewnEntity extends SoulsMob {
         super.dropCustomDeathLoot(level, source, killedByPlayer);
         this.leave(level, Dushi.IRON_WEDGE.get(), 0, 2);
         this.leaveMaybe(level, Dushi.GREAT_SOUL.get(), 0.12F);
+        this.leaveMaybe(level, Dushi.CARVER_BUCKLER.get(), 0.08F);
     }
 
     @Override

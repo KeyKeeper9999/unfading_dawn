@@ -98,6 +98,9 @@ public final class Forge {
             add(list, Dushi.ROUND_SHIELD, 100, scrap(2), cloth(2));
             add(list, Dushi.GUARD_SHIELD, 400, scrap(6));
             add(list, Dushi.TOWER_SHIELD, 0, scrap(12), new Part(Dushi.GREAT_SOUL, 1));
+            add(list, Dushi.CARVER_BUCKLER, 500, new Part(Dushi.IRON_WEDGE, 2), scrap(2));
+            add(list, Dushi.SCALE_SHIELD, 700, new Part(Dushi.BONE_SCALE, 5), new Part(Dushi.WITHE, 2));
+            add(list, Dushi.WAKER_BOARD, 900, new Part(Dushi.LINEN, 2), new Part(Dushi.WAX, 2));
             shelf = Category.ARMOUR;
             // armour: rags of cloth, mail of scrap, plate hammered over the mail, vestments of cloth and a soul
             int[] shape = {2, 4, 3, 2};
@@ -133,6 +136,11 @@ public final class Forge {
             add(list, Dushi.SPELLS.get(Spell.HEAVY_SOUL_SHARD), 500, new Part(Dushi.GREAT_SOUL, 1));
             add(list, Dushi.SPELLS.get(Spell.REBUKE), 300, new Part(Dushi.NAMELESS_SOUL, 2));
             add(list, Dushi.SPELLS.get(Spell.FIRE_ORB), 500, new Part(Dushi.GREAT_SOUL, 1));
+            // what the later places taught
+            add(list, Dushi.SPELLS.get(Spell.SOUL_SCATTER), 800, new Part(Dushi.GREAT_SOUL, 1), new Part(Dushi.IRON_WEDGE, 1));
+            add(list, Dushi.SPELLS.get(Spell.ROOT_SNARE), 900, new Part(Dushi.WITHE, 4), new Part(Dushi.NAMELESS_SOUL, 2));
+            add(list, Dushi.SPELLS.get(Spell.MARSH_FIRE), 900, new Part(Dushi.WITHE, 2), new Part(Dushi.GREAT_SOUL, 1));
+            add(list, Dushi.SPELLS.get(Spell.HOT_WAX), 1000, new Part(Dushi.WAX, 4), new Part(Dushi.GREAT_SOUL, 1));
             shelf = Category.SUPPLIES;
             add(list, Dushi.TAR_POT, 2, 50, cloth(1));
             add(list, Dushi.POWDER_POT, 2, 150, cloth(1), new Part(Dushi.IRON_WEDGE, 1));
