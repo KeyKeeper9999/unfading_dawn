@@ -47,7 +47,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * A player who has rested at a hearth can come back to it from any other (see {@link #travel}).
  */
 public class HearthBlock extends Block {
-    /** What a hearth of a map is called in the list of hearths to travel to (the text is hearth.vsratie_dushi.ID). */
+    /** What a hearth of a map is called in the list of hearths to travel to (the text is hearth.unfading_dawn.ID). */
     public enum Site implements StringRepresentable {
         /** A hearth somebody set down themselves: it is told from others by where it stands. */
         NONE("none"),
@@ -93,7 +93,7 @@ public class HearthBlock extends Block {
                 level.setBlock(pos, state.setValue(LIT, true), Block.UPDATE_ALL);
                 serverLevel.sendParticles(ParticleTypes.FLAME, pos.getX() + 0.5, pos.getY() + 0.9, pos.getZ() + 0.5, 40, 0.25, 0.3, 0.25, 0.04);
                 serverLevel.sendParticles(ParticleTypes.LAVA, pos.getX() + 0.5, pos.getY() + 0.9, pos.getZ() + 0.5, 6, 0.2, 0.1, 0.2, 0.0);
-                PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("banner.vsratie_dushi.hearth_lit", Net.Banner.PALE, "ui.hearth_lit"));
+                PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("banner.unfading_dawn.hearth_lit", Net.Banner.PALE, "ui.hearth_lit"));
             }
             rest(serverLevel, pos, serverPlayer, true);
         }
@@ -115,7 +115,7 @@ public class HearthBlock extends Block {
         BlockPos hearth = BlockPos.of(rest.hearth());
         if (to == null || !to.getBlockState(hearth).is(Dushi.HEARTH.get())) {
             soul.rests.remove(index);                      // somebody took it away
-            player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.hearth_gone"));
+            player.sendOverlayMessage(Component.translatable("message.unfading_dawn.hearth_gone"));
             return false;
         }
         ServerLevel from = player.level();
@@ -145,7 +145,7 @@ public class HearthBlock extends Block {
                 if (!player.getInventory().add(flask)) {
                     player.spawnAtLocation(level, flask);
                 }
-                player.sendSystemMessage(Component.translatable("message.vsratie_dushi.flask_given"));
+                player.sendSystemMessage(Component.translatable("message.unfading_dawn.flask_given"));
             }
         }
         FlaskShardItem.meltAll(level, player);

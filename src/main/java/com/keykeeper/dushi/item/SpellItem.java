@@ -50,7 +50,7 @@ public class SpellItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (!this.hasCatalyst(player, hand)) {
             if (!level.isClientSide()) {
-                player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.need_catalyst." + this.spell.school.key()));
+                player.sendOverlayMessage(Component.translatable("message.unfading_dawn.need_catalyst." + this.spell.school.key()));
             }
             return InteractionResult.FAIL;
         }
@@ -133,8 +133,8 @@ public class SpellItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("spell.vsratie_dushi." + this.spell.id + ".desc").withStyle(ChatFormatting.GRAY));
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.school." + this.spell.school.key()).withStyle(ChatFormatting.DARK_AQUA));
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.casts", castsLeft(stack), stack.getMaxDamage() - 1).withStyle(ChatFormatting.DARK_GREEN));
+        builder.accept(Component.translatable("spell.unfading_dawn." + this.spell.id + ".desc").withStyle(ChatFormatting.GRAY));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.school." + this.spell.school.key()).withStyle(ChatFormatting.DARK_AQUA));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.casts", castsLeft(stack), stack.getMaxDamage() - 1).withStyle(ChatFormatting.DARK_GREEN));
     }
 }

@@ -128,7 +128,7 @@ public final class SoulMechanics {
             for (ServerPlayer player : level.players()) {
                 if (player.isAlive() && player.distanceToSqr(victim) <= BOSS_REWARD_RANGE * BOSS_REWARD_RANGE) {
                     giveSouls(player, Math.round(souls * Charm.COFFIN_NAIL.more(player)));
-                    PacketDistributor.sendToPlayer(player, new Net.Banner("banner.vsratie_dushi.boss_defeated", Net.Banner.GOLD, "ui.boss_defeated"));
+                    PacketDistributor.sendToPlayer(player, new Net.Banner("banner.unfading_dawn.boss_defeated", Net.Banner.GOLD, "ui.boss_defeated"));
                 }
             }
         } else if (victim.getKillCredit() instanceof ServerPlayer player) {
@@ -251,7 +251,7 @@ public final class SoulMechanics {
                 hour(level, soul.hearthHour);
             }
             if (soul.lostSouls > 0) {
-                player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.souls_left", soul.lostSouls));
+                player.sendOverlayMessage(Component.translatable("message.unfading_dawn.souls_left", soul.lostSouls));
             }
         }
     }
@@ -322,7 +322,7 @@ public final class SoulMechanics {
             if (at.getBlock() instanceof PlaceNameBlock) {
                 PlaceNameBlock.Place place = at.getValue(PlaceNameBlock.PLACE);
                 if (place.named && soul.discover(place.id)) {
-                    PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("place.vsratie_dushi." + place.id, Net.Banner.PALE, "ui.place"));
+                    PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("place.unfading_dawn." + place.id, Net.Banner.PALE, "ui.place"));
                 }
                 // Every place has its hour; time stands still there, so the clock is simply set.
                 hour(serverPlayer.level(), place.hour);
@@ -419,7 +419,7 @@ public final class SoulMechanics {
             return;
         }
         if (++soul.undertow == 1) {
-            player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.undertow"));
+            player.sendOverlayMessage(Component.translatable("message.unfading_dawn.undertow"));
             level.playSound(null, player.getX(), player.getY(), player.getZ(), Dushi.sound("player.undertow"), net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         Vec3 motion = player.getDeltaMovement();
@@ -454,7 +454,7 @@ public final class SoulMechanics {
             speed.removeModifier(OVERBURDENED);
             if (over) {
                 speed.addTransientModifier(new AttributeModifier(OVERBURDENED, -0.35, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-                player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.overburdened"));
+                player.sendOverlayMessage(Component.translatable("message.unfading_dawn.overburdened"));
             }
         }
     }

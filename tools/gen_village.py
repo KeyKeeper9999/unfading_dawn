@@ -466,7 +466,7 @@ class Village:
             b.set(cx + 1, gy + 4, z, stairs('stone_brick', 'west', 'top'))
         grate = [(x, y, gz + 1) for x in range(cx - 1, cx + 2) for y in range(gy + 1, gy + 5) if b.free(x, y, gz + 1)]
         for cell in grate:
-            b.set(*cell, 'vsratie_dushi:locked_gate[axis=x,lock=shore]')
+            b.set(*cell, 'unfading_dawn:locked_gate[axis=x,lock=shore]')
         b.seals['shore_key'] = grate
         for x in (cx - 2, cx + 2):                               # a lamp either side of it, on the yard's face of the wall
             b.set(x, gy + 4, gz - 1, 'minecraft:spruce_fence')
@@ -789,7 +789,7 @@ class Village:
             b.set(x, gy + 4, z0 + 2, 'minecraft:stone_brick_stairs[facing=south,half=top]')
         cells = [(x0 + 1, y, z) for z in range(z0, z0 + T) for y in range(gy + 1, gy + 5)]
         for cell in cells:
-            b.set(*cell, 'vsratie_dushi:locked_gate[axis=z,lock=quarry]')
+            b.set(*cell, 'unfading_dawn:locked_gate[axis=z,lock=quarry]')
         b.set(x0 + 1, gy + 4, z0, 'minecraft:stone_brick_stairs[facing=north,half=top]')
         b.set(x0 + 1, gy + 4, z0 + 2, 'minecraft:stone_brick_stairs[facing=south,half=top]')
         cells = [c for c in cells if 'locked_gate' in b.get(*c)]
@@ -824,7 +824,7 @@ class Village:
             b.set(x, gy + 4, z0 + 2, 'minecraft:stone_brick_stairs[facing=south,half=top]')
         cells = [(x0 + 1, y, z) for z in range(z0, z0 + T) for y in range(gy + 1, gy + 5)]
         for cell in cells:
-            b.set(*cell, 'vsratie_dushi:locked_gate[axis=z,lock=mire]')
+            b.set(*cell, 'unfading_dawn:locked_gate[axis=z,lock=mire]')
         b.set(x0 + 1, gy + 4, z0, 'minecraft:stone_brick_stairs[facing=north,half=top]')
         b.set(x0 + 1, gy + 4, z0 + 2, 'minecraft:stone_brick_stairs[facing=south,half=top]')
         cells = [c for c in cells if 'locked_gate' in b.get(*c)]

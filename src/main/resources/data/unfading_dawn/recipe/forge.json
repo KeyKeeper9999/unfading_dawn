@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "N": "unfading_dawn:nameless_soul",
+    "A": "minecraft:anvil",
+    "L": "#minecraft:logs"
+  },
+  "pattern": [
+    "N",
+    "A",
+    "L"
+  ],
+  "result": {
+    "id": "unfading_dawn:forge"
+  }
+}

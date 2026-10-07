@@ -76,7 +76,7 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 @Mod(Dushi.MODID)
 public class Dushi {
-    public static final String MODID = "vsratie_dushi";
+    public static final String MODID = "unfading_dawn";
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
@@ -607,7 +607,7 @@ public class Dushi {
     // ------------------------------------------------------------------ creative tab
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = TABS.register("main", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.vsratie_dushi"))
+            .title(Component.translatable("itemGroup.unfading_dawn"))
             .icon(() -> WARMTH_FLASK.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(HEARTH_ITEM.get());

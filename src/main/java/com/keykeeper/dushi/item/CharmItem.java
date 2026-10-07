@@ -47,7 +47,7 @@ public class CharmItem extends Item {
                 give(serverLevel, player, hand, new ItemStack(Dushi.CHARMS.get(before).get()));
             }
             serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARMOR_EQUIP_CHAIN.value(), SoundSource.PLAYERS, 0.8F, 1.3F);
-            player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.charm_on", name));
+            player.sendOverlayMessage(Component.translatable("message.unfading_dawn.charm_on", name));
         }
         return InteractionResult.SUCCESS;
     }
@@ -73,7 +73,7 @@ public class CharmItem extends Item {
             player.spawnAtLocation(player.level(), stack);
         }
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARMOR_EQUIP_CHAIN.value(), SoundSource.PLAYERS, 0.8F, 0.9F);
-        player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.charm_off", name));
+        player.sendOverlayMessage(Component.translatable("message.unfading_dawn.charm_off", name));
         return true;
     }
 
@@ -87,7 +87,7 @@ public class CharmItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.charm." + this.charm.id, this.charm.amount).withStyle(ChatFormatting.DARK_AQUA));
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.charm_use").withStyle(ChatFormatting.GRAY));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.charm." + this.charm.id, this.charm.amount).withStyle(ChatFormatting.DARK_AQUA));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.charm_use").withStyle(ChatFormatting.GRAY));
     }
 }

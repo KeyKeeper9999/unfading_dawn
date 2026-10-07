@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "axis=x,sealed=false": {
+      "model": "unfading_dawn:block/fog_gate"
+    },
+    "axis=z,sealed=false": {
+      "model": "unfading_dawn:block/fog_gate",
+      "y": 90
+    },
+    "axis=x,sealed=true": {
+      "model": "unfading_dawn:block/fog_seal"
+    },
+    "axis=z,sealed=true": {
+      "model": "unfading_dawn:block/fog_seal",
+      "y": 90
+    }
+  }
+}

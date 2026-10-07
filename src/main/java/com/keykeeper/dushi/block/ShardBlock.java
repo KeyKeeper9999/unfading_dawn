@@ -46,7 +46,7 @@ public class ShardBlock extends Block {
             level.removeBlock(pos, false);
             serverLevel.sendParticles(ParticleTypes.FLAME, pos.getX() + 0.5, pos.getY() + 0.4, pos.getZ() + 0.5, 24, 0.2, 0.2, 0.2, 0.03);
             level.playSound(null, pos, Dushi.sound("ui.souls_retrieve"), SoundSource.BLOCKS, 0.9F, 1.2F);
-            player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.shard_found"));
+            player.sendOverlayMessage(Component.translatable("message.unfading_dawn.shard_found"));
         }
         return InteractionResult.SUCCESS;
     }

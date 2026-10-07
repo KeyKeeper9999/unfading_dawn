@@ -27,7 +27,7 @@ public class TravelScreen extends Screen {
     private int first;
 
     public TravelScreen() {
-        super(Component.translatable("screen.vsratie_dushi.travel"));
+        super(Component.translatable("screen.unfading_dawn.travel"));
     }
 
     private int left() {
@@ -41,9 +41,9 @@ public class TravelScreen extends Screen {
     /** What a hearth is called: the name its place has, or, for one somebody set down, where it stands. */
     static Component name(Net.Stop stop) {
         if (stop.site().equals("none")) {
-            return Component.translatable("hearth.vsratie_dushi.none", stop.pos().getX(), stop.pos().getY(), stop.pos().getZ());
+            return Component.translatable("hearth.unfading_dawn.none", stop.pos().getX(), stop.pos().getY(), stop.pos().getZ());
         }
-        return Component.translatable("hearth.vsratie_dushi." + stop.site());
+        return Component.translatable("hearth.unfading_dawn." + stop.site());
     }
 
     @Override
@@ -55,7 +55,7 @@ public class TravelScreen extends Screen {
             if (this.stops.get(index).here()) {
                 continue;                                  // where the button would be, the row says "you are here"
             }
-            this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.travel.go"), button -> {
+            this.addRenderableWidget(Button.builder(Component.translatable("screen.unfading_dawn.travel.go"), button -> {
                 ClientPacketDistributor.sendToServer(new Net.Travel(index));
                 this.onClose();
             }).bounds(left + PANEL_WIDTH - 62, top + 30 + row * ROW_HEIGHT, 50, 20).build());
@@ -68,7 +68,7 @@ public class TravelScreen extends Screen {
             up.active = this.first > 0;
             down.active = this.first + ROWS < this.stops.size();
         }
-        this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.travel.back"), button -> this.minecraft.gui.setScreen(new HearthScreen()))
+        this.addRenderableWidget(Button.builder(Component.translatable("screen.unfading_dawn.travel.back"), button -> this.minecraft.gui.setScreen(new HearthScreen()))
                 .bounds(left + PANEL_WIDTH - 120, top + PANEL_HEIGHT - 28, 108, 20).build());
     }
 
@@ -96,11 +96,11 @@ public class TravelScreen extends Screen {
             }
             graphics.text(this.font, name(stop), left + 12, y + 6, stop.here() ? GOLD : PALE);
             if (stop.here()) {
-                Component here = Component.translatable("screen.vsratie_dushi.travel.here");
+                Component here = Component.translatable("screen.unfading_dawn.travel.here");
                 graphics.text(this.font, here, right - 12 - this.font.width(here), y + 6, DIM);
             }
         }
-        graphics.centeredText(this.font, Component.translatable("screen.vsratie_dushi.travel.hint"), this.width / 2, top + 34 + ROWS * ROW_HEIGHT, DIM);
+        graphics.centeredText(this.font, Component.translatable("screen.unfading_dawn.travel.hint"), this.width / 2, top + 34 + ROWS * ROW_HEIGHT, DIM);
     }
 
     @Override

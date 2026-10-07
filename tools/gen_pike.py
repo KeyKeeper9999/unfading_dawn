@@ -5,7 +5,7 @@ import sys
 
 from modelkit import Box, Model, Painter, blotch, mix, shade, sheet
 
-A = 'src/main/resources/assets/vsratie_dushi'
+A = 'src/main/resources/assets/unfading_dawn'
 JAVA = 'src/main/java/com/keykeeper/dushi/client/BonePikeModel.java'
 
 M = Model(128, 64)

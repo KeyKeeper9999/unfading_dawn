@@ -1,12 +1,12 @@
 {
   "values": [
-    "vsratie_dushi:prisoner_rags",
-    "vsratie_dushi:guard_hauberk",
-    "vsratie_dushi:rust_cuirass",
-    "vsratie_dushi:chaplain_cassock",
-    "vsratie_dushi:vigil_shift",
-    "vsratie_dushi:mason_apron",
-    "vsratie_dushi:scale_coat",
-    "vsratie_dushi:oilskin_smock"
+    "unfading_dawn:prisoner_rags",
+    "unfading_dawn:guard_hauberk",
+    "unfading_dawn:rust_cuirass",
+    "unfading_dawn:chaplain_cassock",
+    "unfading_dawn:vigil_shift",
+    "unfading_dawn:mason_apron",
+    "unfading_dawn:scale_coat",
+    "unfading_dawn:oilskin_smock"
   ]
 }

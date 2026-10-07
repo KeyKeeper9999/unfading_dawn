@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "unfading_dawn:nameless_soul",
+    "#minecraft:coals"
+  ],
+  "result": {
+    "id": "unfading_dawn:return_ember",
+    "count": 2
+  }
+}

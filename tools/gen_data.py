@@ -6,7 +6,7 @@ import json
 import os
 
 DATA = 'src/main/resources/data'
-MOD = 'vsratie_dushi'
+MOD = 'unfading_dawn'
 M = f'{MOD}:'
 MC = 'minecraft:'
 

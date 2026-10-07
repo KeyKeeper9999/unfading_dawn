@@ -35,9 +35,9 @@ public class GuardShieldItem extends ShieldItem {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.stability", Math.round(this.stability * 100.0F)).withStyle(ChatFormatting.GRAY));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.stability", Math.round(this.stability * 100.0F)).withStyle(ChatFormatting.GRAY));
         if (this.trait != null) {
-            builder.accept(Component.translatable("tooltip.vsratie_dushi.shield." + this.trait).withStyle(ChatFormatting.DARK_AQUA));
+            builder.accept(Component.translatable("tooltip.unfading_dawn.shield." + this.trait).withStyle(ChatFormatting.DARK_AQUA));
         }
     }
 }

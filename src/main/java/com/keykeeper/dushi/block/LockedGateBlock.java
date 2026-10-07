@@ -117,10 +117,10 @@ public class LockedGateBlock extends Block {
                 open(serverLevel, pos);
                 serverLevel.playSound(null, pos, SoundEvents.IRON_DOOR_OPEN, SoundSource.BLOCKS, 1.4F, 0.6F);
                 serverLevel.playSound(null, pos, SoundEvents.CHAIN_BREAK, SoundSource.BLOCKS, 1.2F, 0.7F);
-                player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.gate_opened." + lock.id));
+                player.sendOverlayMessage(Component.translatable("message.unfading_dawn.gate_opened." + lock.id));
             } else {
                 serverLevel.playSound(null, pos, SoundEvents.IRON_TRAPDOOR_CLOSE, SoundSource.BLOCKS, 1.0F, 0.7F);
-                player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.gate_locked." + lock.id));
+                player.sendOverlayMessage(Component.translatable("message.unfading_dawn.gate_locked." + lock.id));
             }
         }
         return InteractionResult.SUCCESS;

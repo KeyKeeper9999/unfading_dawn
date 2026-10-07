@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "unfading_dawn:block/hearth"
+    },
+    "lit=true": {
+      "model": "unfading_dawn:block/hearth_lit"
+    }
+  }
+}

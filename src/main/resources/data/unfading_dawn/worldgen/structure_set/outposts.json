@@ -1,0 +1,18 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 564738291,
+    "spacing": 14,
+    "separation": 6,
+    "exclusion_zone": {
+      "other_set": "unfading_dawn:stockades",
+      "chunk_count": 6
+    }
+  },
+  "structures": [
+    {
+      "structure": "unfading_dawn:outpost",
+      "weight": 1
+    }
+  ]
+}

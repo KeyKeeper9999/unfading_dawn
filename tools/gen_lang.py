@@ -4,7 +4,7 @@ import json
 import os
 
 A = 'src/main/resources/assets'
-M = 'vsratie_dushi'
+M = 'unfading_dawn'
 T = {}
 
 

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "wet=true": {
+      "model": "unfading_dawn:block/sludge"
+    },
+    "wet=false": {
+      "model": "unfading_dawn:block/sludge"
+    }
+  }
+}

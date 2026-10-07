@@ -1,0 +1,7 @@
+{
+  "parent": "unfading_dawn:block/fog_gate",
+  "textures": {
+    "t": "unfading_dawn:block/fog_seal",
+    "particle": "unfading_dawn:block/fog_seal"
+  }
+}

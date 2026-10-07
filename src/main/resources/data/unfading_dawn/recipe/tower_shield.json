@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": "unfading_dawn:rust_scrap",
+    "L": "minecraft:leather"
+  },
+  "pattern": [
+    "RRR",
+    "RLR",
+    "RRR"
+  ],
+  "result": {
+    "id": "unfading_dawn:tower_shield"
+  }
+}

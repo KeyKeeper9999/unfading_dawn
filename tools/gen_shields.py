@@ -11,8 +11,8 @@ import numpy as np
 from jsonmodel import JsonModel
 from modelkit import blotch, mix, shade, sheet
 
-A = 'src/main/resources/assets/vsratie_dushi'
-MOD = 'vsratie_dushi'
+A = 'src/main/resources/assets/unfading_dawn'
+MOD = 'unfading_dawn'
 
 WOOD = (132, 94, 58)
 WOOD_D = (98, 68, 42)

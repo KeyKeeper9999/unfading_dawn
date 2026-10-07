@@ -42,10 +42,10 @@ public final class GearTooltips {
         Gear.Weapon weapon = Gear.weapon(stack);
         if (!(stack.getItem() instanceof WeaponItem)) {
             if (weapon != null) {
-                lines.add(Component.translatable("tooltip.vsratie_dushi.scaling", WeaponItem.grade(weapon.strength()), WeaponItem.grade(weapon.dexterity()))
+                lines.add(Component.translatable("tooltip.unfading_dawn.scaling", WeaponItem.grade(weapon.strength()), WeaponItem.grade(weapon.dexterity()))
                         .withStyle(ChatFormatting.GRAY));
-                lines.add(Component.translatable("tooltip.vsratie_dushi.stamina", Math.round(weapon.stamina())).withStyle(ChatFormatting.DARK_GREEN));
-                lines.add(Component.translatable("tooltip.vsratie_dushi.backstab", String.valueOf(weapon.backstab())).withStyle(ChatFormatting.DARK_RED));
+                lines.add(Component.translatable("tooltip.unfading_dawn.stamina", Math.round(weapon.stamina())).withStyle(ChatFormatting.DARK_GREEN));
+                lines.add(Component.translatable("tooltip.unfading_dawn.backstab", String.valueOf(weapon.backstab())).withStyle(ChatFormatting.DARK_RED));
             }
         }
         // What the weapon does in these hands: its own damage and the damage with this player's strength and dexterity.
@@ -54,32 +54,32 @@ public final class GearTooltips {
             double base = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY)
                     .compute(Attributes.ATTACK_DAMAGE, 1.0, EquipmentSlot.MAINHAND);
             double mine = base * PlayerSoul.of(player).weaponBonus(weapon.strength(), weapon.dexterity());
-            lines.add(Component.translatable("tooltip.vsratie_dushi.damage", number(base), number(mine), number(mine * Gear.backstab(player, weapon)))
+            lines.add(Component.translatable("tooltip.unfading_dawn.damage", number(base), number(mine), number(mine * Gear.backstab(player, weapon)))
                     .withStyle(ChatFormatting.GOLD));
         }
         if (stack.is(com.keykeeper.dushi.Dushi.GREAT_CANDLE.get())) {
-            lines.add(Component.translatable("tooltip.vsratie_dushi.great_candle", Math.round(Gear.CANDLE_BURNS)).withStyle(ChatFormatting.DARK_AQUA));
+            lines.add(Component.translatable("tooltip.unfading_dawn.great_candle", Math.round(Gear.CANDLE_BURNS)).withStyle(ChatFormatting.DARK_AQUA));
         }
         if (Gear.isBow(stack)) {
-            lines.add(Component.translatable("tooltip.vsratie_dushi.bow", WeaponItem.grade(Gear.BOW_SCALING)).withStyle(ChatFormatting.GRAY));
+            lines.add(Component.translatable("tooltip.unfading_dawn.bow", WeaponItem.grade(Gear.BOW_SCALING)).withStyle(ChatFormatting.GRAY));
             if (player != null) {
                 int percent = Math.round(100.0F * Gear.ARROW_DEXTERITY * PlayerSoul.of(player).stats[PlayerSoul.DEXTERITY]);
-                lines.add(Component.translatable("tooltip.vsratie_dushi.bow.mine", percent).withStyle(ChatFormatting.GOLD));
+                lines.add(Component.translatable("tooltip.unfading_dawn.bow.mine", percent).withStyle(ChatFormatting.GOLD));
             }
         }
         if (!(stack.getItem() instanceof GuardShieldItem)) {
             float stability = Gear.stability(stack);
             if (stability >= 0.0F) {
-                lines.add(Component.translatable("tooltip.vsratie_dushi.stability", Math.round(stability * 100.0F)).withStyle(ChatFormatting.GRAY));
+                lines.add(Component.translatable("tooltip.unfading_dawn.stability", Math.round(stability * 100.0F)).withStyle(ChatFormatting.GRAY));
             }
         }
         ArmorSet set = ArmorSet.of(stack.getItem());
         if (set != null && set.bonus > 0.0F) {
-            lines.add(Component.translatable("tooltip.vsratie_dushi.set." + set.id, Math.round(set.bonus * 100.0F)).withStyle(ChatFormatting.DARK_AQUA));
+            lines.add(Component.translatable("tooltip.unfading_dawn.set." + set.id, Math.round(set.bonus * 100.0F)).withStyle(ChatFormatting.DARK_AQUA));
         }
         float weight = Gear.weight(stack);
         if (weight > 0.0F) {
-            lines.add(Component.translatable("tooltip.vsratie_dushi.weight", String.valueOf(Math.round(weight * 10.0F) / 10.0F)).withStyle(ChatFormatting.DARK_GRAY));
+            lines.add(Component.translatable("tooltip.unfading_dawn.weight", String.valueOf(Math.round(weight * 10.0F) / 10.0F)).withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 }

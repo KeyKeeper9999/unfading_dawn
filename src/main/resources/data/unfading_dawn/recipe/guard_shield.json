@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "P": "#minecraft:planks",
+    "I": "minecraft:iron_ingot",
+    "L": "minecraft:leather"
+  },
+  "pattern": [
+    "IPI",
+    "ILI",
+    " I "
+  ],
+  "result": {
+    "id": "unfading_dawn:guard_shield"
+  }
+}

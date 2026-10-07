@@ -6,7 +6,7 @@ import sys
 
 from modelkit import Box, Model, Painter, blotch, mix, shade, sheet
 
-A = 'src/main/resources/assets/vsratie_dushi'
+A = 'src/main/resources/assets/unfading_dawn'
 JAVA = 'src/main/java/com/keykeeper/dushi/client/CapsizedModel.java'
 
 M = Model(256, 256)

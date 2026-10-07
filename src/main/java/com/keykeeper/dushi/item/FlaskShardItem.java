@@ -35,7 +35,7 @@ public class FlaskShardItem extends Item {
                     stack.shrink(1);
                 }
             } else {
-                player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.flask_shard_useless"));
+                player.sendOverlayMessage(Component.translatable("message.unfading_dawn.flask_shard_useless"));
             }
         }
         return InteractionResult.SUCCESS;
@@ -47,7 +47,7 @@ public class FlaskShardItem extends Item {
             ItemStack flask = player.getInventory().getItem(slot);
             if (flask.getItem() instanceof FlaskItem && FlaskItem.enlarge(flask)) {
                 level.playSound(null, player.getX(), player.getY(), player.getZ(), Dushi.sound("ui.level_up"), SoundSource.PLAYERS, 0.8F, 1.3F);
-                player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.flask_enlarged", FlaskItem.capacity(flask)));
+                player.sendOverlayMessage(Component.translatable("message.unfading_dawn.flask_enlarged", FlaskItem.capacity(flask)));
                 return true;
             }
         }
@@ -69,7 +69,7 @@ public class FlaskShardItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.flask_shard").withStyle(ChatFormatting.GRAY));
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.flask_shard.hearth").withStyle(ChatFormatting.GRAY));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.flask_shard").withStyle(ChatFormatting.GRAY));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.flask_shard.hearth").withStyle(ChatFormatting.GRAY));
     }
 }

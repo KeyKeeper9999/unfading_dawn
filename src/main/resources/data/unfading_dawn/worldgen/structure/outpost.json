@@ -1,0 +1,13 @@
+{
+  "type": "unfading_dawn:plan",
+  "plan": "outpost",
+  "biomes": "#unfading_dawn:has_structure",
+  "step": "surface_structures",
+  "terrain_adaptation": "beard_thin",
+  "spawn_overrides": {
+    "monster": {
+      "bounding_box": "full",
+      "spawns": []
+    }
+  }
+}

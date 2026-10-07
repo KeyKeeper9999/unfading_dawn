@@ -1,8 +1,11 @@
-# The Unfading Dawn (vsratie_dushi)
+# The Unfading Dawn (unfading_dawn)
 
 A souls-like inside Minecraft: NeoForge mod for Minecraft 26.3. The mod is shown as "The Unfading Dawn" (in Russian «Немеркнущий
-рассвет»); `vsratie_dushi` - its first, working name - stays as the mod id, the package and the repository, because every block
-of the saved map is written with it. The owner writes in Russian; texts exist in Russian and English.
+рассвет») and its id is `unfading_dawn`: namespace of every block, item and text, the folders of assets and data, the jar.
+Its first, working name survives only where the game never shows it: the repository (`vsratie_dushi1`) and, in half, the
+Java package `com.keykeeper.dushi`, the class `Dushi` and the `DUSHI_*` switches of the tests. Never bring it back into
+anything a player can see. `tools/rename_mod.py OLD NEW` is how the id was changed (text and paths of every tracked file).
+The owner writes in Russian; texts exist in Russian and English.
 
 The mod is a souls-like "in the spirit of", with its own world, names and designs: it does not copy the characters, bosses,
 items or names of any existing game, and every sound is synthesised from scratch. Keep it that way when adding content.
@@ -16,7 +19,7 @@ Nothing can be built on a machine without access to the NeoForge and Mojang serv
 (`.github/workflows/build.yml`) on every push to `main`. The workflow publishes its results to the `ci-out` branch:
 
 - `build.log` - compiler output;
-- `vsratie_dushi.jar` - the mod (the jar never has a version in its name, so it can simply be overwritten);
+- `unfading_dawn.jar` - the mod (the jar never has a version in its name, so it can simply be overwritten);
 - `server.log` - a dedicated server started with `DUSHI_SELFTEST=1`: `SelfTest.java` spawns every mob, makes them fight iron
   golems, drills every move of every mob, drives a stand-in player through souls, levelling, the flask, spells, the hearth,
   the shop and death, prints `DUSHI SELFTEST ...` lines and stops the server;
@@ -69,7 +72,7 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `block/FogGateBlock` - fog before a boss; `sealed=true` is the amber seal that lets nobody through until the boss of
   that room dies (`lift` clears the nearest fog and every seal within reach of the boss's mark).
 - `block/PlaceNameBlock` - a threshold nobody sees or feels: a player who steps through it is shown the name of the
-  place (`place.vsratie_dushi.<id>` in the texts; the list of places is the enum in the block). Every place has its
+  place (`place.unfading_dawn.<id>` in the texts; the list of places is the enum in the block). Every place has its
   hour, and in a world whose time stands still the threshold sets the clock (`SoulMechanics.hour`); a name is shown
   once, when the player first comes to the place (`PlayerSoul.placesSeen`, by id, saved with the player); `to_night`,
   `to_dusk` and `to_murk` have no name and only do that. No item: a map's builder sets it; with a mob mark in hand it can be seen
@@ -77,7 +80,7 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `block/HearthBlock` - rest, level up, and travel: a player can go from the hearth they sit by to any other they have
   rested at (`HearthBlock.travel`, `client/TravelScreen`; the list is `PlayerSoul.rests`, saved with the player, and is
   sent to the client when the hearth's screen opens). A map's hearth has a name, `site=` in its block state
-  (`HearthBlock.Site`, text `hearth.vsratie_dushi.<id>`): a new hearth of a map needs a new entry there and its text.
+  (`HearthBlock.Site`, text `hearth.unfading_dawn.<id>`): a new hearth of a map needs a new entry there and its text.
   Arriving is resting: the hour of the place comes back with it.
 - `block/LockedGateBlock` (`locked_gate`) - an iron grate across a way that a map keeps shut until a key is found
   somewhere else: whoever touches it with the key among their things opens the whole gate, for good (the key is kept).
@@ -115,7 +118,7 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   later place can use the dead of an earlier one.
 - A player within six blocks of a hearth is not noticed by the dead (`PlayerSoul.atHearth`, `SoulsMob.setTarget`); one
   they are already fighting is not let off by running to it.
-- `world/` - `Plan` reads a building from `data/vsratie_dushi/plan/NAME.txt`, `PlanStructure` picks a level, dry place
+- `world/` - `Plan` reads a building from `data/unfading_dawn/plan/NAME.txt`, `PlanStructure` picks a level, dry place
   and one of four turns, `PlanPiece` sets the blocks. The worldgen JSON only names the plan.
 - `entity/` - `SoulsMob` is the base of every enemy: an attack is a "move" with a wind-up, an impact tick and a recovery,
   known on both sides so the model can show it. `SoulsCombatGoal` walks the mob to its target and lets it choose moves.
@@ -170,7 +173,7 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   it back, and giddy after his whirl, he is `open()` and his hide lets twice as much through) and `CapsizedEntity` (a
   boat on the sand until woken; `housed()` - lying, or sat down under her - is when nothing but planks is struck).
 - `SoulMechanics.undertow` - the sea of the Wharf is waded, not swum: a player in water two blocks deep or more, in the
-  biome `vsratie_dushi:shore`, is warned, held down and taken (a sixth of their health every half second after a moment's
+  biome `unfading_dawn:shore`, is warned, held down and taken (a sixth of their health every half second after a moment's
   grace); the stain is left where they last stood. `waterDepth` counts the column. The map's check knows the same cells
   (`Map.undertow`, filled by `gen_shore.py`), so nothing is "reached" through deep water.
 - `block/ShallowsBlock` (`shallows`; `sea_shallows` is the same thing in the sea's grey, for the Wharf's sands) - a

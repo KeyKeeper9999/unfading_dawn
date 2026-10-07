@@ -1,0 +1,76 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "unfading_dawn:item/grave_spade"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        -90,
+        55
+      ],
+      "translation": [
+        0,
+        6.96,
+        -0.02
+      ],
+      "scale": [
+        1.7,
+        1.7,
+        0.85
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0,
+        90,
+        -55
+      ],
+      "translation": [
+        0,
+        6.96,
+        -0.02
+      ],
+      "scale": [
+        1.7,
+        1.7,
+        0.85
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -90,
+        25
+      ],
+      "translation": [
+        1.13,
+        3.55,
+        1.26
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        0.68
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        90,
+        -25
+      ],
+      "translation": [
+        1.13,
+        3.55,
+        1.26
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        0.68
+      ]
+    }
+  }
+}

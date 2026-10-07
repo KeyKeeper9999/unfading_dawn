@@ -12,8 +12,8 @@ from PIL import Image
 from modelkit import Box, Model, blotch, mix, shade, sheet
 from sprite import Sprite
 
-A = 'src/main/resources/assets/vsratie_dushi'
-MOD = 'vsratie_dushi'
+A = 'src/main/resources/assets/unfading_dawn'
+MOD = 'unfading_dawn'
 
 # name of the suit -> the four item names: helmet, chest, legs, boots (the same as in ArmorSet.java)
 SUITS = {

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "unfading_dawn:item/weeping_mother_spawn_egg"
+  }
+}

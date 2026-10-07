@@ -22,7 +22,7 @@ public class CatalystItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.catalyst." + this.school.key()).withStyle(ChatFormatting.GRAY));
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.catalyst_use").withStyle(ChatFormatting.DARK_GRAY));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.catalyst." + this.school.key()).withStyle(ChatFormatting.GRAY));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.catalyst_use").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

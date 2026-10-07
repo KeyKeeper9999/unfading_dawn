@@ -42,7 +42,7 @@ public class ForgeScreen extends Screen {
     private int scroll;
 
     public ForgeScreen() {
-        super(Component.translatable("screen.vsratie_dushi.forge"));
+        super(Component.translatable("screen.unfading_dawn.forge"));
         this.results = new ItemStack[this.all.size()];
         for (int i = 0; i < this.results.length; i++) {
             this.results[i] = this.all.get(i).result().get();
@@ -96,7 +96,7 @@ public class ForgeScreen extends Screen {
         this.buttons = new Button[visible];
         for (int row = 0; row < visible; row++) {
             int line = row;
-            this.buttons[row] = this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.forge.make"),
+            this.buttons[row] = this.addRenderableWidget(Button.builder(Component.translatable("screen.unfading_dawn.forge.make"),
                     button -> {
                         if (this.scroll + line < this.recipes.size()) {
                             ClientPacketDistributor.sendToServer(new Net.Make(this.recipes.get(this.scroll + line)));
@@ -107,13 +107,13 @@ public class ForgeScreen extends Screen {
         int tabWidth = (PANEL_WIDTH - 16) / categories.length;
         for (int i = 0; i < categories.length; i++) {
             Forge.Category category = categories[i];
-            this.tabs[i] = this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.forge.tab." + category.id),
+            this.tabs[i] = this.addRenderableWidget(Button.builder(Component.translatable("screen.unfading_dawn.forge.tab." + category.id),
                     button -> this.open(category)).bounds(left + 8 + i * tabWidth, top + 34, tabWidth - 2, 20).build());
         }
         int bottom = top + this.panelHeight();
         this.addRenderableWidget(Button.builder(Component.literal("▲"), button -> this.scrollBy(-visible + 1)).bounds(left + 8, bottom - 26, 20, 20).build());
         this.addRenderableWidget(Button.builder(Component.literal("▼"), button -> this.scrollBy(visible - 1)).bounds(left + 30, bottom - 26, 20, 20).build());
-        this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.shop.leave"), button -> this.onClose())
+        this.addRenderableWidget(Button.builder(Component.translatable("screen.unfading_dawn.shop.leave"), button -> this.onClose())
                 .bounds(this.width / 2 - 60, bottom - 26, 120, 20).build());
         this.updateButtons();
     }
@@ -161,7 +161,7 @@ public class ForgeScreen extends Screen {
         graphics.fill(left, top, right, bottom, BACK);
         graphics.centeredText(this.font, this.title, this.width / 2, top + 8, GOLD);
         if (this.minecraft.player != null) {
-            Component souls = Component.translatable("screen.vsratie_dushi.hearth.souls", PlayerSoul.of(this.minecraft.player).souls);
+            Component souls = Component.translatable("screen.unfading_dawn.hearth.souls", PlayerSoul.of(this.minecraft.player).souls);
             graphics.text(this.font, souls, right - 10 - this.font.width(souls), top + 21, SOULS);
         }
         String place = (this.scroll + 1) + "-" + Math.min(this.recipes.size(), this.scroll + this.visible()) + " / " + this.recipes.size();

@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "vsratie_dushi:item/warmth_flask_empty"
-  }
-}

@@ -57,7 +57,7 @@ public class KeykeeperEntity extends PathfinderMob {
             if (!soul.metKeykeeper) {
                 soul.metKeykeeper = true;
                 for (int line = 0; line < FIRST_LINES; line++) {
-                    this.say(serverPlayer, "dialogue.vsratie_dushi.keykeeper.first." + line);
+                    this.say(serverPlayer, "dialogue.unfading_dawn.keykeeper.first." + line);
                 }
                 // Whoever already carries a flask from a hearth gets a soul instead of a second one.
                 if (soul.flaskGiven || SoulMechanics.hasFlask(serverPlayer)) {
@@ -71,7 +71,7 @@ public class KeykeeperEntity extends PathfinderMob {
                 level.sendParticles(ParticleTypes.FLAME, this.getX(), this.getY() + 1.0, this.getZ(), 8, 0.3, 0.2, 0.3, 0.01);
             } else {
                 // After the first meeting he trades: a word of advice and then his wares.
-                this.say(serverPlayer, "dialogue.vsratie_dushi.keykeeper.idle." + this.random.nextInt(IDLE_LINES));
+                this.say(serverPlayer, "dialogue.unfading_dawn.keykeeper.idle." + this.random.nextInt(IDLE_LINES));
                 PacketDistributor.sendToPlayer(serverPlayer, new Net.OpenShop(this.getId()));
             }
         }
@@ -79,7 +79,7 @@ public class KeykeeperEntity extends PathfinderMob {
     }
 
     private void say(ServerPlayer player, String key) {
-        player.sendSystemMessage(Component.translatable("dialogue.vsratie_dushi.line",
+        player.sendSystemMessage(Component.translatable("dialogue.unfading_dawn.line",
                 this.getDisplayName().copy().withStyle(ChatFormatting.GOLD), Component.translatable(key)));
     }
 

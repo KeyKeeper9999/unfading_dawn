@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "unfading_dawn:item/withered_watchman_spawn_egg"
+  }
+}

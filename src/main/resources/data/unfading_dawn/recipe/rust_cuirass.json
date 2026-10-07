@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": "unfading_dawn:rust_scrap",
+    "A": "unfading_dawn:guard_hauberk",
+    "I": "minecraft:iron_ingot"
+  },
+  "pattern": [
+    " R ",
+    "RAR",
+    " I "
+  ],
+  "result": {
+    "id": "unfading_dawn:rust_cuirass"
+  }
+}

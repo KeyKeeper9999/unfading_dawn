@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootTable;
 
 /**
- * A building as a grid of blocks, written by tools/gen_structures.py into data/vsratie_dushi/plan/NAME.txt:
+ * A building as a grid of blocks, written by tools/gen_structures.py into data/unfading_dawn/plan/NAME.txt:
  * a palette of block states (a chest also names its loot table) and one palette index per cell, run-length encoded,
  * layer by layer from the bottom, each layer row by row from north to south, each row from west to east.
  */

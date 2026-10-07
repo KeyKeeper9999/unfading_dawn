@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "unfading_dawn:mason"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "unfading_dawn:mason"
+      }
+    ]
+  }
+}

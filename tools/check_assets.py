@@ -7,9 +7,9 @@ import os
 import re
 import sys
 
-A = 'src/main/resources/assets/vsratie_dushi'
+A = 'src/main/resources/assets/unfading_dawn'
 J = 'src/main/java/com/keykeeper/dushi'
-M = 'vsratie_dushi'
+M = 'unfading_dawn'
 problems = []
 main = open(f'{J}/Dushi.java').read()
 items = set(re.findall(r'(?:weapon|shield|registerItem|registerSimpleItem)\("(\w+)"', main))
@@ -101,7 +101,7 @@ for name, entry in sounds.items():
 for k in set(lang['ru_ru']) ^ set(lang['en_us']):
     problems.append(f'text {k} is not in both languages')
 # recipes, chest loot and plans may only name items and loot tables that exist
-DATA = 'src/main/resources/data/vsratie_dushi'
+DATA = 'src/main/resources/data/unfading_dawn'
 names = set()
 for path in glob.glob(f'{DATA}/recipe/*.json') + glob.glob(f'{DATA}/loot_table/chests/**/*.json', recursive=True):
     for ref in re.findall(M + r':(\w+)', open(path).read()):

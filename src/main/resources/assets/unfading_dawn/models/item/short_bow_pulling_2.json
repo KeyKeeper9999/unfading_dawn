@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/bow",
+  "textures": {
+    "layer0": "unfading_dawn:item/short_bow_pulling_2"
+  }
+}

@@ -30,7 +30,7 @@ public class ShopScreen extends Screen {
     private ItemStack[] stacks;
 
     public ShopScreen() {
-        super(Component.translatable("screen.vsratie_dushi.shop"));
+        super(Component.translatable("screen.unfading_dawn.shop"));
     }
 
     private int rows() {
@@ -64,7 +64,7 @@ public class ShopScreen extends Screen {
                     button -> ClientPacketDistributor.sendToServer(new Net.Buy(index)))
                     .bounds(this.left() + 8 + (i % COLUMNS) * CELL_WIDTH + 1, this.top() + 36 + (i / COLUMNS) * CELL_HEIGHT, CELL_WIDTH - 2, CELL_HEIGHT - 2).build());
         }
-        this.addRenderableWidget(Button.builder(Component.translatable("screen.vsratie_dushi.shop.leave"), button -> this.onClose())
+        this.addRenderableWidget(Button.builder(Component.translatable("screen.unfading_dawn.shop.leave"), button -> this.onClose())
                 .bounds(this.width / 2 - 60, this.top() + this.panelHeight() - 26, 120, 20).build());
         this.updateButtons();
     }
@@ -98,7 +98,7 @@ public class ShopScreen extends Screen {
         graphics.fill(left, top, right, bottom, BACK);
         graphics.centeredText(this.font, this.title, this.width / 2, top + 8, GOLD);
         if (this.minecraft.player != null) {
-            Component souls = Component.translatable("screen.vsratie_dushi.hearth.souls", PlayerSoul.of(this.minecraft.player).souls);
+            Component souls = Component.translatable("screen.unfading_dawn.hearth.souls", PlayerSoul.of(this.minecraft.player).souls);
             graphics.text(this.font, souls, right - 10 - this.font.width(souls), top + 21, SOULS);
         }
         graphics.fill(left + 8, top + 32, right - 8, top + 33, FRAME_LIGHT);

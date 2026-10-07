@@ -84,7 +84,7 @@ public class SoulStainEntity extends Entity implements ItemSupplier {
             soul.souls += this.souls;
             soul.lostSouls = 0;
             serverPlayer.syncData(Dushi.PLAYER_SOUL);
-            PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("banner.vsratie_dushi.souls_retrieved", Net.Banner.PALE, "ui.souls_retrieve"));
+            PacketDistributor.sendToPlayer(serverPlayer, new Net.Banner("banner.unfading_dawn.souls_retrieved", Net.Banner.PALE, "ui.souls_retrieve"));
             level.sendParticles(ParticleTypes.SOUL, this.getX(), this.getY() + 0.2, this.getZ(), 30, 0.3, 0.4, 0.3, 0.06);
             this.discard();
         }

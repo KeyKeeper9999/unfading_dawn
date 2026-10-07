@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 918273645,
+    "spacing": 24,
+    "separation": 10
+  },
+  "structures": [
+    {
+      "structure": "unfading_dawn:stockade",
+      "weight": 1
+    }
+  ]
+}

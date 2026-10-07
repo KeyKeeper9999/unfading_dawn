@@ -10,9 +10,9 @@ from PIL import Image
 from jsonmodel import JsonModel
 from modelkit import blotch, mix, shade, sheet
 
-A = 'src/main/resources/assets/vsratie_dushi'
-DATA = 'src/main/resources/data/vsratie_dushi'
-MOD = 'vsratie_dushi'
+A = 'src/main/resources/assets/unfading_dawn'
+DATA = 'src/main/resources/data/unfading_dawn'
+MOD = 'unfading_dawn'
 
 STONE = (112, 110, 108)
 STONE_D = (84, 82, 82)

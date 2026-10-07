@@ -5,7 +5,7 @@ import sys
 
 from modelkit import Box, Model, Painter, blotch, mix, shade, sheet
 
-A = 'src/main/resources/assets/vsratie_dushi'
+A = 'src/main/resources/assets/unfading_dawn'
 JAVA = 'src/main/java/com/keykeeper/dushi/client/ShatunModel.java'
 SCALE = 1.5           # must match MODEL_SCALE in ShatunModel.java
 

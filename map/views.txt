@@ -196,27 +196,27 @@ lever -454.50 -23.00 59.50 -453.50 -24.00 60.50
 lever -20.50 -51.00 155.50 -19.50 -52.00 156.50
 lever 19.50 -45.00 -185.50 20.50 -46.00 -184.50
 near_the_gravedigger -112.50 -44.00 0.00 -133.50 -44.00 0.00
-kill vsratie_dushi:gravedigger -142.50 -46.00 1.50
+kill unfading_dawn:gravedigger -142.50 -46.00 1.50
 near_the_overseer -363.00 -28.00 16.50 -389.50 -27.00 16.50
-kill vsratie_dushi:overseer -392.50 -30.00 18.50
+kill unfading_dawn:overseer -392.50 -30.00 18.50
 near_the_chaplain -478.50 -19.00 16.50 -500.50 -12.00 16.50
-kill vsratie_dushi:chaplain -495.50 -21.00 -7.50
+kill unfading_dawn:chaplain -495.50 -21.00 -7.50
 near_the_taskmaster -26.50 -57.00 163.50 -16.50 -57.00 175.50
-kill vsratie_dushi:taskmaster -17.50 -59.00 189.50
+kill unfading_dawn:taskmaster -17.50 -59.00 189.50
 near_the_stone_eater -63.50 -57.00 187.50 -74.50 -57.00 179.50
-kill vsratie_dushi:stone_eater -93.50 -59.00 180.50
+kill unfading_dawn:stone_eater -93.50 -59.00 180.50
 near_the_wallower -51.50 -43.00 -176.50 -54.50 -45.00 -185.50
-kill vsratie_dushi:wallower -55.50 -46.00 -200.50
+kill unfading_dawn:wallower -55.50 -46.00 -200.50
 near_the_weeping_mother 16.50 -42.00 -223.50 26.50 -43.00 -221.50
-kill vsratie_dushi:weeping_mother 40.50 -46.00 -220.50
+kill unfading_dawn:weeping_mother 40.50 -46.00 -220.50
 near_the_shatun -245.50 -43.00 -142.50 -262.50 -45.00 -145.50
-kill vsratie_dushi:shatun -257.50 -46.00 -166.50
+kill unfading_dawn:shatun -257.50 -46.00 -166.50
 near_the_elder -150.50 -43.00 -209.50 -137.50 -44.00 -208.50
-kill vsratie_dushi:elder -128.50 -46.00 -207.50
+kill unfading_dawn:elder -128.50 -46.00 -207.50
 near_the_helmsman 204.50 -42.00 -27.50 182.50 -42.00 -30.50
-kill vsratie_dushi:helmsman 182.50 -44.00 -36.50
+kill unfading_dawn:helmsman 182.50 -44.00 -36.50
 near_the_capsized 278.50 -44.00 19.50 269.50 -46.00 28.50
-kill vsratie_dushi:capsized 259.50 -47.00 29.50
+kill unfading_dawn:capsized 259.50 -47.00 29.50
 gate -17.50 -46.00 55.50
 gate -17.50 -46.00 -55.50
 gate -150.50 -46.00 -7.50

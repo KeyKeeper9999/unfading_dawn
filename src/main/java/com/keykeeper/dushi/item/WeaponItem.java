@@ -37,9 +37,9 @@ public class WeaponItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.scaling", grade(this.strengthScaling), grade(this.dexterityScaling))
+        builder.accept(Component.translatable("tooltip.unfading_dawn.scaling", grade(this.strengthScaling), grade(this.dexterityScaling))
                 .withStyle(ChatFormatting.GRAY));
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.stamina", Math.round(this.staminaCost)).withStyle(ChatFormatting.DARK_GREEN));
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.backstab", String.valueOf(this.backstab)).withStyle(ChatFormatting.DARK_RED));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.stamina", Math.round(this.staminaCost)).withStyle(ChatFormatting.DARK_GREEN));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.backstab", String.valueOf(this.backstab)).withStyle(ChatFormatting.DARK_RED));
     }
 }

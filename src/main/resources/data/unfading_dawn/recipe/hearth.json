@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "N": "unfading_dawn:nameless_soul",
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:campfire",
+    "B": "minecraft:stone_bricks"
+  },
+  "pattern": [
+    " N ",
+    "ICI",
+    "BBB"
+  ],
+  "result": {
+    "id": "unfading_dawn:hearth"
+  }
+}

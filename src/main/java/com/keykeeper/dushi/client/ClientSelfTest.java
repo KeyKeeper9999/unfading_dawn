@@ -264,16 +264,16 @@ public final class ClientSelfTest {
     }
 
     private static String summon(String id, double x, double z, String extra) {
-        return "summon vsratie_dushi:" + id + " " + x + " " + GROUND + " " + z + " {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]" + extra + "}";
+        return "summon unfading_dawn:" + id + " " + x + " " + GROUND + " " + z + " {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]" + extra + "}";
     }
 
     private static String held(String main, String off) {
         StringBuilder s = new StringBuilder(",equipment:{");
         if (main != null) {
-            s.append("mainhand:{id:\"vsratie_dushi:").append(main).append("\"}");
+            s.append("mainhand:{id:\"unfading_dawn:").append(main).append("\"}");
         }
         if (off != null) {
-            s.append(main != null ? "," : "").append("offhand:{id:\"vsratie_dushi:").append(off).append("\"}");
+            s.append(main != null ? "," : "").append("offhand:{id:\"unfading_dawn:").append(off).append("\"}");
         }
         return s.append('}').toString();
     }
@@ -348,7 +348,7 @@ public final class ClientSelfTest {
         rest();
         command(look(0.5, 12.0, 180, -12));
         shot("13_overseer_back");
-        command(look(0.5, 0.5, 0, -12), "data merge entity @e[type=vsratie_dushi:overseer,limit=1] {Phase:2}", "time set 18000");
+        command(look(0.5, 0.5, 0, -12), "data merge entity @e[type=unfading_dawn:overseer,limit=1] {Phase:2}", "time set 18000");
         attack(OverseerEntity.class, OverseerEntity.ROAR, 25);
         shot("14_overseer_roar_night", 20);
         attack(OverseerEntity.class, OverseerEntity.CHAIN, 24);
@@ -368,7 +368,7 @@ public final class ClientSelfTest {
         command(look(-4.0, 7.0, -110, -5));
         attack(ChaplainEntity.class, ChaplainEntity.LITANY, 40);
         shot("20_chaplain_litany_side");
-        command(look(0.5, 0.5, 0, -8), "data merge entity @e[type=vsratie_dushi:chaplain,limit=1] {Phase:2}", "time set 18000");
+        command(look(0.5, 0.5, 0, -8), "data merge entity @e[type=unfading_dawn:chaplain,limit=1] {Phase:2}", "time set 18000");
         attack(ChaplainEntity.class, ChaplainEntity.CALL, 25);
         shot("21_chaplain_call_night", 20);
         attack(ChaplainEntity.class, ChaplainEntity.SPEARS, 20);
@@ -380,7 +380,7 @@ public final class ClientSelfTest {
 
         // 4a. the village: townsman, butcher, watchman and a hound; then the gravedigger
         command(gone, look(0.5, 0.5, 0, 5), summon("withered_townsman", -3.5, 4.5, held("pitchfork", null)), summon("withered_butcher", -1.0, 4.5, held("cleaver", null)),
-                summon("withered_watchman", 1.5, 4.5, ",equipment:{mainhand:{id:\"vsratie_dushi:pitchfork\"},offhand:{id:\"minecraft:lantern\"}}"),
+                summon("withered_watchman", 1.5, 4.5, ",equipment:{mainhand:{id:\"unfading_dawn:pitchfork\"},offhand:{id:\"minecraft:lantern\"}}"),
                 summon("carrion_hound", 4.0, 4.0, ""));
         shot("v1_village", 30);
         attack(WitheredEntity.class, WitheredEntity.CLEAVE, 12);
@@ -427,7 +427,7 @@ public final class ClientSelfTest {
         rest();
         command(look(0.5, 11.0, 180, -10));
         shot("v9_gravedigger_back");
-        command("kill @e[type=vsratie_dushi:withered_townsman]");
+        command("kill @e[type=unfading_dawn:withered_townsman]");
 
         // 4b. the quarry: digger, barrowman, sapper - together, then each alone from the side; the crawler; the unhewn
         command(gone, look(0.5, 0.5, 0, 5), summon("withered_digger", -3.0, 4.5, held("quarry_pick", null)), summon("withered_barrowman", 0.0, 5.5, ""),
@@ -612,7 +612,7 @@ public final class ClientSelfTest {
         command("time set 6000", gone);
 
         // the Wallower on a floor under the film; a clot of its sludge beside it
-        command("fill -8 " + GROUND + " -3 9 " + GROUND + " 14 vsratie_dushi:shallows", look(0.5, -1.5, 0, 8), summon("wallower", 0.5, 6.0, ""), "time set 18000");
+        command("fill -8 " + GROUND + " -3 9 " + GROUND + " 14 unfading_dawn:shallows", look(0.5, -1.5, 0, 8), summon("wallower", 0.5, 6.0, ""), "time set 18000");
         shot("s5_wallower_night", 30);
         command("time set 6000");
         server(level -> say("sludge: " + com.keykeeper.dushi.block.SludgeBlock.spill(level, new Vec3(4.5, GROUND, 2.5), 2.4) + " pools"));
@@ -678,7 +678,7 @@ public final class ClientSelfTest {
         shot("s8_mother_back");
         command(gone);
         // one of her roots: the earth broken and the ends showing, then out (a root summoned by hand stands to be looked at)
-        command(look(0.5, 0.5, 0, 12), "summon vsratie_dushi:root 0.5 " + GROUND + " 4.5", "summon vsratie_dushi:withered_townsman 2.5 " + GROUND
+        command(look(0.5, 0.5, 0, 12), "summon unfading_dawn:root 0.5 " + GROUND + " 4.5", "summon unfading_dawn:withered_townsman 2.5 " + GROUND
                 + " 4.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]}");
         shot("s9_root_warning", 9);
         shot("s9_root_up", 34);
@@ -1050,17 +1050,17 @@ public final class ClientSelfTest {
         shot("22_items", 40);
 
         // 6. the blocks
-        command(clear, "setblock -1 " + GROUND + " 4 vsratie_dushi:hearth[lit=true]", "setblock 1 " + GROUND + " 4 vsratie_dushi:hearth[lit=false]",
-                "fill 3 " + GROUND + " 4 4 " + (GROUND + 2) + " 4 vsratie_dushi:fog_gate[axis=x]", look(0.5, 1.0, 0, 18));
+        command(clear, "setblock -1 " + GROUND + " 4 unfading_dawn:hearth[lit=true]", "setblock 1 " + GROUND + " 4 unfading_dawn:hearth[lit=false]",
+                "fill 3 " + GROUND + " 4 4 " + (GROUND + 2) + " 4 unfading_dawn:fog_gate[axis=x]", look(0.5, 1.0, 0, 18));
         shot("23_blocks", 40);
         command("time set 18000");
         shot("24_blocks_night", 20);
         command("time set 6000", "fill -1 " + GROUND + " 4 4 " + (GROUND + 2) + " 4 minecraft:air");
 
         // 7. a survivor with sword and shield: the HUD, then from outside, then blocking
-        command("gamemode survival @p", "item replace entity @p weapon.mainhand with vsratie_dushi:longsword",
-                "item replace entity @p weapon.offhand with vsratie_dushi:guard_shield", "item replace entity @p hotbar.1 with vsratie_dushi:warmth_flask",
-                "item replace entity @p hotbar.2 with vsratie_dushi:great_key", "item replace entity @p hotbar.3 with vsratie_dushi:scholar_staff",
+        command("gamemode survival @p", "item replace entity @p weapon.mainhand with unfading_dawn:longsword",
+                "item replace entity @p weapon.offhand with unfading_dawn:guard_shield", "item replace entity @p hotbar.1 with unfading_dawn:warmth_flask",
+                "item replace entity @p hotbar.2 with unfading_dawn:great_key", "item replace entity @p hotbar.3 with unfading_dawn:scholar_staff",
                 look(0.5, 4.5, 0, 8));
         player(player -> {
             PlayerSoul soul = PlayerSoul.of(player);
@@ -1070,7 +1070,7 @@ public final class ClientSelfTest {
             soul.charm = com.keykeeper.dushi.Charm.ASH_KNOT.id;
             player.syncData(Dushi.PLAYER_SOUL);
         });
-        client(() -> SoulsHud.showBanner("banner.vsratie_dushi.hearth_lit", 1));
+        client(() -> SoulsHud.showBanner("banner.unfading_dawn.hearth_lit", 1));
         shot("25_first_person_hud", 20);
         player(player -> {
             PlayerSoul.of(player).regenPause = 0;
@@ -1093,13 +1093,13 @@ public final class ClientSelfTest {
                 {"waker_mallet", "round_shield"}, {"stone_hammer", "carver_buckler"}, {"fish_knife", "scale_shield"}, {"longsword", "waker_board"},
                 {"cargo_hook", "round_shield"}, {"harpoon", "guard_shield"}, {"oar", "plank_shield"}, {"lead_line", "carver_buckler"},
                 {"ship_anchor", "tower_shield"}, {"capsized_claw", "scale_shield"}}) {
-            command("item replace entity @p weapon.mainhand with vsratie_dushi:" + set[0], "item replace entity @p weapon.offhand with vsratie_dushi:" + set[1]);
+            command("item replace entity @p weapon.mainhand with unfading_dawn:" + set[0], "item replace entity @p weapon.offhand with unfading_dawn:" + set[1]);
             camera(CameraType.THIRD_PERSON_FRONT);
             shot("31_held_" + set[0] + "_front", 20);
             camera(CameraType.FIRST_PERSON);
             shot("32_held_" + set[0] + "_first_person", 10);
         }
-        command("item replace entity @p weapon.offhand with vsratie_dushi:tower_shield");
+        command("item replace entity @p weapon.offhand with unfading_dawn:tower_shield");
         client(() -> Minecraft.getInstance().options.keyUse.setDown(true));
         shot("32_tower_shield_blocking_first_person", 20);
         camera(CameraType.THIRD_PERSON_FRONT);
@@ -1110,8 +1110,8 @@ public final class ClientSelfTest {
         client(() -> Minecraft.getInstance().options.keyUse.setDown(false));
         for (ArmorSet set : ArmorSet.values()) {
             command("item replace entity @p weapon.mainhand with minecraft:air", "item replace entity @p weapon.offhand with minecraft:air",
-                    "item replace entity @p armor.head with vsratie_dushi:" + set.names[0], "item replace entity @p armor.chest with vsratie_dushi:" + set.names[1],
-                    "item replace entity @p armor.legs with vsratie_dushi:" + set.names[2], "item replace entity @p armor.feet with vsratie_dushi:" + set.names[3],
+                    "item replace entity @p armor.head with unfading_dawn:" + set.names[0], "item replace entity @p armor.chest with unfading_dawn:" + set.names[1],
+                    "item replace entity @p armor.legs with unfading_dawn:" + set.names[2], "item replace entity @p armor.feet with unfading_dawn:" + set.names[3],
                     look(0.5, 4.5, 0, 8));
             camera(CameraType.THIRD_PERSON_FRONT);
             shot("31_armour_" + set.id + "_front", 20);
@@ -1133,16 +1133,16 @@ public final class ClientSelfTest {
         });
         command("item replace entity @p armor.head with minecraft:netherite_helmet", "item replace entity @p armor.chest with minecraft:netherite_chestplate",
                 "item replace entity @p armor.legs with minecraft:netherite_leggings", "item replace entity @p armor.feet with minecraft:netherite_boots",
-                "item replace entity @p weapon.mainhand with vsratie_dushi:great_key", "item replace entity @p weapon.offhand with vsratie_dushi:tower_shield");
+                "item replace entity @p weapon.mainhand with unfading_dawn:great_key", "item replace entity @p weapon.offhand with unfading_dawn:tower_shield");
         pause(10);
         client(() -> {
             LocalPlayer player = Minecraft.getInstance().player;
             say("burden in netherite with the great key and the tower shield: " + Gear.load(player) + "/" + Gear.maxLoad(PlayerSoul.of(player)) + " "
                     + Gear.burden(player).id);
         });
-        command("item replace entity @p armor.head with vsratie_dushi:guard_hat", "item replace entity @p armor.chest with vsratie_dushi:guard_hauberk",
-                "item replace entity @p armor.legs with vsratie_dushi:guard_leggings", "item replace entity @p armor.feet with vsratie_dushi:guard_boots",
-                "item replace entity @p weapon.mainhand with vsratie_dushi:longsword", "item replace entity @p weapon.offhand with vsratie_dushi:guard_shield");
+        command("item replace entity @p armor.head with unfading_dawn:guard_hat", "item replace entity @p armor.chest with unfading_dawn:guard_hauberk",
+                "item replace entity @p armor.legs with unfading_dawn:guard_leggings", "item replace entity @p armor.feet with unfading_dawn:guard_boots",
+                "item replace entity @p weapon.mainhand with unfading_dawn:longsword", "item replace entity @p weapon.offhand with unfading_dawn:guard_shield");
 
         // 8. the roll, by the real key: how far it carries, and that the player stands up again afterwards
         camera(CameraType.THIRD_PERSON_BACK);

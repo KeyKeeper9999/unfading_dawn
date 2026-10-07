@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """The buildings of the mod, block by block: the stockade and the outpost. Writes one plan per building into
-data/vsratie_dushi/plan/ (read by world/Plan.java). Run from the repo root; pass a directory for preview pictures.
+data/unfading_dawn/plan/ (read by world/Plan.java). Run from the repo root; pass a directory for preview pictures.
 
 Coordinates: x grows east, z grows south, y grows up; layer 0 is the floor the feet stand on, so things stand at y = 1.
 North is the top of the top-down pictures. A building is drawn facing south; the game turns it one of four ways."""
@@ -11,8 +11,8 @@ import sys
 
 from PIL import Image, ImageDraw
 
-DATA = 'src/main/resources/data/vsratie_dushi'
-MOD = 'vsratie_dushi'
+DATA = 'src/main/resources/data/unfading_dawn'
+MOD = 'unfading_dawn'
 AIR = 'minecraft:air'
 
 

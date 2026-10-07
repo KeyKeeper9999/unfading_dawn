@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "unfading_dawn:rust_scrap",
+    "unfading_dawn:rust_scrap"
+  ],
+  "result": {
+    "id": "minecraft:iron_nugget",
+    "count": 3
+  }
+}

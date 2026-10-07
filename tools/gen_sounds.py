@@ -12,8 +12,8 @@ from scipy import signal
 from scipy.io import wavfile
 
 SR = 44100
-A = 'src/main/resources/assets/vsratie_dushi'
-MOD = 'vsratie_dushi'
+A = 'src/main/resources/assets/unfading_dawn'
+MOD = 'unfading_dawn'
 rng = np.random.default_rng(20261004)
 
 

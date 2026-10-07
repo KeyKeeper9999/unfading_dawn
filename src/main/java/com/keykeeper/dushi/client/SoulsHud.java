@@ -180,7 +180,7 @@ public final class SoulsHud {
             }
         }
         if (soul.lostSouls > 0) {
-            String lost = Component.translatable("hud.vsratie_dushi.lost", soul.lostSouls).getString();
+            String lost = Component.translatable("hud.unfading_dawn.lost", soul.lostSouls).getString();
             graphics.text(font, lost, right - font.width(lost), bottom + 0 - 28 - (gained > 0 ? 10 : 0), 0xC0B8C8D8, true);
         }
     }

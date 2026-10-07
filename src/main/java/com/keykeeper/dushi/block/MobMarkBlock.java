@@ -155,7 +155,7 @@ public class MobMarkBlock extends Block implements EntityBlock {
             if (level.getBlockEntity(pos) instanceof MobMarkBlockEntity mark) {
                 mark.forget();
             }
-            player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.mob_mark", next.type().getDescription()));
+            player.sendOverlayMessage(Component.translatable("message.unfading_dawn.mob_mark", next.type().getDescription()));
         }
         return InteractionResult.SUCCESS;
     }

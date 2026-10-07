@@ -47,6 +47,6 @@ public class SoulItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.soul_item", this.souls).withStyle(ChatFormatting.AQUA));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.soul_item", this.souls).withStyle(ChatFormatting.AQUA));
     }
 }

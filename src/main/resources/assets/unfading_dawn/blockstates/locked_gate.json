@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "unfading_dawn:block/locked_gate"
+    },
+    "axis=z": {
+      "model": "unfading_dawn:block/locked_gate",
+      "y": 90
+    }
+  }
+}

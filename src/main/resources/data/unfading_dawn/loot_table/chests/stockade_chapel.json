@@ -1,0 +1,95 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:great_soul",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:mend",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:rebuke",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:soul_shard",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:flare",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:chaplain_skirt",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:chaplain_shoes",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:gold_ingot",
+          "weight": 1,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:prayer_beads",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:scholar_staff",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:ember_glove",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

@@ -28,7 +28,7 @@ import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlers
 @EventBusSubscriber(modid = Dushi.MODID, value = Dist.CLIENT)
 public final class DushiClient {
     private static final KeyMapping.Category KEYS = new KeyMapping.Category(Dushi.id("main"));
-    public static final KeyMapping ROLL_KEY = new KeyMapping("key.vsratie_dushi.roll", InputConstants.KEY_R, KEYS);
+    public static final KeyMapping ROLL_KEY = new KeyMapping("key.unfading_dawn.roll", InputConstants.KEY_R, KEYS);
 
     /** Blocks per tick while rolling, and while stepping back (a roll with no direction held). */
     private static final double ROLL_SPEED = 0.46;
@@ -179,7 +179,7 @@ public final class DushiClient {
                 continue;
             }
             if (!burden.canRoll()) {
-                player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.overburdened"));
+                player.sendOverlayMessage(Component.translatable("message.unfading_dawn.overburdened"));
                 continue;
             }
             Vec2 input = player.input.getMoveVector();

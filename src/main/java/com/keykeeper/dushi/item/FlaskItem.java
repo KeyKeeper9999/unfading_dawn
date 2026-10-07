@@ -58,7 +58,7 @@ public class FlaskItem extends Item {
         if (charges(stack) <= 0) {
             if (level instanceof ServerLevel serverLevel) {
                 serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), Dushi.sound("item.flask.empty"), SoundSource.PLAYERS, 0.8F, 1.0F);
-                player.sendOverlayMessage(Component.translatable("message.vsratie_dushi.flask_empty"));
+                player.sendOverlayMessage(Component.translatable("message.unfading_dawn.flask_empty"));
             }
             player.getCooldowns().addCooldown(stack, 20);
             return InteractionResult.FAIL;
@@ -115,7 +115,7 @@ public class FlaskItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.flask", charges(stack), capacity(stack)).withStyle(ChatFormatting.GOLD));
-        builder.accept(Component.translatable("tooltip.vsratie_dushi.flask_hint").withStyle(ChatFormatting.GRAY));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.flask", charges(stack), capacity(stack)).withStyle(ChatFormatting.GOLD));
+        builder.accept(Component.translatable("tooltip.unfading_dawn.flask_hint").withStyle(ChatFormatting.GRAY));
     }
 }

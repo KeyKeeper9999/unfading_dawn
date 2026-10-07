@@ -9,8 +9,8 @@ from PIL import Image
 
 from sprite import Sprite, diagonal_blade, hilt, mix, shade
 
-A = 'src/main/resources/assets/vsratie_dushi'
-MOD = 'vsratie_dushi'
+A = 'src/main/resources/assets/unfading_dawn'
+MOD = 'unfading_dawn'
 
 O = (30, 26, 28)
 S, s, d, D = (226, 230, 234), (174, 180, 190), (118, 124, 136), (78, 82, 94)

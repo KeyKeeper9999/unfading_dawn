@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:paper",
+    "unfading_dawn:nameless_soul",
+    "minecraft:lapis_lazuli"
+  ],
+  "result": {
+    "id": "unfading_dawn:soul_shard"
+  }
+}

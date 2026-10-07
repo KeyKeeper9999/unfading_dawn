@@ -1,12 +1,12 @@
 {
   "values": [
-    "vsratie_dushi:prisoner_hood",
-    "vsratie_dushi:guard_hat",
-    "vsratie_dushi:rust_helm",
-    "vsratie_dushi:chaplain_mitre",
-    "vsratie_dushi:vigil_cowl",
-    "vsratie_dushi:mason_cap",
-    "vsratie_dushi:scale_hood",
-    "vsratie_dushi:oilskin_souwester"
+    "unfading_dawn:prisoner_hood",
+    "unfading_dawn:guard_hat",
+    "unfading_dawn:rust_helm",
+    "unfading_dawn:chaplain_mitre",
+    "unfading_dawn:vigil_cowl",
+    "unfading_dawn:mason_cap",
+    "unfading_dawn:scale_hood",
+    "unfading_dawn:oilskin_souwester"
   ]
 }
