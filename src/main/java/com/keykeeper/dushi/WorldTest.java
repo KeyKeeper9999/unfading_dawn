@@ -410,7 +410,7 @@ final class WorldTest {
         // the root: for whoever is looked at, out of the ground under them; it strikes them and not its caster
         near.removeAllEffects();
         near.setHealth(near.getMaxHealth());
-        near.setInvulnerableTime(0);
+        near.damageCooldownTime = 0;
         boolean picked = Spell.aimed(level, player, Spell.SNARE_RANGE) == near;
         net.minecraft.world.phys.Vec3 ground = com.keykeeper.dushi.entity.RootEntity.ground(level, near.getX(), near.getY(), near.getZ());
         boolean snared = false;

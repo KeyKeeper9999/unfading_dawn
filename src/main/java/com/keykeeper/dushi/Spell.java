@@ -191,7 +191,7 @@ public enum Spell {
         if (target.isBlocking()) {
             target.stopUsingItem();
         }
-        target.setInvulnerableTime(0);
+        target.damageCooldownTime = 0;                           // (the game's moment of grace after any blow: not setInvulnerableTime, which is another thing)
     }
 
     /** Whoever the caster is looking at: the living thing nearest to the line of their eyes, within {@code range}. */

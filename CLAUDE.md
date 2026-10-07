@@ -95,7 +95,7 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `Spell` - every spell: what it costs, and in `cast` what it does. What pours from a palm (`FLARE`, `HOT_WAX`) is a jet:
   `jetTouches` asks, a quarter of a pace at a time along it, for the nearest point of a thing's box - not for its middle,
   which for a thing as wide as a wagon is out of reach when its side is in one's face - and `lick` takes its shield down
-  and its moment of grace after another blow away, so that the flame lands on what it visibly covers. `ROOT_SNARE` is a
+  and its moment of grace after another blow away, so that the flame lands on what it visibly covers. (The moment of grace is `LivingEntity.damageCooldownTime` in this version; `setInvulnerableTime` is something else and changes nothing about it.) `ROOT_SNARE` is a
   `RootEntity` called by a player (`aimed` picks whom the eyes are on); `MARSH_FIRE` is a wisp's flame that, thrown by a
   player, bends towards what is near its way (`SpellBoltEntity.seek`) and clings. A new spell is an entry, its `cast`,
   a glyph in `gen_items.py`, two texts, a recipe and a place it is found.
