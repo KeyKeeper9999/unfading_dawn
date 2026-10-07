@@ -13,17 +13,39 @@ items or names of any existing game, and every sound is synthesised from scratch
 The story the map tells, the traders and items agreed for the next round, and the places thought of after that are in
 `docs/story.md` (in Russian). Read it before adding content or writing any text of the game, and keep it up to date.
 
+## Where the rest is
+
+This file holds what is common to the whole mod. Read the others only for the work in hand, and write new knowledge
+into the file of its place or topic - here only what every chat needs:
+
+- `docs/places/borough.md`, `stockade.md`, `quarry.md`, `mire.md`, `firwood.md`, `wharf.md` - a place: its way through,
+  its levels, what is left for later, and its own dead and lords (their classes and what is particular about each);
+- `docs/map.md` - how the map is generated, set down and checked, and the things learnt the hard way about it;
+- `docs/animation.md` - poses, held things, moves: the rules learnt;
+- `docs/balance.md` - souls, levels, what each place pays;
+- `docs/story.md` - the story, what is built, what is agreed and what comes next (in Russian).
+
+A new place gets a new file in `docs/places/`.
+
 ## Building and checking
 
 Nothing can be built on a machine without access to the NeoForge and Mojang servers, so the build runs in GitHub Actions
-(`.github/workflows/build.yml`) on every push to `main`. The workflow publishes its results to the `ci-out` branch:
+(`.github/workflows/build.yml`) on every push to `main`. A push cancels the run before it, so changes are gathered and pushed together, and nothing is
+pushed while a run is awaited. The workflow publishes its results to the `ci-out` branch:
+
+- `summary.txt` - the run in a page (`tools/ci_summary.py`): `RESULT: OK` or `RESULT: LOOK` with what to look at; whether
+  each test reached its end, mobs spawned, drills, missing resources, errors of the game, what the map's test did, and
+  what changed against the run before (`counts.json`). Read this first and open a log only where it points;
+- `sheets/*.jpg` and `sheets/index.txt` - the pictures nine to a sheet, by group, each under its name
+  (`tools/ci_sheets.py`: `mobs_<place>`, `gear_held`, `items_player`, `buildings`, `map_<place>`, `map_lords`,
+  `map_screens`). Look at the sheets of what was changed, all of them after a change that goes through everything;
 
 - `build.log` - compiler output;
 - `unfading_dawn.jar` - the mod (the jar never has a version in its name, so it can simply be overwritten);
 - `server.log` - a dedicated server started with `DUSHI_SELFTEST=1`: `SelfTest.java` spawns every mob, makes them fight iron
   golems, drills every move of every mob, drives a stand-in player through souls, levelling, the flask, spells, the hearth,
   the shop and death, prints `DUSHI SELFTEST ...` lines and stops the server;
-- `shots/*.png` and `client.log` - only if the file `.ci/client` exists: the real client is started under xvfb with
+- pictures and `client.log` - only if the file `.ci/client` exists: the real client is started under xvfb with
   `DUSHI_CLIENTTEST=1`; `client/ClientSelfTest.java` makes a world, lines up mobs, blocks and items, takes screenshots
   and quits. This is how the look of the mod is checked. It adds about five minutes to the run. The client renders in
   software there, a few frames a second, so a picture of a move is taken with the move frozen at a chosen tick
@@ -34,6 +56,9 @@ The server test ends with `WorldTest.java`: gear numbers, recipes and chest loot
 down from their plans and counted, the marks raising, losing and raising their mobs, and both buildings looked up in the
 world the server generated. The client test makes an ordinary world, works on a stone stage at y = 180, and at the end
 flies to the nearest outpost and stockade and takes pictures from fixed places of their plans (`view(...)`).
+
+The pictures in full are in the branch `ci-shots` (`shots/NAME.png`), which is large: do not fetch it, take one picture:
+`gh api -H "Accept: application/vnd.github.raw" "repos/KeyKeeper9999/vsratie_dushi1/contents/shots/NAME.png?ref=ci-shots" > NAME.png`.
 
 `git fetch origin +ci-out:refs/remotes/origin/ci-out` and read the files (the branch is written anew every time: without
 the `+` a fetch into an existing ref is refused and yesterday's files are read); the commit message of `ci-out` names the
@@ -51,7 +76,7 @@ works the light out again, sets the rules of the world, saves and stops; the wor
   light read out at the places listed in `map/light.txt`;
 - `High_Stockade.zip` - the map as players get it (unpack into `saves`); the workflow gives the world its shown name
   (`tools/name_world.py`), `map/icon.png` and `map/readme.txt`;
-- `mapclient.log` and `shots/m*.png` - only if `.ci/mapshots` exists: the client opens the saved world the way a player
+- `mapclient.log` and the pictures `m*` - only if `.ci/mapshots` exists: the client opens the saved world the way a player
   would (`client/MapSelfTest.java`, `DUSHI_MAPTEST=map/views.txt`), says how a newcomer starts (`DUSHI MAPTEST ...`),
   flies to every view of `map/views.txt` and takes a picture, then throws every lever and kills the bosses and says
   what the doors and the seals did.
@@ -126,56 +151,6 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   raised shield, which it knocks down), `hitAround`, `shove`, and `strikeLater` - a blow that lands on a place on the
   ground after a delay, the place marked until then (dust sifting down for a falling rock, chips for a crack running
   along the floor). The dead do not turn on each other: `setTarget` ignores another `SoulsMob`.
-- The quarry's own: `BlindCrawlerEntity` hears instead of seeing (`hears`: a walker from 13 blocks, somebody sneaking
-  only on its own block and the eight round it) and calls the others - so a way that crawlers keep is at least five
-  wide between whatever stands in it, or there is no creeping past them; `UnhewnEntity` is a statue (phase 1,
-  nothing of it moves) until somebody comes within 4.5 blocks or strikes it; `TaskmasterEntity` and `StoneEaterEntity` are the lords (the second digs itself
-  under the floor: its model's root part `all` goes down, nothing reaches it there); `PowderPotEntity` (its `blast`
-  hurts the dead too) and `WedgeEntity` are what is thrown. These four mobs share `client/QuarryRenderer`.
-- The Mire's own: `BonePikeEntity` keeps to water (its goal swims it straight at its prey only while there is water
-  ahead, it leaps at whoever stands on the boards, and one that lands on them flounders and is hurt half as much
-  again); `LankyEntity` wades and reaches; `WispEntity` flies a ring round its prey and throws slow fire
-  (`called()` makes one that burns out by itself and leaves nothing: the Mother's); `WallowerEntity` (it dives:
-  the model's root part goes down through the floor, and nothing hurts it there; `MudGlobEntity` is what it spits
-  and `block/SludgeBlock` what that leaves) and `WeepingMotherEntity` (rooted: she does not walk, turn fast, or get
-  pushed, and keeps her own list of roots coming up) are the lords. The drowned are a kind of the withered that
-  walks the bottom. A mob that lives in water has no `FloatGoal`, is not `isAffectedByFluids` and has the path
-  malus of water at 0: it then walks the bottom at its own pace. These share `client/QuarryRenderer` too.
-- `entity/RootEntity` (+ `client/RootModel`, `RootRenderer`, `tools/gen_root.py`) - a root of the Weeping Mother: a thing
-  in the world, not a puff of particles. It is set on the ground under whoever she is after (`RootEntity.ground` looks
-  down for a floor: nothing comes up in the air or over nothing), shows its tips through broken earth for the length of
-  the warning, comes up, strikes once whoever is in its ring and no higher than it reaches, and sinks. She sends them one
-  after another (`ROOTS_EVERY`) and whoever one has thrown is let alone by the next for `ROOT_GRACE` ticks.
-- The Firwood's own (`tools/gen_sect.py`, `gen_waxen.py`, `gen_moth.py`, `gen_shatun.py`, `gen_elder.py`; they share
-  `client/QuarryRenderer`): `UnsleepingEntity` is what the people of the skete have in common. `WakefulEntity` kneels
-  (phase 1) facing the way its mark faces and does not look about: `sees` is the whole rule of its eyes (a cone of 55
-  degrees to ten blocks, five for whoever creeps; it feels a walker within 2.2 at its back), and one struck on his knees
-  wakes those kneeling within `BESIDE` of him. `WakerEntity` looks about like anybody; what he sees he beats his board
-  for (`KNOCK`), and at the third stroke everything of the skete within `HEARD` blocks is up. `SleeperEntity` knows of
-  nobody until they are near, and one leap in a few ends flat on its face (`LUNGE_FALL`, a move of its own). `WaxenEntity`
-  holds a rope of hot wax on its prey and bursts when killed; `SleepMothEntity` lies on the ground like a rag until
-  somebody comes near, then hangs over them and sheds dust (`Gear.drowse`: darkness and slowness, shortened by the
-  linen of the Unsleeping). The lords: `ShatunEntity`, a bear (its charge cannot turn and ends in `CRASH` against
-  anything that does not give - for as long as that lasts its hide lets everything through), and `ElderEntity`, who
-  calls the kneeling round his tent's wall and, hurt enough, falls asleep on his feet (phase 2: other moves, and
-  `DREAM`, which is rolled through like a blow). `SoulsMob.struck` is what a blow does besides hurting (setting alight,
-  slowing); `strikeLands`/`strikeComing` are how a marked place is struck and shown, for a kind that drops something
-  other than rock.
-- The Wharf's own (`tools/gen_sailor.py`: the dockhand, the harpooner, the oarsman, the Pilot and the Helmsman on one
-  mesh, drawn at three sizes; `gen_crab.py`, `gen_skua.py`, `gen_capsized.py`; all on `client/QuarryRenderer`):
-  `ShoremanEntity` is what the seamen have in common. `DockhandEntity` hooks and hauls in (`struck` is the hauling);
-  `HarpoonerEntity` throws from afar (`HarpoonEntity`), stabs up close and hops back if there is ground behind him;
-  `OarsmanEntity` sweeps an oar level (the arm down, the trunk turning: `SailorModel.sweep`). `PilotEntity` is not a
-  lord but is met like one, at the lighthouse's foot. `SandCrabEntity` lies in the sand (phase 1) until somebody is
-  near, and goes round its prey sideways; `called()` is one a lord raps up, which leaves nothing and goes back down.
-  `SkuaEntity` sits, is startled, rings its prey and stoops along a line fixed when it starts to fall. The lords:
-  `HelmsmanEntity` (the anchor is a thing thrown, `AnchorEntity`, aimed by flight time, not by `shoot`; while he hauls
-  it back, and giddy after his whirl, he is `open()` and his hide lets twice as much through) and `CapsizedEntity` (a
-  boat on the sand until woken; `housed()` - lying, or sat down under her - is when nothing but planks is struck).
-- `SoulMechanics.undertow` - the sea of the Wharf is waded, not swum: a player in water two blocks deep or more, in the
-  biome `unfading_dawn:shore`, is warned, held down and taken (a sixth of their health every half second after a moment's
-  grace); the stain is left where they last stood. `waterDepth` counts the column. The map's check knows the same cells
-  (`Map.undertow`, filled by `gen_shore.py`), so nothing is "reached" through deep water.
 - `block/ShallowsBlock` (`shallows`; `sea_shallows` is the same thing in the sea's grey, for the Wharf's sands) - a
   hand's depth of water over a floor, which is a floor: no fluid in it, so nobody is slowed and the roll works. `block/SludgeBlock` (`sludge`) lies some seconds where a clot burst, slows
   whoever is not of the dead (`makeStuckInBlock`: the roll too), and leaves the shallows again if it lay in them.
@@ -215,39 +190,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 
 - Item icons are 16x16 in the style of the game's own; 32x32 only for the two-handed weapons. Mobs and blocks are models.
 - A weapon's damage, speed and reach are ordinary item attributes; stamina cost, scaling and backstab live in `WeaponItem`.
-- How a shield sits in the hand is not guessed: `gen_shields.py` states the wanted pose in body terms (top up, face
-  forward, arm hanging or raised to block) and works the item-display numbers out from the game's own chain of
-  transforms; `shields_held.png` in the preview directory shows the result on a dummy. The 32x32 weapons get their
-  grip brought into the hand the same way (`big_display` in `gen_items.py`).
-- A held item always points at right angles to the arm, forward when the arm hangs. For a level thrust the arm is
-  raised sideways (zRot), not forwards (see the knight's lunge); a long weapon carried at the hip is thrust by
-  drawing the hanging arm back and driving it forward (the pitchfork). A level cut is the arm raised forwards and
-  turned (yRot). A move with its own animation does not also call `swingArm`: the game's swing is laid over it and
-  all that is seen is a wave of the arm.
-- A weapon that is part of a mob's mesh (the spade, the maul) is posed by where its iron is: the pitch of the part
-  is the sum of the trunk's, the arm's, the forearm's and its own, and the move is thought out in that sum (see
-  `TaskmasterModel`). The part's own rotation in the mesh is already in its `xRot` when `setupAnim` begins: a move
-  that sets a pitch outright must add it (`HELD`), or the weapon lies back along the arm. And a trunk bent far
-  forward takes the hands down with it: for a blow that ends before the mob, the arms must still reach forward.
-- A mob that does not walk is judged by its reach, and its reach is read, not guessed: the generator's sheet
-  shows the poses the animation uses (`gen_mother.py`: the same numbers `setupAnim` adds), and where the hands are
-  in each pose is worked out from the mesh. The entity's ranges follow from that. Parts that must not turn with a
-  rooted mob are turned back by its body's yaw (`roots.yRot = -bodyRot`); hair hangs because the bends of
-  everything above it are taken off it at the end of `setupAnim`.
 - A block state property needs two values at least (the game refuses to register a block otherwise): the second
   `Lock` is the gate nothing opens.
-- What a mob carries that is not a weapon is part of its model too and takes part in its moves: the barrowman's
-  barrow hangs from the model's root, his hands are set on its handles whatever else he does.
-- The game's humanoid turns its trunk about the neck: bent forward, the trunk leaves the legs behind. `WitheredModel.hips`
-  runs last in `setupAnim` and takes whatever a move bent the trunk by, beyond the stoop, about the hips instead (neck,
-  head and shoulders go forward and down). A move only sets `body.xRot`; it does not move the head or the arms to follow.
-  The barrowman's hands are solved after that (`handles`): the barrow's tip gives the height of its handles, the arms
-  reach to that height, and the barrow stands where the hands are.
-- A blow that is sometimes punished is two moves, not one with a random tail: the digger's `PICK` and `PICK_STUCK`
-  (about one in three) share the wind-up and the impact, and only the second leaves him bent over a pick fast in the
-  floor. A held thing points across the arm: to bury its point the hands go back, towards the shins.
-- A mob that is meant to be feared looks it: the butcher has his own bulk on the withered's bones (parts shown only
-  on him), is drawn a tenth bigger and has a box to match; doorways he must pass are three high.
 - In this version a loot entry's functions are written under the key `modifier` and a pool's conditions under
   `condition` (see `gen_data.py`); `functions`/`conditions` are silently ignored.
 - The floor of a yard must not be dirt or grass: trees and flowers are planted after structures and grow through it.
@@ -265,173 +209,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 mod's own country, in the spirit of the genre and a copy of nothing in it. The land is a wooded plateau with a gorge cut
 into it (`tools/gen_world.py`); the country outside the plan is the flat forest the world itself is made of.
 
-- The Dead Borough (`tools/gen_village.py`) in the south of the gorge: a walled town of small houses under a night that
-  never ends, where the game begins. It is drawn on a grid of tiles of three blocks: walls, streets and the places built
-  by hand are named in the file, every other tile is a lot and the lots are cut into houses.
-  Yard of the first hearth (keykeeper, anvil, the starter chest; no enemy sees it) -> Low Street -> the lanes of the
-  borough, west or east about (the high street is shut by a gate that opens from the town's side) -> market -> the
-  Shambles (the street is barricaded: through the butchers' shop or round by the back alley) -> Church Lane (the
-  sexton's lodge: a hearth) -> the churchyard (the Gravedigger; a seal on the gate to the road behind him).
-- The road: from the churchyard's north gate under a spur of the plateau by a tunnel with a bend in it. In the bend,
-  where neither mouth is seen, lie the thresholds that turn the clock: evening towards the fortress, night towards the
-  town. Then along the gorge and up a causeway to the fortress's bridge.
-- The High Stockade (`tools/gen_map.py`, in its own coordinates; `gen_world.py` sets it down on the floor of the gorge):
-  a lower fortress and an upper city on two crags, at an hour of evening that never ends. South gate (hearth, anvil) ->
-  ward, cells, walls -> bridge tower (its ground door is opened from inside) -> great bridge -> gate hall (the Overseer;
-  a seal behind him) -> square (hearth, anvil) -> cloister and chapter room / bell tower -> covered walk -> the
-  cathedral's east gallery -> nave (postern and west door open shortcuts; sacristy hearth) -> crypt under the nave
-  (optional, comes out in the alley behind the chapter room) -> choir (the Chaplain) -> treasury and terrace.
-  Whoever falls from its walls lands on the floor of the gorge and walks back round to the causeway.
-
-- The White Pit (`tools/gen_quarry.py`), under a hill of pale stone west of the town, in the town's night: the quarry
-  the Stockade was built from. It is entered by the Quarrymen's Gate at the west end of Low Street, which is locked
-  (`locked_gate`); its key lies in the Stockade's treasury, behind the Chaplain - a place can be reached from the hub
-  and still come after another. Gate -> a lane cut down through the plateau -> the open pit -> the unfinished head of
-  the Founder in the pit's west face: the way in is its mouth -> the Maw (hearth, anvil) -> the main drift -> the
-  pillar field -> a stair up to the Carvers' Shop (statues, four of them the Unhewn) -> the upper gallery (east: the
-  room behind the eyes; west: the gallery of the Wheel Hall) -> the cage shaft down (its door at the main drift opens
-  from inside: the short way from the hearth) -> the Wheel Hall (the Taskmaster; a seal behind him) -> the sump
-  (hearth) -> the lower workings (crawlers: creep past them along the far wall) -> the Breach (the Stone-Eater) ->
-  the crack. Three levels: `TOP` eight over the valley's ground, `MID` six under it, `LOW` thirteen under it.
-  Left for later: a barred drift north out of the lower workings, the fissure behind the Breach.
-
-- The Mire (`tools/gen_swamp.py`), east of the town, at an hour of its own: a green noon that does not pass. It is entered by the Mire Gate at the east end of Low Street (`locked_gate[lock=mire]`); its key lies in
-  the crack behind the Stone-Eater. Gate tower (hearth; the thresholds that turn the clock lie in its bend) -> the
-  Drowned End: the town's own houses sunk to their eaves, willows grown through some, a walk of planks along them ->
-  the ferryman's hut (hearth, anvil) -> the log roads over the open marsh, north to the Weir and south to a door
-  in the ridge that opens from the other side -> the Weir (the Wallower: a floor under the shallows; a seal behind
-  him) -> the mill (hearth, anvil) -> the withy wood -> the island (the Weeping Mother) -> the grove behind her.
-  Water to the knee slows and stops the roll, deep water is swum: the roads are what a player keeps to, and what
-  lives in the water waits beside them. Left for later: a barred way out of the grove.
-
-- The Black Firwood (`tools/gen_skete.py`), a hollow of the plateau north-east of the town full of old firs, at an hour
-  of its own: the one before a dawn that does not come (`PlaceNameBlock.FOREDAWN`: the sky has begun to pale over the
-  trees and there is no sun). No fog and no biome of its own: its dark is the firs'. It is entered by the Wood Wicket, a
-  grate in the cliff of the yard between the road tunnel and the town's north gate (`locked_gate[lock=firwood]`); its
-  key lies in the grove behind the Weeping Mother. Wicket -> a passage that turns twice (the clock is turned in the leg
-  from which neither mouth is seen) -> the old fir (hearth) -> the track through the wood (moths, sleepers, a glade of
-  stakes to the west, a wayside shrine to the east) -> the Shatun's Hollow (the Shatun, and dead firs to put between him
-  and oneself; a seal behind him) -> the skete's edge (hearth, anvil) -> the skete: white tents round the Vigil, three
-  rows of the wakeful on their knees with their backs to the way in and their faces to the east, wakers on their rounds,
-  the wax yard -> the White Tent (the Elder; a seal behind him) -> the candle store (hearth, anvil). The skete is gone
-  round behind the tents, or crept through, or fought all at once. Left for later: a barred way east out of the
-  court behind the White Tent.
-
-- The Morning Wharf (`tools/gen_shore.py`), south of the town where the plateau falls into the sea, at an hour of its
-  own: the sun just clear of the water (`PlaceNameBlock.SUNRISE`), in a mist that is its biome's
-  (`worldgen/biome/shore.json`, which also gives it its surf and its gulls). It is entered by the Sea Gate, the old
-  south gate of the yard of the first hearth (`locked_gate[lock=shore]`); its key lies in the candle store behind the
-  Elder. Sea Gate -> a passage under the plateau (the clock is turned in its cross leg) -> the port: the town's own
-  houses on a grid of their own (`gen_shore.Port` is a `gen_village.Village`), the harbour office (hearth, anvil), the
-  net loft, the boat shed -> the quay -> the long pier -> the koch "Daybreak" at its end (the Helmsman, on her deck:
-  fog on the gangway from the pier, a seal on the one over her other side) -> the old mole (a gap to jump, a slump to
-  the water) -> the Long Spit: flat sand, wet at its edges, a long hook round the roads where three ships lie at
-  anchor that nobody reaches (a hearth under an upturned karbas at its root) -> the boulder strand -> the shoal in its
-  ring of stacks (the Capsized; an arch in, a sealed arch out) -> a causeway -> the lighthouse on its rock (the Pilot
-  at its foot, a hearth inside, a stair round the wall, the lamp room - kept empty of people for a keeper to come).
-  Levels: quay, piers and dry sand are the valley's ground; the sea's top layer of water is one below it; wet sand
-  lies in that layer under a film (`sea_shallows`); where the sea is waded there is sand a layer lower, where it is
-  deep, two. Left for later: nothing barred yet (a way into the rock under the lighthouse is thought of).
-
-`gen_world.py` writes `map/high_stockade.plan.txt` (the same format as the buildings; about 4.9 million blocks),
-`map/views.txt`, `map/light.txt`, `map/census.json` (for `balance.py`) and `map/biomes.txt` (the boxes of the world that
-get a biome of their own - the Mire's, the shore's: `MapBuilder.biomes` fills them, and says in `map.log` how many cells
-it changed). The plan's origin is the place where the newcomer wakes; the game puts it at
-0, -46, 0 and turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the
-sunset. The dead of the town are of tier 0, of the lower fortress tier 1, of the upper city tier 2 (`World.tiers`);
-the quarry's are of tier 0 and strong by birth. The valley's ground is the plan's layer 16 (`GY`): the flat world has
-sixteen blocks of ground under its grass, and the quarry uses thirteen.
-
-A new place is a new file like `gen_village.py`: it builds into the world's `Map` at an offset, and `gen_world.py` gives
-it a piece of the gorge (`in_gorge`), a road, and - if its hour differs - a passage where the clock is turned. The yard
-of the first hearth is the hub the roads start from.
-
-The names of the places are thresholds across the ways in, each on its own side of the line between two places. Views
-whose name begins with `as_player_` are walked to by the test as the newcomer is, before the camera is set free.
-
-`gen_world.py` ends with a check of the map as a place to play, and every change to the map must leave it clean:
-
-- it walks the map the way a player can (steps, jumps, drops, ladders, levers, seals lifted lord by lord and locked
-  gates opened when their key is in reach: `gen_map.STAGES` is the order) and reports what is
-  reached at each stage, chests, shards and mobs nobody can reach, places that are traps, that nobody gets out of the
-  gorge (no place at the edge of the plan is reached), and that the cathedral cannot be entered except by the covered walk;
-- it works out the light like the game does (its numbers matched the game's at every probe) and reports walkable
-  places under a roof that are too dark, and how much of the town's streets the lamps reach;
-- previews: `world_ground.png`, `town_ground.png` (a dot on every reachable place), `town_roofs.png`, `town_iso.png`.
-
-Things learnt the hard way:
-
-- In a world whose game mode is adventure the game drops a newcomer through the floor of the spawn if the place is not
-  loaded yet (they fell into the void). `SoulMechanics.settle` puts them back on it at login and respawn.
-- Whatever a player can stand on is a stair: a boulder beside a fir let the check climb the needles onto the plateau,
-  and the low plinth of a wall let it walk over the corner. In the gorge trees stand clear of rock and walls and are
-  bare to four blocks, barricades are three high with nothing beside them, walls have no ledges.
-- Nothing may be put in front of a door (`Village.kept`): a barrel there shut a house with a chest in it.
-- A gate's tiles are "built by hand" and get no wall from `walls`: whoever builds the gate builds the wall over it
-  (the yard's arch once hung in the air).
-- Blocks set one by one into an empty world leave the light wrong (whole storeys black, or everything fully lit).
-  `MapBuilder` therefore relights every chunk after building (`initializeLight`, then `lightChunk`).
-- Rock is put only under what stands on the ground (`bedrock`), straight down: corbels and other overhangs must not grow rock.
-- `chiseled_sandstone` has a creeper's face on it; the city's stone is smooth and cut sandstone.
-- A flat world's sea is at y = -63 and the game cools a biome with height above its sea: with the ground at y = 63 the
-  forest outside the plan grew up under snow, which the plan's own forest did not have. The ground is at y = -47.
-- With natural regeneration switched off (as the map does) hunger is held full. The game's own mobs do not spawn
-  (`SPAWN_MOBS`): the night would fill with them.
-- A block with a direction of its own must turn with the plan (`rotate`): the fog gate did not, and stood edge-on in
-  every doorway of the map. What is built late (corbels, lamps) can land in a stair: the check counts headroom.
-- Fog fills its opening or it is walked round: the fog before the Stone-Eater stood where the cave had already eaten
-  the drift's wall. `b.fog` fills the free cells of its box (so the box can take in the point of an arch), and
-  `gen_world.py` reports any fog, seal or grate with a free cell beside it in its own plane.
-- A gallery over a lord's hall has its rail from wall to wall: boards that stop short are a way down to him.
-- A lord's death lifts every seal in a box of forty blocks either way round his mark (`FogGateBlock.lift`): two lords
-  of one place must stand further apart than that, or the first opens the way past the second.
-- Under the ground the plan holds only what differs from the world's stone: the hollows, and a skin of rock round them
-  so that the check sees walls (`Quarry.skin`). Above the ground everything is in the plan; a place cut open from
-  above gives its columns to `open_sky`, or firs are planted in the air over it.
-- Painted pots swallow what is put into them; a player who may not build cannot use them (`SoulMechanics.onUsePot`).
-- The check knows water (`gen_map.is_water`): it is stood in and swum, left only onto what is level with its top,
-  and nothing is jumped from it. It found the market's well to be a trap (a grate lies over it now).
-- The colour of a place is its biome's (`worldgen/biome/mire.json`: fog, sky, water, leaves, and how much light the
-  sky gives and of what colour), laid over the place by the map's builder. But the game darkens a biome's fog and
-  sky by the hour and paints them orange towards a low sun, and no biome can take that away: a place with a colour
-  of its own has an hour of full day (`PlaceNameBlock.MURK`: noon, so that the sun is overhead and not in the
-  eyes) and makes its own gloom. Clouds stay white whatever the biome: its `cloud_fog_end_distance` hides them.
-- Nothing has more than 1024 health: the game cuts the attribute off there (the Wallower was born with 1300 and had
-  1024). A lord who needs more has a hide (`HIDE` in the entity: the share of a blow that gets through), and
-  `balance.py` counts it.
-- A willow is a stair too: nothing of one that can be stood on is lower than five blocks over the ground.
-- Time does not move; the hours (`PlaceNameBlock.DUSK`, `NIGHT`, `MURK`, `FOREDAWN`) were chosen by looking at pictures
-  (`*_TRIED` in `gen_world.py` takes the same views at other hours). `time set` is for the whole world: with several
-  players in different places the last threshold crossed wins. Before sunrise the game lights the edge of the sky from
-  about 22500 and shows the sun itself from about 22900: 22600 is a glow with no sun in it, 22200 is plain night.
-- A camera set down in a wood looks at bark, a lamp or the back of a tent: the views of such a place stand on its ways
-  (the cells a place keeps free), and a lord is not looked at across the post in the middle of his hollow.
-- A lord whose charge ends against what does not give needs something in his arena that does not give: the Shatun's
-  hollow was a bare ring, with nothing but its walls to lead him into.
-- The world's own ground is grass over three of dirt over stone, and `MapBuilder` clears only what is over it: a place
-  lower than the valley (the sea) writes air into the ground's own layer and whatever it wants below.
-- A fence is a block to the check and a block and a half to the game: a deck one step higher than another, with the
-  lower one's rail beside it, is a way overboard to the check. The Daybreak's deck is one level from end to end, her
-  cabin's roof has no way up, and nothing on her deck stands within two cells of the rail.
-- Fog in the open needs a doorway built for it: posts and a beam on a ship, an arch of rock on a shoal.
-- What the game does to a biome's colours by the hour is in its `data/minecraft/timeline/day.json`: every hour multiplies
-  fog, sky and the sky's light (at 23600 by about 0.7, 0.7 and 0.55). `.ci/ref.txt` lists files of the game's jar to copy
-  into `ci-out/ref/` - that is how its own biomes were read for the shape of `minecraft:audio/ambient_sounds`.
-- Boulders strewn by chance make pits: `Shore.no_pits` fills whatever on the strand is not come to from its way.
-
-Souls and levels. A level costs `100 + 20 n + 2 n^2` souls, `n` being the level less one (`PlayerSoul.levelCost`): it grows
-with the square of the level. (It used to grow by a tenth of itself each level, which is the same to the thirties and
-past the fifties outran anything the dead could leave: 140 thousand for one level in the seventies.) What a place pays
-is tuned to that in `tools/balance.py`, which says how a part of the map is taken to be played (`CLEARED`, `PASSES`,
-`LOST`: three quarters of it fought, more than once because of the vain tries, a tenth lost in stains; and `FARM`, a
-quarter of a clearing more) and what level each lord is meant to be met at (`TARGET`). The rule for a new place: ten
-levels, six before its first lord and four before its second; a lord leaves about two and a half times the cost of the
-level he is met at; the dead of the place are priced so that the script's "meant" line wants about nothing more.
-
-Balance (see `tools/balance.py`): one clearing of the town brings a player to about level 10-12 before the Gravedigger;
-the lower fortress to about 18 before the Overseer; the upper city to about 29 before the Chaplain; the quarry to
-about 35 before the Taskmaster and 39 before the Stone-Eater; the Mire to about 46 before the Wallower and 50 before
-the Weeping Mother; the Firwood to about 55 before the Shatun and 60 before the Elder; the Wharf to about 66 before
-the Helmsman and 70 before the Capsized. The fortress was
-first tuned for a newcomer; its tiers make up for the levels a player now brings to it. When mobs, weapons, tiers or
-the map change, run it again.
+The places, in the order they are played: the Dead Borough (`gen_village.py`; the hub: the yard of the first hearth) ->
+the High Stockade (`gen_map.py`) -> the White Pit (`gen_quarry.py`) -> the Mire (`gen_swamp.py`) -> the Black Firwood
+(`gen_skete.py`) -> the Morning Wharf (`gen_shore.py`). Each is behind a locked gate of the hub whose key lies behind
+the second lord of the place before it. Each has a file in `docs/places/`; how the map is built and checked, and what
+went wrong before, is in `docs/map.md`; what each place pays is in `docs/balance.md`.
