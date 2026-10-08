@@ -960,6 +960,10 @@ public final class ClientSelfTest {
         shot("h6_cast_back");
         attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.CAST, 34);
         shot("h6_cast_gone");
+        // the anchor in the air, as it flies when he has cast it (frozen: it keeps its way and does not fall)
+        command("summon unfading_dawn:thrown_anchor 2.5 " + (GROUND + 3.0) + " 4.0 {NoGravity:1b,Motion:[0.02d,0.014d,0.004d]}");
+        shot("h6_anchor_flying", 6);
+        command("kill @e[type=unfading_dawn:thrown_anchor]");
         attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.CAST, 64);
         shot("h6_haul");
         attack(com.keykeeper.dushi.entity.HelmsmanEntity.class, com.keykeeper.dushi.entity.HelmsmanEntity.SHOULDER, 18);
@@ -1127,6 +1131,11 @@ public final class ClientSelfTest {
         shot("j7_round");
         attack(com.keykeeper.dushi.entity.ScorchedWardenEntity.class, com.keykeeper.dushi.entity.ScorchedWardenEntity.KINDLE, 40);
         shot("j7_kindle");
+        // the shafts of the sun: the wide one that kindles the Warden, and one over a place the sun will strike
+        command("summon unfading_dawn:sun_shaft 0.5 " + GROUND + " 7.0 {Width10:50,Rise:1,Strike:400,Life:600}",
+                "summon unfading_dawn:sun_shaft -3.5 " + GROUND + " 3.5 {Width10:22,Rise:1,Strike:400,Life:600}");
+        shot("j7_sun_shafts", 8);
+        command("kill @e[type=unfading_dawn:sun_shaft]");
         rest();
         phase(2);
         command("time set 18000");

@@ -265,8 +265,9 @@ SHORE = {
         'minecraft:visual/sky_fog_end_distance': 120.0,
         'minecraft:visual/water_fog_color': '#1d3b42',
         'minecraft:visual/water_fog_end_distance': {'argument': 0.7, 'modifier': 'multiply'},
-        # the surf, all the time, and gulls now and then (the shape is the game's own: see its basalt deltas)
-        'minecraft:audio/ambient_sounds': {'loop': f'{MOD}:ambient.shore.surf', 'additions': {'sound': f'{MOD}:ambient.shore.gull', 'tick_chance': 0.003}},
+        # a wave now and then, a gull more seldom (one event, weighted: see gen_sounds.WEIGHTS); about one of them in twenty
+        # seconds, and none of it a loop, so nothing goes on sounding when one has left the shore
+        'minecraft:audio/ambient_sounds': {'additions': {'sound': f'{MOD}:ambient.shore.sea', 'tick_chance': 0.0025}},
     },
     'carvers': [],
     'downfall': 0.5,
@@ -288,7 +289,6 @@ STUBBLE = {
         'minecraft:visual/sky_fog_end_distance': 140.0,
         'minecraft:visual/cloud_fog_end_distance': 128.0,      # a bare sky: the clouds are further off than this
         'minecraft:visual/sky_light_color': '#fff2d2',         # and the light of it is the colour of straw
-        'minecraft:audio/ambient_sounds': {'loop': f'{MOD}:ambient.stubble.heat'},
     },
     'carvers': [],
     'downfall': 0.0,

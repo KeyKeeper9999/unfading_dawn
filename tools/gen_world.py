@@ -130,7 +130,7 @@ class World:
 
     def in_gorge(self, x, z):
         """The floor of the gorge: round the fortress, the yard before the tunnel, and the town."""
-        if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z) or self.shore.inside(x, z) or self.stubble.inside(x, z):
+        if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z) or self.shore.inside(x, z) or self.stubble.owns(x, z):
             return True
         wob = (smooth(x, z, 13, 310) - 0.5) * 8
         if OX - 15 + wob <= x <= OX + 128 + 15 - wob and OZ - 15 + wob <= z <= SPUR[0] - wob * 0.5:
@@ -176,7 +176,7 @@ class World:
             if white > h:
                 h = white
                 self.white.add((x, z))
-            self.height[(x, z)] = int(h)
+            self.height[(x, z)] = int(min(h, self.stubble.slope(x, z)))     # (round the Stubble the plateau falls to it in slopes)
         for (x, z), h in self.height.items():
             if h == 0:
                 if (x, z) in inside and not self.village.inside(x, z):
@@ -200,7 +200,7 @@ class World:
         far = {}
         queue = deque()
         for (x, z) in self.inside:
-            if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z) or self.shore.inside(x, z) or self.stubble.inside(x, z):
+            if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z) or self.shore.inside(x, z) or self.stubble.owns(x, z):
                 continue                                         # (the Mire, the Firwood and the Stubble plant their own; nothing grows on the shore)
             hard = (x, z) in self.keep or any(self.height.get((x + dx, z + dz), 1) > 0 for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)))
             if hard:
@@ -212,15 +212,19 @@ class World:
                 for dz in (-1, 0, 1):
                     n = (x + dx, z + dz)
                     if n in self.inside and n not in far and not self.village.inside(*n) and not self.swamp.inside(*n) and not self.skete.inside(*n) \
-                            and not self.shore.inside(*n) and not self.stubble.inside(*n):
+                            and not self.shore.inside(*n) and not self.stubble.owns(*n):
                         far[n] = far[(x, z)] + 1
                         queue.append(n)
         trees = []
         for (x, z), h in sorted(self.height.items()):
             n = hsh(x, 7, z, 320)
-            if h >= 4 and self.dist[(x, z)] >= 2 and self.stubble.near(x, z):
-                # round the Stubble the plateau is fallow: no fir, a little dry grass
-                if n > 0.9 and b.free(x, GY + h + 1, z) and 'grass' in str(b.get(x, GY + h, z)):
+            if h >= 1 and self.stubble.near(x, z):
+                # round the Stubble the plateau falls to the fields in slopes of grass: hedgerow trees, thicker along the
+                # crest (they hide the gorge behind it), and dry grass; no fir
+                soft = self.stubble.soft[(x, z)]
+                if soft >= 3 and n < (0.16 if 6 <= soft <= 12 else 0.03) and b.free(x, GY + h + 1, z) and 'grass' in str(b.get(x, GY + h, z)):
+                    gen_stubble.tree(b, x, GY + h + 1, z, hsh(x, 12, z, 322))
+                elif n > 0.88 and b.free(x, GY + h + 1, z) and 'grass' in str(b.get(x, GY + h, z)):
                     b.set(x, GY + h + 1, z, 'minecraft:short_dry_grass' if n < 0.97 else 'minecraft:dead_bush')
             elif h >= 4 and self.dist[(x, z)] >= 2:
                 if (x, z) in self.white and (n > 0.006 or 'grass' not in str(b.get(x, GY + h, z))):
@@ -585,14 +589,16 @@ EXTRA_COLOURS = castle.EXTRA_COLOURS + [
     ('bricks', (150, 90, 74)), ('granite', (150, 104, 86)), ('glass', (190, 220, 230)), ('froglight', (250, 220, 120)),
     ('hay_block', (206, 170, 60)), ('tall_grass', (224, 190, 80)), ('dry_grass', (190, 160, 90)), ('sunflower', (250, 210, 40)), ('smooth_stone', (160, 160, 160)),
     ('oak_log', (110, 86, 52)), ('oak_planks', (162, 130, 78)), ('oak_fence', (150, 120, 70)), ('oak_slab', (162, 130, 78)),
+    ('birch_leaves', (112, 150, 64)), ('oak_leaves', (64, 112, 44)), ('birch_log', (214, 212, 200)), ('cornflower', (84, 112, 224)),
+    ('stripped_oak', (182, 150, 100)), ('stripped_spruce', (150, 116, 72)),
 ]
 
 if __name__ == '__main__':
     COLOURS[0:0] = EXTRA_COLOURS
-    PASSABLE_MORE = ('fern', 'short_grass', 'hanging_roots', 'moss_carpet', 'tall_grass', 'dry_grass', 'sunflower')
+    PASSABLE_MORE = ('fern', 'short_grass', 'hanging_roots', 'moss_carpet', 'tall_grass', 'dry_grass', 'sunflower', 'cornflower')
     castle.PASSABLE = castle.PASSABLE + PASSABLE_MORE
     castle.CLEAR = castle.CLEAR + ('fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water', 'hanging_roots', 'waterlogged=true',
-                                   'brown_mushroom', 'red_mushroom', 'tall_grass', 'dry_grass', 'sunflower')
+                                   'brown_mushroom', 'red_mushroom', 'tall_grass', 'dry_grass', 'sunflower', 'cornflower')
     w = World()
     b = w.build()
     built = len([1 for s in b.cells.values() if s != AIR])

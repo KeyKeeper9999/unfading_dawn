@@ -100,6 +100,19 @@ public final class SoulsHud {
         }
     }
 
+    /** The stamina bar is drawn before the game's own pieces, so that a lord's bar, which is drawn later, lies over it. */
+    @SubscribeEvent
+    static void onRenderGuiFirst(RenderGuiEvent.Pre event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        LocalPlayer player = minecraft.player;
+        if (player == null || minecraft.gui.hud.isHidden()) {
+            return;
+        }
+        if (SoulMechanics.plays(player)) {
+            staminaBar(event.getGuiGraphics(), PlayerSoul.of(player));
+        }
+    }
+
     @SubscribeEvent
     static void onRenderGui(RenderGuiEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
@@ -109,9 +122,6 @@ public final class SoulsHud {
         }
         GuiGraphicsExtractor graphics = event.getGuiGraphics();
         PlayerSoul soul = PlayerSoul.of(player);
-        if (SoulMechanics.plays(player)) {
-            staminaBar(graphics, soul);
-        }
         if (!player.isSpectator()) {
             souls(graphics, minecraft.font, player, soul);
         }

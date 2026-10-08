@@ -11,10 +11,9 @@
       "modifier": "multiply"
     },
     "minecraft:audio/ambient_sounds": {
-      "loop": "unfading_dawn:ambient.shore.surf",
       "additions": {
-        "sound": "unfading_dawn:ambient.shore.gull",
-        "tick_chance": 0.003
+        "sound": "unfading_dawn:ambient.shore.sea",
+        "tick_chance": 0.0025
       }
     }
   },

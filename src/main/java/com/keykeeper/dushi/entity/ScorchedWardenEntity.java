@@ -77,6 +77,9 @@ public class ScorchedWardenEntity extends SoulsMob {
     public static final double FALL_REACH = 4.6;
     public static final double SUN_RADIUS = 2.3;
     public static final int SUN_DELAY = 32;
+    /** How wide the shaft of light stands over a place the sun will strike, and the one that kindles the Warden. */
+    public static final float SHAFT_WIDTH = 2.2F;
+    public static final float KINDLE_SHAFT_WIDTH = 5.0F;
     public static final double EMBER_RADIUS = 1.7;
     /** The share of a blow that gets through to it (nothing has more than 1024 health; it needs more). */
     public static final float HIDE = 0.42F;
@@ -249,9 +252,9 @@ public class ScorchedWardenEntity extends SoulsMob {
                 boolean far = this.distanceTo(target) > THRESH_REACH + 1.5;
                 float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.75F;
                 Vec3 lead = target.getDeltaMovement().multiply(1.0, 0.0, 1.0).scale(far ? 14.0 : 8.0);
-                this.strikeLater(ground(level, target.getX() + lead.x, target.getY(), target.getZ() + lead.z), SUN_DELAY, SUN_RADIUS, damage, true);
+                this.sunStrike(level, ground(level, target.getX() + lead.x, target.getY(), target.getZ() + lead.z), SUN_DELAY, damage);
                 if (far) {
-                    this.strikeLater(ground(level, target.getX(), target.getY(), target.getZ()), SUN_DELAY + 12, SUN_RADIUS, damage, true);
+                    this.sunStrike(level, ground(level, target.getX(), target.getY(), target.getZ()), SUN_DELAY + 12, damage);
                 }
                 this.sunCooldown = far ? 50 + this.random.nextInt(20) : 90 + this.random.nextInt(40);
             }
@@ -272,6 +275,12 @@ public class ScorchedWardenEntity extends SoulsMob {
                 level.sendParticles(ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + this.getBbHeight(), this.getZ(), 1, 0.5, 0.3, 0.5, 0.01);
             }
         }
+    }
+
+    /** The sun strikes where it is shown, {@code delay} ticks on: a shaft of its light stands there until then, and flares. */
+    private void sunStrike(ServerLevel level, Vec3 at, int delay, float damage) {
+        this.strikeLater(at, delay, SUN_RADIUS, damage, true);
+        SunShaftEntity.shine(level, at, SHAFT_WIDTH, delay, delay, delay + 10);
     }
 
     private void straw(ServerLevel level, Vec3 at, int count, double spread) {
@@ -326,6 +335,8 @@ public class ScorchedWardenEntity extends SoulsMob {
             case KINDLE -> {
                 if (time == KINDLE_LIGHT) {
                     this.playSound(Dushi.sound("entity.sun.gather"), 3.0F, 0.7F);
+                    // the sun itself comes down on it: a shaft wider than the Warden, from now until it catches
+                    SunShaftEntity.shine(level, this.position(), KINDLE_SHAFT_WIDTH, 8, KINDLE_BURST - KINDLE_LIGHT, KINDLE_BURST - KINDLE_LIGHT + 16);
                 }
                 if (time >= KINDLE_LIGHT && time < KINDLE_BURST && time % 2 == 0) {
                     // the light gathers on the Warden itself, and it begins to smoke

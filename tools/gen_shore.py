@@ -421,8 +421,17 @@ class Shore:
         c0, r0, c1, r1 = SPECIAL['o']
         x0, z0, x1, z1, top = p.house(c0, r0, c1, r1, 931, hollow=True, doors=(('w', 5),), storeys=2, style=4, door_height=3)
         cx, cz = (x0 + x1) // 2, (z0 + z1) // 2
-        b.hearth(cx + 1, g + 1, cz, 'harbour')
-        b.set(cx + 1, g, cz, 'minecraft:stone_bricks')
+        # the port's hearth is not in it, where it was missed, but under the cliff where the passage comes out: on a step
+        # of stone between two lamps, beside Sea Lane, the first thing seen of the port that is not the dead
+        hx, hz = MOUTH + 6, PZ + 2
+        for x in range(hx - 1, hx + 2):
+            for z in range(hz - 1, hz + 2):
+                b.set(x, g, z, 'minecraft:stone_bricks' if (x, z) != (hx, hz) else 'minecraft:chiseled_stone_bricks')
+        b.hearth(hx, g + 1, hz, 'harbour')
+        for x in (hx - 2, hx + 2):
+            b.set(x, g + 1, hz, FENCE)
+            b.set(x, g + 2, hz, FENCE)
+            b.set(x, g + 3, hz, 'minecraft:lantern[hanging=false,waterlogged=false]')
         b.loot(x1 - 1, g + 1, z0 + 1, 'wharf_office', 'west')
         b.set(x1 - 1, g + 1, z1 - 1, 'minecraft:lectern[facing=west,has_book=false,powered=false]')
         b.set(x1 - 1, g + 1, z1 - 2, 'minecraft:barrel[facing=up]')

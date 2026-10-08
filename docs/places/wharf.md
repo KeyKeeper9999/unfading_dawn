@@ -9,7 +9,7 @@ Part of the map "Вышний Острог". What is common to the whole map is 
   (`worldgen/biome/shore.json`, which also gives it its surf and its gulls). It is entered by the Sea Gate, the old
   south gate of the yard of the first hearth (`locked_gate[lock=shore]`); its key lies in the candle store behind the
   Elder. Sea Gate -> a passage under the plateau (the clock is turned in its cross leg) -> the port: the town's own
-  houses on a grid of their own (`gen_shore.Port` is a `gen_village.Village`), the harbour office (hearth, anvil), the
+  houses on a grid of their own (`gen_shore.Port` is a `gen_village.Village`), the harbour office (an anvil; the port's hearth `harbour`, «Под обрывом», is under the cliff where the passage comes out, beside Sea Lane, between two lamps: inside the office it was missed), the
   net loft, the boat shed -> the quay -> the long pier -> the koch "Daybreak" at its end (the Helmsman, on her deck:
   fog on the gangway from the pier, a seal on the one over her other side) -> the old mole (a gap to jump, a slump to
   the water) -> the Long Spit: flat sand, wet at its edges, a long hook round the roads where three ships lie at
@@ -37,3 +37,10 @@ Part of the map "Вышний Острог". What is common to the whole map is 
   biome `unfading_dawn:shore`, is warned, held down and taken (a sixth of their health every half second after a moment's
   grace); the stain is left where they last stood. `waterDepth` counts the column. The map's check knows the same cells
   (`Map.undertow`, filled by `gen_shore.py`), so nothing is "reached" through deep water.
+- The sea is heard as single waves and gulls (`ambient.shore.sea`, an addition of the biome about once in twenty
+  seconds, waves three times as often as gulls: `gen_sounds.WEIGHTS`), not as a loop: a loop went on under the game's
+  music, and was still heard after one had gone back up the passage.
+- A gull lets whoever it hunts go, and flies back to its mark, when they are within `SkuaEntity.LORD_GROUND` of a
+  living lord: it does not follow anybody onto the Daybreak or into the shoal.
+- The Helmsman's cast anchor is drawn as the anchor itself (`AnchorRenderer`, `tools/gen_anchor.py`: the anchor of his
+  hand, its crown leading the way it flies, turning slowly over its shank).

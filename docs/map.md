@@ -79,6 +79,8 @@ Things learnt the hard way:
   hollow was a bare ring, with nothing but its walls to lead him into.
 - The world's own ground is grass over three of dirt over stone, and `MapBuilder` clears only what is over it: a place
   lower than the valley (the sea) writes air into the ground's own layer and whatever it wants below.
+- A fence or a wall is not stepped up on from the ground beside it (`rail` in `gen_map.analyse`); from anything a block
+  high beside it, it is - so a fence that is to keep a place in has nothing a block high within a cell of it.
 - A fence is a block to the check and a block and a half to the game: a deck one step higher than another, with the
   lower one's rail beside it, is a way overboard to the check. The Daybreak's deck is one level from end to end, her
   cabin's roof has no way up, and nothing on her deck stands within two cells of the rail.

@@ -1635,7 +1635,7 @@ PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'l
 # what one cannot stand on: thin things, and things one stands in rather than on
 NO_FOOTING = ('mob_mark', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'chain', 'fog_gate', 'iron_bars', 'ladder', 'campfire', 'banner',
               'carpet', 'place_name', 'minecraft:light', 'minecraft:water', 'waterlogged=true', 'lily_pad', 'shallows', 'sludge', 'sugar_cane', 'hanging_moss',
-              'firefly_bush', 'short_grass', 'fern', 'seagrass', 'tall_grass', 'dry_grass', 'sunflower')
+              'firefly_bush', 'short_grass', 'fern', 'seagrass', 'tall_grass', 'dry_grass', 'sunflower', 'cornflower')
 # what is opened, in this order, and what the report calls the game from then on (a lord's name: his seals lift)
 STAGES = (('gravedigger', 'after the Gravedigger'), ('overseer', 'after the Overseer'), ('chaplain', 'after the Chaplain'),
           ('quarry_key', "with the key of the Quarrymen's Gate"), ('taskmaster', 'after the Taskmaster'), ('stone_eater', 'after the Stone-Eater'),
@@ -1708,6 +1708,14 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
 
     falls = set()          # places from which a step leads into the void
 
+    def rail(c):
+        """A fence or a wall: a block and a half high in the game, so not stepped up on from the ground beside it."""
+        s = cells.get(c)
+        if s is None or s == AIR:
+            return False
+        name = (s[2] if isinstance(s, tuple) else s).split('[')[0]
+        return name.endswith(('_fence', '_wall', '_fence_gate'))
+
     def neighbours(c, od, os_):
         x, y, z = c
         swimming = wet(c)
@@ -1724,7 +1732,7 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
                 if reach > 1 and any(solid((x + dx * r, y + h, z + dz * r), od, os_) for r in range(1, reach) for h in (0, 1, 2)):
                     break
                 if reach == 1:
-                    if stands((nx, y + 1, nz), od, os_) and not solid((x, y + 2, z), od, os_):
+                    if stands((nx, y + 1, nz), od, os_) and not solid((x, y + 2, z), od, os_) and not rail((nx, y, nz)):
                         yield (nx, y + 1, nz)
                 if solid((nx, y, nz), od, os_) or solid((nx, y + 1, nz), od, os_):
                     break

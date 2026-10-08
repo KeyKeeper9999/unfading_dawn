@@ -23,7 +23,7 @@ import net.minecraft.util.Mth;
 public class SungazerModel extends EntityModel<BossRenderState> {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(Dushi.id("sungazer"), "main");
     /** Must match SCALE in tools/gen_sungazer.py. */
-    private static final float MODEL_SCALE = 1.1F;
+    private static final float MODEL_SCALE = 1.375F;
 
     private final ModelPart all;
     private final ModelPart stem;

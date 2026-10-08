@@ -1026,21 +1026,39 @@
       "unfading_dawn:capsized/knock2"
     ]
   },
-  "ambient.shore.surf": {
-    "subtitle": "subtitles.unfading_dawn.ambient.shore.surf",
+  "ambient.shore.sea": {
+    "subtitle": "subtitles.unfading_dawn.ambient.shore.sea",
     "sounds": [
       {
-        "name": "unfading_dawn:shore/surf",
-        "stream": true
+        "name": "unfading_dawn:shore/wave1",
+        "weight": 3,
+        "volume": 0.55
+      },
+      {
+        "name": "unfading_dawn:shore/wave2",
+        "weight": 3,
+        "volume": 0.55
+      },
+      {
+        "name": "unfading_dawn:shore/wave3",
+        "weight": 3,
+        "volume": 0.55
+      },
+      {
+        "name": "unfading_dawn:shore/gull1",
+        "weight": 1,
+        "volume": 0.45
+      },
+      {
+        "name": "unfading_dawn:shore/gull2",
+        "weight": 1,
+        "volume": 0.45
+      },
+      {
+        "name": "unfading_dawn:shore/gull3",
+        "weight": 1,
+        "volume": 0.45
       }
-    ]
-  },
-  "ambient.shore.gull": {
-    "subtitle": "subtitles.unfading_dawn.ambient.shore.gull",
-    "sounds": [
-      "unfading_dawn:shore/gull1",
-      "unfading_dawn:shore/gull2",
-      "unfading_dawn:shore/gull3"
     ]
   },
   "player.undertow": {
@@ -1330,15 +1348,6 @@
     "subtitle": "subtitles.unfading_dawn.entity.flour.blast",
     "sounds": [
       "unfading_dawn:flour/blast"
-    ]
-  },
-  "ambient.stubble.heat": {
-    "subtitle": "subtitles.unfading_dawn.ambient.stubble.heat",
-    "sounds": [
-      {
-        "name": "unfading_dawn:stubble/heat",
-        "stream": true
-      }
     ]
   },
   "entity.keykeeper.ambient": {

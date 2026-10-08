@@ -141,6 +141,10 @@ public class SkuaEntity extends SoulsMob {
             return;                                              // (the stoop flies itself: see attackTick)
         }
         LivingEntity target = this.getTarget();
+        if (target != null && lordNear(level, target)) {
+            this.setTarget(null);                                // (a gull does not follow anybody into a lord's ground)
+            target = null;
+        }
         Vec3 want;
         if (target != null && target.isAlive()) {
             // round over their head, out of reach
@@ -162,6 +166,14 @@ public class SkuaEntity extends SoulsMob {
         Vec3 pull = far < 0.05 ? Vec3.ZERO : to.scale(Math.min(0.34, far * 0.12) / far);
         this.setDeltaMovement(this.getDeltaMovement().scale(0.8).add(pull.scale(0.4)));
         this.face(this.getDeltaMovement());
+    }
+
+    /** How near a living lord whoever it hunts may come before it lets them go and flies back. */
+    public static final double LORD_GROUND = 24.0;
+
+    private static boolean lordNear(ServerLevel level, LivingEntity target) {
+        return !level.getEntitiesOfClass(SoulsMob.class, target.getBoundingBox().inflate(LORD_GROUND, 10.0, LORD_GROUND),
+                mob -> mob.isBoss() && mob.isAlive()).isEmpty();
     }
 
     private void face(Vec3 way) {

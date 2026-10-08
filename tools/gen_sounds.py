@@ -1333,29 +1333,24 @@ for k in (0, 1):
 
 
 # the shore itself: surf on sand that never quite draws back, gulls, and what the sea does to whoever swims
-def surf(d, waves):
-    """A loop: `waves` swells in it, each a hiss that climbs the sand and a slower suck back; it ends as it begins."""
+
+
+def wave(d, salt):
+    """One wave, now and then rather than all the time: the hiss of it climbing the sand, and the slower draw back."""
+    r = np.random.default_rng(salt)
     n = int(SR * d)
     x = np.arange(n) / n
-    swell = np.zeros(n)
-    for i in range(waves):
-        c = (i + 0.37 + 0.11 * np.sin(i * 2.3)) / waves
-        w = 0.085 + 0.02 * np.cos(i * 1.7)
-        dist = np.minimum(np.abs(x - c), 1.0 - np.abs(x - c))
-        rise = np.where(((x - c + 0.5) % 1.0) < 0.5, np.exp(-(dist / (w * 0.55)) ** 2), np.exp(-(dist / (w * 1.7)) ** 2))
-        swell += rise * (0.8 + 0.2 * np.cos(i * 3.1))
-    base = noise(d)
-    hiss = bandpass(base, 900, 6000) * swell ** 1.5
-    wash = lowpass(noise(d), 500, 3) * (0.35 + 0.65 * swell) * 2.2
-    far = lowpass(noise(d), 140, 3) * 2.6
-    out = hiss * 0.9 + wash + far
-    # (the ends are the same noise seen through the same swell: a short crossfade makes the join seamless)
-    k = int(SR * 0.25)
-    out[:k] = out[:k] * np.linspace(0, 1, k) + out[-k:] * np.linspace(1, 0, k)
-    return out[:n - k]
+    c = 0.3 + r.uniform(-0.04, 0.05)
+    rise = np.where(x < c, np.exp(-((x - c) / 0.15) ** 2), np.exp(-((x - c) / (0.3 + r.uniform(0, 0.06))) ** 2))
+    hiss = bandpass(noise(d), 900, 5600) * rise ** 1.6 * 0.8
+    wash = lowpass(noise(d), 480, 3) * (0.2 + 0.8 * rise) * 2.0
+    far = lowpass(noise(d), 140, 3) * 1.4
+    fade = np.minimum(1.0, x / 0.08) * np.minimum(1.0, (1.0 - x) / 0.25)
+    return (hiss + wash + far) * fade
 
 
-S['shore/surf'] = surf(9.25, 2)
+for k in (0, 1, 2):
+    S[f'shore/wave{k + 1}'] = wave(5.6 + 0.7 * k, 2400 + k)
 for k in (0, 1, 2):
     S[f'shore/gull{k + 1}'] = reverb(place(2.4, *[(0.1 + 0.34 * i + 0.05 * ((i + k) % 2), bird_cry(0.3, 1900 - 160 * k + 60 * ((i * 3 + k) % 3), 1500 - 140 * k, 0.35) * (0.22 - 0.03 * i))
                                                   for i in range(3 + k)]), 2.6, 0.6, 1.6, 3800) * 0.6
@@ -1559,27 +1554,6 @@ S['flour/blast'] = reverb(place(d, (0.0, thump(1.2, 100, 22, 0.25) * 3.0), (0.0,
                                 (0.2, fire(1.4, 700, 60, 10) * decay(1.4, 0.4) * 1.0)), 1.4, 0.3, 0.8)
 
 
-def heat(d):
-    """The field in the afternoon: grasshoppers, a great many, each sawing in its own time, and no wind under them.
-    It loops: every voice is a whole number of its own periods long."""
-    r = np.random.default_rng(1790)
-    n = int(SR * d)
-    x = np.zeros(n)
-    tt = np.arange(n) / SR
-    for i in range(14):
-        f = r.uniform(3600, 7200)
-        beats = int(r.integers(2, 6))                            # bursts in the loop
-        chirr = r.uniform(26, 44)
-        phase = r.uniform(0, 1)
-        on = np.clip(np.sin(2 * np.pi * (beats * tt / d + phase)) * 3.0 - 0.6, 0.0, 1.0)
-        saw_ = 0.5 + 0.5 * np.sign(np.sin(2 * np.pi * round(chirr * d) * tt / d))
-        carrier = np.sin(2 * np.pi * round(f * d) * tt / d) + 0.5 * np.sin(2 * np.pi * round(f * 1.31 * d) * tt / d)
-        x += carrier * on * saw_ * r.uniform(0.03, 0.1)
-    hum = np.sin(2 * np.pi * round(118 * d) * tt / d) * 0.012 + np.sin(2 * np.pi * round(177 * d) * tt / d) * 0.008
-    return x + hum
-
-
-S['stubble/heat'] = heat(9.0)
 
 EVENTS = {
     'entity.withered.ambient': ['withered/ambient1', 'withered/ambient2', 'withered/ambient3'],
@@ -1667,7 +1641,7 @@ EVENTS = {
     'entity.capsized.death': ['capsized/death'], 'entity.capsized.rise': ['capsized/rise'], 'entity.capsized.snap': ['capsized/snap'],
     'entity.capsized.creak': ['capsized/creak1', 'capsized/creak2'], 'entity.capsized.slam': ['capsized/slam'],
     'entity.capsized.knock': ['capsized/knock1', 'capsized/knock2'],
-    'ambient.shore.surf': ['shore/surf'], 'ambient.shore.gull': ['shore/gull1', 'shore/gull2', 'shore/gull3'],
+    'ambient.shore.sea': ['shore/wave1', 'shore/wave2', 'shore/wave3', 'shore/gull1', 'shore/gull2', 'shore/gull3'],
     'player.undertow': ['player/undertow'],
     'entity.fieldhand.ambient': ['fieldhand/ambient1', 'fieldhand/ambient2'], 'entity.fieldhand.hurt': ['fieldhand/hurt'], 'entity.fieldhand.death': ['fieldhand/death'],
     'entity.fieldhand.sickle': ['fieldhand/sickle'], 'entity.fieldhand.scythe': ['fieldhand/scythe'], 'entity.fieldhand.sack': ['fieldhand/sack'],
@@ -1685,7 +1659,7 @@ EVENTS = {
     'entity.miller.ambient': ['miller/ambient1', 'miller/ambient2'], 'entity.miller.hurt': ['miller/hurt'], 'entity.miller.death': ['miller/death'],
     'entity.miller.swing': ['miller/swing'], 'entity.miller.slam': ['miller/slam'], 'entity.miller.shout': ['miller/shout'], 'entity.miller.lantern': ['miller/lantern'],
     'entity.millstone.rumble': ['millstone/rumble'], 'entity.millstone.check': ['millstone/check'], 'entity.millstone.crash': ['millstone/crash'],
-    'entity.flour.puff': ['flour/puff'], 'entity.flour.blast': ['flour/blast'], 'ambient.stubble.heat': ['stubble/heat'],
+    'entity.flour.puff': ['flour/puff'], 'entity.flour.blast': ['flour/blast'],
     'entity.keykeeper.ambient': ['keykeeper/ambient1', 'keykeeper/ambient2'],
     'entity.keykeeper.give': ['keykeeper/give'],
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],
@@ -1700,6 +1674,11 @@ EVENTS = {
     'music.boss': ['music/boss'],
 }
 
+# how often one sound of an event comes before another, and how loud: the sea's waves three times as often as its gulls,
+# and both quiet, so that they are heard under the game's music and not over it
+WEIGHTS = {'shore/wave1': {'weight': 3, 'volume': 0.55}, 'shore/wave2': {'weight': 3, 'volume': 0.55}, 'shore/wave3': {'weight': 3, 'volume': 0.55},
+           'shore/gull1': {'weight': 1, 'volume': 0.45}, 'shore/gull2': {'weight': 1, 'volume': 0.45}, 'shore/gull3': {'weight': 1, 'volume': 0.45}}
+
 if __name__ == '__main__':
     check = sys.argv[1] if len(sys.argv) > 1 else None
     used = {n for names in EVENTS.values() for n in names}
@@ -1712,7 +1691,7 @@ if __name__ == '__main__':
         if only_new and os.path.exists(f'{A}/sounds/{name}.ogg'):
             continue
         x = highpass(np.asarray(x, float), 25)
-        if name not in ('music/boss', 'shore/surf', 'stubble/heat'):                # (a loop keeps its ends)
+        if name not in ('music/boss',):                                         # (a loop keeps its ends)
             x[:64] *= np.linspace(0, 1, 64)
             x[-400:] *= np.linspace(1, 0, 400)
         x = x / (np.max(np.abs(x)) + 1e-9) * (0.8 if name.startswith('music') else 0.89)
@@ -1729,7 +1708,8 @@ if __name__ == '__main__':
             os.remove(wav)
     sounds = {}
     for event, names in EVENTS.items():
-        entries = [{'name': f'{MOD}:{n}', 'stream': True} if n.startswith('music') or n in ('shore/surf', 'stubble/heat') else f'{MOD}:{n}' for n in names]
+        entries = [{'name': f'{MOD}:{n}', 'stream': True} if n.startswith('music') else (dict(name=f'{MOD}:{n}', **WEIGHTS[n]) if n in WEIGHTS else f'{MOD}:{n}')
+                   for n in names]
         sounds[event] = {'subtitle': f'subtitles.{MOD}.{event}', 'sounds': entries}
     with open(f'{A}/sounds.json', 'w') as fh:
         json.dump(sounds, fh, indent=2)

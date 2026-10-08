@@ -12,6 +12,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
@@ -37,7 +40,7 @@ public class SungazerEntity extends SoulsMob {
     public static final int LASH = 2;
     public static final int LASH_DURATION = 36;
     public static final int LASH_IMPACT = 15;
-    public static final double REACH = 2.6;
+    public static final double REACH = 3.2;
     public static final double SPOT_RADIUS = 1.15;
     /** Blocks a tick: a man walks a little faster than this, and runs much faster. */
     public static final double SPOT_SPEED = 0.19;
@@ -60,6 +63,10 @@ public class SungazerEntity extends SoulsMob {
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(2, new SoulsCombatGoal(this, 1.0));
+        // it goes about the corn slowly, its head over the ears, looking for whoever is in it
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.5));
+        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 16.0F));
+        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }

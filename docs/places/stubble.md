@@ -4,25 +4,40 @@ Part of the map "Вышний Острог". What is common to the whole map is 
 
 ## The place
 
-- The Stubble (`tools/gen_stubble.py`), three hollows of the plateau west of the town, at an hour of its own: the
-  afternoon of a harvest day, the sun high and white (`PlaceNameBlock.AFTERNOON`, 8000). Its haze, its sky, its
-  grasshoppers and the colour of its corn are its biome's (`worldgen/biome/stubble.json`): the corn, standing and cut,
+- The Stubble (`tools/gen_stubble.py`), the low country west of the town, at an hour of its own: the
+  afternoon of a harvest day, the sun high and white (`PlaceNameBlock.AFTERNOON`, 8000). Its haze, its sky and the
+  colour of its corn are its biome's (`worldgen/biome/stubble.json`; it has no sound of its own: a loop of grasshoppers
+  was a squeal that hurt the ears, and was taken out): the corn, standing and cut,
   is the game's own grass (`tall_grass`, `short_dry_grass`, turf) in the biome's `grass_color`. The sky is bare and blue
-  (`cloud_fog_end_distance` puts the clouds out of sight) and the light of it straw-coloured (`sky_light_color`). The plateau within ten
-  blocks of the place is left without firs (`Stubble.near`, asked by `gen_world.woods`) and has the same biome.
+  (`cloud_fog_end_distance` puts the clouds out of sight) and the light of it straw-coloured (`sky_light_color`).
+- It is not shut in by rock. West of `OPEN_X` and north to `OPEN_Z` the plateau is gone (`Stubble.lowland`, asked by
+  `gen_world.in_gorge`): the open country, level with the place, planted by `Stubble.country` - long strips of corn,
+  stubble with stooks and fallow, balks and hedges between them, cornflowers in the rye, a cart track north into the
+  haze, five post mills, and a belt of oak and birch along the edge of the map with the world's own forest behind it.
+  The place is the part of it a fence keeps to (`Stubble.fences`: wattle on posts on every edge cell, `Stubble.edge`,
+  with open ground or a walkable slope beyond; a stake more wherever two lengths touch only at a corner). Elsewhere the
+  plateau falls to the place and the country in slopes of grass (`Stubble.slope`: a block in four thirds, sixteen
+  blocks out, asked by `gen_world.land`), with hedgerow trees, thicker along the crest north of the fields where they
+  hide the fortress's gorge; it stays rock only over the passage and behind the granary (`Stubble.rock`).
+- Nothing a block high stands within a cell of a fence cell (`clear_of_fences`): a fence is a block and a half, and
+  from a stook or a bale one steps over it. The check knows a fence is not stepped up on from the ground beside it
+  (`gen_map.analyse`, `rail`).
   `tools/preview_stubble.py DIR` builds the place alone, in a second, for looking at.
 - It is entered by the Reapers' Gate, a grate in the west cliff of the yard between the road tunnel and the town's north
   gate, across from the Wood Wicket (`locked_gate[lock=stubble]`); its key hangs in the lamp room of the lighthouse
   (the chest `lighthouse_lamp`). Gate -> a passage under the plateau (the clock is turned in its cross leg) -> the balk
   (hearth `balk`, an anvil) -> the fields: a cart road west, cut land with rows of stooks first, then standing corn
-  (two cut patches off the road: a chest, a shard) -> a way through the rock (fog) -> the Watched Field, a round cut
-  field (the Scorched Warden on a cross built of blocks two cells behind his mark; five lean-tos of straw: under their
-  roofs the sun does not strike) -> a way through the rock (sealed) -> the threshing yard (hearth `kiln` in the drying
-  barn; the threshing floor; two barns, a chest in one) -> the Great Mill, its back to the rock (fog in its west door;
-  the Hollow Miller on the grinding floor; its east door sealed) -> the granary in the rock behind it (hearth
-  `granary`, a chest, and a grate nothing opens: `Stubble.barred`).
-- North of the mill the corn still stands, and a door in the rock (`gen_stubble.DOOR`, a lever on the yard's side)
-  is the short way from the threshing yard back to the fields.
+  (two cut patches off the road: a chest, a shard) -> a lane between fences, a gate of timber with fog in it -> the
+  Watched Field, a round cut field in a hedge of leaves four high and three through (the Scorched Warden on a cross
+  built of blocks two cells behind his mark, his head seen over the hedge; five lean-tos of straw: under their roofs
+  the sun does not strike) -> a gate (sealed), a lane -> the threshing yard (hearth `kiln` in the drying barn; the
+  threshing floor; two barns, a chest in one) -> the Great Mill, a tower mill: its round stone foot is the grinding
+  floor (fog in its west door; the Hollow Miller; its east door sealed), over it a gallery with a rail, a tower of
+  boards on eight ribs narrowing to a cap, and four lattice sails at the top facing the yard (`TOWER_R`, `TOWER_H`,
+  `SAIL`) -> the granary, a house of field stone under straw against the rock behind the mill, with no door but the
+  mill's (hearth `granary`, a chest, and a grate into the rock nothing opens: `Stubble.barred`).
+- North of the mill the corn still stands, behind the fence the fields end at (`FENCE_Z`); a door in it
+  (`gen_stubble.DOOR`, iron between two posts, a lever on the corn's side) is the short way back to the fields.
 - Everything is on the valley's level. The two lords' marks are more than forty blocks apart either way, so that the
   Warden's death does not lift the Miller's seal.
 
@@ -46,12 +61,17 @@ Part of the map "Вышний Острог". What is common to the whole map is 
   a moment ago (`HEEDLESS`). Its arms do not bend: its blows are turns of the whole of it.
 - `StookEntity` (`tools/gen_stook.py`): stands as a stook until somebody is near; falls on its prey and lies a moment
   (struck harder then); shakes out chaff that blinds. Fire does three times its hurt, and alight it runs.
+- The scorched and the sungazer stand three blocks high and go about the corn (they stroll), looking over it.
 - `SungazerEntity` (`tools/gen_sungazer.py`): a patch of light that creeps over the ground after its prey at less than
   a walk for three and a half seconds (`GAZE`), burning what it passes over; struck from behind its face it takes
   half as much again.
 - `ScorchedWardenEntity`: on its cross (phase 1) it cannot walk (its speed is 0: `setPhase` sets it) and turns after
   its prey; the sun strikes for it (`strikeLater` from above, drawn as gathering light; nobody under a roof is hurt:
-  `sunlit`), oftener the further off they stand. Under 55% it catches (`KINDLE`), comes down (phase 2, speed 0.29),
+  `sunlit`), oftener the further off they stand. Each strike is shown by a shaft of light from the sky that widens
+  until it lands and flares (`SunShaftEntity`, drawn by `SunShaftRenderer` with `tools/gen_beam.py`'s soft box, see-
+  through and shining); a summon gives one its size (`Width10`, `Rise`, `Strike`, `Life`). Under 55% it catches
+  (`KINDLE`): a shaft five blocks wide stands on it from `KINDLE_LIGHT` until it burns at `KINDLE_BURST`, and it
+  comes down (phase 2, speed 0.29),
   burns whoever is close and burns down itself by a little every second. Lying after `FALL` it is `open()`.
   Left alone it goes back to its mark (`onReset`).
 - `HollowMillerEntity` and `MillstoneEntity`: the stone on its beam is an entity of its own, a `SoulsMob` only so as

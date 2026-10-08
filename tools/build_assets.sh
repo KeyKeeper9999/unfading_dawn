@@ -23,6 +23,8 @@ python3 tools/gen_wisp.py ${P:+$P/wisp.png}
 python3 tools/gen_wallower.py ${P:+$P/wallower.png}
 python3 tools/gen_mother.py ${P:+$P/mother.png}
 python3 tools/gen_root.py ${P:+$P/root.png}
+python3 tools/gen_anchor.py ${P:+$P/anchor.png}
+python3 tools/gen_beam.py ${P:+$P/beam.png}
 python3 tools/gen_sect.py ${P:+$P/sect.png}
 python3 tools/gen_waxen.py ${P:+$P/waxen.png}
 python3 tools/gen_moth.py ${P:+$P/moth.png}

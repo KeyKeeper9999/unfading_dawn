@@ -9,7 +9,7 @@ from modelkit import Box, Model, Painter, blotch, mix, shade, sheet
 
 A = 'src/main/resources/assets/unfading_dawn'
 JAVA = 'src/main/java/com/keykeeper/dushi/client/SungazerModel.java'
-SCALE = 1.1           # must match MODEL_SCALE in SungazerModel.java
+SCALE = 1.375           # must match MODEL_SCALE in SungazerModel.java
 
 M = Model(64, 64, SCALE)
 # Three roots it has pulled out of the ground and goes on; a stalk as thick as a wrist, hairy; two great leaves it

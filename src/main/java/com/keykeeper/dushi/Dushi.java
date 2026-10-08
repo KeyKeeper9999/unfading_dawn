@@ -144,7 +144,7 @@ public class Dushi {
             "entity.helmsman.chain", "entity.helmsman.shout",
             "entity.capsized.ambient", "entity.capsized.hurt", "entity.capsized.death", "entity.capsized.rise", "entity.capsized.snap",
             "entity.capsized.creak", "entity.capsized.slam", "entity.capsized.knock",
-            "ambient.shore.surf", "ambient.shore.gull", "player.undertow",
+            "ambient.shore.sea", "player.undertow",
             "entity.fieldhand.ambient", "entity.fieldhand.hurt", "entity.fieldhand.death", "entity.fieldhand.sickle", "entity.fieldhand.scythe",
             "entity.fieldhand.sack", "entity.scorched.ambient", "entity.scorched.hurt", "entity.scorched.death", "entity.scorched.flare",
             "entity.scarecrow.creak", "entity.scarecrow.hurt", "entity.scarecrow.death", "entity.scarecrow.wake", "entity.scarecrow.spin",
@@ -154,7 +154,7 @@ public class Dushi {
             "entity.warden.kindle", "entity.warden.roar", "entity.sun.gather", "entity.sun.burn",
             "entity.miller.ambient", "entity.miller.hurt", "entity.miller.death", "entity.miller.swing", "entity.miller.slam",
             "entity.miller.shout", "entity.miller.lantern", "entity.millstone.rumble", "entity.millstone.check", "entity.millstone.crash",
-            "entity.flour.puff", "entity.flour.blast", "ambient.stubble.heat",
+            "entity.flour.puff", "entity.flour.blast",
             "block.hearth.rest", "block.fog_gate.pass",
             "item.flask.drink", "item.flask.empty", "item.spell.shard", "item.spell.shard_hit", "item.spell.mend", "item.spell.rebuke",
             "item.spell.fire", "item.spell.fire_burst", "item.spell.fizzle",
@@ -591,7 +591,7 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.HarpoonEntity>> HARPOON_ENTITY = ENTITIES.registerEntityType(
             "thrown_harpoon", com.keykeeper.dushi.entity.HarpoonEntity::new, MobCategory.MISC, b -> b.sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(3));
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.AnchorEntity>> ANCHOR_ENTITY = ENTITIES.registerEntityType(
-            "thrown_anchor", com.keykeeper.dushi.entity.AnchorEntity::new, MobCategory.MISC, b -> b.sized(0.9F, 0.9F).clientTrackingRange(8).updateInterval(3));
+            "thrown_anchor", com.keykeeper.dushi.entity.AnchorEntity::new, MobCategory.MISC, b -> b.sized(0.9F, 0.9F).clientTrackingRange(8).updateInterval(1));
 
     /** The Stubble: those who were to have the corn in by sunset, what stands in the field and has begun to walk, and the two lords. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ReaperEntity>> REAPER = ENTITIES.registerEntityType(
@@ -601,13 +601,13 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.SackmanEntity>> SACKMAN = ENTITIES.registerEntityType(
             "sackman", com.keykeeper.dushi.entity.SackmanEntity::new, MobCategory.MONSTER, b -> b.sized(0.8F, 2.1F).eyeHeight(1.8F).clientTrackingRange(10));
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ScorchedEntity>> SCORCHED = ENTITIES.registerEntityType(
-            "scorched", com.keykeeper.dushi.entity.ScorchedEntity::new, MobCategory.MONSTER, b -> b.sized(0.6F, 1.95F).eyeHeight(1.74F).clientTrackingRange(8).fireImmune());
+            "scorched", com.keykeeper.dushi.entity.ScorchedEntity::new, MobCategory.MONSTER, b -> b.sized(0.9F, 2.9F).eyeHeight(2.6F).clientTrackingRange(8).fireImmune());
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ScarecrowEntity>> SCARECROW = ENTITIES.registerEntityType(
             "scarecrow", com.keykeeper.dushi.entity.ScarecrowEntity::new, MobCategory.MONSTER, b -> b.sized(0.7F, 2.3F).eyeHeight(2.0F).clientTrackingRange(8));
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.StookEntity>> STOOK = ENTITIES.registerEntityType(
             "stook", com.keykeeper.dushi.entity.StookEntity::new, MobCategory.MONSTER, b -> b.sized(1.3F, 2.1F).eyeHeight(1.5F).clientTrackingRange(8));
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.SungazerEntity>> SUNGAZER = ENTITIES.registerEntityType(
-            "sungazer", com.keykeeper.dushi.entity.SungazerEntity::new, MobCategory.MONSTER, b -> b.sized(0.7F, 2.4F).eyeHeight(2.1F).clientTrackingRange(10));
+            "sungazer", com.keykeeper.dushi.entity.SungazerEntity::new, MobCategory.MONSTER, b -> b.sized(0.85F, 3.0F).eyeHeight(2.65F).clientTrackingRange(10));
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ScorchedWardenEntity>> SCORCHED_WARDEN = ENTITIES.registerEntityType(
             "scorched_warden", com.keykeeper.dushi.entity.ScorchedWardenEntity::new, MobCategory.MONSTER, b -> b.sized(1.8F, 5.4F).eyeHeight(4.6F).clientTrackingRange(12).fireImmune());
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.HollowMillerEntity>> HOLLOW_MILLER = ENTITIES.registerEntityType(
@@ -618,6 +618,8 @@ public class Dushi {
             "thrown_flour_sack", com.keykeeper.dushi.entity.FlourSackEntity::new, MobCategory.MISC, b -> b.sized(0.4F, 0.4F).clientTrackingRange(8).updateInterval(3));
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.SunPatchEntity>> SUN_PATCH = ENTITIES.registerEntityType(
             "sun_patch", com.keykeeper.dushi.entity.SunPatchEntity::new, MobCategory.MISC, b -> b.sized(0.5F, 0.5F).clientTrackingRange(8).updateInterval(20).fireImmune());
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.SunShaftEntity>> SUN_SHAFT = ENTITIES.registerEntityType(
+            "sun_shaft", com.keykeeper.dushi.entity.SunShaftEntity::new, MobCategory.MISC, b -> b.sized(0.5F, 48.0F).clientTrackingRange(10).updateInterval(40).fireImmune());
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.FlourCloudEntity>> FLOUR_CLOUD = ENTITIES.registerEntityType(
             "flour_cloud", com.keykeeper.dushi.entity.FlourCloudEntity::new, MobCategory.MISC, b -> b.sized(0.5F, 0.5F).clientTrackingRange(8).updateInterval(20).fireImmune());
 

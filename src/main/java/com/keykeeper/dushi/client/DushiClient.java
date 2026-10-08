@@ -108,7 +108,7 @@ public final class DushiClient {
         event.registerEntityRenderer(Dushi.SACKMAN.get(), context -> new QuarryRenderer<>(context,
                 new FieldhandModel(context.bakeLayer(FieldhandModel.BIG), FieldhandModel.Kind.SACKMAN), "sackman", 0.65F, false, false));
         event.registerEntityRenderer(Dushi.SCORCHED.get(), context -> new QuarryRenderer<>(context,
-                new FieldhandModel(context.bakeLayer(FieldhandModel.LAYER), FieldhandModel.Kind.SCORCHED), "scorched", 0.5F, true, true));
+                new FieldhandModel(context.bakeLayer(FieldhandModel.HUGE), FieldhandModel.Kind.SCORCHED), "scorched", 0.75F, true, true));
         event.registerEntityRenderer(Dushi.HOLLOW_MILLER.get(), context -> new QuarryRenderer<>(context,
                 new FieldhandModel(context.bakeLayer(FieldhandModel.HUGE), FieldhandModel.Kind.MILLER), "hollow_miller", 0.9F, true, true));
         event.registerEntityRenderer(Dushi.SCARECROW.get(),
@@ -118,14 +118,15 @@ public final class DushiClient {
         event.registerEntityRenderer(Dushi.STOOK.get(),
                 context -> new QuarryRenderer<>(context, new StookModel(context.bakeLayer(StookModel.LAYER)), "stook", 0.9F, false, false));
         event.registerEntityRenderer(Dushi.SUNGAZER.get(),
-                context -> new QuarryRenderer<>(context, new SungazerModel(context.bakeLayer(SungazerModel.LAYER)), "sungazer", 0.3F, true, true));
+                context -> new QuarryRenderer<>(context, new SungazerModel(context.bakeLayer(SungazerModel.LAYER)), "sungazer", 0.45F, true, true));
         event.registerEntityRenderer(Dushi.MILLSTONE.get(),
                 context -> new QuarryRenderer<>(context, new MillstoneModel(context.bakeLayer(MillstoneModel.LAYER)), "millstone", 0.8F, false, false));
         event.registerEntityRenderer(Dushi.FLOUR_SACK_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.4F, false));
         event.registerEntityRenderer(Dushi.FLOUR_CLOUD.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerEntityRenderer(Dushi.SUN_PATCH.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
+        event.registerEntityRenderer(Dushi.SUN_SHAFT.get(), SunShaftRenderer::new);
         event.registerEntityRenderer(Dushi.HARPOON_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.6F, false));
-        event.registerEntityRenderer(Dushi.ANCHOR_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.6F, false));
+        event.registerEntityRenderer(Dushi.ANCHOR_ENTITY.get(), AnchorRenderer::new);
         Dushi.WITHERED.forEach((kind, type) -> event.registerEntityRenderer(type.get(), context -> new WitheredRenderer(context, kind)));
         event.registerEntityRenderer(Dushi.RUST_KNIGHT.get(), context -> new RustKnightRenderer(context, "rust_knight"));
         event.registerEntityRenderer(Dushi.GILDED_KNIGHT.get(), context -> new RustKnightRenderer(context, "gilded_knight"));
@@ -152,6 +153,8 @@ public final class DushiClient {
         event.registerLayerDefinition(WallowerModel.LAYER, WallowerModel::createLayer);
         event.registerLayerDefinition(WeepingMotherModel.LAYER, WeepingMotherModel::createLayer);
         event.registerLayerDefinition(RootModel.LAYER, RootModel::createLayer);
+        event.registerLayerDefinition(AnchorModel.LAYER, AnchorModel::createLayer);
+        event.registerLayerDefinition(SunShaftModel.LAYER, SunShaftModel::createLayer);
         event.registerLayerDefinition(SectModel.LAYER, SectModel::createLayer);
         event.registerLayerDefinition(WaxenModel.LAYER, WaxenModel::createLayer);
         event.registerLayerDefinition(MothModel.LAYER, MothModel::createLayer);

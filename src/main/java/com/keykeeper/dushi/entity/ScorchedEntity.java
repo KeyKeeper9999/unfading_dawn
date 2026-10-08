@@ -31,7 +31,7 @@ public class ScorchedEntity extends FieldhandEntity {
     public static final int FLARE = 2;
     public static final int FLARE_DURATION = 56;
     public static final int FLARE_BURST = 28;
-    public static final double REACH = 2.4;
+    public static final double REACH = 3.2;
     public static final double FLARE_RADIUS = 3.0;
     /** Ticks between his death and his going up. */
     public static final int PYRE = 12;

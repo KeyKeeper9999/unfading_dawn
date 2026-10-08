@@ -165,7 +165,7 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
     `gen_stone_eater.py`, `gen_pike.py`, `gen_lanky.py`, `gen_wisp.py`, `gen_wallower.py`, `gen_mother.py`, `gen_root.py`,
     `gen_sect.py` (the wakeful, the waker and the sleeper on one model), `gen_waxen.py`, `gen_moth.py`, `gen_shatun.py`,
     `gen_elder.py`, `gen_sailor.py` (five seamen on one mesh), `gen_crab.py`, `gen_skua.py`, `gen_capsized.py`,
-    `gen_fieldhand.py` (five fieldhands on one mesh), `gen_scarecrow.py`, `gen_stook.py` (and the millstone), `gen_sungazer.py` - the mobs
+    `gen_fieldhand.py` (five fieldhands on one mesh), `gen_scarecrow.py`, `gen_stook.py` (and the millstone), `gen_sungazer.py` - the mobs; `gen_anchor.py` (the Helmsman's cast anchor) and `gen_beam.py` (a shaft of sunlight, see-through and shining) - things that fly or stand that are not mobs
     (the withered are eleven kinds now: the Mire's drowned too). `Model.mirror` gives a mirrored part the parent of its
     source with "right" turned to "left" in the name: a part whose parent is named otherwise (`leg_r1`, `wing_r`) must be
     given its `parent=`, or the left shin hangs from the right leg - which the preview shows only if one looks, and the
@@ -179,7 +179,7 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   - `gen_world.py` - the map (not run by `build_assets.sh`: `PYTHONPATH=tools python3 tools/gen_world.py [preview dir]`);
     it puts together the land, `gen_village.py` (the Dead Borough), `gen_map.py` (the High Stockade),
     `gen_quarry.py` (the White Pit), `gen_swamp.py` (the Mire), `gen_skete.py` (the Black Firwood), `gen_shore.py`
-    (the Morning Wharf) and `gen_stubble.py` (the Stubble; `preview_stubble.py DIR` builds that place alone, in a second); without a preview directory it takes about two and a half minutes, with one about five;
+    (the Morning Wharf) and `gen_stubble.py` (the Stubble and its open country; `preview_stubble.py DIR` builds that place alone, in half a minute); without a preview directory it takes about two and a half minutes, with one about five;
   - `balance.py` - the sums of the map's progression (`PYTHONPATH=tools python3 tools/balance.py`): it reads
     `map/census.json`, which `gen_world.py` writes (what comes into reach before each lord), so it takes a second -
     run it after `gen_world.py` when the map changed, and by itself when only numbers in the Java changed.
