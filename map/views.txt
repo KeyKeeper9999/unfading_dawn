@@ -181,8 +181,8 @@ stubble_road_into_the_corn -165.00 -44.40 66.00 -165.50 -44.40 98.50
 stubble_in_the_corn -165.00 -44.40 90.00 -163.50 -44.40 114.50
 stubble_clearing -175.00 -44.40 103.00 -181.50 -45.00 107.50
 stubble_fields_from_above -135.50 -7.00 54.50 -167.50 -46.00 94.50
-stubble_open_country -200.00 -44.40 118.00 -301.50 -44.00 178.50
-stubble_fence_and_mill -157.00 -44.40 106.00 -113.50 -27.00 102.50
+stubble_open_country -200.00 -41.00 118.00 -301.50 -44.00 178.50
+stubble_fence_and_mill -157.00 -42.00 106.00 -113.50 -27.00 102.50
 stubble_country_from_above -81.50 23.00 68.50 -301.50 -47.00 168.50
 stubble_wardens_door -163.00 -44.40 124.00 -163.00 -44.00 139.50
 stubble_watched_field -163.00 -44.40 146.00 -165.50 -42.00 160.50

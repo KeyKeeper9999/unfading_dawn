@@ -42,7 +42,10 @@ public class SunShaftRenderer extends EntityRenderer<SunShaftEntity, SunShaftRen
             // (a model's own space has y pointing down and its ground at 24 sixteenths; the shaft's box stands on that ground)
             poseStack.scale(-1.0F, -1.0F, 1.0F);
             poseStack.translate(0.0F, -1.5F, 0.0F);
-            collector.submitModel(this.model, state, poseStack, TEXTURE, BRIGHT, OverlayTexture.NO_OVERLAY, state.outlineColor);
+            // (a wide one is drawn twice over: the shaft that kindles the Warden hides him while it stands on him)
+            for (int layer = state.width > 3.0F ? 2 : 1; layer > 0; layer--) {
+                collector.submitModel(this.model, state, poseStack, TEXTURE, BRIGHT, OverlayTexture.NO_OVERLAY, state.outlineColor);
+            }
             poseStack.popPose();
         }
         super.submit(state, poseStack, collector, camera);

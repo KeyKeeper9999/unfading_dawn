@@ -21,7 +21,7 @@ CORE = (255, 250, 222)
 def make():
     p = Painter(M, 1)
     for _, _, b in M.boxes():
-        strength, colour = (150, LIGHT) if b.tag == 'outer' else (200, CORE)
+        strength, colour = (190, LIGHT) if b.tag == 'outer' else (240, CORE)
         for face, (fx, fy, fw, fh) in b.faces().items():
             for py in range(fh):
                 for px in range(fw):
