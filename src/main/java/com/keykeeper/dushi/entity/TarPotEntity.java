@@ -47,6 +47,7 @@ public class TarPotEntity extends ThrowableItemProjectile {
                     target.igniteForSeconds(5.0F);
                 }
             }
+            FlourCloudEntity.kindle(level, at, RADIUS);
             level.sendParticles(ParticleTypes.FLAME, at.x, at.y + 0.2, at.z, 50, 1.0, 0.4, 1.0, 0.05);
             level.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y + 0.4, at.z, 14, 0.8, 0.4, 0.8, 0.02);
             level.playSound(null, at.x, at.y, at.z, SoundEvents.DECORATED_POT_SHATTER, SoundSource.NEUTRAL, 1.0F, 0.9F);

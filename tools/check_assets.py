@@ -18,7 +18,8 @@ bolts = re.findall(r'^\s+[A-Z_]+\("(\w+)", [\d.]+, [\d.]+\)', open(f'{J}/entity/
 kinds = re.findall(r'^\s+[A-Z_]+\("(withered_\w+)"', open(f'{J}/entity/WitheredEntity.java').read(), re.M)
 mobs = kinds + ['rust_knight', 'gilded_knight', 'keykeeper', 'overseer', 'chaplain', 'carrion_hound', 'gravedigger', 'blind_crawler', 'unhewn', 'taskmaster',
                'stone_eater', 'bone_pike', 'lanky', 'wisp', 'wallower', 'weeping_mother', 'wakeful', 'waker', 'sleeper', 'waxen', 'sleep_moth', 'shatun', 'elder',
-               'dockhand', 'harpooner', 'oarsman', 'pilot', 'sand_crab', 'skua', 'helmsman', 'capsized']
+               'dockhand', 'harpooner', 'oarsman', 'pilot', 'sand_crab', 'skua', 'helmsman', 'capsized',
+               'reaper', 'mower', 'sackman', 'scorched', 'scarecrow', 'stook', 'sungazer', 'scorched_warden', 'hollow_miller']
 charms = re.findall(r'^\s+[A-Z_]+\("(\w+)", \d+\)', open(f'{J}/Charm.java').read(), re.M)
 armour = re.findall(r'"((?:prisoner|guard|rust|chaplain|vigil|mason|scale|oilskin)_\w+)"', open(f'{J}/ArmorSet.java').read())
 items |= set(armour)
@@ -81,7 +82,9 @@ for tex in re.findall(r'"(textures/entity/[\w/]+\.png)"', ''.join(open(f).read()
 for kind in kinds + ['blind_crawler', 'unhewn', 'unhewn_glow', 'taskmaster', 'taskmaster_glow', 'stone_eater', 'stone_eater_glow', 'bone_pike',
                      'bone_pike_glow', 'lanky', 'lanky_glow', 'wisp', 'wisp_glow', 'wallower', 'wallower_glow', 'weeping_mother', 'weeping_mother_glow', 'wakeful', 'wakeful_glow', 'waker', 'waker_glow', 'sleeper',
                      'waxen', 'waxen_glow', 'sleep_moth', 'sleep_moth_glow', 'shatun', 'shatun_glow', 'elder', 'elder_glow', 'elder_asleep_glow',
-                     'dockhand', 'harpooner', 'oarsman', 'pilot', 'pilot_glow', 'helmsman', 'helmsman_glow', 'sand_crab', 'skua', 'capsized', 'capsized_glow']:
+                     'dockhand', 'harpooner', 'oarsman', 'pilot', 'pilot_glow', 'helmsman', 'helmsman_glow', 'sand_crab', 'skua', 'capsized', 'capsized_glow',
+                     'reaper', 'mower', 'sackman', 'scorched', 'scorched_glow', 'hollow_miller', 'hollow_miller_glow', 'scarecrow', 'scorched_warden',
+                     'scorched_warden_glow', 'stook', 'sungazer', 'sungazer_glow', 'millstone']:
     need(f'{A}/textures/entity/{kind}.png', 'entity texture')
 sounds = json.load(open(f'{A}/sounds.json'))
 registered = set(re.findall(r'"((?:entity|ui|block|item|player|music|ambient)\.[\w.]+)"', main[main.index('SOUND_NAMES'):main.index('static {', main.index('SOUND_NAMES'))]))

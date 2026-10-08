@@ -121,6 +121,15 @@ public final class SelfTest {
         types.add(Dushi.SKUA.get());
         types.add(Dushi.HELMSMAN.get());
         types.add(Dushi.CAPSIZED.get());
+        types.add(Dushi.REAPER.get());
+        types.add(Dushi.MOWER.get());
+        types.add(Dushi.SACKMAN.get());
+        types.add(Dushi.SCORCHED.get());
+        types.add(Dushi.SCARECROW.get());
+        types.add(Dushi.STOOK.get());
+        types.add(Dushi.SUNGAZER.get());
+        types.add(Dushi.SCORCHED_WARDEN.get());
+        types.add(Dushi.HOLLOW_MILLER.get());
         types.add(Dushi.KEYKEEPER.get());
         types.add(Dushi.OVERSEER.get());
         types.add(Dushi.CHAPLAIN.get());
@@ -344,6 +353,12 @@ public final class SelfTest {
             if (mob instanceof com.keykeeper.dushi.entity.CapsizedEntity boat) {
                 boat.rise(dummy);
             }
+            if (mob instanceof com.keykeeper.dushi.entity.ScarecrowEntity scarecrow) {
+                scarecrow.wake(dummy);                           // (it would hang on its stake through it)
+            }
+            if (mob instanceof com.keykeeper.dushi.entity.StookEntity stook) {
+                stook.rise(dummy);
+            }
             mob.setTarget(dummy);
             DRILL.add(new Drill(EntityType.getKey(entry.getKey()).getPath(), mob, dummy, entry.getValue()));
             index++;
@@ -392,6 +407,17 @@ public final class SelfTest {
         plan.put(Dushi.SKUA.get(), new int[] {1});
         plan.put(Dushi.HELMSMAN.get(), new int[] {1, 2, 3, 4, 5, 6});
         plan.put(Dushi.CAPSIZED.get(), new int[] {2, 3, 4, 5, 6, 7});
+        // the Stubble (the scarecrow's first move is its getting down, the stook's its getting up; the Warden's first three
+        // are made on the cross and the rest after it has caught, the Miller's first four with the stone on its axle)
+        plan.put(Dushi.REAPER.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.MOWER.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.SACKMAN.get(), new int[] {1, 2});
+        plan.put(Dushi.SCORCHED.get(), new int[] {1, 2});
+        plan.put(Dushi.SCARECROW.get(), new int[] {2, 3});
+        plan.put(Dushi.STOOK.get(), new int[] {2, 3});
+        plan.put(Dushi.SUNGAZER.get(), new int[] {1, 2});
+        plan.put(Dushi.SCORCHED_WARDEN.get(), new int[] {1, 2, 3, 4, 5, 6, 7});
+        plan.put(Dushi.HOLLOW_MILLER.get(), new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9});
         return plan;
     }
 

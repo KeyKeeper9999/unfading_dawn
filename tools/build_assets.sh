@@ -32,6 +32,10 @@ python3 tools/gen_sailor.py ${P:+$P/sailor.png}
 python3 tools/gen_crab.py ${P:+$P/crab.png}
 python3 tools/gen_skua.py ${P:+$P/skua.png}
 python3 tools/gen_capsized.py ${P:+$P/capsized.png}
+python3 tools/gen_fieldhand.py ${P:+$P/fieldhand.png}
+python3 tools/gen_scarecrow.py ${P:+$P/scarecrow.png}
+python3 tools/gen_stook.py ${P:+$P/stook.png}
+python3 tools/gen_sungazer.py ${P:+$P/sungazer.png}
 python3 tools/gen_items.py ${P:+$P/items.png}
 python3 tools/gen_shields.py ${P:+$P/shields.png}
 python3 tools/gen_armor.py ${P:+$P/armor.png}

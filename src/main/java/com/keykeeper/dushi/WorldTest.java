@@ -79,6 +79,7 @@ final class WorldTest {
         try {
             firwood(level);
             shore(level);
+            stubble(level);
         } catch (RuntimeException e) {
             say("firwood: FAILED: " + e);
             e.printStackTrace(System.out);
@@ -506,6 +507,67 @@ final class WorldTest {
         weapons.append(" bow w").append(Gear.weight(new ItemStack(Items.BOW))).append(" shield stability ").append(Gear.stability(new ItemStack(Items.SHIELD)));
         say(weapons.toString());
         wear(player, null, null, null, null, null, null);
+    }
+
+    /** The Stubble: what stands in the field until it is struck, the lords' hides, the Warden catching, the Miller's stone, and flour meeting fire. */
+    private static void stubble(ServerLevel level) {
+        BlockPos at = new BlockPos(40, 240, -40);
+        for (BlockPos pos : BlockPos.betweenClosed(at.offset(-14, -1, -14), at.offset(14, -1, 14))) {
+            level.setBlock(pos, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), 3);
+        }
+        net.minecraft.world.entity.EntitySpawnReason why = net.minecraft.world.entity.EntitySpawnReason.COMMAND;
+        com.keykeeper.dushi.entity.ScarecrowEntity scarecrow = Dushi.SCARECROW.get().spawn(level, at.offset(-10, 0, 8), why);
+        com.keykeeper.dushi.entity.StookEntity stook = Dushi.STOOK.get().spawn(level, at.offset(10, 0, 8), why);
+        com.keykeeper.dushi.entity.ScorchedWardenEntity warden = Dushi.SCORCHED_WARDEN.get().spawn(level, at.offset(-8, 0, -8), why);
+        com.keykeeper.dushi.entity.HollowMillerEntity miller = Dushi.HOLLOW_MILLER.get().spawn(level, at.offset(4, 0, -4), why);
+        if (scarecrow == null || stook == null || warden == null || miller == null) {
+            say("stubble: something did not spawn FAILED");
+            return;
+        }
+        scarecrow.setRestless(false);
+        boolean stood = !scarecrow.down() && !stook.up() && !warden.down();
+        scarecrow.hurtServer(level, level.damageSources().generic(), 1.0F);
+        stook.hurtServer(level, level.damageSources().generic(), 1.0F);
+        boolean woke = scarecrow.down() && scarecrow.attackId() == com.keykeeper.dushi.entity.ScarecrowEntity.WAKE && stook.up();
+        float whole = warden.getHealth();
+        warden.hurtServer(level, level.damageSources().generic(), 100.0F);
+        float hide = whole - warden.getHealth();
+        warden.hurtServer(level, level.damageSources().onFire(), 100.0F);
+        boolean fireproof = Math.abs(whole - warden.getHealth() - hide) < 0.01F;
+        double rooted = warden.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        warden.showPhase(2);
+        double walks = warden.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        whole = miller.getHealth();
+        miller.hurtServer(level, level.damageSources().generic(), 100.0F);
+        float flour = whole - miller.getHealth();
+        com.keykeeper.dushi.entity.MillstoneEntity stone = miller.stone(level);
+        boolean set = stone != null && stone.isAlive() && Math.abs(stone.position().distanceTo(miller.position()) - com.keykeeper.dushi.entity.MillstoneEntity.RADIUS) < 2.0;
+        if (stone != null) {
+            stone.hurtServer(level, level.damageSources().generic(), 1000.0F);
+        }
+        boolean hard = stone != null && stone.isAlive();
+        miller.showPhase(2);
+        boolean carried = miller.stone(level) == null;
+        // flour, and a flame
+        net.minecraft.world.phys.Vec3 where = net.minecraft.world.phys.Vec3.atBottomCenterOf(at.offset(0, 0, 10));
+        com.keykeeper.dushi.entity.FlourCloudEntity cloud = com.keykeeper.dushi.entity.FlourCloudEntity.burst(level, null, where, 10.0F);
+        boolean idle = !cloud.lit();
+        int lit = com.keykeeper.dushi.entity.FlourCloudEntity.kindle(level, where.add(2.0, 0.0, 0.0), 0.5);
+        boolean hides = Math.abs(hide - 100.0F * com.keykeeper.dushi.entity.ScorchedWardenEntity.HIDE) < 0.01F
+                && Math.abs(flour - 100.0F * com.keykeeper.dushi.entity.HollowMillerEntity.HIDE) < 0.01F;
+        boolean ok = stood && woke && hides && fireproof && rooted == 0.0 && walks > 0.2 && set && hard && carried && idle && lit == 1 && cloud.lit();
+        say("stubble: they stood still=" + stood + ", struck, the scarecrow gets down and the stook up=" + woke + "; of a blow of 100 the Warden takes " + hide
+                + " and the Miller " + flour + ", fire does nothing to the Warden=" + fireproof + "; on the cross it walks at " + rooted + ", alight at " + walks
+                + "; the stone is on its beam=" + set + ", cannot be hurt=" + hard + ", is the Miller's to carry in the end=" + carried
+                + "; flour hangs=" + idle + " and takes fire=" + (lit == 1 && cloud.lit()) + (ok ? "" : " FAILED"));
+        scarecrow.discard();
+        stook.discard();
+        warden.discard();
+        miller.discard();
+        if (stone != null) {
+            stone.discard();
+        }
+        cloud.discard();
     }
 
     /** The Morning Wharf: the lords' hides, what lies as a boat and what lies in the sand, the oilskins, and how deep the sea is. */

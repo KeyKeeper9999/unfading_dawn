@@ -110,6 +110,7 @@ public enum Spell {
                 for (int i = 1; i <= 7; i++) {
                     Vec3 at = eye.add(look.scale(0.5 * i));
                     level.sendParticles(ParticleTypes.FLAME, at.x, at.y - 0.2, at.z, 6, 0.08 * i, 0.08 * i, 0.08 * i, 0.02);
+                    com.keykeeper.dushi.entity.FlourCloudEntity.kindle(level, at, 0.3);
                 }
                 sound(level, caster, "item.spell.fire_burst", 1.0F, 1.2F);
             }

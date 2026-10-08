@@ -1365,6 +1365,222 @@ S['player/undertow'] = reverb(place(d, (0.0, lowpass(noise(1.5), 320, 3) * env(1
 
 
 # ============================================================== events -> files
+# ============================================================== the Stubble
+DRY = ((560, 130, 1.0), (1300, 180, 0.6), (2700, 320, 0.3))     # a throat with no water in it since noon
+FLOURY = ((300, 100, 1.0), (700, 140, 0.8), (1400, 240, 0.3))   # the Miller's: a chest full of flour
+
+
+def rustle(d, bright=4200, grain=70, seed=0):
+    """Straw moving on straw: dry, bright, in handfuls."""
+    r = np.random.default_rng(1700 + seed)
+    hold = np.clip(lowpass(r.standard_normal(int(SR * d)), 11) * 10 + 0.5, 0.0, 1.5)
+    return lowpass(highpass(noise(d), bright * 0.45) * hold * 0.6 + crackle(d, grain, bright) * 0.9, bright * 1.5)
+
+
+def fire(d, body=500, rate=30, seed=0):
+    """Something alight: the low roar of it and the cracking."""
+    r = np.random.default_rng(1750 + seed)
+    roar = lowpass(noise(d), body) * np.clip(lowpass(r.standard_normal(int(SR * d)), 6) * 5 + 0.8, 0.2, 1.6)
+    return roar * 1.4 + crackle(d, rate, 2600) * 0.8
+
+
+def fieldhand_ambient(k):
+    # a breath drawn through dust, and let go
+    d = 1.8 + 0.3 * k
+    breath = voice(contour(d, (0, 128 - 10 * k), (0.35, 150 - 10 * k), (1, 104 - 10 * k)), d, DRY, breath=1.6, jitter=0.08, rough=0.8) * env(d, 0.35, 0.8)
+    return reverb(breath * 0.8 + place(d, (0.5, rustle(0.6, 4200, 30, k) * 0.2)), 0.5, 0.15, 0.3)
+
+
+S['fieldhand/ambient1'] = fieldhand_ambient(0)
+S['fieldhand/ambient2'] = fieldhand_ambient(1)
+d = 0.4
+S['fieldhand/hurt'] = reverb(voice(contour(d, (0, 190), (0.2, 230), (1, 140)), d, DRY, breath=1.2, jitter=0.1, rough=0.9) * env(d, 0.01, 0.28), 0.4, 0.15, 0.25)
+d = 1.9
+S['fieldhand/death'] = reverb(place(d, (0.0, voice(contour(1.2, (0, 180), (0.2, 150), (1, 74)), 1.2, DRY, breath=1.6, jitter=0.09, rough=0.6) * env(1.2, 0.03, 0.9)),
+                                    (0.9, thump(0.4, 90, 44, 0.08) * 0.8), (0.9, rustle(0.8, 3800, 60, 3) * decay(0.8, 0.25) * 0.8)), 0.6, 0.2, 0.4)
+d = 0.45
+S['fieldhand/sickle'] = reverb(place(d, (0.0, whoosh(0.3, 900, 5200, 0.45, 0.3) * 1.2), (0.12, clang(2600, 0.3, strike=0.3) * 0.12)), 0.3, 0.15, 0.2)
+d = 0.9
+S['fieldhand/scythe'] = reverb(place(d, (0.0, whoosh(0.7, 300, 3600, 0.5, 0.4) * 1.5), (0.3, clang(1750, 0.5, strike=0.25) * 0.14),
+                                     (0.3, rustle(0.5, 4500, 90, 5) * decay(0.5, 0.15) * 0.5)), 0.5, 0.2, 0.3)
+d = 0.8
+S['fieldhand/sack'] = reverb(place(d, (0.0, whoosh(0.35, 200, 1500, 0.5, 0.5) * 1.0), (0.22, thump(0.4, 110, 48, 0.07) * 1.4),
+                                   (0.22, lowpass(noise(0.5), 1800) * decay(0.5, 0.12) * 0.8)), 0.4, 0.2, 0.3)
+
+
+def scorched_ambient(k):
+    # what is alight in him, and no breath at all
+    d = 2.2 + 0.3 * k
+    return reverb(fire(d, 380, 22 + 6 * k, k) * env(d, 0.4, 0.8) * 0.8
+                  + voice(contour(d, (0, 70), (1, 60)), d, DRY, breath=0.5, jitter=0.12, rough=1.4) * env(d, 0.6, 1.0) * 0.25, 0.5, 0.15, 0.3)
+
+
+S['scorched/ambient1'] = scorched_ambient(0)
+S['scorched/ambient2'] = scorched_ambient(1)
+d = 0.5
+S['scorched/hurt'] = reverb(place(d, (0.0, bandpass(noise(0.4), 2500, 8500) * decay(0.4, 0.1) * 0.9), (0.0, crackle(0.5, 70, 2400) * decay(0.5, 0.2)),
+                                  (0.0, voice(contour(0.4, (0, 110), (1, 80)), 0.4, DRY, breath=0.6, jitter=0.12, rough=1.4) * env(0.4, 0.01, 0.3) * 0.5)), 0.4, 0.15, 0.3)
+d = 1.6
+S['scorched/death'] = reverb(place(d, (0.0, bandpass(noise(1.3), 1800, 8500) * env(1.3, 0.05, 1.1) * 0.6), (0.0, fire(1.5, 600, 50, 2) * env(1.5, 0.1, 1.0)),
+                                   (0.5, crackle(1.0, 90, 2200) * decay(1.0, 0.3))), 0.6, 0.2, 0.4)
+d = 1.4
+S['scorched/flare'] = reverb(place(d, (0.0, whoosh(0.9, 120, 2600, 0.3, 0.6) * 2.2), (0.15, thump(0.6, 90, 34, 0.14) * 1.6), (0.1, fire(1.3, 700, 60, 4) * decay(1.3, 0.4) * 1.2)),
+                             0.8, 0.25, 0.5)
+
+
+def scarecrow_creak(k):
+    d = 1.3 + 0.2 * k
+    return reverb(place(d, (0.0, creak(0.9, 60 - 10 * k, 34, (520, 1100, 2100)) * env(0.9, 0.05, 0.4) * 0.6), (0.3, rustle(0.8, 4600, 40, 10 + k) * env(0.8, 0.1, 0.5) * 0.4)),
+                  0.5, 0.2, 0.3)
+
+
+S['scarecrow/creak1'] = scarecrow_creak(0)
+S['scarecrow/creak2'] = scarecrow_creak(1)
+d = 0.4
+S['scarecrow/hurt'] = reverb(place(d, (0.0, rustle(0.4, 3600, 140, 12) * decay(0.4, 0.09) * 1.4), (0.0, thump(0.2, 140, 70, 0.04) * 0.6)), 0.3, 0.15, 0.2)
+d = 1.5
+S['scarecrow/death'] = reverb(place(d, (0.0, rustle(1.0, 3400, 120, 13) * decay(1.0, 0.3) * 1.3), (0.15, wood_knock(0.4, 380, 0.8) * 0.8), (0.5, wood_knock(0.4, 290, 0.9) * 0.6),
+                                    (0.5, thump(0.4, 80, 40, 0.08) * 0.8)), 0.6, 0.2, 0.4)
+d = 1.1
+S['scarecrow/wake'] = reverb(place(d, (0.0, creak(0.5, 110, 50, (600, 1300, 2300)) * env(0.5, 0.02, 0.2) * 0.8), (0.4, thump(0.4, 100, 46, 0.07) * 1.2),
+                                   (0.4, rustle(0.6, 3800, 110, 14) * decay(0.6, 0.18) * 1.1)), 0.5, 0.2, 0.3)
+d = 0.8
+S['scarecrow/spin'] = reverb(place(d, (0.0, whoosh(0.7, 250, 2800, 0.5, 0.45) * 1.4), (0.0, creak(0.6, 90, 70, (700, 1500, 2600)) * env(0.6, 0.05, 0.3) * 0.3),
+                                   (0.1, rustle(0.6, 4400, 60, 15) * env(0.6, 0.1, 0.3) * 0.4)), 0.4, 0.2, 0.3)
+
+for k in range(2):
+    S[f'stook/rustle{k + 1}'] = reverb(rustle(1.3 + 0.3 * k, 3900 + 500 * k, 55, 20 + k) * env(1.3 + 0.3 * k, 0.2, 0.6), 0.4, 0.15, 0.3)
+d = 0.4
+S['stook/hurt'] = reverb(place(d, (0.0, rustle(0.4, 3200, 160, 22) * decay(0.4, 0.1) * 1.5), (0.0, thump(0.25, 110, 60, 0.05) * 0.7)), 0.3, 0.15, 0.2)
+d = 1.6
+S['stook/death'] = reverb(place(d, (0.0, rustle(1.5, 3000, 130, 23) * decay(1.5, 0.45) * 1.4), (0.2, thump(0.5, 76, 36, 0.1) * 1.0)), 0.6, 0.2, 0.4)
+d = 1.0
+S['stook/fall'] = reverb(place(d, (0.0, thump(0.6, 84, 32, 0.13) * 1.8), (0.0, rustle(0.9, 2800, 170, 24) * decay(0.9, 0.22) * 1.5)), 0.5, 0.2, 0.4)
+d = 1.6
+S['stook/shed'] = reverb(rustle(d, 4800, 130, 25) * env(d, 0.5, 0.5) * np.clip(0.6 + 0.5 * np.sin(2 * np.pi * 11 * t(d)), 0, 1.2)
+                         + place(d, (0.9, bandpass(noise(0.6), 3500, 8500) * decay(0.6, 0.15) * 0.9)), 0.5, 0.2, 0.3)
+
+
+def sungazer_hum(k):
+    # heat, if heat had a note: a thin high drone that wavers, and the stalk under it
+    d = 2.4 + 0.3 * k
+    drone = sum(tone((1480 + 90 * k) * m * (1 + 0.006 * np.sin(2 * np.pi * (4.0 + i) * t(d))), d) / (i + 1) for i, m in enumerate((1.0, 1.5, 2.01)))
+    return reverb(drone * env(d, 0.9, 1.0) * 0.25 + place(d, (0.8, creak(0.8, 26, 18, (900, 1900, 3100)) * env(0.8, 0.2, 0.4) * 0.12)), 1.0, 0.35, 0.8)
+
+
+S['sungazer/hum1'] = sungazer_hum(0)
+S['sungazer/hum2'] = sungazer_hum(1)
+d = 0.4
+S['sungazer/hurt'] = reverb(place(d, (0.0, creak(0.3, 240, 120, (1100, 2300, 3600)) * env(0.3, 0.01, 0.2) * 0.9), (0.0, rustle(0.3, 5000, 90, 30) * decay(0.3, 0.08) * 0.6)),
+                            0.3, 0.15, 0.2)
+d = 1.5
+S['sungazer/death'] = reverb(place(d, (0.0, creak(0.8, 160, 30, (900, 1900, 3100)) * env(0.8, 0.02, 0.5) * 0.9), (0.6, wood_knock(0.2, 900, 0.3) * 0.5),
+                                   (0.7, rustle(0.8, 4200, 100, 31) * decay(0.8, 0.25)), (0.8, thump(0.4, 90, 44, 0.07) * 0.6)), 0.6, 0.2, 0.4)
+d = 2.2
+S['sungazer/gaze'] = reverb(tone(contour(d, (0, 700), (0.35, 1900), (1, 2300)) * (1 + 0.004 * np.sin(2 * np.pi * 9 * t(d))), d) * env(d, 0.6, 0.5) * 0.3
+                            + shimmer(d, 2400, 5200, 9) * 0.25 + place(d, (0.7, bandpass(noise(1.4), 4200, 8500) * env(1.4, 0.5, 0.6) * 0.12)), 1.0, 0.35, 0.8)
+d = 0.6
+S['sungazer/lash'] = reverb(place(d, (0.0, whoosh(0.45, 500, 3800, 0.5, 0.4) * 1.2), (0.25, rustle(0.3, 4800, 80, 32) * decay(0.3, 0.07) * 0.8)), 0.3, 0.15, 0.2)
+
+
+def warden_ambient(k):
+    # the cross it hangs on, taking its weight; and straw, a great deal of it
+    d = 3.0 + 0.4 * k
+    return reverb(place(d, (0.0, creak(1.8, 34 - 6 * k, 20, (260, 560, 1100)) * env(1.8, 0.2, 0.8) * 1.0), (0.9, rustle(1.8, 3200, 40, 40 + k) * env(1.8, 0.4, 0.9) * 0.4),
+                        (0.2, lowpass(noise(2.4), 160) * env(2.4, 0.8, 1.0) * 1.2)), 1.2, 0.3, 0.6)
+
+
+S['warden/ambient1'] = warden_ambient(0)
+S['warden/ambient2'] = warden_ambient(1)
+d = 0.8
+S['warden/hurt'] = reverb(place(d, (0.0, creak(0.6, 80, 36, (300, 640, 1250)) * env(0.6, 0.01, 0.4) * 1.2), (0.0, rustle(0.6, 3000, 150, 42) * decay(0.6, 0.14) * 1.2),
+                                (0.0, thump(0.4, 80, 40, 0.07) * 0.9)), 0.6, 0.25, 0.4)
+d = 3.4
+S['warden/death'] = reverb(place(d, (0.0, creak(1.6, 70, 18, (240, 520, 1050)) * env(1.6, 0.05, 0.9) * 1.3), (0.3, fire(2.8, 500, 60, 6) * env(2.8, 0.3, 2.0) * 1.0),
+                                 (1.5, thump(0.9, 70, 26, 0.2) * 2.0), (1.5, rustle(1.6, 2800, 170, 43) * decay(1.6, 0.45) * 1.4),
+                                 (2.0, bandpass(noise(1.4), 2200, 8500) * env(1.4, 0.1, 1.2) * 0.4)), 1.4, 0.3, 0.8)
+d = 1.1
+S['warden/sweep'] = reverb(place(d, (0.0, whoosh(0.95, 80, 1500, 0.5, 0.55) * 2.0), (0.1, creak(0.7, 60, 44, (300, 700, 1400)) * env(0.7, 0.1, 0.3) * 0.5),
+                                 (0.2, rustle(0.7, 3600, 70, 44) * env(0.7, 0.15, 0.3) * 0.5)), 0.6, 0.25, 0.4)
+d = 1.4
+S['warden/slam'] = reverb(place(d, (0.0, thump(1.0, 76, 26, 0.22) * 2.6), (0.0, wood_knock(0.6, 230, 1.2) * 1.2), (0.0, rustle(1.2, 2600, 200, 45) * decay(1.2, 0.3) * 1.6),
+                                (0.05, lowpass(noise(0.8), 500) * decay(0.8, 0.2) * 1.2)), 0.9, 0.25, 0.6)
+d = 2.6
+S['warden/kindle'] = reverb(place(d, (0.0, whoosh(1.6, 90, 3000, 0.35, 0.7) * 2.6), (0.4, thump(1.0, 80, 28, 0.25) * 2.0), (0.3, fire(2.3, 800, 80, 7) * env(2.3, 0.2, 1.4) * 1.6)),
+                            1.4, 0.3, 0.8)
+d = 2.0
+S['warden/roar'] = reverb(place(d, (0.0, voice(contour(1.7, (0, 60), (0.25, 88), (1, 48)), 1.7, DEEP, breath=1.4, jitter=0.12, rough=1.6) * env(1.7, 0.1, 0.9) * 1.2),
+                                (0.0, creak(1.5, 46, 26, (240, 500, 1000)) * env(1.5, 0.1, 0.8) * 0.8), (0.2, rustle(1.6, 3000, 90, 46) * env(1.6, 0.2, 0.9) * 0.5)), 1.2, 0.3, 0.7)
+d = 1.9
+S['sun/gather'] = reverb(tone(contour(d, (0, 500), (1, 2600)), d) * env(d, 1.2, 0.2) * 0.2 + shimmer(d, 2000, 6000, 12) * np.linspace(0.1, 1.0, int(SR * d)) * 0.4
+                         + bandpass(noise(d), 5000, 8500) * np.linspace(0.0, 1.0, int(SR * d)) ** 2 * 0.2, 0.8, 0.3, 0.6)
+d = 1.0
+S['sun/burn'] = reverb(place(d, (0.0, bandpass(noise(0.8), 2600, 8500) * decay(0.8, 0.18) * 1.5), (0.0, thump(0.4, 120, 50, 0.06) * 1.0), (0.05, fire(0.9, 700, 70, 8) * decay(0.9, 0.25) * 1.0)),
+                       0.6, 0.25, 0.4)
+
+
+def miller_ambient(k):
+    # a chest full of flour, working: in through it, out through it
+    d = 2.6 + 0.3 * k
+    return reverb(voice(contour(d, (0, 72 - 6 * k), (0.3, 86 - 6 * k), (0.55, 70 - 6 * k), (1, 62 - 6 * k)), d, FLOURY, breath=1.5, jitter=0.07, rough=0.9) * env(d, 0.5, 1.0),
+                  0.9, 0.3, 0.5)
+
+
+S['miller/ambient1'] = miller_ambient(0)
+S['miller/ambient2'] = miller_ambient(1)
+d = 0.6
+S['miller/hurt'] = reverb(voice(contour(d, (0, 96), (0.15, 122), (1, 66)), d, FLOURY, breath=0.9, jitter=0.09, rough=1.1) * env(d, 0.01, 0.45) * 1.2, 0.6, 0.25, 0.4)
+d = 3.0
+S['miller/death'] = reverb(place(d, (0.0, voice(contour(2.2, (0, 110), (0.15, 96), (0.6, 68), (1, 38)), 2.2, FLOURY, breath=1.3, jitter=0.1, rough=0.9) * env(2.2, 0.04, 1.6) * 1.3),
+                                 (1.7, thump(0.9, 70, 28, 0.2) * 2.0), (1.7, lowpass(noise(1.0), 1400) * decay(1.0, 0.25) * 0.9)), 1.2, 0.3, 0.7)
+d = 1.0
+S['miller/swing'] = reverb(place(d, (0.0, whoosh(0.85, 90, 1000, 0.5, 0.55) * 1.9)), 0.6, 0.2, 0.4)
+d = 1.2
+S['miller/slam'] = reverb(place(d, (0.0, thump(0.9, 90, 28, 0.2) * 2.4), (0.0, wood_knock(0.6, 260, 1.2) * 1.4), (0.0, crackle(0.6, 80, 2200) * decay(0.6, 0.15) * 0.8)), 0.9, 0.25, 0.6)
+d = 0.9
+S['miller/shout'] = reverb(place(d, (0.0, voice(contour(0.8, (0, 90), (0.25, 142), (1, 118)), 0.8, FLOURY, breath=0.5, jitter=0.06, rough=1.0) * env(0.8, 0.03, 0.25) * 1.3)),
+                           1.0, 0.3, 0.6)
+d = 1.5
+S['miller/lantern'] = reverb(place(d, (0.0, clang(1900, 0.4, strike=0.5) * 0.3), (0.12, clang(2500, 0.3, strike=0.5) * 0.2), (0.3, whoosh(1.0, 300, 2400, 0.4, 0.6) * 0.9),
+                                   (0.3, fire(1.2, 600, 30, 9) * env(1.2, 0.3, 0.6) * 0.7)), 0.8, 0.3, 0.5)
+d = 1.5
+S['millstone/rumble'] = reverb(grind(d, 60, 420, 31) * env(d, 0.3, 0.5) * 1.6 + lowpass(noise(d), 110) * env(d, 0.3, 0.5) * 1.6, 0.8, 0.25, 0.5)
+d = 1.6
+S['millstone/check'] = reverb(place(d, (0.0, grind(1.4, 500, 2600, 32) * env(1.4, 0.05, 0.9) * 1.4), (0.0, creak(1.2, 150, 40, (380, 800, 1600)) * env(1.2, 0.02, 0.8) * 1.0),
+                                    (0.1, thump(0.5, 80, 36, 0.1) * 1.2)), 0.9, 0.25, 0.5)
+d = 1.5
+S['millstone/crash'] = reverb(place(d, (0.0, stone_hit(0.8, 520, 90, 1.0) * 1.8), (0.0, thump(1.0, 70, 24, 0.22) * 2.4), (0.02, wood_knock(0.5, 300, 1.0) * 1.0),
+                                    (0.1, crackle(0.9, 90, 1800) * decay(0.9, 0.25) * 1.0)), 1.0, 0.25, 0.6)
+d = 0.9
+S['flour/puff'] = reverb(place(d, (0.0, thump(0.3, 120, 60, 0.05) * 1.0), (0.0, lowpass(noise(0.8), 2400) * env(0.8, 0.02, 0.6) * 1.0),
+                               (0.05, bandpass(noise(0.6), 4000, 8500) * decay(0.6, 0.2) * 0.3)), 0.4, 0.2, 0.3)
+d = 1.8
+S['flour/blast'] = reverb(place(d, (0.0, thump(1.2, 100, 22, 0.25) * 3.0), (0.0, lowpass(noise(1.2), 900) * decay(1.2, 0.2) * 2.2), (0.02, whoosh(0.9, 200, 4000, 0.2, 0.7) * 1.6),
+                                (0.2, fire(1.4, 700, 60, 10) * decay(1.4, 0.4) * 1.0)), 1.4, 0.3, 0.8)
+
+
+def heat(d):
+    """The field in the afternoon: grasshoppers, a great many, each sawing in its own time, and no wind under them.
+    It loops: every voice is a whole number of its own periods long."""
+    r = np.random.default_rng(1790)
+    n = int(SR * d)
+    x = np.zeros(n)
+    tt = np.arange(n) / SR
+    for i in range(14):
+        f = r.uniform(3600, 7200)
+        beats = int(r.integers(2, 6))                            # bursts in the loop
+        chirr = r.uniform(26, 44)
+        phase = r.uniform(0, 1)
+        on = np.clip(np.sin(2 * np.pi * (beats * tt / d + phase)) * 3.0 - 0.6, 0.0, 1.0)
+        saw_ = 0.5 + 0.5 * np.sign(np.sin(2 * np.pi * round(chirr * d) * tt / d))
+        carrier = np.sin(2 * np.pi * round(f * d) * tt / d) + 0.5 * np.sin(2 * np.pi * round(f * 1.31 * d) * tt / d)
+        x += carrier * on * saw_ * r.uniform(0.03, 0.1)
+    hum = np.sin(2 * np.pi * round(118 * d) * tt / d) * 0.012 + np.sin(2 * np.pi * round(177 * d) * tt / d) * 0.008
+    return x + hum
+
+
+S['stubble/heat'] = heat(9.0)
+
 EVENTS = {
     'entity.withered.ambient': ['withered/ambient1', 'withered/ambient2', 'withered/ambient3'],
     'entity.withered.hurt': ['withered/hurt1', 'withered/hurt2'],
@@ -1453,6 +1669,23 @@ EVENTS = {
     'entity.capsized.knock': ['capsized/knock1', 'capsized/knock2'],
     'ambient.shore.surf': ['shore/surf'], 'ambient.shore.gull': ['shore/gull1', 'shore/gull2', 'shore/gull3'],
     'player.undertow': ['player/undertow'],
+    'entity.fieldhand.ambient': ['fieldhand/ambient1', 'fieldhand/ambient2'], 'entity.fieldhand.hurt': ['fieldhand/hurt'], 'entity.fieldhand.death': ['fieldhand/death'],
+    'entity.fieldhand.sickle': ['fieldhand/sickle'], 'entity.fieldhand.scythe': ['fieldhand/scythe'], 'entity.fieldhand.sack': ['fieldhand/sack'],
+    'entity.scorched.ambient': ['scorched/ambient1', 'scorched/ambient2'], 'entity.scorched.hurt': ['scorched/hurt'], 'entity.scorched.death': ['scorched/death'],
+    'entity.scorched.flare': ['scorched/flare'],
+    'entity.scarecrow.creak': ['scarecrow/creak1', 'scarecrow/creak2'], 'entity.scarecrow.hurt': ['scarecrow/hurt'], 'entity.scarecrow.death': ['scarecrow/death'],
+    'entity.scarecrow.wake': ['scarecrow/wake'], 'entity.scarecrow.spin': ['scarecrow/spin'],
+    'entity.stook.rustle': ['stook/rustle1', 'stook/rustle2'], 'entity.stook.hurt': ['stook/hurt'], 'entity.stook.death': ['stook/death'],
+    'entity.stook.fall': ['stook/fall'], 'entity.stook.shed': ['stook/shed'],
+    'entity.sungazer.hum': ['sungazer/hum1', 'sungazer/hum2'], 'entity.sungazer.hurt': ['sungazer/hurt'], 'entity.sungazer.death': ['sungazer/death'],
+    'entity.sungazer.gaze': ['sungazer/gaze'], 'entity.sungazer.lash': ['sungazer/lash'],
+    'entity.warden.ambient': ['warden/ambient1', 'warden/ambient2'], 'entity.warden.hurt': ['warden/hurt'], 'entity.warden.death': ['warden/death'],
+    'entity.warden.sweep': ['warden/sweep'], 'entity.warden.slam': ['warden/slam'], 'entity.warden.kindle': ['warden/kindle'], 'entity.warden.roar': ['warden/roar'],
+    'entity.sun.gather': ['sun/gather'], 'entity.sun.burn': ['sun/burn'],
+    'entity.miller.ambient': ['miller/ambient1', 'miller/ambient2'], 'entity.miller.hurt': ['miller/hurt'], 'entity.miller.death': ['miller/death'],
+    'entity.miller.swing': ['miller/swing'], 'entity.miller.slam': ['miller/slam'], 'entity.miller.shout': ['miller/shout'], 'entity.miller.lantern': ['miller/lantern'],
+    'entity.millstone.rumble': ['millstone/rumble'], 'entity.millstone.check': ['millstone/check'], 'entity.millstone.crash': ['millstone/crash'],
+    'entity.flour.puff': ['flour/puff'], 'entity.flour.blast': ['flour/blast'], 'ambient.stubble.heat': ['stubble/heat'],
     'entity.keykeeper.ambient': ['keykeeper/ambient1', 'keykeeper/ambient2'],
     'entity.keykeeper.give': ['keykeeper/give'],
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],
@@ -1479,7 +1712,7 @@ if __name__ == '__main__':
         if only_new and os.path.exists(f'{A}/sounds/{name}.ogg'):
             continue
         x = highpass(np.asarray(x, float), 25)
-        if name not in ('music/boss', 'shore/surf'):                # (a loop keeps its ends)
+        if name not in ('music/boss', 'shore/surf', 'stubble/heat'):                # (a loop keeps its ends)
             x[:64] *= np.linspace(0, 1, 64)
             x[-400:] *= np.linspace(1, 0, 400)
         x = x / (np.max(np.abs(x)) + 1e-9) * (0.8 if name.startswith('music') else 0.89)
@@ -1496,7 +1729,7 @@ if __name__ == '__main__':
             os.remove(wav)
     sounds = {}
     for event, names in EVENTS.items():
-        entries = [{'name': f'{MOD}:{n}', 'stream': True} if n.startswith('music') or n == 'shore/surf' else f'{MOD}:{n}' for n in names]
+        entries = [{'name': f'{MOD}:{n}', 'stream': True} if n.startswith('music') or n in ('shore/surf', 'stubble/heat') else f'{MOD}:{n}' for n in names]
         sounds[event] = {'subtitle': f'subtitles.{MOD}.{event}', 'sounds': entries}
     with open(f'{A}/sounds.json', 'w') as fh:
         json.dump(sounds, fh, indent=2)

@@ -179,6 +179,7 @@ public class SpellBoltEntity extends ThrowableItemProjectile {
         if (target.hurtServer(level, source, amount)) {
             if (kind == Kind.FIRE_ORB || kind == Kind.DARK_FLAME) {
                 target.igniteForSeconds(4.0F);
+                FlourCloudEntity.kindle(level, target.position(), 1.0);
             } else if (kind == Kind.WISP_FLAME && owner instanceof Player) {
                 target.igniteForSeconds(MARSH_BURNS);                // marsh fire thrown by a player: it clings
             }

@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw
 src, dst = sys.argv[1], sys.argv[2]
 os.makedirs(dst, exist_ok=True)
 W, H, BAR, COLS, ROWS = 640, 360, 18, 3, 3
-LETTERS = {'v': 'mobs_borough', 'q': 'mobs_quarry', 's': 'mobs_mire', 'f': 'mobs_firwood', 'g': 'mobs_firwood', 'h': 'mobs_wharf'}
+LETTERS = {'v': 'mobs_borough', 'q': 'mobs_quarry', 's': 'mobs_mire', 'f': 'mobs_firwood', 'g': 'mobs_firwood', 'h': 'mobs_wharf', 'j': 'mobs_stubble'}
 MAPS = [(26, 'map_borough'), (54, 'map_stockade'), (87, 'map_quarry'), (111, 'map_mire'), (137, 'map_firwood'), (182, 'map_wharf'), (10**6, 'map_lords')]
 def group(n):
     m = re.match(r'm(\d+)_(.*)', n)

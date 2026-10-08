@@ -101,6 +101,28 @@ public final class DushiClient {
                 context -> new QuarryRenderer<>(context, new SkuaModel(context.bakeLayer(SkuaModel.LAYER)), "skua", 0.3F, false, false));
         event.registerEntityRenderer(Dushi.CAPSIZED.get(),
                 context -> new QuarryRenderer<>(context, new CapsizedModel(context.bakeLayer(CapsizedModel.LAYER)), "capsized", 2.0F, false, true));
+        event.registerEntityRenderer(Dushi.REAPER.get(), context -> new QuarryRenderer<>(context,
+                new FieldhandModel(context.bakeLayer(FieldhandModel.LAYER), FieldhandModel.Kind.REAPER), "reaper", 0.5F, false, false));
+        event.registerEntityRenderer(Dushi.MOWER.get(), context -> new QuarryRenderer<>(context,
+                new FieldhandModel(context.bakeLayer(FieldhandModel.BIG), FieldhandModel.Kind.MOWER), "mower", 0.65F, false, false));
+        event.registerEntityRenderer(Dushi.SACKMAN.get(), context -> new QuarryRenderer<>(context,
+                new FieldhandModel(context.bakeLayer(FieldhandModel.BIG), FieldhandModel.Kind.SACKMAN), "sackman", 0.65F, false, false));
+        event.registerEntityRenderer(Dushi.SCORCHED.get(), context -> new QuarryRenderer<>(context,
+                new FieldhandModel(context.bakeLayer(FieldhandModel.LAYER), FieldhandModel.Kind.SCORCHED), "scorched", 0.5F, true, true));
+        event.registerEntityRenderer(Dushi.HOLLOW_MILLER.get(), context -> new QuarryRenderer<>(context,
+                new FieldhandModel(context.bakeLayer(FieldhandModel.HUGE), FieldhandModel.Kind.MILLER), "hollow_miller", 0.9F, true, true));
+        event.registerEntityRenderer(Dushi.SCARECROW.get(),
+                context -> new QuarryRenderer<>(context, new ScarecrowModel(context.bakeLayer(ScarecrowModel.LAYER), false), "scarecrow", 0.4F, false, false));
+        event.registerEntityRenderer(Dushi.SCORCHED_WARDEN.get(),
+                context -> new QuarryRenderer<>(context, new ScarecrowModel(context.bakeLayer(ScarecrowModel.GIANT), true), "scorched_warden", 1.4F, false, true));
+        event.registerEntityRenderer(Dushi.STOOK.get(),
+                context -> new QuarryRenderer<>(context, new StookModel(context.bakeLayer(StookModel.LAYER)), "stook", 0.9F, false, false));
+        event.registerEntityRenderer(Dushi.SUNGAZER.get(),
+                context -> new QuarryRenderer<>(context, new SungazerModel(context.bakeLayer(SungazerModel.LAYER)), "sungazer", 0.3F, true, true));
+        event.registerEntityRenderer(Dushi.MILLSTONE.get(),
+                context -> new QuarryRenderer<>(context, new MillstoneModel(context.bakeLayer(MillstoneModel.LAYER)), "millstone", 0.8F, false, false));
+        event.registerEntityRenderer(Dushi.FLOUR_SACK_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.4F, false));
+        event.registerEntityRenderer(Dushi.FLOUR_CLOUD.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerEntityRenderer(Dushi.HARPOON_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.6F, false));
         event.registerEntityRenderer(Dushi.ANCHOR_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.6F, false));
         Dushi.WITHERED.forEach((kind, type) -> event.registerEntityRenderer(type.get(), context -> new WitheredRenderer(context, kind)));
@@ -140,6 +162,14 @@ public final class DushiClient {
         event.registerLayerDefinition(CrabModel.LAYER, CrabModel::createLayer);
         event.registerLayerDefinition(SkuaModel.LAYER, SkuaModel::createLayer);
         event.registerLayerDefinition(CapsizedModel.LAYER, CapsizedModel::createLayer);
+        event.registerLayerDefinition(FieldhandModel.LAYER, FieldhandModel::createLayer);
+        event.registerLayerDefinition(FieldhandModel.BIG, FieldhandModel::createBigLayer);
+        event.registerLayerDefinition(FieldhandModel.HUGE, FieldhandModel::createHugeLayer);
+        event.registerLayerDefinition(ScarecrowModel.LAYER, ScarecrowModel::createLayer);
+        event.registerLayerDefinition(ScarecrowModel.GIANT, ScarecrowModel::createGiantLayer);
+        event.registerLayerDefinition(StookModel.LAYER, StookModel::createLayer);
+        event.registerLayerDefinition(SungazerModel.LAYER, SungazerModel::createLayer);
+        event.registerLayerDefinition(MillstoneModel.LAYER, MillstoneModel::createLayer);
         event.registerLayerDefinition(KeykeeperModel.LAYER, KeykeeperModel::createLayer);
         event.registerLayerDefinition(OverseerModel.LAYER, OverseerModel::createLayer);
         event.registerLayerDefinition(ChaplainModel.LAYER, ChaplainModel::createLayer);

@@ -1049,6 +1049,298 @@
       "unfading_dawn:player/undertow"
     ]
   },
+  "entity.fieldhand.ambient": {
+    "subtitle": "subtitles.unfading_dawn.entity.fieldhand.ambient",
+    "sounds": [
+      "unfading_dawn:fieldhand/ambient1",
+      "unfading_dawn:fieldhand/ambient2"
+    ]
+  },
+  "entity.fieldhand.hurt": {
+    "subtitle": "subtitles.unfading_dawn.entity.fieldhand.hurt",
+    "sounds": [
+      "unfading_dawn:fieldhand/hurt"
+    ]
+  },
+  "entity.fieldhand.death": {
+    "subtitle": "subtitles.unfading_dawn.entity.fieldhand.death",
+    "sounds": [
+      "unfading_dawn:fieldhand/death"
+    ]
+  },
+  "entity.fieldhand.sickle": {
+    "subtitle": "subtitles.unfading_dawn.entity.fieldhand.sickle",
+    "sounds": [
+      "unfading_dawn:fieldhand/sickle"
+    ]
+  },
+  "entity.fieldhand.scythe": {
+    "subtitle": "subtitles.unfading_dawn.entity.fieldhand.scythe",
+    "sounds": [
+      "unfading_dawn:fieldhand/scythe"
+    ]
+  },
+  "entity.fieldhand.sack": {
+    "subtitle": "subtitles.unfading_dawn.entity.fieldhand.sack",
+    "sounds": [
+      "unfading_dawn:fieldhand/sack"
+    ]
+  },
+  "entity.scorched.ambient": {
+    "subtitle": "subtitles.unfading_dawn.entity.scorched.ambient",
+    "sounds": [
+      "unfading_dawn:scorched/ambient1",
+      "unfading_dawn:scorched/ambient2"
+    ]
+  },
+  "entity.scorched.hurt": {
+    "subtitle": "subtitles.unfading_dawn.entity.scorched.hurt",
+    "sounds": [
+      "unfading_dawn:scorched/hurt"
+    ]
+  },
+  "entity.scorched.death": {
+    "subtitle": "subtitles.unfading_dawn.entity.scorched.death",
+    "sounds": [
+      "unfading_dawn:scorched/death"
+    ]
+  },
+  "entity.scorched.flare": {
+    "subtitle": "subtitles.unfading_dawn.entity.scorched.flare",
+    "sounds": [
+      "unfading_dawn:scorched/flare"
+    ]
+  },
+  "entity.scarecrow.creak": {
+    "subtitle": "subtitles.unfading_dawn.entity.scarecrow.creak",
+    "sounds": [
+      "unfading_dawn:scarecrow/creak1",
+      "unfading_dawn:scarecrow/creak2"
+    ]
+  },
+  "entity.scarecrow.hurt": {
+    "subtitle": "subtitles.unfading_dawn.entity.scarecrow.hurt",
+    "sounds": [
+      "unfading_dawn:scarecrow/hurt"
+    ]
+  },
+  "entity.scarecrow.death": {
+    "subtitle": "subtitles.unfading_dawn.entity.scarecrow.death",
+    "sounds": [
+      "unfading_dawn:scarecrow/death"
+    ]
+  },
+  "entity.scarecrow.wake": {
+    "subtitle": "subtitles.unfading_dawn.entity.scarecrow.wake",
+    "sounds": [
+      "unfading_dawn:scarecrow/wake"
+    ]
+  },
+  "entity.scarecrow.spin": {
+    "subtitle": "subtitles.unfading_dawn.entity.scarecrow.spin",
+    "sounds": [
+      "unfading_dawn:scarecrow/spin"
+    ]
+  },
+  "entity.stook.rustle": {
+    "subtitle": "subtitles.unfading_dawn.entity.stook.rustle",
+    "sounds": [
+      "unfading_dawn:stook/rustle1",
+      "unfading_dawn:stook/rustle2"
+    ]
+  },
+  "entity.stook.hurt": {
+    "subtitle": "subtitles.unfading_dawn.entity.stook.hurt",
+    "sounds": [
+      "unfading_dawn:stook/hurt"
+    ]
+  },
+  "entity.stook.death": {
+    "subtitle": "subtitles.unfading_dawn.entity.stook.death",
+    "sounds": [
+      "unfading_dawn:stook/death"
+    ]
+  },
+  "entity.stook.fall": {
+    "subtitle": "subtitles.unfading_dawn.entity.stook.fall",
+    "sounds": [
+      "unfading_dawn:stook/fall"
+    ]
+  },
+  "entity.stook.shed": {
+    "subtitle": "subtitles.unfading_dawn.entity.stook.shed",
+    "sounds": [
+      "unfading_dawn:stook/shed"
+    ]
+  },
+  "entity.sungazer.hum": {
+    "subtitle": "subtitles.unfading_dawn.entity.sungazer.hum",
+    "sounds": [
+      "unfading_dawn:sungazer/hum1",
+      "unfading_dawn:sungazer/hum2"
+    ]
+  },
+  "entity.sungazer.hurt": {
+    "subtitle": "subtitles.unfading_dawn.entity.sungazer.hurt",
+    "sounds": [
+      "unfading_dawn:sungazer/hurt"
+    ]
+  },
+  "entity.sungazer.death": {
+    "subtitle": "subtitles.unfading_dawn.entity.sungazer.death",
+    "sounds": [
+      "unfading_dawn:sungazer/death"
+    ]
+  },
+  "entity.sungazer.gaze": {
+    "subtitle": "subtitles.unfading_dawn.entity.sungazer.gaze",
+    "sounds": [
+      "unfading_dawn:sungazer/gaze"
+    ]
+  },
+  "entity.sungazer.lash": {
+    "subtitle": "subtitles.unfading_dawn.entity.sungazer.lash",
+    "sounds": [
+      "unfading_dawn:sungazer/lash"
+    ]
+  },
+  "entity.warden.ambient": {
+    "subtitle": "subtitles.unfading_dawn.entity.warden.ambient",
+    "sounds": [
+      "unfading_dawn:warden/ambient1",
+      "unfading_dawn:warden/ambient2"
+    ]
+  },
+  "entity.warden.hurt": {
+    "subtitle": "subtitles.unfading_dawn.entity.warden.hurt",
+    "sounds": [
+      "unfading_dawn:warden/hurt"
+    ]
+  },
+  "entity.warden.death": {
+    "subtitle": "subtitles.unfading_dawn.entity.warden.death",
+    "sounds": [
+      "unfading_dawn:warden/death"
+    ]
+  },
+  "entity.warden.sweep": {
+    "subtitle": "subtitles.unfading_dawn.entity.warden.sweep",
+    "sounds": [
+      "unfading_dawn:warden/sweep"
+    ]
+  },
+  "entity.warden.slam": {
+    "subtitle": "subtitles.unfading_dawn.entity.warden.slam",
+    "sounds": [
+      "unfading_dawn:warden/slam"
+    ]
+  },
+  "entity.warden.kindle": {
+    "subtitle": "subtitles.unfading_dawn.entity.warden.kindle",
+    "sounds": [
+      "unfading_dawn:warden/kindle"
+    ]
+  },
+  "entity.warden.roar": {
+    "subtitle": "subtitles.unfading_dawn.entity.warden.roar",
+    "sounds": [
+      "unfading_dawn:warden/roar"
+    ]
+  },
+  "entity.sun.gather": {
+    "subtitle": "subtitles.unfading_dawn.entity.sun.gather",
+    "sounds": [
+      "unfading_dawn:sun/gather"
+    ]
+  },
+  "entity.sun.burn": {
+    "subtitle": "subtitles.unfading_dawn.entity.sun.burn",
+    "sounds": [
+      "unfading_dawn:sun/burn"
+    ]
+  },
+  "entity.miller.ambient": {
+    "subtitle": "subtitles.unfading_dawn.entity.miller.ambient",
+    "sounds": [
+      "unfading_dawn:miller/ambient1",
+      "unfading_dawn:miller/ambient2"
+    ]
+  },
+  "entity.miller.hurt": {
+    "subtitle": "subtitles.unfading_dawn.entity.miller.hurt",
+    "sounds": [
+      "unfading_dawn:miller/hurt"
+    ]
+  },
+  "entity.miller.death": {
+    "subtitle": "subtitles.unfading_dawn.entity.miller.death",
+    "sounds": [
+      "unfading_dawn:miller/death"
+    ]
+  },
+  "entity.miller.swing": {
+    "subtitle": "subtitles.unfading_dawn.entity.miller.swing",
+    "sounds": [
+      "unfading_dawn:miller/swing"
+    ]
+  },
+  "entity.miller.slam": {
+    "subtitle": "subtitles.unfading_dawn.entity.miller.slam",
+    "sounds": [
+      "unfading_dawn:miller/slam"
+    ]
+  },
+  "entity.miller.shout": {
+    "subtitle": "subtitles.unfading_dawn.entity.miller.shout",
+    "sounds": [
+      "unfading_dawn:miller/shout"
+    ]
+  },
+  "entity.miller.lantern": {
+    "subtitle": "subtitles.unfading_dawn.entity.miller.lantern",
+    "sounds": [
+      "unfading_dawn:miller/lantern"
+    ]
+  },
+  "entity.millstone.rumble": {
+    "subtitle": "subtitles.unfading_dawn.entity.millstone.rumble",
+    "sounds": [
+      "unfading_dawn:millstone/rumble"
+    ]
+  },
+  "entity.millstone.check": {
+    "subtitle": "subtitles.unfading_dawn.entity.millstone.check",
+    "sounds": [
+      "unfading_dawn:millstone/check"
+    ]
+  },
+  "entity.millstone.crash": {
+    "subtitle": "subtitles.unfading_dawn.entity.millstone.crash",
+    "sounds": [
+      "unfading_dawn:millstone/crash"
+    ]
+  },
+  "entity.flour.puff": {
+    "subtitle": "subtitles.unfading_dawn.entity.flour.puff",
+    "sounds": [
+      "unfading_dawn:flour/puff"
+    ]
+  },
+  "entity.flour.blast": {
+    "subtitle": "subtitles.unfading_dawn.entity.flour.blast",
+    "sounds": [
+      "unfading_dawn:flour/blast"
+    ]
+  },
+  "ambient.stubble.heat": {
+    "subtitle": "subtitles.unfading_dawn.ambient.stubble.heat",
+    "sounds": [
+      {
+        "name": "unfading_dawn:stubble/heat",
+        "stream": true
+      }
+    ]
+  },
   "entity.keykeeper.ambient": {
     "subtitle": "subtitles.unfading_dawn.entity.keykeeper.ambient",
     "sounds": [
