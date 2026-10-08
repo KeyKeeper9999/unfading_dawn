@@ -60,6 +60,9 @@ public final class GearTooltips {
         if (stack.is(com.keykeeper.dushi.Dushi.GREAT_CANDLE.get())) {
             lines.add(Component.translatable("tooltip.unfading_dawn.great_candle", Math.round(Gear.CANDLE_BURNS)).withStyle(ChatFormatting.DARK_AQUA));
         }
+        if (stack.is(com.keykeeper.dushi.Dushi.WARDEN_POLE.get())) {
+            lines.add(Component.translatable("tooltip.unfading_dawn.great_candle", Math.round(Gear.POLE_BURNS)).withStyle(ChatFormatting.DARK_AQUA));
+        }
         if (Gear.isBow(stack)) {
             lines.add(Component.translatable("tooltip.unfading_dawn.bow", WeaponItem.grade(Gear.BOW_SCALING)).withStyle(ChatFormatting.GRAY));
             if (player != null) {

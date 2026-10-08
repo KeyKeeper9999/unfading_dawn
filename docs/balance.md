@@ -13,6 +13,7 @@ Balance (see `tools/balance.py`): one clearing of the town brings a player to ab
 the lower fortress to about 18 before the Overseer; the upper city to about 29 before the Chaplain; the quarry to
 about 35 before the Taskmaster and 39 before the Stone-Eater; the Mire to about 46 before the Wallower and 50 before
 the Weeping Mother; the Firwood to about 55 before the Shatun and 60 before the Elder; the Wharf to about 66 before
-the Helmsman and 70 before the Capsized. The fortress was
+the Helmsman and 70 before the Capsized; the Stubble to about 76 before the Scorched Warden and 80 before the Hollow
+Miller. The fortress was
 first tuned for a newcomer; its tiers make up for the levels a player now brings to it. When mobs, weapons, tiers or
 the map change, run it again.

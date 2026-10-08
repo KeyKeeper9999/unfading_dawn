@@ -20,7 +20,7 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 public class MillstoneModel extends EntityModel<BossRenderState> {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(Dushi.id("millstone"), "main");
     /** The stone's radius in model units. */
-    private static final float WHEEL = 11.0F;
+    private static final float WHEEL = 14.0F;
 
     private final ModelPart wheel;
 
@@ -36,15 +36,15 @@ public class MillstoneModel extends EntityModel<BossRenderState> {
         PartDefinition all = root.addOrReplaceChild("all", CubeListBuilder.create(),
                 PartPose.offset(0.0F, 24.0F, 0.0F));
         PartDefinition beam = all.addOrReplaceChild("beam", CubeListBuilder.create()
-                .texOffs(50, 34).addBox(-96.0F, -1.5F, -1.5F, 100.0F, 3.0F, 3.0F)
-                .texOffs(168, 0).addBox(4.0F, -2.0F, -2.0F, 2.0F, 4.0F, 4.0F),
-                PartPose.offset(0.0F, -11.0F, 0.0F));
+                .texOffs(0, 46).addBox(-96.0F, -1.5F, -1.5F, 100.0F, 3.0F, 3.0F)
+                .texOffs(208, 0).addBox(4.5F, -2.5F, -2.5F, 2.0F, 5.0F, 5.0F),
+                PartPose.offset(0.0F, -14.0F, 0.0F));
         PartDefinition wheel = all.addOrReplaceChild("wheel", CubeListBuilder.create()
-                .texOffs(106, 0).addBox(-3.0F, -11.0F, -6.0F, 6.0F, 22.0F, 12.0F)
-                .texOffs(50, 0).addBox(-3.0F, -6.0F, -11.0F, 6.0F, 12.0F, 22.0F)
-                .texOffs(0, 0).addBox(-3.2F, -9.0F, -9.0F, 7.0F, 18.0F, 18.0F)
-                .texOffs(142, 0).addBox(-4.0F, -2.5F, -2.5F, 8.0F, 5.0F, 5.0F),
-                PartPose.offset(0.0F, -11.0F, 0.0F));
+                .texOffs(132, 0).addBox(-3.5F, -14.0F, -8.0F, 7.0F, 28.0F, 16.0F)
+                .texOffs(62, 0).addBox(-3.5F, -8.0F, -14.0F, 7.0F, 16.0F, 28.0F)
+                .texOffs(0, 0).addBox(-3.7F, -11.5F, -11.5F, 8.0F, 23.0F, 23.0F)
+                .texOffs(178, 0).addBox(-4.5F, -3.0F, -3.0F, 9.0F, 6.0F, 6.0F),
+                PartPose.offset(0.0F, -14.0F, 0.0F));
         // </generated mesh>
         return LayerDefinition.create(mesh, 256, 64);
     }

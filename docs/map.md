@@ -86,4 +86,9 @@ Things learnt the hard way:
 - What the game does to a biome's colours by the hour is in its `data/minecraft/timeline/day.json`: every hour multiplies
   fog, sky and the sky's light (at 23600 by about 0.7, 0.7 and 0.55). `.ci/ref.txt` lists files of the game's jar to copy
   into `ci-out/ref/` - that is how its own biomes were read for the shape of `minecraft:audio/ambient_sounds`.
+- A place in the open may want its own grass: a biome's `grass_color` paints turf, `short_grass` and `tall_grass`
+  alike, so a field of corn is tall grass in a biome whose grass is the colour of rye (the Stubble) - no block of the
+  mod's, nothing for a player to trample. The check walks through it (`PASSABLE_MORE`, `NO_FOOTING`).
+- The picture numbers of a run (`m137_...`) are the line numbers of `map/views.txt`: a new place's views shift every
+  number after them, and `MAPS` in `tools/ci_sheets.py` is cut by those numbers.
 - Boulders strewn by chance make pits: `Shore.no_pits` fills whatever on the strand is not come to from its way.

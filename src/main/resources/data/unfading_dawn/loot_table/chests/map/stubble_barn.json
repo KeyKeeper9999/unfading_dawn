@@ -60,6 +60,26 @@
           ]
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:thresh_flail",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:reaper_shirt",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

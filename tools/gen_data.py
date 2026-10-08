@@ -189,9 +189,9 @@ MAP_CHESTS = {
     'lighthouse_cellar': [(GREAT, 4), (M + 'sailcloth', 4), (M + 'tarred_rope', 4), (M + 'crab_shell', 4)],
     'lighthouse_lamp': [(GREAT, 6), (M + 'sea_knot', 1), (M + 'return_ember', 3), (M + 'stubble_key', 1)],          # the key of the Reapers' Gate
     # the Stubble (tools/gen_stubble.py)
-    'stubble_field': [(GREAT, 3), (M + 'rye_straw', 4), (M + 'return_ember', 2)],
-    'stubble_barn': [(GREAT, 4), (M + 'flour_sack', 4), (M + 'rye_straw', 4)],
-    'stubble_mill': [(GREAT, 7), (M + 'return_ember', 3), (M + 'flour_sack', 6)],                 # the keeper's own, hung by the lamp
+    'stubble_field': [(GREAT, 3), (M + 'rye_straw', 4), (M + 'return_ember', 2), (M + 'reaper_sickle', 1), (M + 'reaper_hat', 1)],   # what somebody left in the corn
+    'stubble_barn': [(GREAT, 4), (M + 'flour_sack', 4), (M + 'rye_straw', 4), (M + 'thresh_flail', 1), (M + 'reaper_shirt', 1)],
+    'stubble_mill': [(GREAT, 7), (M + 'return_ember', 3), (M + 'flour_sack', 6), (M + 'twin_ear', 1), (M + 'dry_wind', 1)],        # the Miller's own                 # the keeper's own, hung by the lamp
 }
 for _name, _items in MAP_CHESTS.items():
     CHESTS['map/' + _name] = [pool(item(_id, count=(_n, _n)) if _n > 1 else item(_id)) for _id, _n in _items]
@@ -281,11 +281,13 @@ SHORE = {
 # colour of ripe rye. Grasshoppers, all the time.
 STUBBLE = {
     'attributes': {
-        'minecraft:visual/fog_color': '#ecdcae',
-        'minecraft:visual/sky_color': '#c9d8e2',
+        'minecraft:visual/fog_color': '#f0e0b2',
+        'minecraft:visual/sky_color': '#7fb2e8',
         'minecraft:visual/fog_start_distance': 24.0,
         'minecraft:visual/fog_end_distance': 150.0,
         'minecraft:visual/sky_fog_end_distance': 140.0,
+        'minecraft:visual/cloud_fog_end_distance': 128.0,      # a bare sky: the clouds are further off than this
+        'minecraft:visual/sky_light_color': '#fff2d2',         # and the light of it is the colour of straw
         'minecraft:audio/ambient_sounds': {'loop': f'{MOD}:ambient.stubble.heat'},
     },
     'carvers': [],

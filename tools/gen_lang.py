@@ -31,13 +31,15 @@ for key, ru, en in (
         ('plank_shield', 'Щит из досок', 'Plank Shield'), ('round_shield', 'Круглый щит', 'Round Shield'),
         ('guard_shield', 'Щит стражника', "Guard's Shield"), ('tower_shield', 'Башенный щит', 'Tower Shield'),
         ('carver_buckler', 'Кулачный щит тёсчика', "Carver's Buckler"), ('scale_shield', 'Щит из чешуи', 'Scale Shield'),
-        ('waker_board', 'Било будильщика', "Waker's Board"),
+        ('waker_board', 'Било будильщика', "Waker's Board"), ('kiln_door', 'Заслонка овина', 'Kiln Door'),
+        ('millstone_shield', 'Жёрнов Пустомола', "The Hollow Miller's Stone"),
         ('scholar_staff', 'Посох школяра', "Scholar's Staff"), ('prayer_beads', 'Чётки', 'Prayer Beads'),
         ('ember_glove', 'Тлеющая рукавица', 'Ember Glove'),
         ('soul_shard', 'Осколок души', 'Soul Shard'), ('heavy_soul_shard', 'Тяжёлый осколок души', 'Heavy Soul Shard'), ('mend', 'Исцеление', 'Mend'),
         ('rebuke', 'Отпор', 'Rebuke'), ('fire_orb', 'Огненный ком', 'Fire Orb'), ('flare', 'Огненная ладонь', 'Burning Palm'),
         ('soul_scatter', 'Россыпь душ', 'Soul Scatter'), ('root_snare', 'Корень из-под ног', 'Root from Underfoot'),
         ('marsh_fire', 'Болотный огонь', 'Marsh Fire'), ('hot_wax', 'Горячий воск', 'Hot Wax'),
+        ('dry_wind', 'Суховей', 'Dry Wind'), ('sun_patch', 'Солнечное пятно', 'Patch of Sun'),
         ('warmth_flask', 'Фляга тепла', 'Flask of Warmth'), ('flask_shard', 'Осколок фляги', 'Flask Shard'),
         ('nameless_soul', 'Душа безымянного', 'Soul of a Nameless One'), ('great_soul', 'Большая душа', 'Great Soul'),
         ('overseer_soul', 'Душа Надзирателя', 'Soul of the Overseer'), ('chaplain_soul', 'Душа Капеллана', 'Soul of the Chaplain'),
@@ -84,6 +86,10 @@ for key, ru, en in (
         ('capsized_claw', 'Клешня Перевёртыша', 'Claw of the Capsized'),
         ('helmsman_soul', 'Душа Кормчего', 'Soul of the Helmsman'), ('capsized_soul', 'Душа Перевёртыша', 'Soul of the Capsized'),
         ('rye_straw', 'Ржаная солома', 'Rye Straw'), ('flour_sack', 'Мешок муки', 'Sack of Flour'),
+        ('reaper_sickle', 'Серп жнеца', "Reaper's Sickle"), ('scythe', 'Коса', 'Scythe'), ('thresh_flail', 'Цеп', 'Threshing Flail'),
+        ('warden_pole', 'Жердь Сторожа', "The Warden's Pole"),
+        ('reaper_hat', 'Соломенная шляпа', 'Straw Hat'), ('reaper_shirt', 'Страдная рубаха', 'Harvest Shirt'),
+        ('reaper_breeches', 'Порты жнеца', "Reaper's Breeches"), ('reaper_bast', 'Лапти', 'Bast Shoes'),
         ('warden_soul', 'Душа Палёного сторожа', 'Soul of the Scorched Warden'), ('miller_soul', 'Душа Пустомола', 'Soul of the Hollow Miller'),
         ('oilskin_souwester', 'Зюйдвестка', "Sou'wester"), ('oilskin_smock', 'Промасленная роба', 'Oilskin Smock'),
         ('oilskin_trousers', 'Промасленные порты', 'Oilskin Trousers'), ('oilskin_boots', 'Бахилы', 'Sea Boots'),
@@ -102,7 +108,8 @@ CHARMS = (('coffin_nail', 'Гробовой гвоздь', 'Coffin Nail', 'Мё�
           ('shatun_claw', 'Коготь шатуна', "Shatun's Claw", 'Здоровья больше на %s сердца', '%s hearts more'),
           ('sea_knot', 'Морской узел', "Seaman's Knot", 'Удар оружием стоит на %s%% меньше сил', 'A swing costs %s%% less stamina'),
           ('tide_pearl', 'Жемчужина стоячей воды', 'Pearl of the Slack Tide', 'Здоровье возвращается само: полсердца раз в %s с',
-           'Health comes back by itself: half a heart every %s s'))
+           'Health comes back by itself: half a heart every %s s'),
+          ('twin_ear', 'Двойной колос', 'Twin Ear', 'Глоток из фляги не тратится в %s%% случаев', 'A gulp of the flask is not spent %s%% of the time'))
 for key, ru, en, ru_d, en_d in CHARMS:
     t(f'item.{M}.{key}', ru, en)
     t(f'tooltip.{M}.charm.{key}', ru_d, en_d)
@@ -155,6 +162,8 @@ t(f'tooltip.{M}.stability', 'Устойчивость: %s%%', 'Stability: %s%%')
 t(f'tooltip.{M}.shield.buckler', 'Поднятый, не мешает силам возвращаться', 'Held up, it does not slow the return of stamina')
 t(f'tooltip.{M}.shield.light', 'Лёгкий: вдвое легче щита стражника', "Light: half the weight of a guard's shield")
 t(f'tooltip.{M}.shield.board', 'Отбрасывает того, кто по нему ударил', 'Throws back whoever strikes it')
+t(f'tooltip.{M}.shield.door', 'Поднятая, держит огонь: за ней не горят', 'Held up, it keeps fire off: nobody burns behind it')
+t(f'tooltip.{M}.shield.stone', 'Камень: держит любой удар и весит, как жёрнов', 'Stone: it holds any blow, and weighs what a millstone weighs')
 t(f'tooltip.{M}.catalyst.sorcery', 'Катализатор чародейства', 'Catalyst of sorcery')
 t(f'tooltip.{M}.catalyst.miracle', 'Катализатор чудес', 'Catalyst of miracles')
 t(f'tooltip.{M}.catalyst.pyromancy', 'Катализатор пиромантии', 'Catalyst of pyromancy')
@@ -180,6 +189,7 @@ t(f'tooltip.{M}.set.vigil', 'Сон и морок отпускают раньш�
 t(f'tooltip.{M}.set.mason', 'Взрыв и падающий камень бьют слабее: −%s%% за вещь', 'Blasts and falling rock hurt less: −%s%% per piece')
 t(f'tooltip.{M}.set.scale', 'Вода меньше держит ноги: −%s%% за вещь', 'Water holds the legs less: −%s%% per piece')
 t(f'tooltip.{M}.set.oilskin', 'Удар отбрасывает слабее: −%s%% за вещь', 'A blow throws you less far: −%s%% per piece')
+t(f'tooltip.{M}.set.reaper', 'Огонь жжёт слабее: −%s%% за вещь', 'Fire hurts less: −%s%% per piece')
 t(f'tooltip.{M}.great_candle', 'Горит: кого ударит, тот в огне %s с', 'It is alight: what it strikes burns for %s s')
 
 t(f'spell.{M}.soul_shard.desc', 'Быстрый сгусток бледного света', 'A quick bolt of pale light')
@@ -191,6 +201,8 @@ t(f'spell.{M}.flare.desc', 'Язык пламени из ладони на тр�
 t(f'spell.{M}.soul_scatter.desc', 'Пять осколков веером: вблизи в цель идут все', 'Five shards in a fan: up close all of them land')
 t(f'spell.{M}.root_snare.desc', 'Корень выходит под тем, на кого смотришь: бьёт и держит', 'A root comes up under whoever you look at: it strikes and holds')
 t(f'spell.{M}.marsh_fire.desc', 'Медленный огонёк: сам сворачивает к врагу и долго горит на нём', 'A slow flame: it bends its own way to an enemy and burns on it for long')
+t(f'spell.{M}.dry_wind.desc', 'Сухой ветер из ладони: бьёт слабо, зато отбрасывает и раздувает то, что горит', 'A dry wind from the palm: it hurts little, but it throws back what it meets and fans what burns')
+t(f'spell.{M}.sun_patch.desc', 'Пятно света там, куда смотришь: миг собирается и жжёт всех, кто в нём остался', 'A patch of light where you look: it gathers for a moment, and burns whoever is still in it')
 t(f'spell.{M}.hot_wax.desc', 'Струя воска из ладони: жжёт слабо, зато схватывается на ногах', 'A gush of wax from the palm: it burns little, but sets on the legs')
 
 t(f'message.{M}.need_catalyst.sorcery', 'Нужен посох в другой руке', 'You need a staff in the other hand')

@@ -120,5 +120,6 @@ public class ReaperEntity extends FieldhandEntity {
     protected void dropCustomDeathLoot(ServerLevel level, net.minecraft.world.damagesource.DamageSource source, boolean killedByPlayer) {
         super.dropCustomDeathLoot(level, source, killedByPlayer);
         this.leaveMaybe(level, Dushi.RYE_STRAW.get(), 0.5F);
+        this.leaveMaybe(level, Dushi.REAPER_SICKLE.get(), 0.05F);
     }
 }

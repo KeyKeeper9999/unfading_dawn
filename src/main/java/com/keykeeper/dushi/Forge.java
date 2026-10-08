@@ -97,6 +97,11 @@ public final class Forge {
             add(list, Dushi.OAR, 900, new Part(Dushi.TARRED_ROPE, 2), new Part(Dushi.SAILCLOTH, 2));
             add(list, Dushi.SHIP_ANCHOR, 0, new Part(Dushi.HELMSMAN_SOUL, 1), new Part(Dushi.TARRED_ROPE, 6));
             add(list, Dushi.CAPSIZED_CLAW, 0, new Part(Dushi.CAPSIZED_SOUL, 1), new Part(Dushi.CRAB_SHELL, 6));
+            // what the harvest was got in with, and an arm of the one that watched it
+            add(list, Dushi.REAPER_SICKLE, 1000, new Part(Dushi.RYE_STRAW, 2), scrap(3));
+            add(list, Dushi.SCYTHE, 1000, new Part(Dushi.RYE_STRAW, 3), scrap(5));
+            add(list, Dushi.THRESH_FLAIL, 1000, new Part(Dushi.RYE_STRAW, 4), scrap(2));
+            add(list, Dushi.WARDEN_POLE, 0, new Part(Dushi.WARDEN_SOUL, 1), new Part(Dushi.RYE_STRAW, 6));
             shelf = Category.SUPPLIES;
             add(list, () -> Items.ARROW, 8, 0, scrap(1));
             // shields
@@ -107,6 +112,8 @@ public final class Forge {
             add(list, Dushi.CARVER_BUCKLER, 500, new Part(Dushi.IRON_WEDGE, 2), scrap(2));
             add(list, Dushi.SCALE_SHIELD, 700, new Part(Dushi.BONE_SCALE, 5), new Part(Dushi.WITHE, 2));
             add(list, Dushi.WAKER_BOARD, 900, new Part(Dushi.LINEN, 2), new Part(Dushi.WAX, 2));
+            add(list, Dushi.KILN_DOOR, 1000, scrap(8), new Part(Dushi.RYE_STRAW, 2));
+            add(list, Dushi.MILLSTONE_SHIELD, 0, new Part(Dushi.MILLER_SOUL, 1), new Part(Dushi.FLOUR_SACK, 4));
             shelf = Category.ARMOUR;
             // armour: rags of cloth, mail of scrap, plate hammered over the mail, vestments of cloth and a soul
             int[] shape = {2, 4, 3, 2};
@@ -138,6 +145,10 @@ public final class Forge {
             for (int piece = 0; piece < 4; piece++) {
                 add(list, ArmorSet.OILSKIN.pieces().get(piece), 280 * shape[piece], new Part(Dushi.SAILCLOTH, shape[piece] + 2), new Part(Dushi.TARRED_ROPE, 1));
             }
+            // a reaper's harvest clothes: linen, and straw for the hat, the belt and the shoes
+            for (int piece = 0; piece < 4; piece++) {
+                add(list, ArmorSet.REAPER.pieces().get(piece), 300 * shape[piece], cloth(shape[piece] + 1), new Part(Dushi.RYE_STRAW, shape[piece]));
+            }
             shelf = Category.MAGIC;
             // catalysts and spells: written with a soul
             add(list, Dushi.SCHOLAR_STAFF, 300, cloth(2), scrap(1));
@@ -151,6 +162,8 @@ public final class Forge {
             add(list, Dushi.SPELLS.get(Spell.ROOT_SNARE), 900, new Part(Dushi.WITHE, 4), new Part(Dushi.NAMELESS_SOUL, 2));
             add(list, Dushi.SPELLS.get(Spell.MARSH_FIRE), 900, new Part(Dushi.WITHE, 2), new Part(Dushi.GREAT_SOUL, 1));
             add(list, Dushi.SPELLS.get(Spell.HOT_WAX), 1000, new Part(Dushi.WAX, 4), new Part(Dushi.GREAT_SOUL, 1));
+            add(list, Dushi.SPELLS.get(Spell.DRY_WIND), 1100, new Part(Dushi.RYE_STRAW, 4), new Part(Dushi.NAMELESS_SOUL, 2));
+            add(list, Dushi.SPELLS.get(Spell.SUN_PATCH), 1100, new Part(Dushi.RYE_STRAW, 2), new Part(Dushi.GREAT_SOUL, 1));
             shelf = Category.SUPPLIES;
             add(list, Dushi.TAR_POT, 2, 50, cloth(1));
             add(list, Dushi.POWDER_POT, 2, 150, cloth(1), new Part(Dushi.IRON_WEDGE, 1));

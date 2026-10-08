@@ -77,7 +77,10 @@ public class FlaskItem extends Item {
             float gulp = Math.max(10.0F, entity.getMaxHealth() * 0.5F);
             entity.heal(entity instanceof Player drinker ? gulp * com.keykeeper.dushi.Charm.ASH_KNOT.more(drinker) : gulp);
             serverLevel.sendParticles(ParticleTypes.FLAME, entity.getX(), entity.getY() + 1.0, entity.getZ(), 14, 0.3, 0.5, 0.3, 0.01);
-            if (!(entity instanceof Player player) || !player.getAbilities().instabuild) {
+            // (two ears on one stalk: now and then there is more in the flask than was put there)
+            boolean spared = entity instanceof Player lucky && com.keykeeper.dushi.Charm.TWIN_EAR.on(lucky)
+                    && serverLevel.getRandom().nextInt(100) < com.keykeeper.dushi.Charm.TWIN_EAR.amount;
+            if (!spared && (!(entity instanceof Player player) || !player.getAbilities().instabuild)) {
                 stack.setDamageValue(stack.getDamageValue() + 1);
             }
             if (entity instanceof Player player) {

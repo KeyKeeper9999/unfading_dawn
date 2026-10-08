@@ -21,7 +21,7 @@ mobs = kinds + ['rust_knight', 'gilded_knight', 'keykeeper', 'overseer', 'chapla
                'dockhand', 'harpooner', 'oarsman', 'pilot', 'sand_crab', 'skua', 'helmsman', 'capsized',
                'reaper', 'mower', 'sackman', 'scorched', 'scarecrow', 'stook', 'sungazer', 'scorched_warden', 'hollow_miller']
 charms = re.findall(r'^\s+[A-Z_]+\("(\w+)", \d+\)', open(f'{J}/Charm.java').read(), re.M)
-armour = re.findall(r'"((?:prisoner|guard|rust|chaplain|vigil|mason|scale|oilskin)_\w+)"', open(f'{J}/ArmorSet.java').read())
+armour = re.findall(r'"((?:prisoner|guard|rust|chaplain|vigil|mason|scale|oilskin|reaper)_\w+)"', open(f'{J}/ArmorSet.java').read())
 items |= set(armour)
 items |= set(charms) | set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate', 'mob_mark', 'forge'}
 blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name', 'shard_heap', 'locked_gate', 'shallows', 'sludge', 'sea_shallows'}

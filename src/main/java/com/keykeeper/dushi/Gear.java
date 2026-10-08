@@ -256,6 +256,17 @@ public final class Gear {
         return victim instanceof Player player ? 1.0F - ArmorSet.OILSKIN.bonus * worn(player, ArmorSet.OILSKIN) : 1.0F;
     }
 
+    /** The share of a fire's hurt that reaches somebody in a reaper's harvest clothes. */
+    public static float fireShare(Player player) {
+        return 1.0F - ArmorSet.REAPER.bonus * worn(player, ArmorSet.REAPER);
+    }
+
+    /** Behind the door of a kiln, held up, a fire does this much of what it would. */
+    public static final float DOOR_FIRE = 0.25F;
+
+    /** For how many seconds the Warden's pole sets alight what it strikes. */
+    public static final float POLE_BURNS = 5.0F;
+
     /** What a swing costs: the weapon's own, less what a seaman's knot takes off. */
     public static float swingCost(Player player, float cost) {
         return cost * Charm.SEA_KNOT.less(player);

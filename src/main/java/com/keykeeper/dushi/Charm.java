@@ -29,7 +29,9 @@ public enum Charm {
     /** The wharf: a knot no landsman ties, off the pilot's lamp. A swing costs less stamina. */
     SEA_KNOT("sea_knot", 12),
     /** The shoal: what the Capsized grew under its boat. Health comes back by itself, half a heart every so many seconds. */
-    TIDE_PEARL("tide_pearl", 4);
+    TIDE_PEARL("tide_pearl", 4),
+    /** The Stubble: two ears on one stalk, which is luck, and plenty. Now and then a gulp of the flask is not spent. */
+    TWIN_EAR("twin_ear", 25);
 
     public final String id;
     /** What it gives, as its tooltip says it: a percentage for most, a number for the link and the claw. */

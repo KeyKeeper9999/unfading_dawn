@@ -555,11 +555,18 @@ final class WorldTest {
         int lit = com.keykeeper.dushi.entity.FlourCloudEntity.kindle(level, where.add(2.0, 0.0, 0.0), 0.5);
         boolean hides = Math.abs(hide - 100.0F * com.keykeeper.dushi.entity.ScorchedWardenEntity.HIDE) < 0.01F
                 && Math.abs(flour - 100.0F * com.keykeeper.dushi.entity.HollowMillerEntity.HIDE) < 0.01F;
-        boolean ok = stood && woke && hides && fireproof && rooted == 0.0 && walks > 0.2 && set && hard && carried && idle && lit == 1 && cloud.lit();
+        // a reaper's harvest clothes, and fire
+        FakePlayer player = FakePlayerFactory.getMinecraft(level);
+        ArmorSet clothes = ArmorSet.REAPER;
+        wear(player, clothes.piece(0), clothes.piece(1), clothes.piece(2), clothes.piece(3), null, null);
+        float share = Gear.fireShare(player);
+        wear(player, null, null, null, null, null, null);
+        boolean cool = Math.abs(share - (1.0F - 4.0F * clothes.bonus)) < 0.001F && Gear.fireShare(player) == 1.0F;
+        boolean ok = stood && woke && hides && fireproof && rooted == 0.0 && walks > 0.2 && set && hard && carried && idle && lit == 1 && cloud.lit() && cool;
         say("stubble: they stood still=" + stood + ", struck, the scarecrow gets down and the stook up=" + woke + "; of a blow of 100 the Warden takes " + hide
                 + " and the Miller " + flour + ", fire does nothing to the Warden=" + fireproof + "; on the cross it walks at " + rooted + ", alight at " + walks
-                + "; the stone is on its beam=" + set + ", cannot be hurt=" + hard + ", is the Miller's to carry in the end=" + carried
-                + "; flour hangs=" + idle + " and takes fire=" + (lit == 1 && cloud.lit()) + (ok ? "" : " FAILED"));
+                + "; the stone is on its beam=" + set + ", takes no hurt=" + hard + ", is the Miller's to carry in the end=" + carried
+                + "; flour hangs=" + idle + " and takes fire=" + (lit == 1 && cloud.lit()) + "; in a reaper's clothes fire does x" + share + (ok ? "" : " FAILED"));
         scarecrow.discard();
         stook.discard();
         warden.discard();
@@ -669,7 +676,8 @@ final class WorldTest {
                     gifts.append(' ').append(charm.id).append('=').append(new String[] {"regen x", "spells x", "block x", "roll ", "backstab x", "swing "}[i]).append(rounded(with[i]));
                 }
             }
-            boolean other = charm == Charm.COFFIN_NAIL || charm == Charm.ASH_KNOT || charm == Charm.FETTER_LINK || charm == Charm.SHATUN_CLAW || charm == Charm.TIDE_PEARL;
+            boolean other = charm == Charm.COFFIN_NAIL || charm == Charm.ASH_KNOT || charm == Charm.FETTER_LINK || charm == Charm.SHATUN_CLAW || charm == Charm.TIDE_PEARL
+                    || charm == Charm.TWIN_EAR;
             each &= changed == (other ? 0 : 1);
         }
         soul.charm = Charm.COFFIN_NAIL.id;

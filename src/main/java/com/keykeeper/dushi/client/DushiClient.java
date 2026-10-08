@@ -123,6 +123,7 @@ public final class DushiClient {
                 context -> new QuarryRenderer<>(context, new MillstoneModel(context.bakeLayer(MillstoneModel.LAYER)), "millstone", 0.8F, false, false));
         event.registerEntityRenderer(Dushi.FLOUR_SACK_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.4F, false));
         event.registerEntityRenderer(Dushi.FLOUR_CLOUD.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
+        event.registerEntityRenderer(Dushi.SUN_PATCH.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerEntityRenderer(Dushi.HARPOON_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.6F, false));
         event.registerEntityRenderer(Dushi.ANCHOR_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.6F, false));
         Dushi.WITHERED.forEach((kind, type) -> event.registerEntityRenderer(type.get(), context -> new WitheredRenderer(context, kind)));

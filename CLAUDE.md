@@ -18,7 +18,7 @@ The story the map tells, the traders and items agreed for the next round, and th
 This file holds what is common to the whole mod. Read the others only for the work in hand, and write new knowledge
 into the file of its place or topic - here only what every chat needs:
 
-- `docs/places/borough.md`, `stockade.md`, `quarry.md`, `mire.md`, `firwood.md`, `wharf.md` - a place: its way through,
+- `docs/places/borough.md`, `stockade.md`, `quarry.md`, `mire.md`, `firwood.md`, `wharf.md`, `stubble.md` - a place: its way through,
   its levels, what is left for later, and its own dead and lords (their classes and what is particular about each);
 - `docs/map.md` - how the map is generated, set down and checked, and the things learnt the hard way about it;
 - `docs/animation.md` - poses, held things, moves: the rules learnt;
@@ -116,12 +116,12 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `MapBuilder` (build only) and `client/MapSelfTest` (build only) - see "The map".
 - `Gear` - what the rules know about any piece of gear, the game's own included: stamina cost, scaling and backstab of
   a weapon (by item tag for vanilla ones), stability of a shield, weight of everything worn or held, and the burden that
-  follows from the weight (it decides the roll). `ArmorSet` - the mod's eight suits and the gift of each (the prisoner's,
+  follows from the weight (it decides the roll). `ArmorSet` - the mod's nine suits (the last a reaper's harvest clothes) and the gift of each (the prisoner's,
   the guard's, the rusted plate, the chaplain's, the linen of the Unsleeping, a stonecutter's felt and leather, the
   Mire's coat of scales, a seaman's oilskins). A gift is a function of `Gear` asked where the thing happens (`staminaRegen`,
-  `blockCost`, `drowse`, `blastShare`, `wading`, `thrown`: how far a blow throws - asked by `SoulsMob.shove` and by both
+  `blockCost`, `drowse`, `blastShare`, `wading`, `fireShare`, `thrown`: how far a blow throws - asked by `SoulsMob.shove` and by both
   of its hits); a blow that must be known for what it is says so while it lands (`SoulsMob.rockfall`).
-- `Charm` + `item/CharmItem` - the charms: eleven small things, one or two to a place, one worn at a time (`PlayerSoul.charm`,
+- `Charm` + `item/CharmItem` - the charms: twelve small things, one or two to a place, one worn at a time (`PlayerSoul.charm`,
   kept through death). A charm is put on by using it and the one worn before comes back into the hand; it is taken off at
   a hearth (`HearthScreen`) and shown beside the flask (`SoulsHud`). What each gives is asked of the enum where the thing
   happens (`Charm.X.more(player)`, `.less(player)`, `.on(player)`). A new charm is an entry there, an icon, its two texts
@@ -164,7 +164,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
     `gen_chaplain.py`, `gen_hound.py`, `gen_gravedigger.py`, `gen_crawler.py`, `gen_unhewn.py`, `gen_taskmaster.py`,
     `gen_stone_eater.py`, `gen_pike.py`, `gen_lanky.py`, `gen_wisp.py`, `gen_wallower.py`, `gen_mother.py`, `gen_root.py`,
     `gen_sect.py` (the wakeful, the waker and the sleeper on one model), `gen_waxen.py`, `gen_moth.py`, `gen_shatun.py`,
-    `gen_elder.py`, `gen_sailor.py` (five seamen on one mesh), `gen_crab.py`, `gen_skua.py`, `gen_capsized.py` - the mobs
+    `gen_elder.py`, `gen_sailor.py` (five seamen on one mesh), `gen_crab.py`, `gen_skua.py`, `gen_capsized.py`,
+    `gen_fieldhand.py` (five fieldhands on one mesh), `gen_scarecrow.py`, `gen_stook.py` (and the millstone), `gen_sungazer.py` - the mobs
     (the withered are eleven kinds now: the Mire's drowned too). `Model.mirror` gives a mirrored part the parent of its
     source with "right" turned to "left" in the name: a part whose parent is named otherwise (`leg_r1`, `wing_r`) must be
     given its `parent=`, or the left shin hangs from the right leg - which the preview shows only if one looks, and the
@@ -177,8 +178,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   - `check_assets.py` - checks that everything registered has its files and names;
   - `gen_world.py` - the map (not run by `build_assets.sh`: `PYTHONPATH=tools python3 tools/gen_world.py [preview dir]`);
     it puts together the land, `gen_village.py` (the Dead Borough), `gen_map.py` (the High Stockade),
-    `gen_quarry.py` (the White Pit), `gen_swamp.py` (the Mire), `gen_skete.py` (the Black Firwood) and `gen_shore.py`
-    (the Morning Wharf); without a preview directory it takes about two and a half minutes, with one about five;
+    `gen_quarry.py` (the White Pit), `gen_swamp.py` (the Mire), `gen_skete.py` (the Black Firwood), `gen_shore.py`
+    (the Morning Wharf) and `gen_stubble.py` (the Stubble; `preview_stubble.py DIR` builds that place alone, in a second); without a preview directory it takes about two and a half minutes, with one about five;
   - `balance.py` - the sums of the map's progression (`PYTHONPATH=tools python3 tools/balance.py`): it reads
     `map/census.json`, which `gen_world.py` writes (what comes into reach before each lord), so it takes a second -
     run it after `gen_world.py` when the map changed, and by itself when only numbers in the Java changed.
@@ -211,6 +212,6 @@ into it (`tools/gen_world.py`); the country outside the plan is the flat forest 
 
 The places, in the order they are played: the Dead Borough (`gen_village.py`; the hub: the yard of the first hearth) ->
 the High Stockade (`gen_map.py`) -> the White Pit (`gen_quarry.py`) -> the Mire (`gen_swamp.py`) -> the Black Firwood
-(`gen_skete.py`) -> the Morning Wharf (`gen_shore.py`). Each is behind a locked gate of the hub whose key lies behind
+(`gen_skete.py`) -> the Morning Wharf (`gen_shore.py`) -> the Stubble (`gen_stubble.py`). Each is behind a locked gate of the hub whose key lies behind
 the second lord of the place before it. Each has a file in `docs/places/`; how the map is built and checked, and what
 went wrong before, is in `docs/map.md`; what each place pays is in `docs/balance.md`.

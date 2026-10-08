@@ -318,6 +318,16 @@ public class Dushi {
     public static final DeferredItem<WeaponItem> SHIP_ANCHOR = weapon("ship_anchor", 19.5F, 0.6F, 1.0F, 46.0F, 1.0F, 0.0F, 1.5F, 900, Rarity.EPIC);
     public static final DeferredItem<WeaponItem> CAPSIZED_CLAW = weapon("capsized_claw", 13.5F, 1.6F, 0.0F, 17.0F, 0.6F, 0.6F, 1.75F, 900, Rarity.EPIC);
 
+    /**
+     * The Stubble: a reaper's sickle (quick, and at its best in a back), a mower's scythe (two hands, and as wide a
+     * swathe as there is), the flail they threshed with, and one of the poles the Scorched Warden had for arms (two
+     * hands; it is still alight, and what it strikes burns).
+     */
+    public static final DeferredItem<WeaponItem> REAPER_SICKLE = weapon("reaper_sickle", 12.0F, 2.2F, -0.25F, 10.0F, 0.2F, 0.9F, 2.5F, 600, Rarity.UNCOMMON);
+    public static final DeferredItem<WeaponItem> SCYTHE = weapon("scythe", 17.0F, 0.9F, 1.5F, 32.0F, 0.6F, 0.6F, 1.5F, 600, Rarity.UNCOMMON);
+    public static final DeferredItem<WeaponItem> THRESH_FLAIL = weapon("thresh_flail", 13.0F, 1.1F, 0.75F, 23.0F, 0.9F, 0.2F, 1.5F, 600, Rarity.UNCOMMON);
+    public static final DeferredItem<WeaponItem> WARDEN_POLE = weapon("warden_pole", 18.0F, 0.95F, 1.75F, 30.0F, 0.6F, 0.6F, 1.5F, 900, Rarity.EPIC);
+
     public static final DeferredItem<ShortBowItem> SHORT_BOW = ITEMS.registerItem("short_bow", props -> new ShortBowItem(props.stacksTo(1)));
 
     // ------------------------------------------------------------------ shields
@@ -358,6 +368,10 @@ public class Dushi {
     public static final DeferredItem<Item> SCALE_SHIELD = shield("scale_shield", 0.85F, 0.55F, 4.0F, "light", Rarity.UNCOMMON);
     /** A waker's board, carried on the arm: whoever strikes it is thrown back by it. */
     public static final DeferredItem<Item> WAKER_BOARD = shield("waker_board", 0.9F, 0.65F, -1.0F, "board", Rarity.UNCOMMON);
+    /** The iron door of a drying barn's kiln: fire caught on it does nothing, and whoever holds it up does not burn. */
+    public static final DeferredItem<Item> KILN_DOOR = shield("kiln_door", 0.95F, 0.7F, -1.0F, "door", Rarity.UNCOMMON);
+    /** The runner stone of the Great Mill, carried as a shield: nothing gets through it, and it weighs what it weighs. */
+    public static final DeferredItem<Item> MILLSTONE_SHIELD = shield("millstone_shield", 1.0F, 0.92F, -1.0F, "stone", Rarity.EPIC);
 
     // ------------------------------------------------------------------ armour
 
@@ -599,9 +613,11 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.HollowMillerEntity>> HOLLOW_MILLER = ENTITIES.registerEntityType(
             "hollow_miller", com.keykeeper.dushi.entity.HollowMillerEntity::new, MobCategory.MONSTER, b -> b.sized(1.1F, 2.95F).eyeHeight(2.6F).clientTrackingRange(12));
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.MillstoneEntity>> MILLSTONE = ENTITIES.registerEntityType(
-            "millstone", com.keykeeper.dushi.entity.MillstoneEntity::new, MobCategory.MONSTER, b -> b.sized(1.4F, 1.5F).eyeHeight(0.8F).clientTrackingRange(10).updateInterval(1).fireImmune());
+            "millstone", com.keykeeper.dushi.entity.MillstoneEntity::new, MobCategory.MONSTER, b -> b.sized(1.6F, 1.85F).eyeHeight(0.9F).clientTrackingRange(10).updateInterval(1).fireImmune());
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.FlourSackEntity>> FLOUR_SACK_ENTITY = ENTITIES.registerEntityType(
             "thrown_flour_sack", com.keykeeper.dushi.entity.FlourSackEntity::new, MobCategory.MISC, b -> b.sized(0.4F, 0.4F).clientTrackingRange(8).updateInterval(3));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.SunPatchEntity>> SUN_PATCH = ENTITIES.registerEntityType(
+            "sun_patch", com.keykeeper.dushi.entity.SunPatchEntity::new, MobCategory.MISC, b -> b.sized(0.5F, 0.5F).clientTrackingRange(8).updateInterval(20).fireImmune());
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.FlourCloudEntity>> FLOUR_CLOUD = ENTITIES.registerEntityType(
             "flour_cloud", com.keykeeper.dushi.entity.FlourCloudEntity::new, MobCategory.MISC, b -> b.sized(0.5F, 0.5F).clientTrackingRange(8).updateInterval(20).fireImmune());
 

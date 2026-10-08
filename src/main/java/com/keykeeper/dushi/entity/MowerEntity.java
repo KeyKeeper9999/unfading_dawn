@@ -124,6 +124,12 @@ public class MowerEntity extends FieldhandEntity {
     }
 
     @Override
+    protected void dropCustomDeathLoot(ServerLevel level, net.minecraft.world.damagesource.DamageSource source, boolean killedByPlayer) {
+        super.dropCustomDeathLoot(level, source, killedByPlayer);
+        this.leaveMaybe(level, Dushi.SCYTHE.get(), 0.06F);
+    }
+
+    @Override
     public void recover() {
         super.recover();
         this.back = false;

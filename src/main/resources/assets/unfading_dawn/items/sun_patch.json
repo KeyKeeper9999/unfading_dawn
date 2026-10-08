@@ -1,0 +1,14 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "property": "minecraft:broken",
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "unfading_dawn:item/sun_patch_spent"
+    },
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "unfading_dawn:item/sun_patch"
+    }
+  }
+}

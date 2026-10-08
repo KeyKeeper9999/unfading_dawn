@@ -221,6 +221,7 @@ public class SungazerEntity extends SoulsMob {
         super.dropCustomDeathLoot(level, source, killedByPlayer);
         this.leaveMaybe(level, Dushi.NAMELESS_SOUL.get(), 0.25F);
         this.leaveMaybe(level, Dushi.GREAT_SOUL.get(), 0.08F);
+        this.leaveMaybe(level, Dushi.SPELLS.get(com.keykeeper.dushi.Spell.SUN_PATCH).get(), 0.05F);
     }
 
     @Override

@@ -1247,7 +1247,8 @@ public final class ClientSelfTest {
                 {"battle_axe", "plank_shield"}, {"short_bow", "prayer_beads"}, {"bear_spear", "guard_shield"}, {"great_candle", "vigil_staff"},
                 {"waker_mallet", "round_shield"}, {"stone_hammer", "carver_buckler"}, {"fish_knife", "scale_shield"}, {"longsword", "waker_board"},
                 {"cargo_hook", "round_shield"}, {"harpoon", "guard_shield"}, {"oar", "plank_shield"}, {"lead_line", "carver_buckler"},
-                {"ship_anchor", "tower_shield"}, {"capsized_claw", "scale_shield"}}) {
+                {"ship_anchor", "tower_shield"}, {"capsized_claw", "scale_shield"},
+                {"reaper_sickle", "kiln_door"}, {"scythe", "round_shield"}, {"thresh_flail", "millstone_shield"}, {"warden_pole", "kiln_door"}}) {
             command("item replace entity @p weapon.mainhand with unfading_dawn:" + set[0], "item replace entity @p weapon.offhand with unfading_dawn:" + set[1]);
             camera(CameraType.THIRD_PERSON_FRONT);
             shot("31_held_" + set[0] + "_front", 20);

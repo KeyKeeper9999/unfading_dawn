@@ -22,7 +22,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * The eight suits of armour of the mod. Besides protection every suit has a weight (see {@link Gear}) and a small gift of its
+ * The nine suits of armour of the mod. Besides protection every suit has a weight (see {@link Gear}) and a small gift of its
  * own that grows with every piece worn.
  */
 public enum ArmorSet {
@@ -59,7 +59,14 @@ public enum ArmorSet {
      * him less far.
      */
     OILSKIN("oilskin", new String[] {"oilskin_souwester", "oilskin_smock", "oilskin_trousers", "oilskin_boots"}, 19.0F, 0.15F,
-            15, new int[] {2, 6, 4, 2}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_LEATHER, "repairs_cloth", Rarity.UNCOMMON);
+            15, new int[] {2, 6, 4, 2}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_LEATHER, "repairs_cloth", Rarity.UNCOMMON),
+    /**
+     * A reaper's harvest clothes - a straw hat, a long linen shirt with the red stitching of the season, breeches, bast
+     * shoes: as light as rags and little better; they were made to be worn all day under that sun, and fire does less
+     * to whoever wears them.
+     */
+    REAPER("reaper", new String[] {"reaper_hat", "reaper_shirt", "reaper_breeches", "reaper_bast"}, 9.0F, 0.12F,
+            12, new int[] {2, 4, 3, 2}, 0.0F, 0.0F, SoundEvents.ARMOR_EQUIP_LEATHER, "repairs_cloth", Rarity.UNCOMMON);
 
     public static final EquipmentSlot[] SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
     private static final ArmorType[] TYPES = {ArmorType.HELMET, ArmorType.CHESTPLATE, ArmorType.LEGGINGS, ArmorType.BOOTS};

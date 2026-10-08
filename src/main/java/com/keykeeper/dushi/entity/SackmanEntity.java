@@ -121,6 +121,7 @@ public class SackmanEntity extends FieldhandEntity {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean killedByPlayer) {
         super.dropCustomDeathLoot(level, source, killedByPlayer);
         this.leave(level, Dushi.FLOUR_SACK.get(), 0, 2);
+        this.leaveMaybe(level, Dushi.THRESH_FLAIL.get(), 0.05F);
     }
 
     @Override

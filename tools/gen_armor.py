@@ -25,6 +25,7 @@ SUITS = {
     'mason': ('mason_cap', 'mason_apron', 'mason_breeches', 'mason_boots'),
     'scale': ('scale_hood', 'scale_coat', 'scale_leggings', 'scale_waders'),
     'oilskin': ('oilskin_souwester', 'oilskin_smock', 'oilskin_trousers', 'oilskin_boots'),
+    'reaper': ('reaper_hat', 'reaper_shirt', 'reaper_breeches', 'reaper_bast'),
 }
 
 # ---------------------------------------------------------------------------------------------------- the worn textures
@@ -628,7 +629,65 @@ def oilskin():
     return one, two
 
 
-WORN = {'prisoner': prisoner, 'guard': guard, 'rust': rust, 'chaplain': chaplain, 'vigil': vigil, 'mason': mason, 'scale': scale, 'oilskin': oilskin}
+STRAW = (214, 180, 88)
+STRAW_D = (166, 132, 58)
+STRAW_L = (240, 214, 130)
+HOMESPUN = (120, 104, 82)
+HOMESPUN_D = (88, 76, 60)
+
+
+def reaper():
+    """A reaper's harvest clothes: a long shirt of bleached linen with the red stitching of the season at the neck, the
+    cuffs and the hem, a twist of straw for a belt; a straw hat; homespun breeches; bast shoes over leg wraps."""
+    one, two = Worn(), Worn()
+    cloth = weave(LINEN, LINEN_D, 'reaper', 2.6, 0.5)
+
+    def straw(face, px, py, w, h):
+        c = STRAW_D if (px + py) % 2 == 0 else (STRAW_L if (px * 3 + py * 5) % 7 == 0 else STRAW)
+        return shade(c, 1.1 if face == 'top' else 1.0 - 0.03 * py)
+    # the hat: its crown, on the second layer of the head (the brim cannot be worn in this layout: it is in the icon)
+    one.fill('hat', straw, faces=('top',))
+    one.fill('hat', straw, faces=SIDES, rows=(0, 2))
+    for face in SIDES:
+        for px in range(8):
+            one.put('hat', face, px, 2, THREAD if px % 3 else THREAD_D)
+            if (px * 5 + len(face)) % 3 == 0:
+                one.put('hat', face, px, 3, STRAW_D)             # the brim's edge, frayed
+    # the shirt: to the wrists, open at the neck
+    one.fill('body', cloth)
+    for py in range(0, 4):
+        one.clear('body', 'front', 3, py) if py < 2 else None
+        one.clear('body', 'front', 4, py) if py < 2 else None
+        one.put('body', 'front', 2, py, THREAD if py % 2 else THREAD_D)
+        one.put('body', 'front', 5, py, THREAD_D if py % 2 else THREAD)
+    for face, w in (('front', 8), ('back', 8), ('right', 4), ('left', 4)):
+        for px in range(w):
+            one.put('body', face, px, 9, STRAW if px % 2 else STRAW_D)       # the belt
+            one.put('body', face, px, 11, THREAD if px % 2 else THREAD_D)    # the hem
+    one.fill('arm', cloth, faces=('top',) + SIDES, rows=(0, 10))
+    for face in SIDES:
+        for px in range(4):
+            one.put('arm', face, px, 10, THREAD if px % 2 else THREAD_D)
+    # the bast shoes, and the wraps under them with their cord
+    for face in SIDES:
+        for px in range(4):
+            for py in range(6, 10):
+                c = LINEN if (py + px // 2) % 2 else LINEN_D
+                if (py * 3 + px) % 5 == 0:
+                    c = STRAW_D
+                one.put('leg', face, px, py, shade(c, 0.96))
+            for py in range(10, 12):
+                one.put('leg', face, px, py, STRAW if (px + py) % 2 else STRAW_D)
+    one.fill('leg', lambda face, px, py, w, h: shade(STRAW_D, 0.8), faces=('bottom',))
+    # the breeches: homespun, to below the knee
+    spun = weave(HOMESPUN, HOMESPUN_D, 'reaperbr', 2.0, 0.5)
+    two.fill('body', spun, faces=SIDES, rows=(8, 11))
+    two.fill('leg', spun, faces=SIDES, rows=(0, 7))
+    return one, two
+
+
+WORN = {'prisoner': prisoner, 'guard': guard, 'rust': rust, 'chaplain': chaplain, 'vigil': vigil, 'mason': mason, 'scale': scale, 'oilskin': oilskin,
+        'reaper': reaper}
 
 # ---------------------------------------------------------------------------------------------------- the icons
 
@@ -720,6 +779,23 @@ HELMETS = {
         "..oooo....oooo..",
         "................",
         "................"], dict(L=LINEN_L, B=LINEN, D=LINEN_D, N=THREAD, n=THREAD_D)),
+    'reaper': ([
+        "................",
+        "................",
+        "................",
+        ".....oooooo.....",
+        "....oSSSSSso....",
+        "....oSsSsSso....",
+        "....oNnNnNno....",
+        ".oooosSsSsSoooo.",
+        "oSSsSsSsSsSsSsSo",
+        "osSsSsSsSsSsSsso",
+        ".oossssssssssoo.",
+        "...oooooooooo...",
+        "................",
+        "................",
+        "................",
+        "................"], dict(S=STRAW, s=STRAW_D, N=THREAD, n=THREAD_D)),
     'mason': ([
         "................",
         "................",
@@ -839,6 +915,9 @@ OVER = {
     'chaplain_cassock': [(7, 4, ["Gg", "gG", "Gg", "gG", "Gg", "gG", "Gg", "gG"]), (2, 5, ["G"]), (13, 5, ["G"]), (6, 2, ["W"]), (9, 2, ["W"])],
     'chaplain_skirt': [(4, 12, ["Gg"]), (10, 12, ["gG"]), (4, 2, ["GgGgGgGg"])],
     'chaplain_shoes': [],
+    'reaper_shirt': [(7, 3, ["N", "n", "N"]), (8, 3, ["n", "N", "n"]), (3, 9, ["SsSsSsSsS"]), (3, 12, ["NnNnNnNnN"]), (2, 5, ["N"]), (13, 5, ["N"])],
+    'reaper_breeches': [(4, 9, ["CC"]), (10, 9, ["CC"])],
+    'reaper_bast': [(3, 6, ["LC"]), (11, 6, ["CL"]), (3, 8, ["LL"]), (11, 8, ["LL"]), (2, 10, ["SsS"]), (10, 10, ["sSs"])],
     'vigil_shift': [(7, 4, ["N", "N", ".", "N", "N", ".", "N", "N"]), (3, 9, ["CRCRCRCRC"]), (5, 10, ["R"]), (2, 5, ["N"]), (13, 5, ["N"])],
     'vigil_skirt': [(4, 11, ["Nn"]), (10, 11, ["nN"]), (4, 2, ["CRCRCRCR"])],
     'vigil_wraps': [(3, 6, ["CC"]), (11, 6, ["CC"]), (2, 10, ["CAC"]), (10, 10, ["ACA"]), (3, 8, ["CC"]), (11, 8, ["CC"])],
@@ -864,6 +943,7 @@ PALETTES = {
     'mason': dict(A=FELT_L, B=FELT, C=FELT_D, L=APRON, l=APRON_D, P=APRON_L, W=DUST, S=STEEL),
     'scale': dict(A=HIDE_L, B=HIDE, C=HIDE_D, L=BONE_L, E=BONE, D=BONE_D, V=WITHE, v=shade(WITHE, 0.72), P=(36, 36, 32)),
     'oilskin': dict(A=OIL_L, B=OIL, C=OIL_D, H=HEMP, h=shade(HEMP, 0.74), P=(26, 24, 24), L=PITCH_L, l=PITCH),
+    'reaper': dict(A=LINEN_L, B=LINEN, C=LINEN_D, N=THREAD, n=THREAD_D, S=STRAW, s=STRAW_D, L=LINEN),
 }
 # pieces whose base colours differ from the suit's
 PIECE_PALETTE = {
@@ -874,6 +954,8 @@ PIECE_PALETTE = {
     'mason_boots': dict(A=APRON_L, B=APRON, C=APRON_D),
     'oilskin_trousers': dict(A=OIL, B=OIL_D, C=shade(OIL_D, 0.78)),
     'oilskin_boots': dict(A=PITCH_L, B=PITCH, C=(28, 26, 26)),
+    'reaper_breeches': dict(A=shade(HOMESPUN, 1.15), B=HOMESPUN, C=HOMESPUN_D),
+    'reaper_bast': dict(A=STRAW_L, B=STRAW, C=STRAW_D),
 }
 
 

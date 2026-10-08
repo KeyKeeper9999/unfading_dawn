@@ -513,6 +513,15 @@ public final class SoulMechanics {
         if (victim instanceof Player player && (event.getSource().is(DamageTypeTags.IS_EXPLOSION) || SoulsMob.rockfall)) {
             event.setAmount(event.getAmount() * Gear.blastShare(player));
         }
+        // A reaper's harvest clothes were made for that sun; and behind the door of a kiln, held up, a fire is a small thing.
+        if (victim instanceof Player player && event.getSource().is(DamageTypeTags.IS_FIRE)) {
+            float share = Gear.fireShare(player);
+            if (player.isBlocking() && player.getItemBlockingWith() != null && player.getItemBlockingWith().is(Dushi.KILN_DOOR.get())) {
+                share *= Gear.DOOR_FIRE;
+                player.clearFire();
+            }
+            event.setAmount(event.getAmount() * share);
+        }
         // Rolling through a blow.
         if (victim instanceof Player player && PlayerSoul.of(player).rollTicks > Net.ROLL_TICKS - Gear.burden(player).safeTicks
                 && !event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
@@ -538,6 +547,11 @@ public final class SoulMechanics {
             // The Elder's great candle is still alight: what it strikes burns (the waxen and the Elder do not).
             if (attacker.getMainHandItem().is(Dushi.GREAT_CANDLE.get()) && !victim.fireImmune()) {
                 victim.igniteForSeconds(Gear.CANDLE_BURNS);
+            }
+            // So is the pole the Scorched Warden had for an arm.
+            if (attacker.getMainHandItem().is(Dushi.WARDEN_POLE.get()) && !victim.fireImmune()) {
+                victim.igniteForSeconds(Gear.POLE_BURNS);
+                com.keykeeper.dushi.entity.FlourCloudEntity.kindle(level, victim.position(), 1.0);
             }
             event.setAmount(amount);
         } else if (event.getSource().getEntity() instanceof Player archer && event.getSource().getDirectEntity() instanceof AbstractArrow) {

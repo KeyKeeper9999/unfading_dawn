@@ -36,11 +36,18 @@ public enum Spell {
     /** The Mire's: a slow green flame that bends its way to whatever is near it and burns on it a long time. */
     MARSH_FIRE("marsh_fire", SpellSchool.PYROMANCY, 10, 12.0F, 24, 0),
     /** The Firwood's: hot wax from the palm. It burns little; it sets on the legs. */
-    HOT_WAX("hot_wax", SpellSchool.PYROMANCY, 12, 12.0F, 20, 0);
+    HOT_WAX("hot_wax", SpellSchool.PYROMANCY, 12, 12.0F, 20, 0),
+    /** The Stubble's: a dry wind out of the palm. It hurts little; it throws back what it meets, and fans whatever is alight. */
+    DRY_WIND("dry_wind", SpellSchool.PYROMANCY, 14, 14.0F, 24, 0),
+    /** The Stubble's: a patch of its sun on the ground where the caster looks - a second to gather, and then it burns. */
+    SUN_PATCH("sun_patch", SpellSchool.PYROMANCY, 10, 14.0F, 30, 0);
 
     /** How far the flare reaches, measured to the nearest of its prey, not to the middle of it. */
     public static final double FLARE_REACH = 3.5;
     public static final double WAX_REACH = 4.5;
+    public static final double WIND_REACH = 6.0;
+    /** How far off the sun can be called down. */
+    public static final double SUN_RANGE = 16.0;
     /** How far off somebody can be picked out for a root. */
     public static final double SNARE_RANGE = 14.0;
     public static final int SNARE_WARNING = 12;
@@ -149,6 +156,36 @@ public enum Spell {
                     level.sendParticles(ParticleTypes.SMALL_FLAME, at.x, at.y - 0.2 - 0.02 * i * i, at.z, 1, 0.05 * i, 0.05 * i, 0.05 * i, 0.0);
                 }
                 sound(level, caster, "item.spell.fire", 1.0F, 1.5F);
+            }
+            case DRY_WIND -> {
+                DamageSource source = caster.damageSources().indirectMagic(caster, caster);
+                Vec3 push = new Vec3(look.x, 0.0, look.z);
+                push = push.lengthSqr() < 1.0E-4 ? new Vec3(0.0, 0.0, 1.0) : push.normalize();
+                for (LivingEntity target : inJet(level, caster, WIND_REACH)) {
+                    lick(target);
+                    boolean alight = target.isOnFire();
+                    target.hurtServer(level, source, (alight ? 11.0F : 4.0F) * power);
+                    if (alight) {
+                        target.igniteForSeconds(6.0F);                 // (it does not light anything; it feeds what burns)
+                    }
+                    target.knockback(1.3, -push.x, -push.z, source, 4.0F);
+                }
+                for (int i = 1; i <= 12; i++) {
+                    Vec3 at = eye.add(look.scale(0.5 * i));
+                    level.sendParticles(ParticleTypes.CLOUD, at.x, at.y - 0.2, at.z, 2, 0.06 * i, 0.06 * i, 0.06 * i, 0.04);
+                    level.sendParticles(ParticleTypes.WHITE_ASH, at.x, at.y - 0.2, at.z, 6, 0.08 * i, 0.08 * i, 0.08 * i, 0.0);
+                }
+                sound(level, caster, "player.weapon_swing_heavy", 1.0F, 1.6F);
+            }
+            case SUN_PATCH -> {
+                LivingEntity aimed = aimed(level, caster, SUN_RANGE);
+                Vec3 want = aimed != null ? aimed.position() : eye.add(look.scale(6.0));
+                Vec3 ground = com.keykeeper.dushi.entity.RootEntity.ground(level, want.x, want.y, want.z);
+                if (ground != null) {
+                    com.keykeeper.dushi.entity.SunPatchEntity.call(level, caster, ground, 13.0F * power);
+                } else {
+                    sound(level, caster, "item.spell.fizzle", 1.0F, 1.0F);
+                }
             }
         }
     }

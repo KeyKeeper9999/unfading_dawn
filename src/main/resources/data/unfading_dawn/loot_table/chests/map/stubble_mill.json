@@ -60,6 +60,26 @@
           ]
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:twin_ear",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "unfading_dawn:dry_wind",
+          "weight": 1
+        }
+      ]
     }
   ]
 }

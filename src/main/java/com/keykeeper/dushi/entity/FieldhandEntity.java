@@ -43,6 +43,7 @@ public abstract class FieldhandEntity extends SoulsMob {
         this.leave(level, Dushi.RYE_STRAW.get(), 0, 2);
         this.leaveMaybe(level, Dushi.NAMELESS_SOUL.get(), 0.15F);
         this.leaveMaybe(level, Dushi.GREAT_SOUL.get(), 0.07F);
+        this.leavePiece(level, com.keykeeper.dushi.ArmorSet.REAPER, 0.05F);
     }
 
     @Override

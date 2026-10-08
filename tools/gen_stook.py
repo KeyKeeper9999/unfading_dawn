@@ -92,12 +92,12 @@ def make():
 
 # ---------------------------------------------------------------------------------------------- the runner stone
 S = Model(256, 64)
-# A millstone on edge, as high as a man's chest, with the beam it runs on through its eye: the beam goes off to the
+# A millstone on edge, as high as a man's shoulder, with the beam it runs on through its eye: the beam goes off to the
 # stone's right, six blocks, to the post in the middle of the floor. The stone turns on the beam (see MillstoneModel).
 S.part('all', None, (0, 24, 0))
-S.part('beam', 'all', (0, -11, 0), boxes=[Box(-96, -1.5, -1.5, 100, 3, 3, 'beam', 'beam'), Box(4, -2, -2, 2, 4, 4, 'iron', 'pin')])
-S.part('wheel', 'all', (0, -11, 0), boxes=[Box(-3, -11, -6, 6, 22, 12, 'stone', 'rim_a'), Box(-3, -6, -11, 6, 12, 22, 'stone', 'rim_b'),
-                                           Box(-3.2, -9, -9, 6.4, 18, 18, 'stone', 'face'), Box(-4, -2.5, -2.5, 8, 5, 5, 'iron', 'eye')])
+S.part('beam', 'all', (0, -14, 0), boxes=[Box(-96, -1.5, -1.5, 100, 3, 3, 'beam', 'beam'), Box(4.5, -2.5, -2.5, 2, 5, 5, 'iron', 'pin')])
+S.part('wheel', 'all', (0, -14, 0), boxes=[Box(-3.5, -14, -8, 7, 28, 16, 'stone', 'rim_a'), Box(-3.5, -8, -14, 7, 16, 28, 'stone', 'rim_b'),
+                                           Box(-3.7, -11.5, -11.5, 7.4, 23, 23, 'stone', 'face'), Box(-4.5, -3, -3, 9, 6, 6, 'iron', 'eye')])
 S.pack()
 
 GRIT = (150, 146, 136)

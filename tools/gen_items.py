@@ -602,6 +602,42 @@ for uu, half in enumerate((1, 2, 2, 3, 3, 3, 3, 3, 3, 2, 1)):   # the blade: alo
 sp.pts([(4, 27), (6, 25)], C)                            # where the hands have polished it
 sp.outline(0.45, inner=False)
 
+# a scythe: a long bent snath with its two grips, and the blade out at a right angle from its end
+sp = icon('scythe', 32, big=True)
+for i in range(21):
+    xx, yy = 3 + i, 29 - i + (1 if 8 <= i <= 13 else 0)      # (the snath is not straight: it is bent to the mower)
+    sp.px(xx, yy, W if i % 5 else w)
+    sp.px(xx + 1, yy, w)
+    sp.px(xx + 1, yy + 1, b)
+for gx, gy in ((7, 24), (13, 18)):                           # the grips
+    sp.pts([(gx - 1, gy - 1), (gx - 2, gy - 2)], w)
+    sp.px(gx - 2, gy - 1, b)
+for i in range(17):                                         # the blade: from the heel at the snath's end, out and down to the point
+    xx = 24 - i
+    yy = 8 - int(round(5.0 * math.sin(i / 16.0 * math.pi * 0.62)))
+    wide = 3 if i < 5 else (2 if i < 12 else 1)
+    for tt in range(wide):
+        sp.px(xx, yy + tt, S if tt == 0 else (s if tt < wide - 1 or wide == 1 else d))
+sp.pts([(24, 9), (25, 9), (25, 8)], M)                       # the ring that holds it
+sp.outline(0.45, inner=False)
+
+# the Warden's pole: a long pole burnt black, alight in its splits, with the rake that was lashed to its end
+sp = icon('warden_pole', 32, big=True)
+CHARRED, CHARRED_D = (58, 46, 42), (34, 26, 26)
+for i in range(22):
+    xx, yy = 3 + i, 29 - i
+    hot = i % 5 == 2
+    sp.px(xx, yy, f if hot else CHARRED)
+    sp.px(xx + 1, yy, F if hot and i % 2 == 0 else CHARRED_D)
+    sp.px(xx + 1, yy + 1, CHARRED_D)
+for tt in range(-4, 5):                                      # the head of the rake, across the end of it
+    sp.px(25 + tt, 7 + tt, CHARRED if tt % 2 else w)
+    sp.px(26 + tt, 7 + tt, CHARRED_D)
+for tt in (-4, -2, 0, 2, 4):                                 # and its teeth
+    sp.pts([(26 + tt, 6 + tt), (27 + tt, 5 + tt), (28 + tt, 4 + tt)], M if tt % 4 else m)
+sp.pts([(22, 11), (23, 10), (23, 11)], R)                    # the lashing
+sp.outline(0.45, inner=False)
+
 # a harpoon: a long shaft, an iron foreshaft, a head with one barb turned back, and a becket for the line
 sp = icon('harpoon', 32, big=True)
 for i in range(19):
@@ -771,6 +807,8 @@ GLYPHS = {
     'root_snare': (v, ["..#...", ".##.#.", "..###.", ".##...", "#.##.#", "######"]),
     'marsh_fire': ((70, 150, 70), ["...#..", "..##..", ".##+#.", ".#++#.", ".#++#.", "..##.."]),
     'hot_wax': ((176, 130, 60), [".####.", ".####.", "..##..", ".#.#..", ".#..#.", "....#."]),
+    'dry_wind': ((206, 184, 120), ["###.#.", "....#.", "#####.", "......", "####.#", "....##"]),
+    'sun_patch': ((255, 206, 90), ["#.##.#", ".#++#.", "#++++#", "#++++#", ".#++#.", "#.##.#"]),
 }
 for name, (col, glyph) in GLYPHS.items():
     scroll(name, col, glyph)
@@ -1401,6 +1439,58 @@ ascii_icon('stubble_key', [
 ascii_icon('helmsman_soul', SOUL_ROWS, {'1': (196, 244, 228), '2': (92, 176, 164), 'd': (48, 102, 106), 'M': (18, 36, 44), 'D': (34, 66, 74)}, lock='12dMD')
 ascii_icon('capsized_soul', SOUL_ROWS, {'1': (255, 196, 164), '2': (216, 100, 72), 'd': (132, 54, 46), 'M': (44, 20, 20), 'D': (86, 36, 32)}, lock='12dMD')
 
+# ---- the Stubble: what the harvest was got in with
+ascii_icon('reaper_sickle', [
+    "................",
+    ".......oooo.....",
+    ".....ooSSSso....",
+    "....oSSsooodo...",
+    "...oSsoo..oso...",
+    "...oSso....oo...",
+    "...oSso.........",
+    "...oSsdo........",
+    "....oSsdo.......",
+    ".....oSsdo......",
+    "......oWwoo.....",
+    ".......oWwo.....",
+    "........oWwo....",
+    ".........oWbo...",
+    "..........oo....",
+    "................"], handheld=True)
+ascii_icon('thresh_flail', [
+    "................",
+    "............oo..",
+    "...........oWwo.",
+    "..........oWwo..",
+    ".........oWwo...",
+    "........oWwo....",
+    ".......oWwoRo...",
+    "......oWwo.oRo..",
+    ".....oWwo..oWo..",
+    "....oWwo...oWwo.",
+    "...oWwo....oWwo.",
+    "..oWwo.....oWwo.",
+    ".oWwo......oWbo.",
+    ".oWbo.......oo..",
+    "..oo............",
+    "................"], handheld=True)
+ascii_icon('twin_ear', [
+    "................",
+    "....o.....o.....",
+    "...o1o...o1o....",
+    "..o121o.o121o...",
+    "..o212o.o212o...",
+    "..o121o.o121o...",
+    "..o212o.o212o...",
+    "...o1o...o1o....",
+    "....o3o.o3o.....",
+    ".....o3o3o......",
+    "......o3o.......",
+    "......o3o.......",
+    "......o3o.......",
+    "......o3o.......",
+    ".......o........",
+    "................"], {'1': (240, 208, 110), '2': (196, 158, 70), '3': (150, 132, 70)})
 # ---- the Stubble: what its dead leave, and the souls of its two lords
 STRAW_Y, STRAW_M, STRAW_K = (232, 198, 100), (196, 158, 70), (140, 108, 48)
 ascii_icon('rye_straw', [
@@ -1804,7 +1894,7 @@ def big_display(grip):
 
 BIG_GRIP = {'rust_greatsword': 5.5, 'great_key': 10.5, 'grave_spade': 8.0, 'pitchfork': 10.0, 'quarry_pick': 9.0, 'great_maul': 8.0, 'boat_hook': 10.0,
             'vigil_staff': 10.0, 'bear_spear': 10.0, 'great_candle': 9.0,
-            'oar': 9.0, 'harpoon': 10.0, 'ship_anchor': 6.0}
+            'oar': 9.0, 'harpoon': 10.0, 'ship_anchor': 6.0, 'scythe': 9.0, 'warden_pole': 9.0}
 
 if __name__ == '__main__':
     os.makedirs(f'{A}/textures/item', exist_ok=True)

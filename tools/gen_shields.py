@@ -321,6 +321,8 @@ BONE, BONE_D, BONE_L = (198, 192, 166), (140, 134, 112), (230, 226, 204)
 HIDE, HIDE_D = (72, 80, 62), (48, 56, 44)
 WITHE = (118, 128, 72)
 SPRUCE, SPRUCE_D, SPRUCE_L = (112, 80, 52), (80, 56, 38), (150, 112, 74)
+SOOT = (44, 42, 46)
+GRIT, GRIT_D = (150, 146, 136), (108, 104, 98)
 
 
 def whole(e, d, px, py):
@@ -411,11 +413,68 @@ def waker_board():
     return m
 
 
+def kiln_door():
+    m = JsonModel(64, 'kiln_door')
+    # the door of a drying barn's kiln: a plate of iron with its two hinge straps and a ring to lift it by, sooted
+    m.add(3.5, 0, 7.4, 12.5, 15, 8.4, 'iron', 'plate')
+    m.add(3, 2.5, 8.4, 13, 4, 8.9, 'strap', 'strap_a')
+    m.add(3, 11, 8.4, 13, 12.5, 8.9, 'strap', 'strap_b')
+    m.add(7, 6.5, 8.4, 9, 8.5, 9.4, 'strap', 'ring')
+    m.add(7, 5, 6.2, 9, 10, 7.4, 'leather', 'grip')
+    m.pack()
+
+    def paint(e, d, px, py, w, h, rnd):
+        if e.mat == 'iron':
+            c = SOOT if blotch(f'soot{d}', px, py, 2.6) > 0.45 else IRON_D
+            if d in ('south', 'north') and (px in (0, w - 1) or py in (0, h - 1)):
+                c = shade(IRON_D, 0.8)
+            if d == 'south' and blotch('heat', px, py * 0.7, 2.0) > 0.78:
+                c = RUST                                         # where the fire was hottest behind it
+            return c
+        if e.mat == 'strap':
+            return IRON_L if (px + py) % 4 == 0 else IRON
+        return LEATHER
+    m.paint(paint, 21)
+    return m
+
+
+def millstone_shield():
+    m = JsonModel(64, 'millstone_shield')
+    # a millstone: an octagon out of three overlapping slabs of grit, its eye bushed with iron; a grip of rope through the eye
+    m.add(5, 0, 7.0, 11, 16, 9.0, 'stone', 'tall')
+    m.add(2.5, 2.5, 7.0, 13.5, 13.5, 9.0, 'stone', 'mid')
+    m.add(0, 5, 7.0, 16, 11, 9.0, 'stone', 'wide')
+    m.add(6.5, 6.5, 9.0, 9.5, 9.5, 9.6, 'iron', 'eye')
+    m.add(7, 6, 5.8, 9, 10, 7.0, 'leather', 'grip')
+    m.pack()
+
+    def paint(e, d, px, py, w, h, rnd):
+        if e.mat == 'stone':
+            if d not in ('south', 'north'):
+                return GRIT_D if (px + py) % 3 else GRIT
+            gx = (e.frm[0] + px) if d == 'south' else (e.to[0] - 1 - px)
+            gy = (16 - e.to[1]) + py
+            dist = math.hypot(gx - 7.5, gy - 7.5)
+            ang = math.atan2(gy - 7.5, gx - 7.5)
+            c = GRIT_D if blotch(f'grit{d}', gx, gy, 2.2) > 0.6 else GRIT
+            if dist > 2.0 and int((ang + math.pi) / (math.pi / 4) * 2.0 + dist * 0.9) % 3 == 0:
+                c = shade(c, 0.8)                                # the furrows it was dressed with
+            if blotch(f'flour{d}', gx, gy, 2.0) > 0.66:
+                c = mix(c, (238, 234, 222), 0.5)
+            return shade(c, 1.05 - 0.12 * gy / 15)
+        if e.mat == 'iron':
+            return IRON_D if d == 'south' and 1 <= px <= 1 and 1 <= py <= 1 else IRON
+        return LEATHER
+    m.paint(paint, 22)
+    return m
+
+
 if __name__ == '__main__':
     shots = []
     held = []
     for name, build in (('plank_shield', plank_shield), ('round_shield', round_shield), ('guard_shield', guard_shield), ('tower_shield', tower_shield),
-                        ('carver_buckler', carver_buckler), ('scale_shield', scale_shield), ('waker_board', waker_board)):
+                        ('carver_buckler', carver_buckler), ('scale_shield', scale_shield), ('waker_board', waker_board), ('kiln_door', kiln_door),
+                        ('millstone_shield', millstone_shield)):
         m = build()
         m.display = DISPLAY
         m.gui_light = 'front'

@@ -669,7 +669,7 @@ if __name__ == '__main__':
                                 ('elder', (gen_skete.TENT[0] + 1, GY + 4, gen_skete.TENT[1] - 9), (gen_skete.TENT[0], GY + 3, gen_skete.TENT[1] + 4)),
                                 ('helmsman', (gen_shore.SHIP[0] - 3, GY + 5, gen_shore.SHIP[1] + 34), (gen_shore.SHIP[0], GY + 5, gen_shore.SHIP[1] + 12)),
                                 ('capsized', (gen_shore.SHOAL[0] + 9, GY + 3, gen_shore.SHOAL[1] + 5), (gen_shore.SHOAL[0], GY + 1, gen_shore.SHOAL[1] - 4)),
-                                ('scorched_warden', (gen_stubble.WATCH[0] + 13, GY + 4, gen_stubble.WATCH[1] + 6), (gen_stubble.WATCH[0], GY + 4, gen_stubble.WATCH[1])),
+                                ('scorched_warden', (gen_stubble.WATCH[0] + 12, GY + 9, gen_stubble.WATCH[1] + 6), (gen_stubble.WATCH[0], GY + 3, gen_stubble.WATCH[1])),
                                 ('hollow_miller', (gen_stubble.MILL[0] - 9, GY + 3, gen_stubble.MILL[1] + 5), (gen_stubble.MILL[0], GY + 2, gen_stubble.MILL[1]))):
             f.write(f'near_the_{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')

@@ -245,7 +245,7 @@ near_the_helmsman 204.50 -42.00 -27.50 182.50 -42.00 -30.50
 kill unfading_dawn:helmsman 182.50 -44.00 -36.50
 near_the_capsized 278.50 -44.00 19.50 269.50 -46.00 28.50
 kill unfading_dawn:capsized 259.50 -47.00 29.50
-near_the_scorched_warden -159.50 -43.00 147.50 -165.50 -43.00 160.50
+near_the_scorched_warden -159.50 -38.00 148.50 -165.50 -44.00 160.50
 kill unfading_dawn:scorched_warden -143.50 -46.00 161.50
 near_the_hollow_miller -108.50 -44.00 111.50 -113.50 -45.00 102.50
 kill unfading_dawn:hollow_miller -114.50 -46.00 89.50
