@@ -296,10 +296,10 @@ public class FieldhandModel extends EntityModel<BossRenderState> {
     private void mower(BossRenderState state, float age, float stride, float t) {
         // The scythe carried low across him in both hands, the blade out to his left; he sways as he walks, as mowers do.
         Anim.pose(this.torso, 1.0F, 0.15F, 0.25F + stride * 0.12F, 0.0F);
-        Anim.pose(this.rightArm, 1.0F, -0.35F, 0.3F, 0.0F);
-        Anim.pose(this.rightForearm, 1.0F, -0.2F, 0.0F, 0.0F);
-        Anim.pose(this.leftArm, 1.0F, -0.9F, 0.5F, 0.0F);
-        Anim.pose(this.leftForearm, 1.0F, -0.5F, 0.0F, 0.0F);
+        Anim.pose(this.rightArm, 1.0F, 0.25F, 0.35F, 0.0F);
+        Anim.pose(this.rightForearm, 1.0F, 0.1F, 0.0F, 0.0F);
+        Anim.pose(this.leftArm, 1.0F, -0.6F, 0.5F, 0.0F);
+        Anim.pose(this.leftForearm, 1.0F, -0.4F, 0.0F, 0.0F);
         switch (state.attackId) {
             case MowerEntity.SWEEP -> {
                 float impact = MowerEntity.SWEEP_IMPACT;

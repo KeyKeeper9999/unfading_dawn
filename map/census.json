@@ -100,6 +100,23 @@
   "shards": 2,
   "tier": 0
  },
+ "hollow_miller": {
+  "chests": [
+   "stubble_barn"
+  ],
+  "mobs": {
+   "hollow_miller:0": 1,
+   "mower:0": 2,
+   "reaper:0": 4,
+   "sackman:0": 2,
+   "scarecrow:0": 2,
+   "scorched:0": 3,
+   "stook:0": 2,
+   "sungazer:0": 2
+  },
+  "shards": 1,
+  "tier": 0
+ },
  "overseer": {
   "chests": [
    "gatehouse",
@@ -117,6 +134,25 @@
   },
   "shards": 1,
   "tier": 1
+ },
+ "scorched_warden": {
+  "chests": [
+   "lighthouse_cellar",
+   "lighthouse_lamp",
+   "stubble_field"
+  ],
+  "mobs": {
+   "mower:0": 1,
+   "pilot:0": 1,
+   "reaper:0": 6,
+   "scarecrow:0": 6,
+   "scorched:0": 1,
+   "scorched_warden:0": 1,
+   "stook:0": 3,
+   "sungazer:0": 2
+  },
+  "shards": 1,
+  "tier": 0
  },
  "shatun": {
   "chests": [

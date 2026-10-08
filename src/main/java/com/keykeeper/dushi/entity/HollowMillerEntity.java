@@ -80,6 +80,7 @@ public class HollowMillerEntity extends SoulsMob {
     public static final float HIDE = 0.4F;
 
     private MillstoneEntity stone;
+    private BlockPos post;
     private int heaveCooldown = 160;
     private int checkCooldown = 260;
     private int rollCooldown = 60;
@@ -163,8 +164,14 @@ public class HollowMillerEntity extends SoulsMob {
         return 2.6;
     }
 
-    /** The post his floor is centred on: where his mark is, or where he stood when he was first seen. */
+    /**
+     * The post his floor is centred on: the timber nearest to where his mark is (he stands before it, not in it) - or,
+     * where there is none, the place where he stood when he was first seen.
+     */
     private BlockPos post() {
+        if (this.post != null) {
+            return this.post;
+        }
         BlockPos home = MobMarkBlockEntity.homeOf(this);
         if (home == null) {
             String key = "MillPost";
@@ -175,7 +182,17 @@ public class HollowMillerEntity extends SoulsMob {
             }
             home = BlockPos.of(kept);
         }
-        return home;
+        BlockPos found = home;
+        double best = Double.MAX_VALUE;
+        for (BlockPos pos : BlockPos.betweenClosed(home.offset(-5, 0, -5), home.offset(5, 0, 5))) {
+            if (this.level().getBlockState(pos).is(net.minecraft.tags.BlockTags.LOGS) && this.level().getBlockState(pos.above()).is(net.minecraft.tags.BlockTags.LOGS)
+                    && pos.distSqr(home) < best) {
+                best = pos.distSqr(home);
+                found = pos.immutable();
+            }
+        }
+        this.post = found;
+        return found;
     }
 
     /** The stone on its beam, if it is still on it: looked for, and set up if there is none. */

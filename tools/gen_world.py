@@ -19,6 +19,7 @@ import gen_map as castle
 import gen_quarry
 import gen_shore
 import gen_skete
+import gen_stubble
 import gen_swamp
 import gen_village
 from gen_map import (BARS, BELL, CY, FLOOR_LANTERN, GAL, L0, L1, L2, LANTERN, LC, PASSABLE, VAULT, Map, analyse, cobbles, dark_places, hsh, stairs, valid_blocks)
@@ -122,13 +123,14 @@ class World:
         self.swamp = gen_swamp.Swamp(self.b, GY, self.village)
         self.skete = gen_skete.Skete(self.b, GY)
         self.shore = gen_shore.Shore(self.b, GY, D, W)
+        self.stubble = gen_stubble.Stubble(self.b, GY)
         self.keep = set()                # columns of the valley where nothing may grow: roads, the feet of walls
 
     # ------------------------------------------------------------------ the shape of the gorge
 
     def in_gorge(self, x, z):
         """The floor of the gorge: round the fortress, the yard before the tunnel, and the town."""
-        if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z) or self.shore.inside(x, z):
+        if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z) or self.shore.inside(x, z) or self.stubble.inside(x, z):
             return True
         wob = (smooth(x, z, 13, 310) - 0.5) * 8
         if OX - 15 + wob <= x <= OX + 128 + 15 - wob and OZ - 15 + wob <= z <= SPUR[0] - wob * 0.5:
@@ -198,8 +200,8 @@ class World:
         far = {}
         queue = deque()
         for (x, z) in self.inside:
-            if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z) or self.shore.inside(x, z):
-                continue                                         # (the Mire and the Firwood plant their own; nothing grows on the shore)
+            if self.village.inside(x, z) or self.swamp.inside(x, z) or self.skete.inside(x, z) or self.shore.inside(x, z) or self.stubble.inside(x, z):
+                continue                                         # (the Mire, the Firwood and the Stubble plant their own; nothing grows on the shore)
             hard = (x, z) in self.keep or any(self.height.get((x + dx, z + dz), 1) > 0 for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)))
             if hard:
                 far[(x, z)] = 0
@@ -210,13 +212,17 @@ class World:
                 for dz in (-1, 0, 1):
                     n = (x + dx, z + dz)
                     if n in self.inside and n not in far and not self.village.inside(*n) and not self.swamp.inside(*n) and not self.skete.inside(*n) \
-                            and not self.shore.inside(*n):
+                            and not self.shore.inside(*n) and not self.stubble.inside(*n):
                         far[n] = far[(x, z)] + 1
                         queue.append(n)
         trees = []
         for (x, z), h in sorted(self.height.items()):
             n = hsh(x, 7, z, 320)
-            if h >= 4 and self.dist[(x, z)] >= 2:
+            if h >= 4 and self.dist[(x, z)] >= 2 and self.stubble.near(x, z):
+                # round the Stubble the plateau is fallow: no fir, a little dry grass
+                if n > 0.9 and b.free(x, GY + h + 1, z) and 'grass' in str(b.get(x, GY + h, z)):
+                    b.set(x, GY + h + 1, z, 'minecraft:short_dry_grass' if n < 0.97 else 'minecraft:dead_bush')
+            elif h >= 4 and self.dist[(x, z)] >= 2:
                 if (x, z) in self.white and (n > 0.006 or 'grass' not in str(b.get(x, GY + h, z))):
                     if n > 0.94 and b.free(x, GY + h + 1, z) and 'grass' in str(b.get(x, GY + h, z)):
                         b.set(x, GY + h + 1, z, 'minecraft:short_grass' if n < 0.98 else 'minecraft:dead_bush')
@@ -423,6 +429,8 @@ class World:
         self.skete.build(self.height)
         b.zone = 'wharf'
         self.shore.build(self.height)
+        b.zone = 'stubble'
+        self.stubble.build(self.height)
         self.woods()
         self.tiers()
         return b
@@ -520,9 +528,19 @@ def views(w):
         out.append(('time', hour))
         out += [(f'{name}_at_{hour}', eye, look) for name, eye, look in sea if name in ('shore_long_pier', 'shore_spit_from_its_root', 'shore_quay_east')]
     out.append(('time', 18000))
+    corn = w.stubble.views()
+    out += corn[:1]                                              # the Reapers' Gate, from the yard, in the town's night
+    out.append(('time', AFTERNOON))
+    out += corn[1:]
+    for hour in AFTERNOON_TRIED:                                 # the same places at other hours, to choose by
+        out.append(('time', hour))
+        out += [(f'{name}_at_{hour}', eye, look) for name, eye, look in corn if name in ('stubble_cut_land', 'stubble_watched_field', 'stubble_mill_from_the_floor')]
+    out.append(('time', 18000))
     return out
 
 
+AFTERNOON = 8000                    # the hour of the Stubble: see PlaceNameBlock.AFTERNOON
+AFTERNOON_TRIED = ()
 SUNRISE = 23600                     # the hour of the Morning Wharf: see PlaceNameBlock.SUNRISE
 SUNRISE_TRIED = ()                  # (23250: the sun half out and the land still dark; 23950 and 450: day already, the mist gone white)
 
@@ -551,6 +569,7 @@ def probes(w):
     out += w.swamp.probes()
     out += w.skete.probes()
     out += w.shore.probes()
+    out += w.stubble.probes()
     return out
 
 
@@ -564,14 +583,16 @@ EXTRA_COLOURS = castle.EXTRA_COLOURS + [
     ('candle', (255, 214, 120)), ('packed_mud', (140, 106, 80)), ('rooted_dirt', (124, 90, 62)), ('coarse_dirt', (112, 80, 54)), ('bone_block', (220, 214, 190)),
     ('sea_shallows', (150, 196, 204)), ('sandstone', (204, 190, 146)), ('sand', (222, 208, 162)), ('clay', (150, 156, 168)), ('seagrass', (60, 120, 90)),
     ('bricks', (150, 90, 74)), ('granite', (150, 104, 86)), ('glass', (190, 220, 230)), ('froglight', (250, 220, 120)),
+    ('hay_block', (206, 170, 60)), ('tall_grass', (224, 190, 80)), ('dry_grass', (190, 160, 90)), ('sunflower', (250, 210, 40)), ('smooth_stone', (160, 160, 160)),
+    ('oak_log', (110, 86, 52)), ('oak_planks', (162, 130, 78)), ('oak_fence', (150, 120, 70)), ('oak_slab', (162, 130, 78)),
 ]
 
 if __name__ == '__main__':
     COLOURS[0:0] = EXTRA_COLOURS
-    PASSABLE_MORE = ('fern', 'short_grass', 'hanging_roots', 'moss_carpet')
+    PASSABLE_MORE = ('fern', 'short_grass', 'hanging_roots', 'moss_carpet', 'tall_grass', 'dry_grass', 'sunflower')
     castle.PASSABLE = castle.PASSABLE + PASSABLE_MORE
     castle.CLEAR = castle.CLEAR + ('fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water', 'hanging_roots', 'waterlogged=true',
-                                   'brown_mushroom', 'red_mushroom')
+                                   'brown_mushroom', 'red_mushroom', 'tall_grass', 'dry_grass', 'sunflower')
     w = World()
     b = w.build()
     built = len([1 for s in b.cells.values() if s != AIR])
@@ -614,7 +635,8 @@ if __name__ == '__main__':
         json.dump(census, f, indent=1, sort_keys=True)
         f.write('\n')
     for kind, x, y, z in b.marks:
-        tall = 6 if kind == 'weeping_mother' else 4 if kind in ('lanky', 'elder') else 3 if kind in (
+        tall = 6 if kind in ('weeping_mother', 'scorched_warden') else 4 if kind in ('lanky', 'elder') else 3 if kind in (
+            'hollow_miller', 'mower', 'sackman', 'scarecrow', 'stook', 'sungazer',
             'gravedigger', 'overseer', 'chaplain', 'knight', 'gilded', 'unhewn', 'taskmaster', 'stone_eater', 'shatun', 'waxen', 'helmsman', 'capsized',
             'pilot', 'oarsman') else 2
         for h in range(tall):
@@ -646,16 +668,18 @@ if __name__ == '__main__':
                                 ('shatun', (gen_skete.DEN[0] - 3, GY + 4, gen_skete.DEN[1] + 11), (gen_skete.DEN[0], GY + 2, gen_skete.DEN[1] - 6)),
                                 ('elder', (gen_skete.TENT[0] + 1, GY + 4, gen_skete.TENT[1] - 9), (gen_skete.TENT[0], GY + 3, gen_skete.TENT[1] + 4)),
                                 ('helmsman', (gen_shore.SHIP[0] - 3, GY + 5, gen_shore.SHIP[1] + 34), (gen_shore.SHIP[0], GY + 5, gen_shore.SHIP[1] + 12)),
-                                ('capsized', (gen_shore.SHOAL[0] + 9, GY + 3, gen_shore.SHOAL[1] + 5), (gen_shore.SHOAL[0], GY + 1, gen_shore.SHOAL[1] - 4))):
+                                ('capsized', (gen_shore.SHOAL[0] + 9, GY + 3, gen_shore.SHOAL[1] + 5), (gen_shore.SHOAL[0], GY + 1, gen_shore.SHOAL[1] - 4)),
+                                ('scorched_warden', (gen_stubble.WATCH[0] + 13, GY + 4, gen_stubble.WATCH[1] + 6), (gen_stubble.WATCH[0], GY + 4, gen_stubble.WATCH[1])),
+                                ('hollow_miller', (gen_stubble.MILL[0] - 9, GY + 3, gen_stubble.MILL[1] + 5), (gen_stubble.MILL[0], GY + 2, gen_stubble.MILL[1]))):
             f.write(f'near_the_{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')
         # and tries the locked gate without its key and with it
-        for key in ('quarry_key', 'mire_key', 'firwood_key', 'shore_key'):
+        for key in ('quarry_key', 'mire_key', 'firwood_key', 'shore_key', 'stubble_key'):
             f.write('gate ' + ' '.join(f'{v_:.2f}' for v_ in world(*sorted(b.seals[key])[0], spawn)) + '\n')
     # the columns that get a biome of their own (MapBuilder lays it): boxes of the world, four blocks wide - the game
     # keeps a biome for every four blocks each way - a line each
     with open('map/biomes.txt', 'w') as f:
-        for biome, columns in (('mire', w.swamp.biome_columns()), ('shore', w.shore.biome_columns())):
+        for biome, columns in (('mire', w.swamp.biome_columns()), ('shore', w.shore.biome_columns()), ('stubble', w.stubble.biome_columns())):
             quarts = {}
             for (x, z) in columns:
                 wx, _, wz = world(x, GY, z, spawn)
@@ -799,6 +823,20 @@ if __name__ == '__main__':
                 px, pz = (x - 120) * 4 + 1, (z - 540) * 4 + 1
                 draw.rectangle([px, pz, px + 1, pz + 1], fill=(120, 200, 255) if castle.is_water(b.get(x, y, z)) else (255, 90, 60))
         img.save(f'{out}/shore_ground.png')
+        # the Stubble: its ground with a dot on every place a player can be, and from above and the side
+        tx0, tx1, tz0, tz1 = 8, 222, 352, 484
+        for name, top in (('stubble_ground', GY + 3), ('stubble_roofs', H - 1)):
+            img = b.top_down(top, scale=6).crop((tx0 * 6, tz0 * 6, tx1 * 6, tz1 * 6))
+            if name == 'stubble_ground':
+                draw = ImageDraw.Draw(img)
+                for (x, y, z) in seen:
+                    if tx0 <= x < tx1 and tz0 <= z < tz1 and GY <= y <= GY + 3:
+                        px, pz = (x - tx0) * 6 + 2, (z - tz0) * 6 + 2
+                        draw.rectangle([px, pz, px + 1, pz + 1], fill=(255, 60, 60))
+            img.save(f'{out}/{name}.png')
+        sub = Map('part', W, H, D)
+        sub.cells = {c: s for c, s in b.cells.items() if tx0 <= c[0] < 200 and tz0 <= c[2] < tz1 and c[1] >= GY and gen_stubble.Stubble.inside(w.stubble, c[0], c[2])}
+        sub.iso(scale=5).save(f'{out}/stubble_iso.png')
         sub = Map('part', W, H, D)
         sub.cells = {c: s for c, s in b.cells.items() if 388 <= c[0] < 474 and 326 <= c[2] < 450 and c[1] >= GY and 'spruce_leaves' not in str(s)}
         sub.iso(scale=5).save(f'{out}/skete_iso.png')

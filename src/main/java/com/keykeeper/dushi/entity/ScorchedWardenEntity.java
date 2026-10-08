@@ -496,7 +496,7 @@ public class ScorchedWardenEntity extends SoulsMob {
         super.die(source);
         if (this.level() instanceof ServerLevel level) {
             BlockPos home = MobMarkBlockEntity.homeOf(this);
-            FogGateBlock.lift(level, home != null ? home : this.blockPosition(), 48);
+            FogGateBlock.lift(level, home != null ? home : this.blockPosition(), 40);
         }
     }
 

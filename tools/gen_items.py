@@ -1380,6 +1380,23 @@ ascii_icon('shore_key', [
     ".osdo.oo........",
     "..oo............",
     "................"], {'1': (132, 196, 176), '2': (78, 132, 122)})
+ascii_icon('stubble_key', [
+    "................",
+    "..........ooo...",
+    ".........oSsdo..",
+    "........oSo.odo.",
+    "........oso.odo.",
+    "........o1dodo..",
+    ".......o112do...",
+    "......oS12oo....",
+    ".....oSs2o......",
+    "....oSs2o.......",
+    "...oSsdoo.......",
+    "..oSsdoso.......",
+    ".oSsdos2o.......",
+    ".osdo.oo........",
+    "..oo............",
+    "................"], {'1': (240, 208, 110), '2': (176, 138, 58)})
 # the Helmsman's: the green of deep water with the morning on it; the Capsized's: the red of a boiled shell
 ascii_icon('helmsman_soul', SOUL_ROWS, {'1': (196, 244, 228), '2': (92, 176, 164), 'd': (48, 102, 106), 'M': (18, 36, 44), 'D': (34, 66, 74)}, lock='12dMD')
 ascii_icon('capsized_soul', SOUL_ROWS, {'1': (255, 196, 164), '2': (216, 100, 72), 'd': (132, 54, 46), 'M': (44, 20, 20), 'D': (86, 36, 32)}, lock='12dMD')

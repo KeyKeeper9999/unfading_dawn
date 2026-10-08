@@ -74,14 +74,16 @@ def lit(face, py, fh, top=1.1, bottom=0.7, fall=0.16):
 
 def scorch(c, seed, face, px, py, fw, fh, rnd, glow):
     """The Warden: what it is made of is burnt black wherever the sun has stood on it, split, and red in the splits."""
-    burnt = blotch(f'sc{seed}{face}', px, py, 2.6)
-    if burnt < 0.36:
-        return shade(c, 0.8), False
-    crack = blotch(f'crk{seed}{face}', px * 1.7, py * 0.55, 1.5)
-    if 0.47 < crack < 0.54:
-        return (EMBER_L if rnd.random() < 0.3 else EMBER), True
+    burnt = blotch(f'sc{seed}{face}', px, py, 3.0)
+    if burnt < 0.5:
+        return mix(c, (226, 214, 190), 0.18), False              # the rest is bleached by the same sun
     k = CHAR_D if blotch(f'ch{seed}{face}', px, py, 1.9) > 0.55 else (CHAR_L if rnd.random() < 0.12 else CHAR)
-    return mix(c, k, min(1.0, (burnt - 0.36) * 4.0)), False
+    if burnt < 0.6:
+        return mix(c, k, (burnt - 0.5) * 9.0), False              # the edge of a burn: brown
+    crack = blotch(f'crk{seed}{face}', px * 1.7, py * 0.55, 1.5)
+    if 0.45 < crack < 0.56:
+        return (EMBER_L if rnd.random() < 0.3 else EMBER), True
+    return k, False
 
 
 def make(kind):

@@ -77,7 +77,7 @@ for key, ru, en in (
         ('mason_breeches', 'Порты каменотёса', "Stonecutter's Breeches"), ('mason_boots', 'Сапоги каменотёса', "Stonecutter's Boots"),
         ('scale_hood', 'Чешуйчатый куколь', 'Scale Hood'), ('scale_coat', 'Чешуйчатая рубаха', 'Scale Coat'),
         ('scale_leggings', 'Чешуйчатые порты', 'Scale Leggings'), ('scale_waders', 'Бродни', 'Waders'),
-        ('shore_key', 'Ключ от Морских ворот', 'Key to the Sea Gate'),
+        ('shore_key', 'Ключ от Морских ворот', 'Key to the Sea Gate'), ('stubble_key', 'Ключ от Жнецких ворот', "Key to the Reapers' Gate"),
         ('sailcloth', 'Парусина', 'Sailcloth'), ('tarred_rope', 'Смолёный канат', 'Tarred Rope'), ('crab_shell', 'Панцирь клешняка', "Sand Crab's Shell"),
         ('cargo_hook', 'Крюк крючника', "Dockhand's Hook"), ('harpoon', 'Гарпун', 'Harpoon'), ('oar', 'Весло карбаса', "Karbas Oar"),
         ('lead_line', 'Лот лоцмана', "Pilot's Sounding Lead"), ('ship_anchor', 'Якорь «Зари»', 'Anchor of the Daybreak'),
@@ -262,6 +262,14 @@ t(f'place.{M}.lighthouse', 'МАЯК', 'THE LIGHTHOUSE')
 t(f'message.{M}.gate_locked.shore', 'Заперто. Из-под створок тянет солью и смолой. Ключ хранили там, где не спят.',
   'Locked. Salt and tar on the draught under the leaves. The key was kept where nobody sleeps.')
 t(f'message.{M}.gate_opened.shore', 'Морские ворота отперты', 'The Sea Gate is unlocked')
+# the Stubble, west of the borough's wall: the afternoon of a harvest that is never in
+t(f'place.{M}.stubble', 'ЖНИВЬЁ', 'THE STUBBLE')
+t(f'place.{M}.watch_field', 'СТОРОЖЕВОЕ ПОЛЕ', 'THE WATCHED FIELD')
+t(f'place.{M}.threshing', 'ГУМНО', 'THE THRESHING YARD')
+t(f'place.{M}.great_mill', 'БОЛЬШАЯ МЕЛЬНИЦА', 'THE GREAT MILL')
+t(f'message.{M}.gate_locked.stubble', 'Заперто. Из-за решётки тянет сухим теплом и соломой. Ключ унесли к морю — встречать тех, кому везли хлеб.',
+  'Locked. Dry heat and straw on the draught through the grate. The key went down to the sea, to meet those the bread was for.')
+t(f'message.{M}.gate_opened.stubble', 'Жнецкие ворота отперты', "The Reapers' Gate is unlocked")
 t(f'message.{M}.undertow', 'Тянет на дно', 'The sea is taking you under')
 t(f'block.{M}.shallows', 'Мелкая вода', 'Shallows')
 t(f'block.{M}.sea_shallows', 'Вода на песке', 'Water on the Sand')
@@ -300,6 +308,7 @@ for key, ru, en in (('none', 'Очаг (%s, %s, %s)', 'A hearth (%s, %s, %s)'), 
                     ('old_fir', 'Под старой елью', 'Under the Old Fir'), ('skete', 'Околица скита', "The Skete's Edge"),
                     ('harbour', 'Портовая контора', 'The Harbour Office'), ('karbas', 'Под перевёрнутым карбасом', 'Under the Upturned Karbas'),
                     ('lighthouse', 'Маяк', 'The Lighthouse'),
+                    ('balk', 'У межи', 'By the Balk'), ('kiln', 'Овин', 'The Drying Barn'), ('granary', 'Мельничный амбар', "The Miller's Granary"),
                     ('reliquary', 'Свечная кладовая', 'The Candle Store')):
     t(f'hearth.{M}.{key}', ru, en)
 t(f'screen.{M}.hearth.level', 'Уровень: %s', 'Level: %s')

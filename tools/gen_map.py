@@ -1635,13 +1635,14 @@ PASSABLE = ('mob_mark', 'carpet', 'lantern', 'candle', 'dead_bush', 'cobweb', 'l
 # what one cannot stand on: thin things, and things one stands in rather than on
 NO_FOOTING = ('mob_mark', 'lantern', 'candle', 'dead_bush', 'cobweb', 'lever', 'end_rod', 'chain', 'fog_gate', 'iron_bars', 'ladder', 'campfire', 'banner',
               'carpet', 'place_name', 'minecraft:light', 'minecraft:water', 'waterlogged=true', 'lily_pad', 'shallows', 'sludge', 'sugar_cane', 'hanging_moss',
-              'firefly_bush', 'short_grass', 'fern', 'seagrass')
+              'firefly_bush', 'short_grass', 'fern', 'seagrass', 'tall_grass', 'dry_grass', 'sunflower')
 # what is opened, in this order, and what the report calls the game from then on (a lord's name: his seals lift)
 STAGES = (('gravedigger', 'after the Gravedigger'), ('overseer', 'after the Overseer'), ('chaplain', 'after the Chaplain'),
           ('quarry_key', "with the key of the Quarrymen's Gate"), ('taskmaster', 'after the Taskmaster'), ('stone_eater', 'after the Stone-Eater'),
           ('mire_key', 'with the key of the Mire Gate'), ('wallower', 'after the Wallower'), ('weeping_mother', 'after the Weeping Mother'),
           ('firwood_key', 'with the key of the Wood Wicket'), ('shatun', 'after the Shatun'), ('elder', 'after the Elder'),
-          ('shore_key', 'with the key of the Sea Gate'), ('helmsman', 'after the Helmsman'), ('capsized', 'after the Capsized'))
+          ('shore_key', 'with the key of the Sea Gate'), ('helmsman', 'after the Helmsman'), ('capsized', 'after the Capsized'),
+          ('stubble_key', "with the key of the Reapers' Gate"), ('scorched_warden', 'after the Scorched Warden'), ('hollow_miller', 'after the Hollow Miller'))
 
 
 def is_water(state):

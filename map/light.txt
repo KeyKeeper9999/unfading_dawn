@@ -60,3 +60,8 @@ shore_deck 200 -44 -29
 shore_spit 238 -46 -138
 shore_shoal 276 -47 25
 shore_lighthouse 245 -44 51
+stubble_passage -159 -46 22
+stubble_road -166 -46 78
+stubble_watch -161 -46 154
+stubble_mill -112 -46 93
+stubble_granary -112 -46 85

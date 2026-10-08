@@ -187,7 +187,11 @@ MAP_CHESTS = {
     'spit_wreck': [(GREAT, 3), (M + 'oilskin_boots', 1), (M + 'crab_shell', 3), (M + 'tarred_rope', 2)],
     'boulders_cache': [(GREAT, 4), (M + 'return_ember', 3), (M + 'oilskin_trousers', 1)],
     'lighthouse_cellar': [(GREAT, 4), (M + 'sailcloth', 4), (M + 'tarred_rope', 4), (M + 'crab_shell', 4)],
-    'lighthouse_lamp': [(GREAT, 6), (M + 'sea_knot', 1), (M + 'return_ember', 3)],                 # the keeper's own, hung by the lamp
+    'lighthouse_lamp': [(GREAT, 6), (M + 'sea_knot', 1), (M + 'return_ember', 3), (M + 'stubble_key', 1)],          # the key of the Reapers' Gate
+    # the Stubble (tools/gen_stubble.py)
+    'stubble_field': [(GREAT, 3), (M + 'rye_straw', 4), (M + 'return_ember', 2)],
+    'stubble_barn': [(GREAT, 4), (M + 'flour_sack', 4), (M + 'rye_straw', 4)],
+    'stubble_mill': [(GREAT, 7), (M + 'return_ember', 3), (M + 'flour_sack', 6)],                 # the keeper's own, hung by the lamp
 }
 for _name, _items in MAP_CHESTS.items():
     CHESTS['map/' + _name] = [pool(item(_id, count=(_n, _n)) if _n > 1 else item(_id)) for _id, _n in _items]
@@ -272,7 +276,28 @@ SHORE = {
     'temperature': 0.6,
 }
 
+# The Stubble's biome: the afternoon of a harvest day. A white, hot sky with hardly any blue left in it; the far end of
+# a field lost in a haze the colour of chaff; and the grass of the place - which is its corn, standing and cut - the
+# colour of ripe rye. Grasshoppers, all the time.
+STUBBLE = {
+    'attributes': {
+        'minecraft:visual/fog_color': '#ecdcae',
+        'minecraft:visual/sky_color': '#c9d8e2',
+        'minecraft:visual/fog_start_distance': 24.0,
+        'minecraft:visual/fog_end_distance': 150.0,
+        'minecraft:visual/sky_fog_end_distance': 140.0,
+        'minecraft:audio/ambient_sounds': {'loop': f'{MOD}:ambient.stubble.heat'},
+    },
+    'carvers': [],
+    'downfall': 0.0,
+    'effects': {'dry_foliage_color': '#b89a4a', 'foliage_color': '#9a9a48', 'grass_color': '#d6b24e', 'water_color': '#6a8c8a'},
+    'features': [],
+    'has_precipitation': False,
+    'temperature': 1.6,
+}
+
 if __name__ == '__main__':
+    write_json(f'{DATA}/{MOD}/worldgen/biome/stubble.json', STUBBLE)
     write_json(f'{DATA}/{MOD}/worldgen/biome/mire.json', MIRE)
     write_json(f'{DATA}/{MOD}/worldgen/biome/shore.json', SHORE)
     for old in glob.glob(f'{DATA}/{MOD}/recipe/*.json'):

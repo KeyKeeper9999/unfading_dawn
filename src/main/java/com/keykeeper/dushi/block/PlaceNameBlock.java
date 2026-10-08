@@ -45,6 +45,12 @@ public class PlaceNameBlock extends Block {
      */
     public static final int SUNRISE = 23600;
 
+    /**
+     * The hour of the Stubble: the afternoon of a harvest day, the sun high and a little past its height, white, with
+     * no cloud near it and no wind. Its haze and the colour of its corn are the biome's (worldgen/biome/stubble.json).
+     */
+    public static final int AFTERNOON = 8000;
+
     public enum Place implements StringRepresentable {
         STOCKADE("stockade", DUSK, true),
         WARD("ward", DUSK, true),
@@ -92,7 +98,13 @@ public class PlaceNameBlock extends Block {
         BOULDERS("boulders", SUNRISE, true),
         SHOAL("shoal", SUNRISE, true),
         LIGHTHOUSE("lighthouse", SUNRISE, true),
-        TO_SUNRISE("to_sunrise", SUNRISE, false);
+        TO_SUNRISE("to_sunrise", SUNRISE, false),
+        /** The cut and the uncut fields west of the borough's wall, where the harvest is never in. */
+        STUBBLE("stubble", AFTERNOON, true),
+        WATCH_FIELD("watch_field", AFTERNOON, true),
+        THRESHING("threshing", AFTERNOON, true),
+        GREAT_MILL("great_mill", AFTERNOON, true),
+        TO_AFTERNOON("to_afternoon", AFTERNOON, false);
 
         public final String id;
         /** The hour of the day at this place; the world's clock is set to it when a player comes. */

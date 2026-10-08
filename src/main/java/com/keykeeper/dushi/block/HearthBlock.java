@@ -53,7 +53,8 @@ public class HearthBlock extends Block {
         NONE("none"),
         YARD("yard"), LODGE("lodge"), KEEPER("keeper"), SMITHY("smithy"), SACRISTY("sacristy"), TERRACE("terrace"), MAW("maw"), SUMP("sump"),
         FERRY("ferry"), MILL("mill"), OLD_FIR("old_fir"), SKETE("skete"), RELIQUARY("reliquary"),
-        HARBOUR("harbour"), KARBAS("karbas"), LIGHTHOUSE("lighthouse");
+        HARBOUR("harbour"), KARBAS("karbas"), LIGHTHOUSE("lighthouse"),
+        BALK("balk"), KILN("kiln"), GRANARY("granary");
 
         public final String id;
 

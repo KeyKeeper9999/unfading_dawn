@@ -89,8 +89,8 @@ SACK = (176, 160, 124)
 SACK_D = (132, 118, 88)
 FLOUR = (238, 234, 222)
 FLOUR_D = (206, 200, 186)
-LEATHER = (104, 70, 44)
-LEATHER_D = (70, 46, 32)
+LEATHER = (150, 116, 84)
+LEATHER_D = (112, 84, 60)
 HAIR = (226, 222, 210)
 HAIR_D = (176, 172, 160)
 FELT = (96, 88, 80)
@@ -321,8 +321,8 @@ def make(kind):
                 if face in ('front', 'back') and py < 3 and (px < 2 or px > fw - 3):
                     return None                                  # the bib of it
                 c = LEATHER_D if blotch(f'lt{face}', px, py * 0.6, 2.2) > 0.58 else LEATHER
-                if blotch(f'ltf{face}', px, py, 2.6) > 0.6:
-                    c = mix(c, FLOUR, 0.45)
+                if blotch(f'ltf{face}', px, py, 2.6) > 0.48:
+                    c = mix(c, FLOUR, 0.6)
                 if face in ('front', 'back') and py == fh - 1 and (px * 3) % 4 == 0:
                     return None
                 return shade(c, lit(face, py, fh, 1.1, 0.7, 0.14))
@@ -346,7 +346,7 @@ def make(kind):
         'reaper': ["dddddddd", "dssssssd", "sdDssDds", "sBBddBBs", "sdDssDds", "ssdDDdss", "sdBBBBds", "ddssssdd"],
         'mower': ["DDDDDDDD", "dDDDDDDd", "sDDssDDs", "sBEddEBs", "sdDssDds", "ssdDDdss", "sdBBBBds", "ddsDDsdd"],
         # white with flour, all but the eyes and the mouth
-        'sackman': ["ffffffff", "fsfsffsf", "fDDffDDf", "fBEffEBf", "fDDffDDf", "ffsDDsff", "fdBBBBdf", "ffffffff"],
+        'sackman': ["sfsdsfss", "fsdssdfs", "sDDfsDDs", "sBEddEBf", "fDDssDDs", "ssfDDsfs", "sdBBBBdf", "dfsssfsd"],
         # no face: a cinder, with what is alight in it showing where the eyes and the mouth were
         'scorched': ["CCcCCcCC", "CccccccC", "cCCccCCc", "CGgCCgGC", "cCCccCCc", "ccCggCcc", "cCgGGgCc", "CccCCccC"],
         'hollow_miller': ["ffffffff", "fsdssdsf", "DDDssDDD", "DEBddBED", "sDDssDDs", "HdsDDsdH", "HHBBBBHH", "HHHHHHHH"],
@@ -390,7 +390,7 @@ REAP_CUT = {'torso': (0.55, -0.7, 0), 'tail': (-0.55, 0, 0), 'head': (-0.4, 0.5,
 REAP_LUNGE = {'torso': (0.8, -0.2, 0), 'tail': (-0.8, 0, 0), 'head': (-0.7, 0, 0), 'right_arm': (-1.9, 0, 0), 'right_forearm': (-0.1, 0, 0), 'left_arm': (0.6, 0, 0.3),
               'right_leg': (-0.7, 0, 0), 'left_leg': (0.6, 0, 0)}
 # -- the mower: the scythe carried low across him; drawn round; swept
-MOW_STAND = {'torso': (0.15, 0.25, 0), 'tail': (-0.15, 0, 0), 'right_arm': (-0.35, 0.3, 0), 'right_forearm': (-0.2, 0, 0), 'left_arm': (-0.9, 0.5, 0), 'left_forearm': (-0.5, 0, 0)}
+MOW_STAND = {'torso': (0.15, 0.25, 0), 'tail': (-0.15, 0, 0), 'right_arm': (0.25, 0.35, 0), 'right_forearm': (0.1, 0, 0), 'left_arm': (-0.6, 0.5, 0), 'left_forearm': (-0.4, 0, 0)}
 MOW_DRAWN = {'torso': (0.2, 1.0, 0), 'tail': (-0.2, 0, 0), 'right_arm': (-0.1, 0.6, 0), 'right_forearm': (0.1, 0, 0), 'left_arm': (-0.9, 0.3, 0), 'left_forearm': (-0.8, 0, 0)}
 MOW_SWEPT = {'torso': (0.3, -0.9, 0), 'tail': (-0.3, 0, 0), 'right_arm': (-0.1, -0.5, 0), 'right_forearm': (0.1, 0, 0), 'left_arm': (-0.7, -0.4, 0), 'left_forearm': (-0.9, 0, 0),
              'right_leg': (-0.3, 0, 0), 'left_leg': (0.3, 0, 0)}

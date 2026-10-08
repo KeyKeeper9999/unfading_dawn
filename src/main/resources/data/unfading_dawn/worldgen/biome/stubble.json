@@ -1,0 +1,23 @@
+{
+  "attributes": {
+    "minecraft:visual/fog_color": "#ecdcae",
+    "minecraft:visual/sky_color": "#c9d8e2",
+    "minecraft:visual/fog_start_distance": 24.0,
+    "minecraft:visual/fog_end_distance": 150.0,
+    "minecraft:visual/sky_fog_end_distance": 140.0,
+    "minecraft:audio/ambient_sounds": {
+      "loop": "unfading_dawn:ambient.stubble.heat"
+    }
+  },
+  "carvers": [],
+  "downfall": 0.0,
+  "effects": {
+    "dry_foliage_color": "#b89a4a",
+    "foliage_color": "#9a9a48",
+    "grass_color": "#d6b24e",
+    "water_color": "#6a8c8a"
+  },
+  "features": [],
+  "has_precipitation": false,
+  "temperature": 1.6
+}

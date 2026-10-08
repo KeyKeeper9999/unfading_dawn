@@ -470,6 +470,8 @@ public class Dushi {
     public static final DeferredItem<Item> FIRWOOD_KEY = ITEMS.registerItem("firwood_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     /** Opens the Sea Gate, the old south gate of the yard of the first hearth: the way down to the Morning Wharf. */
     public static final DeferredItem<Item> SHORE_KEY = ITEMS.registerItem("shore_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
+    /** Opens the Reapers' Gate, in the cliff of the yard before the town's north gate: the way out to the Stubble. */
+    public static final DeferredItem<Item> STUBBLE_KEY = ITEMS.registerItem("stubble_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     public static final DeferredItem<com.keykeeper.dushi.item.PowderPotItem> POWDER_POT = ITEMS.registerItem("powder_pot",
             props -> new com.keykeeper.dushi.item.PowderPotItem(props.stacksTo(16)));
     public static final DeferredItem<ReturnEmberItem> RETURN_EMBER = ITEMS.registerItem("return_ember", props -> new ReturnEmberItem(props.stacksTo(16)));
@@ -677,6 +679,7 @@ public class Dushi {
                 output.accept(MIRE_KEY.get());
                 output.accept(FIRWOOD_KEY.get());
                 output.accept(SHORE_KEY.get());
+                output.accept(STUBBLE_KEY.get());
                 output.accept(NAMELESS_SOUL.get());
                 output.accept(GREAT_SOUL.get());
                 output.accept(OVERSEER_SOUL.get());
