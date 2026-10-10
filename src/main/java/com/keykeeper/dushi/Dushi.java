@@ -234,11 +234,11 @@ public class Dushi {
     /** The same thing over the black floors of the Sky Beneath: all but black, with stars in it that are not over it. It shines, a very little. */
     public static final DeferredBlock<com.keykeeper.dushi.block.ShallowsBlock> NIGHT_SHALLOWS = BLOCKS.registerBlock("night_shallows", com.keykeeper.dushi.block.ShallowsBlock::new,
             props -> props.mapColor(MapColor.COLOR_BLACK).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
-                    .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.WET_GRASS).emissiveRendering((state, level, pos) -> true));
+                    .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.WET_GRASS).emissiveRendering(state -> true));
     /** The sky of the Sky Beneath: what its roof, its far walls and its pits are made of. See {@link com.keykeeper.dushi.block.UnderSkyBlock}. No item; maps set it. */
     public static final DeferredBlock<com.keykeeper.dushi.block.UnderSkyBlock> UNDER_SKY = BLOCKS.registerBlock("under_sky", com.keykeeper.dushi.block.UnderSkyBlock::new,
             props -> props.mapColor(MapColor.COLOR_BLACK).strength(-1.0F, 3600000.0F).noLootTable().pushReaction(PushReaction.IMMOVEABLE)
-                    .sound(SoundType.STONE).emissiveRendering((state, level, pos) -> true));
+                    .sound(SoundType.STONE).emissiveRendering(state -> true));
     /** A pool of sludge that lies a while and is gone: see {@link com.keykeeper.dushi.block.SludgeBlock}. No item; the Wallower spits it. */
     public static final DeferredBlock<com.keykeeper.dushi.block.SludgeBlock> SLUDGE = BLOCKS.registerBlock("sludge", com.keykeeper.dushi.block.SludgeBlock::new,
             props -> props.mapColor(MapColor.COLOR_BROWN).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
