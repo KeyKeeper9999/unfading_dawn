@@ -695,7 +695,7 @@ if __name__ == '__main__':
                                 ('scorched_warden', (gen_stubble.WATCH[0] + 12, GY + 9, gen_stubble.WATCH[1] + 6), (gen_stubble.WATCH[0], GY + 3, gen_stubble.WATCH[1])),
                                 ('hollow_miller', (gen_stubble.MILL[0] - 9, GY + 3, gen_stubble.MILL[1] + 5), (gen_stubble.MILL[0], GY + 2, gen_stubble.MILL[1])),
                                 ('bolt', (gen_depths.WORKS[0] + 9, gen_depths.PLATE + 4, gen_depths.WORKS[1] - 9), (gen_depths.WORKS[0], gen_depths.PLATE + 5, gen_depths.WORKS[1])),
-                                ('coming', (gen_depths.TEAR[0] + 7, gen_depths.HIGH + 3, gen_depths.TEAR[1] - 13), (gen_depths.TEAR[0], gen_depths.HIGH + 6, gen_depths.TEAR[1]))):
+                                ('coming', (gen_depths.TEAR[0] + 5, gen_depths.HIGH + 3, gen_depths.TEAR[1] - 2), (gen_depths.TEAR[0], gen_depths.HIGH + 6, gen_depths.TEAR[1] + gen_depths.TEAR_R + 1))):
             f.write(f'near_the_{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')
         # and tries the locked gate without its key and with it

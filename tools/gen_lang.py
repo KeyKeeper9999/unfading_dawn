@@ -159,6 +159,8 @@ t(f'entity.{M}.powder_pot', 'Пороховой горшок', 'Powder Pot')
 t(f'entity.{M}.thrown_wedge', 'Железный клин', 'Iron Wedge')
 t(f'entity.{M}.thrown_harpoon', 'Гарпун', 'Harpoon')
 t(f'entity.{M}.thrown_anchor', 'Якорь «Зари»', 'Anchor of the Daybreak')
+t(f'entity.{M}.gear', 'Шестерня', 'Clock Wheel')
+t(f'entity.{M}.tendril', 'Рука Грядущего', 'Arm of the Coming')
 
 t(f'tooltip.{M}.scaling', 'Сила: %s   Ловкость: %s', 'Strength: %s   Dexterity: %s')
 t(f'tooltip.{M}.stamina', 'Расход сил: %s', 'Stamina cost: %s')
@@ -502,14 +504,15 @@ SUBTITLES = {
     'entity.deepling.wake': ('Под огоньком раскрывается пасть', 'A mouth opens under the light'),
     'entity.deepling.gulp': ('Клацает пасть', 'Jaws snap'),
     'entity.deepling.glare': ('Из пасти смотрят', 'Something looks out of a mouth'),
-    'entity.gut.ambient': ('Утроба сопит спиной', 'Gut breathes through its back'),
+    'entity.gut.ambient': ('Утроба сопит под панцирем', 'Gut breathes under its shell'),
     'entity.gut.hurt': ('Утроба ревёт', 'Gut bellows'),
     'entity.gut.death': ('Утроба валится', 'Gut goes down'),
     'entity.gut.bellow': ('Утроба трубит', 'Gut trumpets'),
-    'entity.gut.step': ('Тяжёлый топот', 'Heavy tread'),
+    'entity.gut.step': ('Шлёпают ладони', 'Palms slap the ground'),
     'entity.gut.crash': ('Утроба врезается', 'Gut crashes'),
-    'entity.gut.slam': ('Кулаки бьют оземь', 'Fists strike the ground'),
-    'entity.gut.gape': ('Спина раскрывается', 'A back opens'),
+    'entity.gut.slam': ('Утроба рушится оземь', 'Gut comes down'),
+    'entity.gut.gape': ('Панцирь раскрывается', 'A shell opens'),
+    'entity.gut.shell': ('Удар глохнет в панцире', 'A blow dies on a shell'),
     'entity.clockhand.hurt': ('Звенит пружина', 'A spring twangs'),
     'entity.clockhand.death': ('Стрелочник рассыпается', 'Clockhand comes apart'),
     'entity.clockhand.tick': ('Тик', 'Tick'),
@@ -532,7 +535,7 @@ SUBTITLES = {
     'entity.bolt.step': ('Цокают стрелки', 'Hands click on stone'),
     'entity.coming.ambient': ('Гудит исподнее небо', 'The sky beneath hums'),
     'entity.coming.hurt': ('Грядущее вздрагивает', 'The Coming shudders'),
-    'entity.coming.death': ('Грядущее уходит в разрыв', 'The Coming goes back through'),
+    'entity.coming.death': ('Грядущее уходит в Разрыв', 'The Coming goes back through'),
     'entity.coming.gaze': ('Грядущее смотрит', 'The Coming looks'),
     'entity.coming.rear': ('Шея выгибается', 'A neck rears'),
     'entity.coming.slam': ('Рушится голова', 'A head comes down'),
@@ -543,6 +546,12 @@ SUBTITLES = {
     'entity.coming.bite': ('Смыкается пасть', 'A maw shuts'),
     'entity.coming.star': ('Свет встаёт на воде', 'Light stands on the water'),
     'entity.coming.burst': ('Падает звезда', 'A star falls'),
+    'entity.gear.wind': ('Заводится шестерня', 'A wheel winds up'),
+    'entity.gear.roll': ('Катится шестерня', 'A wheel runs'),
+    'entity.gear.catch': ('Шестерня встаёт на место', 'A wheel is caught'),
+    'entity.tendril.open': ('В полу раскрывается дыра', 'A hole opens in the floor'),
+    'entity.tendril.rise': ('Из дыры встаёт рука', 'An arm comes up out of a hole'),
+    'entity.tendril.slap': ('Рука рушится оземь', 'An arm comes down'),
     'entity.miller.ambient': ('Сипит Пустомол', 'Miller wheezes'), 'entity.miller.hurt': ('Пустомол кряхтит', 'Miller grunts'),
     'entity.miller.death': ('Пустомол оседает', 'Miller sinks down'), 'entity.miller.swing': ('Идёт вага', 'A bar comes round'),
     'entity.miller.slam': ('Вага бьёт в пол', 'A bar strikes the floor'), 'entity.miller.shout': ('Пустомол ухает', 'Miller heaves'),

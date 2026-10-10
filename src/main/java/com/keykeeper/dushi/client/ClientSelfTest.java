@@ -1246,7 +1246,7 @@ public final class ClientSelfTest {
         shot("k2_night", 30);
         command("time set 6000");
         attack(com.keykeeper.dushi.entity.LongarmEntity.class, com.keykeeper.dushi.entity.LongarmEntity.GRAB, 15);
-        shot("k2_grab_drawn");
+        shot("k2_grab_hands");
         attack(com.keykeeper.dushi.entity.LongarmEntity.class, com.keykeeper.dushi.entity.LongarmEntity.GRAB, 25);
         shot("k2_grab");
         attack(com.keykeeper.dushi.entity.LongarmEntity.class, com.keykeeper.dushi.entity.LongarmEntity.RAKE, 22);
@@ -1282,31 +1282,36 @@ public final class ClientSelfTest {
         shot("k2_side_glare");
         rest();
         command("fill -5 " + GROUND + " 8 -1 " + (GROUND + 3) + " 8 minecraft:air");
-        // the gut
+        // the gut: shut, heaving itself forward, reared and come down, its shell open and the arms of its mouth out
         command(gone, look(0.5, -0.5, 0, 0), summon("gut", 0.5, 5.5, ""));
         shot("k3_gut", 24);
-        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.CHARGE, 14);
-        shot("k3_paw");
-        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.CHARGE, 40);
-        shot("k3_run");
-        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.SLAM, 24);
+        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.HEAVE, 26);
+        shot("k3_drawn");
+        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.HEAVE, 42);
+        shot("k3_heave");
+        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.SLAM, 26);
         shot("k3_reared");
-        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.SLAM, 34);
+        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.SLAM, 38);
         shot("k3_down");
-        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.GAPE, 17);
+        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.GAPE, 20);
         shot("k3_gape");
+        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.GAPE, 36);
+        shot("k3_arms");
         attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.STAGGER, 24);
         shot("k3_stagger");
         rest();
         command(look(-6.0, 5.5, -90, 0));
         shot("k3_gut_side", 16);
-        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.SLAM, 24);
+        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.SLAM, 26);
         shot("k3_side_reared");
-        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.STAGGER, 24);
-        shot("k3_side_stagger");
+        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.GAPE, 36);
+        shot("k3_side_arms");
         rest();
         command(look(4.5, 10.5, 150, 4));
         shot("k3_gut_back", 16);
+        attack(com.keykeeper.dushi.entity.GutEntity.class, com.keykeeper.dushi.entity.GutEntity.GAPE, 36);
+        shot("k3_back_arms");
+        rest();
         // the Bolt: on its rod, and off it
         command(gone, look(0.5, -5.0, 0, -14), summon("bolt", 0.5, 7.0, ""));
         shot("k4_bolt", 24);
@@ -1317,6 +1322,10 @@ public final class ClientSelfTest {
         shot("k4_toll");
         attack(com.keykeeper.dushi.entity.BoltEntity.class, com.keykeeper.dushi.entity.BoltEntity.WEIGHTS, 20);
         shot("k4_weights");
+        attack(com.keykeeper.dushi.entity.BoltEntity.class, com.keykeeper.dushi.entity.BoltEntity.GEARS, 14);
+        shot("k4_gears");
+        attack(com.keykeeper.dushi.entity.BoltEntity.class, com.keykeeper.dushi.entity.BoltEntity.HANDS, 30);
+        shot("k4_hands");
         attack(com.keykeeper.dushi.entity.BoltEntity.class, com.keykeeper.dushi.entity.BoltEntity.BREAK, 30);
         shot("k4_strain");
         rest();
@@ -1339,11 +1348,28 @@ public final class ClientSelfTest {
         rest();
         command(look(-9.0, 7.0, -90, -6));
         shot("k5_bolt_side", 16);
+        attack(com.keykeeper.dushi.entity.BoltEntity.class, com.keykeeper.dushi.entity.BoltEntity.STAB, 17);
+        shot("k5_side_stab_back");
         attack(com.keykeeper.dushi.entity.BoltEntity.class, com.keykeeper.dushi.entity.BoltEntity.STAB, 26);
         shot("k5_side_stab");
         rest();
-        // the Coming: under its mask, and without it
-        command(gone, look(0.5, -7.0, 0, -16), summon("coming", 0.5, 7.0, ""));
+        command(look(0.5, 7.0, 0, -89));
+        attack(com.keykeeper.dushi.entity.BoltEntity.class, com.keykeeper.dushi.entity.BoltEntity.STAB, 26);
+        shot("k5_stab_from_above");
+        rest();
+        // its hall: a wheel as it stands in the wall and one as it runs along the floor, a weight on its chain, the light the hour is struck with
+        command(gone, look(0.5, -3.0, 0, -8), "summon unfading_dawn:gear -5.5 " + GROUND + " 8.5 {Kind:0,Size10:15,Speed10:20,Rotation:[90f,0f]}",
+                "summon unfading_dawn:gear -1.0 " + GROUND + " 6.0 {Kind:0,Size10:10,Speed10:60,Rotation:[40f,0f]}",
+                "summon unfading_dawn:gear 2.5 " + GROUND + " 6.5 {Kind:2,Warning:500,Speed10:40}",
+                "summon unfading_dawn:sun_shaft 5.5 " + GROUND + " 7.5 {Width10:17,Rise:1,Strike:400,Life:600,Hue:2}");
+        shot("k5_works", 24);
+        command("time set 18000");
+        shot("k5_works_night", 30);
+        command("time set 6000", "kill @e[type=unfading_dawn:gear]", "kill @e[type=unfading_dawn:sun_shaft]");
+        // the Coming: a wall behind it with the crack in it; under its mask, in the crack to the neck - and without it, out to the breast
+        command(gone, look(0.5, -9.0, 0, -18), "fill -9 " + GROUND + " 12 9 " + (GROUND + 15) + " 12 minecraft:deepslate",
+                "fill -2 " + GROUND + " 12 2 " + (GROUND + 11) + " 12 unfading_dawn:under_sky[tone=3]",
+                "fill -1 " + (GROUND + 12) + " 12 1 " + (GROUND + 13) + " 12 unfading_dawn:under_sky[tone=3]", summon("coming", 0.5, 10.5, ""));
         shot("k6_coming", 24);
         command("time set 18000");
         shot("k6_coming_night", 30);
@@ -1354,41 +1380,67 @@ public final class ClientSelfTest {
         shot("k6_slam_back");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 44);
         shot("k6_slam");
-        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SWEEP, 28);
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SWEEP, 24);
         shot("k6_sweep_drawn");
-        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SWEEP, 38);
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SWEEP, 40);
         shot("k6_sweep");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.CRUSH, 20);
         shot("k6_crush_up");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.CRUSH, 30);
         shot("k6_crush");
-        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.UNMASK, 40);
-        shot("k6_unmask");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.REACH, 40);
+        shot("k6_reach");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.EMERGE, 40);
+        shot("k6_strain");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.EMERGE, 70);
+        shot("k6_emerge");
         rest();
-        command(look(-13.0, 7.0, -90, -14));
+        command(look(-14.0, 6.0, -90, -14));
         shot("k6_coming_side", 16);
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 44);
         shot("k6_side_slam");
         rest();
-        command(look(0.5, -7.0, 0, -16));
+        command(look(0.5, -9.0, 0, -18));
         phase(2);
         shot("k7_bare", 20);
         command("time set 18000");
         shot("k7_bare_night", 30);
         command("time set 6000");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.GAZE, 34);
+        shot("k7_gaze");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 44);
+        shot("k7_slam");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SWEEP, 40);
+        shot("k7_sweep");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.CRUSH, 30);
+        shot("k7_crush");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.REACH, 40);
+        shot("k7_reach");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.PULL, 60);
         shot("k7_pull");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.PULL, 94);
         shot("k7_bite");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.RAIN, 50);
         shot("k7_rain");
-        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.GAZE, 34);
-        shot("k7_gaze");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.GLARE, 70);
+        shot("k7_glare");
         rest();
-        command(look(0.5, 1.0, 0, -40));
+        command(look(0.5, 4.0, 0, -50));
         shot("k7_bare_from_below", 16);
-        command(look(-13.0, 7.0, -90, -14));
+        command(look(-14.0, 6.0, -90, -14));
         shot("k7_bare_side", 16);
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 44);
+        shot("k7_side_slam");
+        rest();
+        // what it reaches with: the hole with its fingers, the arm up out of it; and a ray such as comes out of its head
+        command(gone, look(0.5, -3.0, 0, -12), "fill -9 " + GROUND + " 12 9 " + (GROUND + 15) + " 12 minecraft:air",
+                "fill -16 " + GROUND + " 12 16 " + (GROUND + 9) + " 12 minecraft:deepslate_bricks",
+                "summon unfading_dawn:tendril -3.5 " + GROUND + " 7.0 {Warning:600}", "summon unfading_dawn:tendril 0.5 " + GROUND + " 8.0 {Warning:2,Yaw:150}",
+                "summon unfading_dawn:sun_shaft 4.5 " + GROUND + " 6.0 {Width10:17,Rise:1,Strike:400,Life:600,Hue:1,FromX10:-40,FromY10:90,FromZ10:50}");
+        shot("k7_tendril", 40);
+        command("time set 18000");
+        shot("k7_tendril_night", 30);
+        command("time set 6000", "kill @e[type=unfading_dawn:tendril]", "kill @e[type=unfading_dawn:sun_shaft]");
         // the light it strikes with, and the sky and the water of the place: every tone of the sky in a wall, from overhead down to the horizon
         command(gone, look(0.5, -3.0, 0, -8), "fill -8 " + (GROUND - 1) + " 0 8 " + (GROUND - 1) + " 10 minecraft:black_concrete",
                 "fill -8 " + GROUND + " 0 8 " + GROUND + " 10 unfading_dawn:night_shallows");

@@ -1706,6 +1706,9 @@ d = 1.1
 S['gut/slam'] = under(place(d, (0.0, thump(0.9, 80, 24, 0.2) * 2.6), (0.0, stone_hit(0.6, 440, 100, 0.9) * 1.2), (0.06, stone_hit(0.5, 380, 90, 0.8) * 0.9)), 0.9, 0.3, 0.6)
 d = 1.0
 S['gut/gape'] = under(place(d, (0.0, squelch(0.6, 220) * 1.4), (0.1, creak(0.6, 60, 22, (300, 700, 1500)) * env(0.6, 0.05, 0.4) * 0.5), (0.5, stone_hit(0.3, 1300, 180, 0.2) * 0.9)), 0.8, 0.3, 0.5)
+# a blow that the gut's shell takes: a knock on something thick and hollow
+d = 0.5
+S['gut/shell'] = under(place(d, (0.0, wood_knock(0.3, 300, 1.4) * 1.6), (0.0, stone_hit(0.3, 700, 140, 0.4) * 0.9), (0.02, thump(0.3, 110, 60, 0.05) * 1.0)), 0.5, 0.2, 0.3)
 
 # the clockhand: a clock
 d = 0.4
@@ -1800,6 +1803,24 @@ S['coming/bite'] = under(place(d, (0.0, stone_hit(0.6, 700, 110, 0.5) * 1.6), (0
 for k in (0, 1):
     d = 1.2
     S[f'coming/star{k + 1}'] = under(layer(backwards(chime(1320 + 220 * k, 1.0, 1.2) * env(1.0, 0.01, 0.8)) * 0.5, tone(contour(d, (0, 1800 + 200 * k), (1, 2600)), d) * env(d, 0.9, 0.1) * 0.06), 0.9, 0.4, 0.5)
+# the works of the stopped clock (GearEntity): a wheel winding itself up where it stands, the wheel running, and caught by the far wall
+d = 1.4
+S['gear/wind'] = under(layer(rattle(d, 34, 1400, 4200, seed=131) * env(d, 0.6, 0.1) * 0.9, grind(d, 240, 1100, 132) * env(d, 0.7, 0.1) * 0.7,
+                             tone(contour(d, (0, 180), (1, 520)), d) * env(d, 0.8, 0.1) * 0.12), 0.8, 0.3, 0.5)
+d = 2.2
+S['gear/roll'] = under(layer(grind(d, 120, 700, 133) * env(d, 0.08, 1.2) * 1.5, rattle(d, 44, 900, 3000, seed=134) * env(d, 0.05, 1.3) * 0.6,
+                             thump(0.6, 80, 34, 0.16) * 1.2), 1.2, 0.35, 0.8)
+d = 1.1
+S['gear/catch'] = under(place(d, (0.0, clang(310, 0.9, strike=1.0) * 1.2), (0.0, thump(0.7, 84, 30, 0.14) * 2.0), (0.06, rattle(0.6, 12, 1200, 3800, seed=135) * 0.7)), 1.0, 0.3, 0.7)
+# what the Coming reaches with (TendrilEntity): the hole opening, the arm coming up through it, and down along the floor
+d = 1.3
+S['tendril/open'] = under(layer(backwards(chime(520, 1.1, 0.8) * env(1.1, 0.01, 0.9)) * 0.5, lowpass(noise(d), 300) * env(d, 0.9, 0.2) * 0.9,
+                               tone(contour(d, (0, 90), (1, 60)), d) * env(d, 0.6, 0.3) * 0.3), 1.0, 0.4, 0.6)
+d = 0.9
+S['tendril/rise'] = under(place(d, (0.0, whoosh(0.5, 90, 1800, 0.35, 0.4) * 2.4), (0.0, squelch(0.5, 170) * 1.3), (0.1, creak(0.6, 70, 36, (240, 620, 1300)) * env(0.6, 0.05, 0.4) * 0.5)), 0.9, 0.3, 0.6)
+d = 1.5
+S['tendril/slap'] = under(place(d, (0.0, whoosh(0.4, 120, 1500, 0.7, 0.4) * 1.6), (0.22, thump(1.1, 70, 22, 0.26) * 3.0), (0.22, splash(0.9, 1.3, 3200) * 1.3),
+                               (0.24, stone_hit(0.6, 340, 80, 0.8) * 1.1)), 1.2, 0.35, 0.8)
 for k in (0, 1):
     d = 1.1
     S[f'coming/burst{k + 1}'] = under(place(d, (0.0, chime(990 - 110 * k, 0.9, 1.4) * 0.6), (0.0, thump(0.6, 110, 34, 0.1) * 1.2), (0.0, highpass(noise(0.25), 3000) * decay(0.25, 0.04) * 0.6),
@@ -1924,6 +1945,7 @@ EVENTS = {
     'entity.deepling.wake': ['deepling/wake'], 'entity.deepling.gulp': ['deepling/gulp'], 'entity.deepling.glare': ['deepling/glare'],
     'entity.gut.ambient': ['gut/ambient1', 'gut/ambient2'], 'entity.gut.hurt': ['gut/hurt'], 'entity.gut.death': ['gut/death'], 'entity.gut.bellow': ['gut/bellow'],
     'entity.gut.step': ['gut/step1', 'gut/step2'], 'entity.gut.crash': ['gut/crash'], 'entity.gut.slam': ['gut/slam'], 'entity.gut.gape': ['gut/gape'],
+    'entity.gut.shell': ['gut/shell'],
     'entity.clockhand.hurt': ['clockhand/hurt'], 'entity.clockhand.death': ['clockhand/death'], 'entity.clockhand.tick': ['clockhand/tick1', 'clockhand/tick2'],
     'entity.clockhand.stab': ['clockhand/stab'], 'entity.clockhand.sweep': ['clockhand/sweep'], 'entity.clockhand.wind': ['clockhand/wind'],
     'entity.bolt.ambient': ['bolt/ambient1', 'bolt/ambient2'], 'entity.bolt.hurt': ['bolt/hurt'], 'entity.bolt.death': ['bolt/death'],
@@ -1934,6 +1956,8 @@ EVENTS = {
     'entity.coming.gaze': ['coming/gaze'], 'entity.coming.rear': ['coming/rear'], 'entity.coming.slam': ['coming/slam'], 'entity.coming.sweep': ['coming/sweep'],
     'entity.coming.strain': ['coming/strain'], 'entity.coming.unmask': ['coming/unmask'], 'entity.coming.pull': ['coming/pull'], 'entity.coming.bite': ['coming/bite'],
     'entity.coming.star': ['coming/star1', 'coming/star2'], 'entity.coming.burst': ['coming/burst1', 'coming/burst2'],
+    'entity.gear.wind': ['gear/wind'], 'entity.gear.roll': ['gear/roll'], 'entity.gear.catch': ['gear/catch'],
+    'entity.tendril.open': ['tendril/open'], 'entity.tendril.rise': ['tendril/rise'], 'entity.tendril.slap': ['tendril/slap'],
     'entity.keykeeper.ambient': ['keykeeper/ambient1', 'keykeeper/ambient2'],
     'entity.keykeeper.give': ['keykeeper/give'],
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],

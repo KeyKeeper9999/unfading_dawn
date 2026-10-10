@@ -1587,6 +1587,12 @@
       "unfading_dawn:gut/gape"
     ]
   },
+  "entity.gut.shell": {
+    "subtitle": "subtitles.unfading_dawn.entity.gut.shell",
+    "sounds": [
+      "unfading_dawn:gut/shell"
+    ]
+  },
   "entity.clockhand.hurt": {
     "subtitle": "subtitles.unfading_dawn.entity.clockhand.hurt",
     "sounds": [
@@ -1791,6 +1797,42 @@
     "sounds": [
       "unfading_dawn:coming/burst1",
       "unfading_dawn:coming/burst2"
+    ]
+  },
+  "entity.gear.wind": {
+    "subtitle": "subtitles.unfading_dawn.entity.gear.wind",
+    "sounds": [
+      "unfading_dawn:gear/wind"
+    ]
+  },
+  "entity.gear.roll": {
+    "subtitle": "subtitles.unfading_dawn.entity.gear.roll",
+    "sounds": [
+      "unfading_dawn:gear/roll"
+    ]
+  },
+  "entity.gear.catch": {
+    "subtitle": "subtitles.unfading_dawn.entity.gear.catch",
+    "sounds": [
+      "unfading_dawn:gear/catch"
+    ]
+  },
+  "entity.tendril.open": {
+    "subtitle": "subtitles.unfading_dawn.entity.tendril.open",
+    "sounds": [
+      "unfading_dawn:tendril/open"
+    ]
+  },
+  "entity.tendril.rise": {
+    "subtitle": "subtitles.unfading_dawn.entity.tendril.rise",
+    "sounds": [
+      "unfading_dawn:tendril/rise"
+    ]
+  },
+  "entity.tendril.slap": {
+    "subtitle": "subtitles.unfading_dawn.entity.tendril.slap",
+    "sounds": [
+      "unfading_dawn:tendril/slap"
     ]
   },
   "entity.keykeeper.ambient": {

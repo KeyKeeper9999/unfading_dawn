@@ -162,7 +162,11 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   that is no roof is sheets of the one under a tiling of the other. With them `night_shallows`, the shallows in a
   film that shines a little. Maps set them (the Sky Beneath); see `docs/places/depths.md`.
 - A mob that must send one more number to its model every frame says it in `SoulsMob.renderExtra()`
-  (`BossRenderState.extra`: the Bolt's swing). `SunShaftEntity` has a hue (`dusk(...)`: the Coming's violet shafts).
+  (`BossRenderState.extra`: the Bolt's swing, how far round the Coming's neck is turned). `SunShaftEntity` has a hue
+  (`dusk(...)`: the Coming's violet, `amber(...)`: the Bolt's hall) and may be a ray from a place (`ray(...)`).
+- What a lord strikes with that is not itself is an entity that is not a mob, cannot be struck and is not saved, with
+  the lord for its owner: `RootEntity`, `GearEntity` (the Bolt's wheels and weights), `TendrilEntity` (the Coming's arms).
+  Summoned by hand such a thing strikes nobody and stays to be looked at (the pictures do that).
 - `client/` - models, renderers, `SoulsHud`, `HearthScreen`, `ShopScreen`, the roll key.
 - `tools/` - everything generated is generated from here; run `sh tools/build_assets.sh [preview dir]` from the repo root:
   - `modelkit.py` - entity models described once in Python: texture layout, the mesh part of the Java model class (written
@@ -174,7 +178,7 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
     `gen_sect.py` (the wakeful, the waker and the sleeper on one model), `gen_waxen.py`, `gen_moth.py`, `gen_shatun.py`,
     `gen_elder.py`, `gen_sailor.py` (five seamen on one mesh), `gen_crab.py`, `gen_skua.py`, `gen_capsized.py`,
     `gen_fieldhand.py` (five fieldhands on one mesh), `gen_scarecrow.py`, `gen_stook.py` (and the millstone), `gen_sungazer.py`,
-    `gen_dusk.py` (six of the Sky Beneath), `gen_clock.py` (the clockhand and the Bolt), `gen_coming.py` (the Coming; all three paint with `duskkit.py`) - the mobs; `gen_anchor.py` (the Helmsman's cast anchor) and `gen_beam.py` (a shaft of sunlight, see-through and shining) - things that fly or stand that are not mobs
+    `gen_dusk.py` (six of the Sky Beneath), `gen_clock.py` (the clockhand, the Bolt, and the works of its hall: a wheel and a weight), `gen_coming.py` (the Coming - with its poses, which it writes into the model - and the arm it reaches out of the floor with; all three paint with `duskkit.py`) - the mobs; `gen_anchor.py` (the Helmsman's cast anchor) and `gen_beam.py` (a shaft of sunlight, see-through and shining) - things that fly or stand that are not mobs
     (the withered are eleven kinds now: the Mire's drowned too). `Model.mirror` gives a mirrored part the parent of its
     source with "right" turned to "left" in the name: a part whose parent is named otherwise (`leg_r1`, `wing_r`) must be
     given its `parent=`, or the left shin hangs from the right leg - which the preview shows only if one looks, and the

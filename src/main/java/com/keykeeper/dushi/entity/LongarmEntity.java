@@ -23,10 +23,12 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * One of the long-armed: something that is in the wall. A hump of it shows in a niche, and two arms folded before it;
- * the rest, if there is any, is in the rock. It does not come out and it does not turn. It waits for whoever passes
- * its niche within four paces - and then the arms are four paces long: it takes hold and draws them in to the wall,
- * or, if they are off to one side, rakes the whole width of the way.
+ * One of the long-armed: a stain of dark on a wall, and arms out of the stain. Small ones are always out, feeling
+ * about its edge; the two long ones are not seen until they are wanted - first their hands, then all of them. There
+ * is no body: what can be struck is the stain (the mob stands in a niche behind it, where the long arms lie folded).
+ * It does not come out and it does not turn. It waits for whoever passes within four paces - and then the arms are
+ * four paces long: it takes hold and draws them in to the wall, or, if they are off to one side, rakes the whole
+ * width of the way.
  * <p>
  * It is a thing of narrow ways: the place to be when one is passed is the far wall, or past it at a run.
  */

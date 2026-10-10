@@ -198,78 +198,137 @@ SHADOW_POSES = (
 
 
 # ---------------------------------------------------------------------------------------------------- the long-armed
-# Something that is in the wall: a hump of it shows in a niche, without a head, and two arms of three joints each that
-# hang folded before it like a mantis's - and are four paces long when they are not folded. Lesser hands hold the edge
-# of the niche. It does not come out. It faces -z, out of the wall; the hump is behind the cell's middle.
-LONGARM_SCALE = 1.5             # must match MODEL_SCALE in LongarmModel.java
+# A stain of dark on a wall, as wide as a door and taller, that has run a little down it: and arms come out of the
+# stain. Small ones are always out - they feel about the edge of it, the way a man feels for a step in the dark. The
+# two long ones, of three joints and four paces each, are not seen until they are wanted: first the hands, then all of
+# it at once. There is no body. It faces -z, out of the wall; 'pool' is the stain, a hand's breadth before the face of
+# the cell it sits in (the niche behind it is where the long arms lie folded: LONGARM_FRONT is half a cell in model
+# units, and a little more, so that the stain lies on the rock round the niche and hides it).
+LONGARM_SCALE = 2.0             # must match MODEL_SCALE in LongarmModel.java
+LONGARM_FRONT = 4.0
+# the small arms: where on the stain, how they are turned from straight out (about x, y), and how long
+LONGARM_FEELERS = ((-7.5, -19, 0.5, 0.5, 5), (6.5, -21, -0.6, -0.5, 6), (-8.5, -10, 0.7, 0.9, 4), (8, -12, 0.2, -0.8, 5), (1.5, -24.5, -0.9, 0.1, 4), (-2.5, -5.5, 0.9, 0.2, 5))
+LONGARM_SIDES = (('right', -1), ('left', 1))
+
+
+def longarm_ink(px, py, fw, fh):
+    """How deep in the stain a texel of its plate is: under 0 it is not of it at all, near 0 its edge. The stain is a
+    blot (not round: three blots run together), with runs down the wall under it and a few drops flung off beside it."""
+    x, y = px - (fw - 1) / 2, py
+    best = -9.0
+    for cx, cy, r in ((0.0, 11.5, 9.6), (-3.5, 7.0, 6.2), (4.0, 15.5, 6.4), (2.5, 6.0, 5.0)):
+        wob = (blotch('lpool', px, py, 2.4) - 0.5) * 3.4 + (blotch('lpool2', px, py, 6.0) - 0.5) * 2.4
+        best = max(best, r + wob - math.hypot((x - cx) * 0.94, y - cy))
+    # runs: each a line of its own length from the blot down
+    for rx, top, bottom in ((-6, 14, 23), (-2, 18, 26), (3, 19, 24), (7, 17, 22), (-8, 10, 17), (0, 20, 25)):
+        if abs(x - rx) < 0.6 and top <= y <= bottom:
+            best = max(best, 0.4 if y < bottom else 0.1)
+        if abs(x - rx) < 1.6 and bottom - 1 <= y <= bottom and rx in (-2, 3):
+            best = max(best, 0.1)                                    # (a run ends in a drop)
+    for dx, dy in ((-11, 4), (10, 9), (-10.5, 16), (11, 19), (9, 2)):
+        if math.hypot(x - dx, y - dy) < 1.05:
+            best = max(best, 0.1)
+    return best
 
 
 def longarm():
-    M = Model(64, 64, LONGARM_SCALE)
+    M = Model(128, 64, LONGARM_SCALE)
     M.part('all', None, (0, 24, 0))
-    M.part('hump', 'all', (0, -12, 3), boxes=[Box(-6, -13, -3, 12, 13, 8, 'hump', 'hump'), Box(-5, 0, -1, 10, 12, 5, 'rags', 'rags')])
-    M.part('right_arm', 'hump', (-5, -10, -3), (-0.9, 0, 0.12), boxes=[Box(-1.5, 0, -1.5, 3, 13, 3, 'arm', 'upper')])
-    M.part('right_fore', 'right_arm', (0, 13, 0), (2.25, 0, 0), boxes=[Box(-1, 0, -1, 2, 13, 2, 'arm', 'fore')])
-    M.part('right_wrist', 'right_fore', (0, 13, 0), (-2.3, 0, 0), boxes=[Box(-1, 0, -1, 2, 12, 2, 'limb', 'wrist')])
-    M.part('right_hand', 'right_wrist', (0, 12, 0), (0.7, 0, 0), boxes=[Box(-3, 0, -0.5, 6, 9, 1, 'hang', 'hand')])
-    for src in ('right_arm', 'right_fore', 'right_wrist', 'right_hand'):
-        dst = src.replace('right', 'left')
-        M.mirror(src, dst, parent='hump' if src == 'right_arm' else {'right_fore': 'left_arm', 'right_wrist': 'left_fore', 'right_hand': 'left_wrist'}[src])
-    # the hands on the edge of the niche
-    M.part('cling_r', 'hump', (-6.5, -7, -3), (0, 0, 0.5), boxes=[Box(-0.5, 0, -0.5, 1, 6, 1, 'limb', 'cling'), Box(-1.5, 6, -0.5, 3, 4, 1, 'hang', 'cling_hand')])
-    M.part('cling_l', 'hump', (6.5, -3, -3), (0, 0, -0.9), boxes=[Box(-0.5, 0, -0.5, 1, 6, 1, 'limb', 'cling'), Box(-1.5, 6, -0.5, 3, 4, 1, 'hang', 'cling_hand')])
-    M.part('cling_t', 'hump', (2, -13, -3), (0, 0, 2.6), boxes=[Box(-0.5, 0, -0.5, 1, 5, 1, 'limb', 'cling'), Box(-1.5, 5, -0.5, 3, 4, 1, 'hang', 'cling_hand')])
+    M.part('pool', 'all', (0, 0, -LONGARM_FRONT), boxes=[Box(-12, -27, -0.6, 24, 27, 1, 'pool', 'pool')])
+    for side, sign in LONGARM_SIDES:
+        # folded in the niche behind the stain: down, up, down, and the hand up again
+        M.part(f'{side}_arm', 'pool', (sign * 2.6, -17, 2.4), (0.0, 0, 0), boxes=[Box(-1, 0, -1, 2, 10, 2, 'arm', 'upper')])
+        M.part(f'{side}_fore', f'{side}_arm', (0, 10, 0), (3.0, 0, 0), boxes=[Box(-1, 0, -1, 2, 10, 2, 'arm', 'fore')])
+        M.part(f'{side}_wrist', f'{side}_fore', (0, 10, 0), (-3.0, 0, 0), boxes=[Box(-1, 0, -1, 2, 9, 2, 'limb', 'wrist')])
+        M.part(f'{side}_hand', f'{side}_wrist', (0, 9, 0), (3.0, 0, 0), boxes=[Box(-3, 0, -0.5, 6, 8, 1, 'hang', 'hand')])
+    for i, (x, y, rx, ry, long) in enumerate(LONGARM_FEELERS):
+        M.part(f'feel{i}', 'pool', (x, y, 0), (round(-math.pi / 2 + rx, 4), ry, 0), boxes=[Box(-0.5, -1, -0.5, 1, long + 1, 1, 'limb', 'feeler')])
+        M.part(f'feelh{i}', f'feel{i}', (0, long, 0), (0.5 if i % 2 else -0.4, 0, 0.3 * (1 if i % 2 else -1)), boxes=[Box(-1.5, 0, -0.5, 3, 4, 1, 'hang', 'feel_hand')])
     M.pack()
     return M
 
 
 def paint_longarm(M):
     p = Painter(M, 833)
+    INK = (9, 9, 17)
+    INK_L = (24, 22, 44)
     for name, _, b in M.boxes():
-        if b.mat == 'hump':
-            p.fill_box(b, night('lh'))
-            starry(p, b, 'lh', 0.02)
-            cracks(p, b, 'lh', 1, faces=('front',), colour=VIOLET_D, bright=VIOLET)
-        elif b.mat == 'rags':
-            base = night('lr', light=0.85)
-
-            def rags(face, px, py, fw, fh, rnd):
-                if face in ('top', 'bottom'):
+        if b.mat == 'pool':
+            def pool(face, px, py, fw, fh, rnd):
+                if face != 'front':
                     return None
-                if px % 3 == 2 and py > 1 or py >= fh - int(blotch(f'rag{face}', px // 3, 0, 1.1) * 7):
+                deep = longarm_ink(px, py, fw, fh)
+                if deep < 0.0:
                     return None
-                return base(face, px, py, fw, fh, rnd)
-            p.fill_box(b, rags)
+                if deep < 1.1:
+                    return INK_L
+                return INK if blotch('ldeep', px, py, 3.0) < 0.7 else (5, 5, 10)
+            p.fill_box(b, pool)
+            fx, fy, fw, fh = b.faces()['front']
+            import random
+            rnd = random.Random('longarm stain')
+            for py in range(fh):
+                for px in range(fw):
+                    deep = longarm_ink(px, py, fw, fh)
+                    if deep < 0.0:
+                        continue
+                    n = rnd.random()
+                    if 0.0 <= deep < 1.1 and n < 0.11:
+                        p.px(fx + px, fy + py, VIOLET_D if n > 0.05 else VIOLET, glow=True)     # the edge of it shines, a very little
+                    elif deep > 2.5 and n < 0.032:
+                        p.px(fx + px, fy + py, STAR if n < 0.008 else (STAR_D if n < 0.026 else BLUE), glow=True)
         elif b.mat == 'arm':
-            # night at the shoulder, skin by the elbow: it pales towards what it holds with
+            # the dark it comes out of at the shoulder, skin by the elbow: it pales towards what it holds with
             dark = night('la', light=0.9)
             pale = skin('la', PALE_D, PALE_DD)
 
             def arm(face, px, py, fw, fh, rnd, tag=b.tag):
                 t = py / max(1, fh - 1) if face not in ('top', 'bottom') else (0.0 if face == 'top' else 1.0)
                 if tag == 'upper':
-                    t = t * 0.4
+                    t = t * 0.45
                 else:
-                    t = 0.4 + t * 0.6
+                    t = 0.45 + t * 0.55
                 a, c = dark(face, px, py, fw, fh, rnd), pale(face, px, py, fw, fh, rnd)
                 return mix(a, c, min(1.0, max(0.0, t + (blotch('lat', px, py, 2.0) - 0.5) * 0.3)))
             p.fill_box(b, arm)
         elif b.mat == 'limb':
-            p.fill_box(b, skin('ll'))
+            if b.tag == 'feeler':
+                dark = night('lf', light=0.9)
+                pale = skin('lf')
+                # (its first texel is in the stain, and is the stain's colour)
+                p.fill_box(b, lambda face, px, py, fw, fh, rnd: mix(dark(face, px, py, fw, fh, rnd), pale(face, px, py, fw, fh, rnd),
+                                                                     min(1.0, py / 2.0) if face not in ('top', 'bottom') else (0.0 if face == 'top' else 1.0)))
+            else:
+                p.fill_box(b, skin('ll'))
         elif b.mat == 'hang':
-            p.fill_box(b, flip(hand_up(mirrored=name.startswith('left') or name == 'cling_l')))
+            p.fill_box(b, flip(hand_up(mirrored=name.startswith('left') or (name.startswith('feelh') and int(name[5:]) % 2 == 1))))
     return p.tex, p.glow
 
 
-# folded (its rest); the fingers working; drawn back; out at full length; both arms wide, raking
+def longarm_arms(upper, fore, wrist, hand, yaw=0.0, roll=0.0):
+    """Both long arms turned from where they lie folded: the numbers LongarmModel has."""
+    pose = {}
+    for side, sign in LONGARM_SIDES:
+        pose[f'{side}_arm'] = (upper, -sign * yaw, sign * roll)
+        pose[f'{side}_fore'] = (fore, 0, 0)
+        pose[f'{side}_wrist'] = (wrist, 0, 0)
+        pose[f'{side}_hand'] = (hand, 0, 0)
+    return pose
+
+
+LONGARM_PEEK = longarm_arms(-1.5708, -0.42, 0.42, -3.0)        # the hands out of the stain, the arms behind them folded like a mantis's
+LONGARM_OUT = longarm_arms(-1.5708, -3.0, 3.0, -3.3)           # all of it out, straight, the hands closing
+LONGARM_WIDE = longarm_arms(-1.5708, -3.0, 3.0, -3.2, yaw=-1.0)  # both out to the sides, for the rake
+LONGARM_RAKED = longarm_arms(-1.5708, -3.0, 3.0, -3.2, yaw=0.55)
+
+# the stain with nothing but its small arms out (its rest); the hands coming; out at full length; wide; raked through
 LONGARM_POSES = (
-    ('folded', {}),
-    ('twitch', {'right_hand': (0.5, 0, 0), 'left_wrist': (0.3, 0, 0)}),
-    ('drawn', {'right_arm': (-0.5, 0, 0), 'left_arm': (-0.5, 0, 0), 'right_fore': (0.4, 0, 0), 'left_fore': (0.4, 0, 0)}),
-    ('grab', {'right_arm': (-0.62, 0, -0.1), 'left_arm': (-0.62, 0, 0.1), 'right_fore': (-2.2, 0, 0), 'left_fore': (-2.2, 0, 0), 'right_wrist': (2.3, 0, 0),
-              'left_wrist': (2.3, 0, 0), 'right_hand': (-0.9, 0, 0), 'left_hand': (-0.9, 0, 0)}),
-    ('rake', {'right_arm': (-0.55, 0.9, 0), 'left_arm': (-0.55, -0.9, 0), 'right_fore': (-2.2, 0, 0), 'left_fore': (-2.2, 0, 0), 'right_wrist': (2.0, 0, 0),
-              'left_wrist': (2.0, 0, 0), 'right_hand': (-0.7, 0, 0), 'left_hand': (-0.7, 0, 0)}),
+    ('stain', {}),
+    ('feeling', {'feel0': (0.4, 0, 0), 'feel3': (-0.3, 0.3, 0), 'feelh1': (0.6, 0, 0)}),
+    ('hands', LONGARM_PEEK),
+    ('grab', LONGARM_OUT),
+    ('wide', LONGARM_WIDE),
+    ('rake', LONGARM_RAKED),
 )
 
 
@@ -483,28 +542,51 @@ DEEPLING_POSES = (
 
 
 # ---------------------------------------------------------------------------------------------------- the gut
-# A beast the size of a bull with no head: its neck ends in a healed stump. Its back opens from end to end, and that
-# is the mouth - two lips of hide with teeth along them, and eyes down in the red of it. It stands on four fists.
-# 'body' hangs at the hind quarters, so that it can rear; the hind legs stay on the ground.
-GUT_SCALE = 1.5                 # must match MODEL_SCALE in GutModel.java
+# The gut: a mound the length of two men and the height of one, with no head and no legs. It is shut in a shell of two
+# halves, like a beetle's wing-cases, that meet along its back; under the rim of the shell it is carried on hands, a
+# row of them down each side, and it goes as fast as they can shuffle. Where a head would be is a blunt end with a
+# seam in it, drawn together long ago. The shell opens along the back, and what is under it is a mouth from end to
+# end - teeth on the edges of the two halves, eyes down in the red - and arms folded in it, that come out and feel for
+# whoever is beside it. 'body' hangs at its hind end, so that it can rear.
+GUT_SCALE = 2.0                 # must match MODEL_SCALE in GutModel.java
+GUT_FEET = 5                    # hands down each side
+GUT_HIND = 8                    # where 'body' hangs: so far behind the middle of it
+GUT_SIDES = (('r', -1), ('l', 1))
+
+
+GUT_SLOPE = 0.4                 # how the two halves of the shell lean together when it is shut: a roof, not a lid
 
 
 def gut():
-    M = Model(128, 128, GUT_SCALE)
+    M = Model(256, 128, GUT_SCALE)
+    h = GUT_HIND
     M.part('all', None, (0, 24, 0))
-    M.part('body', 'all', (0, -17, 7), boxes=[Box(-6, -5, -18, 12, 10, 21, 'hide', 'trunk'), Box(-5, -5.5, -17, 10, 1, 19, 'maw', 'maw')])
-    M.part('stump', 'body', (0, -1, -18), (0.2, 0, 0), boxes=[Box(-4, -4, -4, 8, 8, 4, 'hide', 'stump'), Box(-3, -3, -5, 6, 6, 1, 'scar', 'scar')])
-    M.part('lip_r', 'body', (-6, -5, 0), boxes=[Box(0, -3, -17.5, 6, 3, 20, 'hide', 'lip'), Box(5, -1, -17, 1, 4, 19, 'teeth', 'teeth')])
+    M.part('body', 'all', (0, -4, h), boxes=[Box(-8, -9, -10 - h, 16, 9, 20, 'hide', 'trunk'), Box(-5.5, -12, -9.5 - h, 11, 3, 19, 'hide', 'back'),
+                                             Box(-5, -12.6, -8.5 - h, 10, 1, 17, 'maw', 'maw'),
+                                             Box(-6, -8, 10 - h, 12, 8, 3, 'hide', 'rump'), Box(-4, -6.5, 13 - h, 8, 6, 3, 'hide', 'rump2'),
+                                             Box(-9, -8.5, -9.5 - h, 1, 6, 19, 'shell', 'flank_r'), Box(8, -8.5, -9.5 - h, 1, 6, 19, 'shell', 'flank_l')])
+    M.part('stump', 'body', (0, -3, -10 - h), (0.2, 0, 0), boxes=[Box(-6, -6, -4, 12, 8, 4, 'hide', 'stump'), Box(-4, -4.5, -8, 8, 6, 4, 'hide', 'nose'),
+                                                                 Box(-3, -4, -8.6, 6, 5, 1, 'scar', 'scar')])
+    # the two halves of the shell, each hinged along the top of a flank and leaning in to the other: three plates to a half,
+    # the middle one the greatest and lapping the two others
+    M.part('lip_r', 'body', (-8.5, -9, 0), (0, 0, -GUT_SLOPE), boxes=[Box(0, -2, -11 - h, 9, 2, 8, 'shell', 'plate_f'), Box(-0.5, -3, -4.5 - h, 10, 3, 9, 'shell', 'plate_m'),
+                                                                     Box(0, -2, 3 - h, 9, 2, 9, 'shell', 'plate_b'), Box(8, 0, -8.5 - h, 1, 4, 17, 'teeth', 'teeth')])
     M.mirror('lip_r', 'lip_l', parent='body')
-    M.part('fore_r', 'body', (-4.5, 4, -14), boxes=[Box(-2.5, 0, -2.5, 5, 7, 5, 'hide', 'thigh')])
-    M.part('fore_shin_r', 'fore_r', (0, 7, 0), boxes=[Box(-2, 0, -2, 4, 4, 4, 'hide', 'shin'), Box(-2.5, 4, -3.5, 5, 2, 6, 'fist', 'fist')])
-    M.mirror('fore_r', 'fore_l', parent='body')
-    M.mirror('fore_shin_r', 'fore_shin_l', parent='fore_l')
-    M.part('hind_r', 'all', (-4.5, -13, 7), boxes=[Box(-2.5, 0, -2.5, 5, 7, 5, 'hide', 'thigh')])
-    M.part('hind_shin_r', 'hind_r', (0, 7, 0), boxes=[Box(-2, 0, -2, 4, 4, 4, 'hide', 'shin'), Box(-2.5, 4, -3.5, 5, 2, 6, 'fist', 'fist')])
-    M.mirror('hind_r', 'hind_l', parent='all')
-    M.mirror('hind_shin_r', 'hind_shin_l', parent='hind_l')
-    M.part('tail', 'body', (0, -2, 3), (0.9, 0, 0), boxes=[Box(-1, 0, -1, 2, 9, 2, 'hide', 'tail'), Box(-2, 9, -0.5, 4, 5, 1, 'hang', 'tail_hand')])
+    # the hands it goes on
+    for i in range(GUT_FEET):
+        z = -8 + i * 4 - h
+        M.part(f'foot_r{i}', 'body', (-7, -1, z), (0, 0, 0.12), boxes=[Box(-1, 0, -1, 2, 4.4, 2, 'limb', 'foot'), Box(-3, 4, -4, 5, 1, 6, 'flat', 'foot_hand')])
+        M.mirror(f'foot_r{i}', f'foot_l{i}', parent='body')
+    # the arms that lie in the mouth: two a side, folded along it under the shell
+    for k, z in enumerate((-7 - h, 0 - h)):
+        M.part(f'grab_r{k}', 'body', (-3, -10.5, z), (1.5708, 0, 0), boxes=[Box(-1, 0, -1, 2, 11, 2, 'arm', 'upper')])
+        M.part(f'grabf_r{k}', f'grab_r{k}', (0, 11, 0), (-3.0, 0, 0), boxes=[Box(-1, 0, -1, 2, 11, 2, 'limb', 'fore'), Box(-2.5, 11, -0.5, 5, 6, 1, 'hang', 'grab_hand')])
+        M.mirror(f'grab_r{k}', f'grab_l{k}', parent='body')
+        M.mirror(f'grabf_r{k}', f'grabf_l{k}', parent=f'grab_l{k}')
+    # what hangs from the blunt end, and feels the ground before it; and a tail with a hand on it, dragged
+    for side, sign in GUT_SIDES:
+        M.part(f'whisk_{side}', 'stump', (sign * 3, 1, -7), (-0.9, 0, -sign * 0.3), boxes=[Box(-0.5, 0, -0.5, 1, 4, 1, 'limb', 'whisk'), Box(-1.5, 4, -0.5, 3, 3, 1, 'hang', 'whisk_hand')])
+    M.part('tail', 'body', (0, -3, 15.5 - h), (1.2, 0, 0), boxes=[Box(-1, 0, -1, 2, 10, 2, 'hide', 'tail'), Box(-2, 10, -0.5, 4, 5, 1, 'hang', 'tail_hand')])
     M.pack()
     return M
 
@@ -514,6 +596,9 @@ def paint_gut(M):
     HIDE = (40, 34, 52)
     HIDE_D = (24, 20, 34)
     HIDE_L = (62, 54, 78)
+    SHELL = (22, 21, 36)
+    SHELL_D = (11, 11, 20)
+    SHELL_L = (52, 50, 80)
     for name, _, b in M.boxes():
         if b.mat == 'hide':
             def hide(face, px, py, fw, fh, rnd, tag=b.tag):
@@ -521,31 +606,55 @@ def paint_gut(M):
                 if face == 'top':
                     c = mix(c, HIDE_L, 0.5)
                 f = {'top': 1.1, 'bottom': 0.7}.get(face, 1.02 - 0.2 * (py / max(1, fh - 1)))
-                # the hide in folds down its flanks
-                if tag == 'trunk' and face in ('left', 'right') and px % 5 == 2 and py > 1:
+                # the hide in folds: down its flanks, and in rings round its blunt end
+                if tag in ('trunk', 'rump') and face in ('left', 'right', 'back') and px % 5 == 2 and py > 1:
                     f *= 0.72
+                if tag == 'stump' and face in ('left', 'right', 'top', 'bottom') and (px if face in ('left', 'right') else py) % 3 == 1:
+                    f *= 0.76
                 return shade(c, f * rnd.choice((0.93, 1.0, 1.0, 1.06)))
             p.fill_box(b, hide)
             if b.tag == 'trunk':
-                cracks(p, b, 'gut', 2, faces=('left', 'right'), colour=VIOLET_D, bright=VIOLET)
-            if b.tag == 'lip':
-                # the inner side of a lip is raw
-                fx, fy, fw, fh = b.faces()['left' if not name.endswith('_l') else 'right']
-                for x in range(fw):
-                    for y in range(fh):
-                        p.px(fx + x, fy + y, shade(RAW, 0.8 + 0.2 * ((x + y) % 2)))
+                cracks(p, b, 'gut', 1, faces=('left', 'right'), colour=VIOLET_D, bright=VIOLET)
+        elif b.mat == 'shell':
+            left = name.endswith('_l')
+
+            def shell(face, px, py, fw, fh, rnd, tag=b.tag):
+                # along the beast: on the top and bottom faces down the picture, on the side faces across it
+                along = py if face in ('top', 'bottom') else px
+                plate = along % 7
+                c = SHELL_D if blotch(f'gs{tag}{face}', px, py, 3.4) > 0.62 else SHELL
+                f = {'top': 1.25, 'bottom': 0.6}.get(face, 1.0 - 0.18 * (py / max(1, fh - 1)))
+                if plate == 0:
+                    return shade(SHELL_D, 0.7)                        # where one plate of it laps the next
+                if plate == 1:
+                    c = SHELL_L
+                if tag.startswith('flank') and face in ('left', 'right') and py >= fh - 2:
+                    if plate in (3, 4) or (py == fh - 1 and plate in (2, 5)):
+                        return None                                  # its lower edge, cut in tongues
+                    return shade(SHELL_L, 0.9)
+                return shade(c, f * rnd.choice((0.92, 1.0, 1.0, 1.08)))
+            p.fill_box(b, shell)
+            if b.tag.startswith('flank'):
+                starry(p, b, f'gs{b.tag}', 0.012, faces=('right', 'left'))
+                continue
+            starry(p, b, f'gs{name}{b.tag}', 0.014, faces=('top',))
+            if True:
+                # the under side of a half and its inner edge are raw
                 fx, fy, fw, fh = b.faces()['bottom']
                 for x in range(fw):
                     for y in range(fh):
                         p.px(fx + x, fy + y, shade(RAW_D, 0.9 + 0.2 * ((x + y) % 2)))
+                fx, fy, fw, fh = b.faces()['left' if not left else 'right']
+                for x in range(fw):
+                    for y in range(fh):
+                        p.px(fx + x, fy + y, shade(RAW, 0.8 + 0.2 * ((x + y) % 2)))
         elif b.mat == 'maw':
             def maw(face, px, py, fw, fh, rnd):
                 if face != 'top':
                     return None
                 return shade(RAW if blotch('maw', px, py, 2.0) > 0.5 else RAW_D, 0.75)
             p.fill_box(b, maw)
-            rnd_eyes = ((2, 3), (6, 5), (3, 8), (7, 11), (2, 13), (5, 15), (7, 2), (4, 17))
-            for x, y in rnd_eyes:
+            for x, y in ((2, 2), (7, 4), (4, 7), (8, 10), (2, 12), (6, 14), (5, 1), (3, 15)):
                 p.put(b, 'top', x, y, STAR, glow=True)
                 p.put(b, 'top', x, y + 1, NIGHT_D)
         elif b.mat == 'scar':
@@ -556,7 +665,7 @@ def paint_gut(M):
                 mid = (fw - 1) / 2
                 if abs(px - mid) < 0.6 and 0 < py < fh - 1:
                     return RAW_D if py % 2 else PALE_DD
-                if abs(px - mid) < 1.6 and py % 2 == 1 and 0 < py < fh - 1:
+                if abs(px - mid) < 2.6 and py % 2 == 1 and 0 < py < fh - 1:
                     return PALE_DD
                 return None
             p.fill_box(b, scar)
@@ -569,33 +678,52 @@ def paint_gut(M):
                     return None
                 return TOOTH if py < long - 1 else TOOTH_D
             p.fill_box(b, teeth)
-        elif b.mat == 'fist':
-            p.fill_box(b, skin('gf', PALE_D, PALE_DD))
-            for x in (1, 3):
-                p.put(b, 'front', x, 0, NAIL)
-                p.put(b, 'top', x, b.td - 1, PALE_DD)
+        elif b.mat == 'arm':
+            dark = night('ga', light=1.0)
+            pale = skin('ga', PALE_D, PALE_DD)
+            p.fill_box(b, lambda face, px, py, fw, fh, rnd: mix(dark(face, px, py, fw, fh, rnd), pale(face, px, py, fw, fh, rnd),
+                                                                 (py / max(1, fh - 1)) * 0.7 if face not in ('top', 'bottom') else (0.0 if face == 'top' else 0.7)))
+        elif b.mat == 'limb':
+            p.fill_box(b, skin('gl', PALE_D, PALE_DD))
+        elif b.mat == 'flat':
+            p.fill_box(b, hand_flat(mirrored=name.startswith('foot_l')))
         elif b.mat == 'hang':
-            p.fill_box(b, flip(hand_up()))
+            p.fill_box(b, flip(hand_up(mirrored=name.endswith('_l') or '_l' in name)))
     return p.tex, p.glow
 
 
-# standing; its back open; pawing before a charge; reared; come down
+def gut_grab(out):
+    """The arms of its mouth, `out` of the way out of it: up through the open shell, over its edge and down beside it
+    (what is added to where they lie folded; GutModel has the same numbers)."""
+    pose = {}
+    for side, sign in GUT_SIDES:
+        for k in (0, 1):
+            pose[f'grab_{side}{k}'] = (-1.5708 * out, (0.45 if k else -0.45) * out * -sign, -sign * 2.87 * out)
+            pose[f'grabf_{side}{k}'] = (3.0 * out, 0, sign * 1.9 * out)
+    return pose
+
+
+def gut_lips(open_):
+    return {'lip_r': (0, 0, -open_), 'lip_l': (0, 0, open_)}
+
+
+# shut (its rest); its shell open; drawn back to heave itself forward; reared; come down; the arms out of its mouth
 GUT_POSES = (
-    ('stand', {}),
-    ('gape', {'lip_r': (0, 0, -1.15), 'lip_l': (0, 0, 1.15)}),
-    ('paw', {'body': (0.12, 0, 0), 'fore_r': (-0.7, 0, 0), 'fore_shin_r': (1.0, 0, 0), 'lip_r': (0, 0, -0.3), 'lip_l': (0, 0, 0.3)}),
-    ('reared', {'body': (-0.75, 0, 0), 'fore_r': (-0.5, 0, 0), 'fore_l': (-0.9, 0, 0), 'fore_shin_r': (0.8, 0, 0), 'fore_shin_l': (0.6, 0, 0),
-                'lip_r': (0, 0, -0.9), 'lip_l': (0, 0, 0.9)}),
-    ('down', {'body': (0.2, 0, 0), 'fore_r': (-0.35, 0, 0), 'fore_l': (-0.35, 0, 0), 'lip_r': (0, 0, -1.2), 'lip_l': (0, 0, 1.2)}),
+    ('shut', {}),
+    ('open', gut_lips(1.1)),
+    ('drawn', dict(gut_lips(0.15), body={'off': (0, 1, 3), 'rot': (-0.14, 0, 0)}, stump=(-0.3, 0, 0))),
+    ('reared', dict(gut_lips(0.4), body=(-0.6, 0, 0), stump=(-0.25, 0, 0))),
+    ('down', dict(gut_lips(1.0), body=(0.07, 0, 0), stump=(0.3, 0, 0))),
+    ('arms', dict(gut_lips(1.1), **gut_grab(1.0))),
 )
 
 MODELS = {
     'usher': (usher, paint_usher, USHER_POSES, 'UsherModel', dict(zoom=4.6, centre=(0, -4))),
     'stray_shadow': (shadow, paint_shadow, SHADOW_POSES, 'StrayShadowModel', dict(zoom=5.0, centre=(0, 6))),
-    'longarm': (longarm, paint_longarm, LONGARM_POSES, 'LongarmModel', dict(zoom=4.4, centre=(0, 2))),
+    'longarm': (longarm, paint_longarm, LONGARM_POSES, 'LongarmModel', dict(zoom=3.4, centre=(0, -2))),
     'handwalker': (walker, paint_walker, WALKER_POSES, 'HandwalkerModel', dict(zoom=5.6, centre=(0, 14))),
     'deepling': (deepling, paint_deepling, DEEPLING_POSES, 'DeeplingModel', dict(zoom=6.5, centre=(0, 8))),
-    'gut': (gut, paint_gut, GUT_POSES, 'GutModel', dict(zoom=5.0, centre=(0, 4))),
+    'gut': (gut, paint_gut, GUT_POSES, 'GutModel', dict(zoom=3.6, centre=(0, 0))),
 }
 
 if __name__ == '__main__':

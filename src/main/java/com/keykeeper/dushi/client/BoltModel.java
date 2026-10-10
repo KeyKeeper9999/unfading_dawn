@@ -159,6 +159,18 @@ public class BoltModel extends EntityModel<BossRenderState> {
                 float call = Anim.pulse(t, 2.0F, BoltEntity.WEIGHTS_CALL, BoltEntity.WEIGHTS_CALL + 10.0F, BoltEntity.WEIGHTS_DURATION);
                 this.bob.yRot += Mth.sin(t * 0.5F) * 0.4F * call;
             }
+            case BoltEntity.GEARS -> {
+                // the lens turns once about its rod, as a key is turned, and the wheels are let go
+                float call = Anim.ramp(t, 2.0F, BoltEntity.WORKS_CALL + 8.0F);
+                this.bob.yRot += Mth.TWO_PI * call;
+            }
+            case BoltEntity.HANDS -> {
+                // the hands along the rod stand out from it and tremble while the hall strikes the hour
+                float call = Anim.pulse(t, 2.0F, BoltEntity.WORKS_CALL, BoltEntity.HANDS_DURATION - 16.0F, BoltEntity.HANDS_DURATION);
+                for (int i = 0; i < 4; i++) {
+                    this.leg[i].zRot += SIDE[i] * (0.7F + Mth.sin(t * 1.3F + i) * 0.06F) * call;
+                }
+            }
             case BoltEntity.BREAK -> {
                 float strain = Anim.pulse(t, 2.0F, BoltEntity.BREAK_SNAP - 4.0F, BoltEntity.BREAK_SNAP, BoltEntity.BREAK_SNAP + 2.0F);
                 this.bob.zRot += Mth.sin(t * 2.3F) * 0.1F * strain;
@@ -172,10 +184,12 @@ public class BoltModel extends EntityModel<BossRenderState> {
                 float back = Anim.pulse(t, 0.0F, impact - 9.0F, impact - 4.0F, impact - 1.0F);
                 float through = Anim.pulse(t, impact - 4.0F, impact, impact + 12.0F, BoltEntity.STAB_DURATION);
                 this.bob.xRot += -0.25F * back + 0.3F * through;
-                this.leg[0].zRot += 0.9F * back + 0.4F * through;
-                this.shin[0].zRot += -1.6F * back - 1.0F * through;
-                this.leg[0].xRot += -1.2F * through;
-                this.leg[0].yRot += 0.5F * through;
+                // one hand drawn up and in, and then out straight before it, the whole length of it: the turn about x is what
+                // sends it forward (it went the other way once, and the hand struck behind it)
+                this.leg[0].zRot += 0.9F * back + 0.2F * through;
+                this.shin[0].zRot += -1.6F * back + 1.04F * through;
+                this.leg[0].xRot += -0.3F * back + 1.45F * through;
+                this.leg[0].yRot += 0.6F * through;
             }
             case BoltEntity.SWEEP -> {
                 float first = BoltEntity.SWEEP_HITS[0];

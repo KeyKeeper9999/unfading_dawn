@@ -51,7 +51,10 @@ public final class SelfTest {
     /** For every mob, how many times each of its moves was started. */
     private static final Map<String, Map<Integer, Integer>> MOVES = new LinkedHashMap<>();
     private static final Map<String, Integer> LAST_MOVE = new LinkedHashMap<>();
-    private static final int DRILL_TICKS = 900;
+    private static final int DRILL_TICKS = 1100;
+    /** How low and how high the stray shadow's box was seen in the drill: it lies with it and stands with it. */
+    private static float shadowLow = Float.MAX_VALUE;
+    private static float shadowHigh;
     private static final int PLAYER_TICK = 20;
     private static final List<Drill> DRILL = new ArrayList<>();
     private static int ticks = -1;
@@ -433,8 +436,8 @@ public final class SelfTest {
         plan.put(Dushi.SUNGAZER.get(), new int[] {1, 2});
         plan.put(Dushi.SCORCHED_WARDEN.get(), new int[] {1, 2, 3, 4, 5, 6, 7});
         plan.put(Dushi.HOLLOW_MILLER.get(), new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9});
-        // the Sky Beneath (the Bolt's third move is its tearing off the rod, and the rest are made on its legs; the
-        // Coming's fifth is the loss of its mask)
+        // the Sky Beneath (the Bolt's fifth move is its tearing off the rod, and the rest are made on its legs; the
+        // Coming's sixth is the loss of its mask, and the coming out of the rock that goes with it)
         plan.put(Dushi.USHER.get(), new int[] {1, 2});
         plan.put(Dushi.STRAY_SHADOW.get(), new int[] {1, 2});
         plan.put(Dushi.LONGARM.get(), new int[] {1, 2});
@@ -442,8 +445,8 @@ public final class SelfTest {
         plan.put(Dushi.DEEPLING.get(), new int[] {1, 2});
         plan.put(Dushi.GUT.get(), new int[] {1, 2, 3});
         plan.put(Dushi.CLOCKHAND.get(), new int[] {1, 2, 3});
-        plan.put(Dushi.BOLT.get(), new int[] {1, 2, 3, 4, 5, 6});
-        plan.put(Dushi.COMING.get(), new int[] {1, 2, 3, 4, 5, 6, 7});
+        plan.put(Dushi.BOLT.get(), new int[] {1, 2, 3, 4, 5, 6, 7, 8});
+        plan.put(Dushi.COMING.get(), new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9});
         return plan;
     }
 
@@ -453,6 +456,10 @@ public final class SelfTest {
                 continue;
             }
             d.mob.setTarget(d.dummy);
+            if (d.mob instanceof com.keykeeper.dushi.entity.StrayShadowEntity shadow) {
+                shadowLow = Math.min(shadowLow, shadow.getBbHeight());
+                shadowHigh = Math.max(shadowHigh, shadow.getBbHeight());
+            }
             if (d.mob.attackId() == 0 && d.next < d.moves.length) {
                 if (d.next > 0) {
                     d.done.append(d.moves[d.next - 1]).append(' ');
@@ -470,6 +477,7 @@ public final class SelfTest {
             say("drill " + d.name + ": finished moves [" + d.done.toString().trim() + "] of " + d.moves.length + ", alive=" + d.mob.isAlive()
                     + " phase=" + d.mob.phase() + " dummy health=" + Math.round(d.dummy.getHealth()) + "/" + Math.round(d.dummy.getMaxHealth()));
         }
+        say("shadow box: lying " + shadowLow + " risen " + shadowHigh + (shadowLow < 0.5F && shadowHigh > 1.5F ? " ok" : " WRONG"));
         say("drill done");
     }
 

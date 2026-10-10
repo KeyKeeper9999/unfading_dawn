@@ -3,6 +3,7 @@ package com.keykeeper.dushi.client;
 import com.keykeeper.dushi.Dushi;
 import com.keykeeper.dushi.entity.SunShaftEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -15,6 +16,7 @@ import net.minecraft.resources.Identifier;
 public class SunShaftRenderer extends EntityRenderer<SunShaftEntity, SunShaftRenderState> {
     private static final Identifier TEXTURE = Dushi.id("textures/entity/sun_shaft.png");
     private static final Identifier DUSK = Dushi.id("textures/entity/dusk_shaft.png");
+    private static final Identifier AMBER = Dushi.id("textures/entity/amber_shaft.png");
     /** Full light: a shaft is not darker for standing in a shadow. */
     private static final int BRIGHT = 0xF000F0;
     private final SunShaftModel model;
@@ -33,20 +35,36 @@ public class SunShaftRenderer extends EntityRenderer<SunShaftEntity, SunShaftRen
     public void extractRenderState(SunShaftEntity entity, SunShaftRenderState state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.width = entity.width() * SunShaftEntity.share(entity.tickCount + partialTicks, entity.rise(), entity.strike(), entity.life());
-        state.dusk = entity.hue() == 1;
+        state.hue = entity.hue();
+        float x = entity.fromX();
+        float y = entity.fromY();
+        float z = entity.fromZ();
+        float flat = (float) Math.sqrt(x * x + z * z);
+        if (flat < 0.01F && y < 0.01F) {
+            state.length = SunShaftEntity.HEIGHT;
+            state.yaw = 0.0F;
+            state.pitch = 0.0F;
+        } else {
+            // (a ray: its top is turned to where it comes from - as the cast anchor's crown is turned the way it flies)
+            state.length = (float) Math.sqrt(flat * flat + y * y);
+            state.yaw = (float) Math.toDegrees(Math.atan2(x, z));
+            state.pitch = (float) Math.toDegrees(Math.atan2(flat, y));
+        }
     }
 
     @Override
     public void submit(SunShaftRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         if (state.width > 0.01F) {
             poseStack.pushPose();
-            poseStack.scale(state.width, SunShaftEntity.HEIGHT, state.width);
+            poseStack.rotateDegrees(Axis.YP, state.yaw);
+            poseStack.rotateDegrees(Axis.XP, state.pitch);
+            poseStack.scale(state.width, state.length, state.width);
             // (a model's own space has y pointing down and its ground at 24 sixteenths; the shaft's box stands on that ground)
             poseStack.scale(-1.0F, -1.0F, 1.0F);
             poseStack.translate(0.0F, -1.5F, 0.0F);
             // (a wide one is drawn twice over: the shaft that kindles the Warden hides him while it stands on him)
             for (int layer = state.width > 3.0F ? 2 : 1; layer > 0; layer--) {
-                collector.submitModel(this.model, state, poseStack, state.dusk ? DUSK : TEXTURE, BRIGHT, OverlayTexture.NO_OVERLAY, state.outlineColor);
+                collector.submitModel(this.model, state, poseStack, state.hue == SunShaftEntity.DUSK ? DUSK : (state.hue == SunShaftEntity.AMBER ? AMBER : TEXTURE), BRIGHT, OverlayTexture.NO_OVERLAY, state.outlineColor);
             }
             poseStack.popPose();
         }

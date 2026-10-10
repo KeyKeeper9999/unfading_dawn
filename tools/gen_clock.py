@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """What was set in the Sky Beneath on purpose, when the day was stopped: the clockhand (ClockhandModel.java), which
-tends a clock that does not go, and the Bolt (BoltModel.java), the lock on tomorrow - the bob of the great pendulum,
-and what it is when it has torn itself off its rod. Both wear amber, the colour of the Founder's seals. A mesh, a
-texture and a glow each.
+tends a clock that does not go, the Bolt (BoltModel.java), the lock on tomorrow - the bob of the great pendulum,
+and what it is when it has torn itself off its rod - and the works of that clock, which are the hall the Bolt hangs in
+and as much its body as the lens is (GearModel.java: a wheel, a weight on its chain). All wear amber, the colour of
+the Founder's seals. A mesh, a texture and a glow each.
 Run from the repo root; pass a file name to also get a preview sheet (and a second argument to leave the Java alone)."""
 import math
 import sys
@@ -277,13 +278,134 @@ BOLT_POSES = (
     ('toll', {'bob': (0.2, 0, 0), 'leg_fr': (0, 0, -0.5), 'leg_fl': (0, 0, 0.5), 'leg_br': (0, 0, -0.5), 'leg_bl': (0, 0, 0.5)}),
     ('down', bolt_down()),
     ('stab_back', bolt_down({'bob': (-0.25, 0, 0), 'leg_fr': (0, 0, 0.9), 'shin_fr': (0, 0, -1.6)})),
-    ('stab', bolt_down({'bob': (0.3, 0, 0), 'leg_fr': (-1.2, 0.5, 0.4), 'shin_fr': (0, 0, -1.0)})),
+    ('stab', bolt_down({'bob': (0.3, 0, 0), 'leg_fr': (1.45, 0.6, 0.2), 'shin_fr': (0, 0, 1.04)})),
     ('crash', bolt_down({'bob': {'off': (0, -3, 0), 'rot': (0.1, 0, 0)}, 'leg_fr': (0, 0, 0.5), 'leg_fl': (0, 0, -0.5), 'leg_br': (0, 0, 0.5), 'leg_bl': (0, 0, -0.5)})),
+)
+
+# ---------------------------------------------------------------------------------------------------- the works
+# The pieces of the stopped clock that still move (GearEntity, GearModel.java): a wheel standing on its edge - teeth,
+# a rim, four spokes, a boss of brass with the Founder's amber in it - and one of the clock's weights on its chain.
+# One mesh holds both; the model shows the one it is asked for. The wheel is two faces cut out of flat plates, with
+# a block of iron between them for its rim; 'wheel' turns about its axle (x), and is GEAR_R model units to the tips
+# of its teeth (GearEntity.RADIUS blocks).
+GEAR_SCALE = 2.0                # must match MODEL_SCALE in GearModel.java
+GEAR_R = 13
+GEAR_TEETH = 12
+GEAR_CHAIN = 5
+
+
+def gear():
+    M = Model(128, 128, GEAR_SCALE)
+    R = GEAR_R
+    M.part('cog', None, (0, 24, 0))
+    M.part('wheel', 'cog', (0, -R, 0), boxes=[Box(-2, -R, -R, 1, 2 * R, 2 * R, 'cogface', 'face_r'), Box(1, -R, -R, 1, 2 * R, 2 * R, 'cogface', 'face_l'),
+                                              Box(-1.5, -9.5, -4, 3, 19, 8, 'rim', 'rim'), Box(-1.5, -4, -9.5, 3, 8, 19, 'rim', 'rim'),
+                                              Box(-1.5, -7, -7, 3, 14, 14, 'rim', 'rim'), Box(-3, -2.5, -2.5, 6, 5, 5, 'brass', 'boss')])
+    chain = [Box(-1, -19 - 16 * (i + 1), -1, 2, 16, 2, 'chain', f'chain{i}') for i in range(GEAR_CHAIN)]
+    M.part('weight', None, (0, 24, 0), boxes=[Box(-4, -14, -4, 8, 14, 8, 'weight', 'weight'), Box(-2.5, -17, -2.5, 5, 3, 5, 'brass', 'cap'),
+                                              Box(-1.5, -19, -0.5, 3, 2, 1, 'brass', 'eye')] + chain)
+    M.pack()
+    return M
+
+
+def cog_face(px, py, fw, fh):
+    """What a texel of a wheel's face is: None (cut away), 'tooth', 'rim', 'spoke', 'boss' or 'stud'."""
+    cx, cy = px - (fw - 1) / 2, py - (fh - 1) / 2
+    r = math.hypot(cx, cy)
+    ang = math.atan2(cy, cx)
+    if r < 3.4:
+        return 'stud' if r < 1.2 else 'boss'
+    if r <= 10.6:
+        if r > 7.4:
+            return 'rim'
+        # four spokes, each widening to the rim
+        turn = (ang + math.pi / 4) % (math.pi / 2) - math.pi / 4
+        if abs(math.sin(turn)) * r < 1.2 + 0.08 * r:
+            return 'spoke'
+        return None
+    if r <= GEAR_R + 0.3:
+        tooth = (ang / (2 * math.pi) * GEAR_TEETH) % 1.0
+        if 0.2 < tooth < 0.8 and r <= GEAR_R - 0.2:
+            return 'tooth'
+        if r <= 11.3:
+            return 'rim'
+    return None
+
+
+def paint_gear(M):
+    p = Painter(M, 877)
+    metal = iron('gw', IRON_D, (20, 22, 28), IRON)
+    for name, _, b in M.boxes():
+        if b.mat == 'cogface':
+            def face(f, px, py, fw, fh, rnd):
+                if f not in ('left', 'right'):
+                    return None
+                kind = cog_face(px, py, fw, fh)
+                if kind is None:
+                    return None
+                r = math.hypot(px - (fw - 1) / 2, py - (fh - 1) / 2)
+                if kind == 'tooth':
+                    return shade(IRON if r < GEAR_R - 1.4 else IRON_L, rnd.choice((0.92, 1.0, 1.06)))
+                if kind == 'rim':
+                    if abs(r - 9.0) < 0.55:
+                        return shade(BRASS if int(math.atan2(py - (fh - 1) / 2, px - (fw - 1) / 2) * 6) % 2 else BRASS_D, 1.0)
+                    return shade(IRON_D if blotch('cogrim', px, py, 2.6) > 0.6 else IRON, rnd.choice((0.92, 1.0, 1.06)))
+                if kind == 'spoke':
+                    return shade(IRON_D, rnd.choice((0.95, 1.0, 1.1)))
+                if kind == 'stud':
+                    return AMBER_L
+                return shade(BRASS_L if r < 2.4 else BRASS, 1.0)
+            p.fill_box(b, face)
+            for f in ('left', 'right'):
+                fx, fy, fw, fh = b.faces()[f]
+                for x in range(fw):
+                    for y in range(fh):
+                        if cog_face(x, y, fw, fh) == 'stud':
+                            p.px(fx + x, fy + y, AMBER_L if (x + y) % 2 else AMBER, glow=True)
+        elif b.mat == 'rim':
+            p.fill_box(b, metal)
+        elif b.mat == 'brass':
+            p.fill_box(b, brass('gb'))
+            if b.tag == 'boss':
+                for f in ('left', 'right'):
+                    fx, fy, fw, fh = b.faces()[f]
+                    for x in range(1, fw - 1):
+                        for y in range(1, fh - 1):
+                            p.px(fx + x, fy + y, AMBER_L if (x, y) == (fw // 2, fh // 2) else AMBER, glow=True)
+        elif b.mat == 'weight':
+            base = iron('gt', IRON, IRON_D, IRON_L)
+
+            def weight(f, px, py, fw, fh, rnd):
+                if f not in ('top', 'bottom') and py in (2, 3, fh - 4, fh - 3):
+                    return shade(BRASS if py in (2, fh - 4) else BRASS_D, 1.0)
+                return base(f, px, py, fw, fh, rnd)
+            p.fill_box(b, weight)
+            # the seal on it: the keyhole of the Bolt's own lens, in amber, on every side
+            for f in ('front', 'back', 'left', 'right'):
+                for x, y, c in ((3, 6, AMBER_L), (4, 6, AMBER_L), (3, 7, AMBER), (4, 7, AMBER), (3, 8, AMBER_D), (4, 8, AMBER_D)):
+                    p.put(b, f, x, y, c, glow=True)
+        elif b.mat == 'chain':
+            def chain(f, px, py, fw, fh, rnd):
+                if f in ('top', 'bottom'):
+                    return shade(IRON_D, 0.9)
+                # links: one seen flat, the next edge on
+                link = (py // 2) % 2
+                if link == 0:
+                    return shade(IRON if px == 0 else IRON_L, 0.95) if py % 2 == 0 or True else None
+                return shade(IRON_D, 0.85) if px == (fw - 1) // 2 or fw < 2 else None
+            p.fill_box(b, chain)
+    return p.tex, p.glow
+
+
+GEAR_POSES = (
+    ('wheel', {}),
+    ('turned', {'wheel': (0.26, 0, 0)}),
 )
 
 MODELS = {
     'clockhand': (clockhand, paint_clockhand, CLOCKHAND_POSES, 'ClockhandModel', dict(zoom=6.4, centre=(0, 4)), ()),
     'bolt': (bolt, paint_bolt, BOLT_POSES, 'BoltModel', dict(zoom=2.3, centre=(0, -30), size=(300, 420)), ('stub',)),
+    'gear': (gear, paint_gear, GEAR_POSES, 'GearModel', dict(zoom=3.4, centre=(0, -6)), ('weight',)),
 }
 
 if __name__ == '__main__':

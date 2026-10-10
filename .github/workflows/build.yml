@@ -26,7 +26,7 @@ jobs:
         run: |
           if [ -f build/libs/unfading_dawn.jar ] && [ ! -f .ci/skip_server ]; then
             mkdir -p run && echo eula=true > run/eula.txt && echo pause-when-empty-seconds=-1 > run/server.properties
-            (DUSHI_SELFTEST=1 timeout 480 ./gradlew runServer --no-daemon > server.log 2>&1 || true)
+            (DUSHI_SELFTEST=1 timeout 560 ./gradlew runServer --no-daemon > server.log 2>&1 || true)
           fi
       - name: client screenshots
         continue-on-error: true

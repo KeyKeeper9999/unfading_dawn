@@ -161,13 +161,14 @@ public class Dushi {
             "entity.handwalker.ambient", "entity.handwalker.hurt", "entity.handwalker.death", "entity.handwalker.rear", "entity.handwalker.whip",
             "entity.handwalker.step",
             "entity.deepling.ambient", "entity.deepling.hurt", "entity.deepling.death", "entity.deepling.wake", "entity.deepling.gulp", "entity.deepling.glare",
-            "entity.gut.ambient", "entity.gut.hurt", "entity.gut.death", "entity.gut.bellow", "entity.gut.step", "entity.gut.crash", "entity.gut.slam", "entity.gut.gape",
+            "entity.gut.ambient", "entity.gut.hurt", "entity.gut.death", "entity.gut.bellow", "entity.gut.step", "entity.gut.crash", "entity.gut.slam", "entity.gut.gape", "entity.gut.shell",
             "entity.clockhand.hurt", "entity.clockhand.death", "entity.clockhand.tick", "entity.clockhand.stab", "entity.clockhand.sweep", "entity.clockhand.wind",
             "entity.bolt.ambient", "entity.bolt.hurt", "entity.bolt.death", "entity.bolt.tock", "entity.bolt.strike", "entity.bolt.toll", "entity.bolt.chain",
             "entity.bolt.weight", "entity.bolt.strain", "entity.bolt.snap", "entity.bolt.stab", "entity.bolt.sweep", "entity.bolt.land", "entity.bolt.step",
             "entity.coming.ambient", "entity.coming.hurt", "entity.coming.death", "entity.coming.gaze", "entity.coming.rear", "entity.coming.slam",
             "entity.coming.sweep", "entity.coming.strain", "entity.coming.unmask", "entity.coming.pull", "entity.coming.bite", "entity.coming.star",
             "entity.coming.burst",
+            "entity.gear.wind", "entity.gear.roll", "entity.gear.catch", "entity.tendril.open", "entity.tendril.rise", "entity.tendril.slap",
             "block.hearth.rest", "block.fog_gate.pass",
             "item.flask.drink", "item.flask.empty", "item.spell.shard", "item.spell.shard_hit", "item.spell.mend", "item.spell.rebuke",
             "item.spell.fire", "item.spell.fire_burst", "item.spell.fizzle",
@@ -675,13 +676,19 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.DeeplingEntity>> DEEPLING = ENTITIES.registerEntityType(
             "deepling", com.keykeeper.dushi.entity.DeeplingEntity::new, MobCategory.MONSTER, b -> b.sized(1.0F, 1.0F).eyeHeight(0.6F).clientTrackingRange(10));
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.GutEntity>> GUT = ENTITIES.registerEntityType(
-            "gut", com.keykeeper.dushi.entity.GutEntity::new, MobCategory.MONSTER, b -> b.sized(1.7F, 1.8F).eyeHeight(1.4F).clientTrackingRange(10));
+            "gut", com.keykeeper.dushi.entity.GutEntity::new, MobCategory.MONSTER, b -> b.sized(2.3F, 2.0F).eyeHeight(1.4F).clientTrackingRange(10));
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ClockhandEntity>> CLOCKHAND = ENTITIES.registerEntityType(
             "clockhand", com.keykeeper.dushi.entity.ClockhandEntity::new, MobCategory.MONSTER, b -> b.sized(0.7F, 2.3F).eyeHeight(2.0F).clientTrackingRange(8).fireImmune());
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.BoltEntity>> BOLT = ENTITIES.registerEntityType(
             "bolt", com.keykeeper.dushi.entity.BoltEntity::new, MobCategory.MONSTER, b -> b.sized(2.2F, 2.6F).eyeHeight(1.4F).clientTrackingRange(12).updateInterval(1).fireImmune());
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ComingEntity>> COMING = ENTITIES.registerEntityType(
-            "coming", com.keykeeper.dushi.entity.ComingEntity::new, MobCategory.MONSTER, b -> b.sized(2.4F, 7.5F).eyeHeight(6.5F).clientTrackingRange(14).fireImmune());
+            "coming", com.keykeeper.dushi.entity.ComingEntity::new, MobCategory.MONSTER, b -> b.sized(3.2F, 9.0F).eyeHeight(6.5F).clientTrackingRange(14).fireImmune());
+    /** The works of the stopped clock - the Bolt's hall, which is its body: see {@link com.keykeeper.dushi.entity.GearEntity}. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.GearEntity>> GEAR = ENTITIES.registerEntityType(
+            "gear", com.keykeeper.dushi.entity.GearEntity::new, MobCategory.MISC, b -> b.sized(2.0F, 3.2F).clientTrackingRange(10).updateInterval(1).fireImmune());
+    /** What the Coming reaches into its hall with: see {@link com.keykeeper.dushi.entity.TendrilEntity}. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.TendrilEntity>> TENDRIL = ENTITIES.registerEntityType(
+            "tendril", com.keykeeper.dushi.entity.TendrilEntity::new, MobCategory.MISC, b -> b.sized(1.6F, 7.0F).clientTrackingRange(10).updateInterval(20).fireImmune());
 
     /** A root of the Weeping Mother, out of the ground: see {@link com.keykeeper.dushi.entity.RootEntity}. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.RootEntity>> ROOT = ENTITIES.registerEntityType(

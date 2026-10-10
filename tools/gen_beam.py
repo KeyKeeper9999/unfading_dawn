@@ -20,6 +20,8 @@ CORE = (255, 250, 222)
 
 DUSK = (150, 112, 232)          # the same shaft in the light of the Sky Beneath (SunShaftEntity.dusk)
 DUSK_CORE = (214, 204, 255)
+AMBER = (255, 170, 60)          # and in the amber of the Founder's seals (SunShaftEntity.amber): what the stopped clock strikes with
+AMBER_CORE = (255, 232, 170)
 
 
 def make(light=LIGHT, core=CORE):
@@ -49,5 +51,6 @@ if __name__ == '__main__':
     tex = make()
     tex.save(f'{A}/textures/entity/sun_shaft.png')
     make(DUSK, DUSK_CORE).save(f'{A}/textures/entity/dusk_shaft.png')
+    make(AMBER, AMBER_CORE).save(f'{A}/textures/entity/amber_shaft.png')
     if len(sys.argv) > 1:
         tex.resize((512, 512), 0).save(sys.argv[1])

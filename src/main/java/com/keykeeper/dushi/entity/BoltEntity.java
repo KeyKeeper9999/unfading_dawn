@@ -48,6 +48,13 @@ import net.minecraft.world.phys.Vec3;
  * from it along the floor, to be rolled through or jumped - and the weights of the clock come down out of the dark
  * where somebody stands.
  * <p>
+ * The hall it hangs in is the rest of that clock, and as much its body as the lens is: wheels stand in the wall
+ * all round the floor and turn (GearEntity; it hangs them again whenever one is missing), and they are let go across
+ * the floor, two and three at a time; the hall strikes the hour - two hands of amber light go round the floor, place
+ * after place lighting and then struck; the weights are seen coming down on their chains. On its rod these are its
+ * own moves ({@link #WEIGHTS}, {@link #GEARS}, {@link #HANDS}); off it the hall does them by itself while the Bolt
+ * fights on its legs.
+ * <p>
  * Hurt enough it tears itself off the rod. The four hands that lay folded along it come down and are its legs (phase
  * 2): it walks, thrusts with one of them the length of three men, turns on the spot with all four out, and leaps on
  * whoever stands off from it.
@@ -62,16 +69,24 @@ public class BoltEntity extends SoulsMob {
     public static final int WEIGHTS = 2;
     public static final int WEIGHTS_DURATION = 56;
     public static final int WEIGHTS_CALL = 18;
-    public static final int BREAK = 3;
+    /** The wheels of the hall let go across its floor. */
+    public static final int GEARS = 3;
+    public static final int GEARS_DURATION = 56;
+    /** The hall strikes the hour: two hands of amber light go round the floor. */
+    public static final int HANDS = 4;
+    public static final int HANDS_DURATION = 84;
+    /** The tick of either of those two moves on which the works answer. */
+    public static final int WORKS_CALL = 18;
+    public static final int BREAK = 5;
     public static final int BREAK_DURATION = 84;
     public static final int BREAK_SNAP = 36;
-    public static final int STAB = 4;
+    public static final int STAB = 6;
     public static final int STAB_DURATION = 54;
     public static final int STAB_IMPACT = 25;
-    public static final int SWEEP = 5;
+    public static final int SWEEP = 7;
     public static final int SWEEP_DURATION = 74;
     public static final int[] SWEEP_HITS = {30, 46};
-    public static final int LEAP = 6;
+    public static final int LEAP = 8;
     public static final int LEAP_DURATION = 86;
     public static final int LEAP_JUMP = 24;
     public static final int LEAP_LAND = 46;
@@ -88,6 +103,23 @@ public class BoltEntity extends SoulsMob {
     /** The share of a blow that gets through to it (nothing has more than 1024 health; it needs more). */
     public static final float HIDE = 0.38F;
     private static final double WALK = 0.27;
+    /** The wheels in the wall of its hall: how many, how far from where it hangs, and how many times the drawn wheel each is. */
+    public static final int MOUNTS = 8;
+    public static final double MOUNT_FAR = 13.5;
+    public static final float MOUNT_SIZE = 1.55F;
+    /** A wheel let go runs from so far out, so fast, having turned where it stood so long. */
+    public static final double ROLL_FAR = 12.4;
+    public static final float ROLL_SPEED = 0.5F;
+    public static final int ROLL_WARNING = 26;
+    /** The hands of light: how many places along each, how far apart, how wide a place, how many steps round and how long between two. */
+    public static final int HAND_PLACES = 5;
+    public static final double HAND_SPACING = 2.5;
+    public static final double HAND_RADIUS = 1.5;
+    public static final int HAND_STEPS = 10;
+    public static final int HAND_EVERY = 6;
+    public static final int HAND_DELAY = 16;
+    /** How high over the floor a weight begins to come down. */
+    public static final float WEIGHT_HEIGHT = 14.0F;
 
     private Vec3 pivot;
     private float homeYaw;
@@ -99,6 +131,15 @@ public class BoltEntity extends SoulsMob {
     private int leapCooldown = 80;
     private int sweepCooldown = 100;
     private Vec3 leapTo;
+    /** The hall: its wheels (hung again whenever one is missing), what it did last, and when it acts next by itself. */
+    private final GearEntity[] mounts = new GearEntity[MOUNTS];
+    private int worksCooldown = 150;
+    private int lastWorks;
+    /** The hour being struck: steps left, the angle of the hands, which way they go, ticks to the next step. */
+    private int handSteps;
+    private double handAngle;
+    private double handTurn;
+    private int handWait;
     private final Set<UUID> tolled = new HashSet<>();
 
     public BoltEntity(EntityType<? extends BoltEntity> type, Level level) {
@@ -168,6 +209,8 @@ public class BoltEntity extends SoulsMob {
         return switch (id) {
             case TOLL -> TOLL_DURATION;
             case WEIGHTS -> WEIGHTS_DURATION;
+            case GEARS -> GEARS_DURATION;
+            case HANDS -> HANDS_DURATION;
             case BREAK -> BREAK_DURATION;
             case STAB -> STAB_DURATION;
             case SWEEP -> SWEEP_DURATION;
@@ -209,6 +252,9 @@ public class BoltEntity extends SoulsMob {
         this.sweepCooldown = 100;
         this.amplitude = 0.6;
         this.angle = 0.0;
+        this.worksCooldown = 150;
+        this.lastWorks = 0;
+        this.handSteps = 0;
         this.tolled.clear();
         if (this.pivot != null) {
             this.teleportTo(this.pivot.x, this.pivot.y, this.pivot.z);
@@ -222,9 +268,9 @@ public class BoltEntity extends SoulsMob {
                 this.tollCooldown = 210 + this.random.nextInt(90);
                 return TOLL;
             }
-            if (this.weightsCooldown <= 0) {
-                this.weightsCooldown = 150 + this.random.nextInt(70);
-                return WEIGHTS;
+            if (this.worksCooldown <= 0) {
+                this.worksCooldown = 120 + this.random.nextInt(60);
+                return this.nextWorks();
             }
             return 0;
         }
@@ -243,11 +289,156 @@ public class BoltEntity extends SoulsMob {
         return distance < STAB_REACH - 0.8 ? STAB : 0;
     }
 
+    /** Which of the three things its hall does comes next: never the one it did last. */
+    private int nextWorks() {
+        int pick = WEIGHTS + this.random.nextInt(3);
+        if (pick == this.lastWorks) {
+            pick = WEIGHTS + (pick - WEIGHTS + 1 + this.random.nextInt(2)) % 3;
+        }
+        this.lastWorks = pick;
+        return pick;
+    }
+
     @Override
     public void startAttack(int id) {
         super.startAttack(id);
         this.tolled.clear();
         this.leapTo = null;
+    }
+
+    /** Where it hangs: the middle of its hall. */
+    private Vec3 middle() {
+        return this.pivot != null ? this.pivot : this.position();
+    }
+
+    /** The place of the hall's wall where its {@code i}th wheel stands, {@code far} from the middle. */
+    private Vec3 mountAt(int i, double far) {
+        Vec3 middle = this.middle();
+        double a = Math.toRadians(this.homeYaw) + (i + 0.5) * Math.PI * 2.0 / MOUNTS;
+        return new Vec3(middle.x + Math.cos(a) * far, middle.y, middle.z + Math.sin(a) * far);
+    }
+
+    /** The wheels in the wall are hung again whenever one is missing (they are not kept with the world), and turn as it fares. */
+    private void tendMounts(ServerLevel level) {
+        float turn = this.getTarget() != null ? (this.getHealth() < this.getMaxHealth() * 0.5F ? 7.0F : 4.5F) : 0.6F;
+        for (int i = 0; i < MOUNTS; i++) {
+            if (this.mounts[i] == null || !this.mounts[i].isAlive()) {
+                double a = Math.toRadians(this.homeYaw) + (i + 0.5) * Math.PI * 2.0 / MOUNTS;
+                this.mounts[i] = GearEntity.mount(level, this, this.mountAt(i, MOUNT_FAR).add(0.0, -0.6, 0.0), (float) Math.toDegrees(a), MOUNT_SIZE);
+            }
+            this.mounts[i].turn(i % 2 == 0 ? turn : -turn);
+        }
+    }
+
+    /** How far a point is from the stretch between two others, along the floor. */
+    private static double offLine(Vec3 point, Vec3 from, Vec3 to) {
+        double wx = to.x - from.x;
+        double wz = to.z - from.z;
+        double t = ((point.x - from.x) * wx + (point.z - from.z) * wz) / Math.max(1.0E-6, wx * wx + wz * wz);
+        t = Math.max(0.0, Math.min(1.0, t));
+        return Math.hypot(point.x - from.x - wx * t, point.z - from.z - wz * t);
+    }
+
+    /**
+     * Wheels are let go: each from one of those in the wall across the floor to one about opposite - the first along the
+     * line that passes nearest whoever it fights, the others across that line.
+     */
+    private void letGo(ServerLevel level, int wheels) {
+        LivingEntity target = this.getTarget();
+        Vec3 aim = target != null ? target.position().add(target.getKnownMovement().multiply(1.0, 0.0, 1.0).scale(12.0)) : this.middle();
+        float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 1.1F;
+        boolean[] used = new boolean[MOUNTS];
+        for (int n = 0; n < wheels; n++) {
+            int from = -1;
+            int to = -1;
+            double best = Double.MAX_VALUE;
+            for (int i = 0; i < MOUNTS; i++) {
+                if (used[i]) {
+                    continue;
+                }
+                for (int across = 3; across <= 5; across++) {
+                    int j = (i + across) % MOUNTS;
+                    if (used[j]) {
+                        continue;
+                    }
+                    double off = offLine(aim, this.mountAt(i, ROLL_FAR), this.mountAt(j, ROLL_FAR)) + this.random.nextDouble() * 0.8;
+                    if (off < best) {
+                        best = off;
+                        from = i;
+                        to = j;
+                    }
+                }
+            }
+            if (from < 0) {
+                return;
+            }
+            used[from] = true;
+            used[to] = true;
+            // (the wheels beside the two are left alone too: the next one comes across this one's way, not along it)
+            used[(from + 1) % MOUNTS] = true;
+            used[(to + 1) % MOUNTS] = true;
+            GearEntity.roll(level, this, this.mountAt(from, ROLL_FAR), this.mountAt(to, ROLL_FAR), ROLL_SPEED, ROLL_WARNING + n * 12, damage);
+        }
+        this.playSound(Dushi.sound("entity.bolt.chain"), 3.0F, 1.3F);
+    }
+
+    /** The hall begins to strike the hour: two hands of light, opposite each other, go half round the floor. */
+    private void strikeHour() {
+        this.handSteps = HAND_STEPS;
+        this.handAngle = this.random.nextDouble() * Math.PI;
+        this.handTurn = (this.random.nextBoolean() ? 1.0 : -1.0) * Math.PI / HAND_STEPS;
+        this.handWait = 0;
+    }
+
+    /** One step of the hands: the places along both light up, and are struck a little after. */
+    private void handsTick(ServerLevel level) {
+        if (this.handSteps <= 0 || --this.handWait > 0) {
+            return;
+        }
+        this.handWait = HAND_EVERY;
+        this.handSteps--;
+        float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.8F;
+        Vec3 middle = this.middle();
+        for (int side = -1; side <= 1; side += 2) {
+            for (int k = 1; k <= HAND_PLACES; k++) {
+                double far = side * (0.4 + k * HAND_SPACING);
+                Vec3 at = ground(level, middle.x + Math.cos(this.handAngle) * far, middle.y, middle.z + Math.sin(this.handAngle) * far);
+                this.strikeLater(at, HAND_DELAY, HAND_RADIUS, damage, false);
+                SunShaftEntity.amber(level, at, (float) HAND_RADIUS * 1.1F, HAND_DELAY, HAND_DELAY, HAND_DELAY + 8);
+            }
+        }
+        level.playSound(null, middle.x, middle.y, middle.z, Dushi.sound("entity.bolt.tock"), this.getSoundSource(), 2.4F, 1.5F);
+        this.handAngle += this.handTurn;
+    }
+
+    /** The weights of the clock come down: one where whoever it fights will be, the others round them. Each is seen coming. */
+    private void dropWeights(ServerLevel level) {
+        float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.9F;
+        LivingEntity target = this.getTarget();
+        Vec3 aim = target != null ? target.position() : this.position().add(this.facing().scale(6.0));
+        Vec3 lead = target != null ? target.getKnownMovement().multiply(1.0, 0.0, 1.0).scale(10.0) : Vec3.ZERO;
+        this.weight(level, ground(level, aim.x + lead.x, aim.y, aim.z + lead.z), 30, damage);
+        int more = this.getHealth() < this.getMaxHealth() * 0.75F ? 4 : 2;
+        for (int i = 0; i < more; i++) {
+            double a = this.random.nextDouble() * Math.PI * 2.0;
+            double far = 2.6 + this.random.nextDouble() * 3.4;
+            this.weight(level, ground(level, aim.x + Math.cos(a) * far, aim.y, aim.z + Math.sin(a) * far), 38 + i * 6, damage);
+        }
+    }
+
+    private void weight(ServerLevel level, Vec3 at, int delay, float damage) {
+        this.strikeLater(at, delay, WEIGHT_RADIUS, damage, true);
+        GearEntity.weight(level, this, at, WEIGHT_HEIGHT, delay);
+    }
+
+    /** One of the three things its hall does. */
+    private void works(ServerLevel level, int kind) {
+        boolean hard = this.getHealth() < this.getMaxHealth() * 0.5F;
+        switch (kind) {
+            case GEARS -> this.letGo(level, hard ? 3 : 2);
+            case HANDS -> this.strikeHour();
+            default -> this.dropWeights(level);
+        }
     }
 
     private static Vec3 ground(Level level, double x, double y, double z) {
@@ -276,6 +467,18 @@ public class BoltEntity extends SoulsMob {
         this.weightsCooldown = Math.max(0, this.weightsCooldown - 1);
         this.leapCooldown = Math.max(0, this.leapCooldown - 1);
         this.sweepCooldown = Math.max(0, this.sweepCooldown - 1);
+        this.worksCooldown = Math.max(0, this.worksCooldown - 1);
+        if (this.isAlive()) {
+            if (this.tickCount % 20 == 1) {
+                this.tendMounts(level);
+            }
+            this.handsTick(level);
+            // off its rod it has its hands full: the hall goes on by itself, oftener the worse it fares
+            if (this.down() && this.getTarget() != null && this.worksCooldown <= 0 && this.attackId() != BREAK) {
+                this.worksCooldown = (this.getHealth() < this.getMaxHealth() * 0.25F ? 90 : 130) + this.random.nextInt(50);
+                this.works(level, this.nextWorks());
+            }
+        }
         if (this.down() || !this.isAlive()) {
             return;
         }
@@ -356,16 +559,20 @@ public class BoltEntity extends SoulsMob {
                     this.playSound(Dushi.sound("entity.bolt.chain"), 3.0F, 1.0F);
                 }
                 if (time == WEIGHTS_CALL) {
-                    LivingEntity target = this.getTarget();
-                    Vec3 aim = target != null ? target.position() : this.position().add(this.facing().scale(6.0));
-                    Vec3 lead = target != null ? target.getKnownMovement().multiply(1.0, 0.0, 1.0).scale(10.0) : Vec3.ZERO;
-                    this.strikeLater(ground(level, aim.x + lead.x, aim.y, aim.z + lead.z), 30, WEIGHT_RADIUS, damage * 0.9F, true);
-                    int more = this.getHealth() < this.getMaxHealth() * 0.75F ? 4 : 2;
-                    for (int i = 0; i < more; i++) {
-                        double a = this.random.nextDouble() * Math.PI * 2.0;
-                        double far = 2.6 + this.random.nextDouble() * 3.4;
-                        this.strikeLater(ground(level, aim.x + Math.cos(a) * far, aim.y, aim.z + Math.sin(a) * far), 38 + i * 6, WEIGHT_RADIUS, damage * 0.9F, true);
-                    }
+                    this.dropWeights(level);
+                }
+            }
+            case GEARS -> {
+                if (time == WORKS_CALL) {
+                    this.works(level, GEARS);
+                }
+            }
+            case HANDS -> {
+                if (time == WORKS_CALL - 10) {
+                    this.playSound(Dushi.sound("entity.bolt.toll"), 3.0F, 1.4F);
+                }
+                if (time == WORKS_CALL) {
+                    this.works(level, HANDS);
                 }
             }
             case BREAK -> {
@@ -449,6 +656,9 @@ public class BoltEntity extends SoulsMob {
 
     @Override
     protected void strikeComing(ServerLevel level, Vec3 at, double radius, int left, boolean fromAbove) {
+        if (!fromAbove && radius < 2.0) {
+            return;                                                // (a place of the hands of light: the light standing on it is its mark)
+        }
         if (!fromAbove) {
             // where it will come down: the ring of the place, in sparks
             if (this.strikeClock() % 2 == 0) {
@@ -477,6 +687,13 @@ public class BoltEntity extends SoulsMob {
 
     @Override
     protected void strikeLands(ServerLevel level, Vec3 at, double radius, float damage, boolean fromAbove) {
+        if (!fromAbove && radius < 2.0) {
+            // the hour struck: light, and nothing thrown
+            this.hitAround(level, at, radius, damage, 0.2, this.damageSources().indirectMagic(this, this));
+            level.sendParticles(ParticleTypes.END_ROD, at.x, at.y + 0.5, at.z, 10, radius * 0.4, 0.6, radius * 0.4, 0.05);
+            level.sendParticles(ParticleTypes.FALLING_HONEY, at.x, at.y + 1.6, at.z, 6, radius * 0.4, 0.6, radius * 0.4, 0.0);
+            return;
+        }
         this.hitAround(level, at, radius, damage, 0.5, this.damageSources().mobAttack(this));
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.IRON_BLOCK.defaultBlockState()), at.x, at.y + 0.3, at.z, fromAbove ? 40 : 20, radius * 0.4, 0.3, radius * 0.4, 0.2);
         level.sendParticles(ParticleTypes.POOF, at.x, at.y + 0.2, at.z, 8, radius * 0.4, 0.1, radius * 0.4, 0.03);

@@ -7,10 +7,13 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
@@ -27,6 +30,9 @@ import net.minecraft.world.level.block.state.BlockState;
  * has found, and then one of two things: it takes them by the ankles from where it is, or it stands up out of the
  * floor - a man's outline, a hand's breadth thick - and claws. Standing it can be struck like anything else; that is
  * the time to strike it.
+ * <p>
+ * What can be struck of it lies with it: lying, it is a patch of floor a hand deep ({@link #LYING}); only while it is
+ * up is it as tall as a man.
  */
 public class StrayShadowEntity extends SoulsMob {
     public static final int RISE = 1;
@@ -42,6 +48,11 @@ public class StrayShadowEntity extends SoulsMob {
     public static final double REACH = 2.3;
     /** The share of a blow that finds anything in it while it lies. */
     public static final float FLAT = 0.3F;
+    /** What there is of it to strike while it lies: as wide as the pool it lies in, and a hand deep. */
+    public static final EntityDimensions LYING = EntityDimensions.scalable(1.5F, 0.3F);
+
+    /** Whether its box stands (see {@link #tick}); null until it has been looked at once. */
+    private Boolean stands;
 
     public StrayShadowEntity(EntityType<? extends StrayShadowEntity> type, Level level) {
         super(type, level);
@@ -69,6 +80,22 @@ public class StrayShadowEntity extends SoulsMob {
     /** Up out of the floor: when a blow lands on it whole. */
     public boolean risen() {
         return this.attackId() == RISE && this.attackTime >= RISE_UP - 4 && this.attackTime <= RISE_SINK + 6;
+    }
+
+    @Override
+    public EntityDimensions getDefaultDimensions(Pose pose) {
+        return this.risen() ? super.getDefaultDimensions(pose) : LYING;
+    }
+
+    /** Its box gets up and lies down with it, on both sides (the move and its clock are known on both). */
+    @Override
+    public void tick() {
+        super.tick();
+        boolean up = this.risen();
+        if (this.stands == null || this.stands != up) {
+            this.stands = up;
+            this.refreshDimensions();
+        }
     }
 
     @Override
@@ -138,6 +165,12 @@ public class StrayShadowEntity extends SoulsMob {
             return super.hurtServer(level, source, damage * FLAT);
         }
         return super.hurtServer(level, source, damage);
+    }
+
+    /** (it stands up where it lies, under whatever roof there is) */
+    @Override
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
+        return source.is(DamageTypes.IN_WALL) || super.isInvulnerableTo(level, source);
     }
 
     @Override

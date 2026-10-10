@@ -63,7 +63,9 @@ BEHIND = (78, 740)                           # the hearth behind the pendulum
 TEAR = (62, 784)                             # the Tear: its middle
 TEAR_R = 18
 LAST = (62, 757)                             # the hearth by the Tear
-END = (62, 808)                              # the room beyond it
+END = (TEAR[0] + TEAR_R + 10, TEAR[1])        # the room beyond it: east of the Tear (the Coming has the wall opposite the way in)
+BAY = 7                                      # the rock face the Tear's crack is in: so far either side of its middle
+RIFT_TOP = 13                                # and the crack is so many cells tall
 # the Still Water: round these its floor lies (x, z, how far), and here the floor is gone
 WATER = ((44, 632, 9), (58, 640, 15), (80, 648, 17), (104, 654, 14), (118, 664, 9), (92, 668, 13), (72, 664, 11), (78, 678, 8), (40, 627, 6))
 PITS = ((68, 652, 3.6), (99, 661, 3.0))
@@ -393,8 +395,8 @@ class Depths:
                 self.taken.add((c[0] + (side if axis == 'x' else 0), c[1] + (0 if axis == 'x' else side)))
 
     def niche(self, x, z, facing):
-        """A long-armed one in the face of a ridge: the cell it sits in, shut in on three sides and overhead, open
-        the way it faces."""
+        """A long-armed one in the face of a ridge: the cell its arms lie folded in, shut in on three sides and
+        overhead, open the way it faces - and what is seen of it is the stain over that opening, on the rock round it."""
         b = self.b
         if (x, z) not in self.ground:
             raise ValueError(f'no floor for a niche at {(x, z)}')
@@ -419,13 +421,16 @@ class Depths:
         if self.mobs:
             b.mob('longarm', x, y + 1, z, facing)
         self.taken.add((x, z))
-        for k in (1, 2, 3):                                        # (and the way out of it, through whatever of the ridge is before it)
-            c = (x + fx * k, z + fz * k)
-            if c in self.ground:
-                for h in (1, 2, 3):
-                    if not self.open(c[0], y + h, c[1]) and 'mob_mark' not in str(b.get(c[0], y + h, c[1])):
-                        b.set(c[0], y + h, c[1], AIR)
-                self.taken.add(c)
+        # the way out of it, through whatever of the ridge is before it - and as wide as the stain it is: the face of the
+        # rock it lies on is to be seen, three cells of it and four high
+        for k in (1, 2, 3):
+            for side in ((-1, 0, 1) if k < 3 else (0,)):
+                c = (x + fx * k - fz * side, z + fz * k + fx * side)
+                if c in self.ground:
+                    for h in ((1, 2, 3, 4) if k < 3 else (1, 2, 3)):
+                        if not self.open(c[0], y + h, c[1]) and 'mob_mark' not in str(b.get(c[0], y + h, c[1])):
+                            b.set(c[0], y + h, c[1], AIR)
+                    self.taken.add(c)
 
     def lamp_grid(self, cells, level, up=4, every=4):
         """Light without a lamp, a little of it, over a floor: the dark of the place is to be seen in."""
@@ -701,7 +706,7 @@ class Depths:
         self.tear_north = self.lay(self.line((tx, tz - R - 3), (tx, LAST[1] + 4), 1), HIGH, black_rock, roof=5)
         self.tear_floor = self.lay({(x, z) for x in range(tx - R - 3, tx + R + 4) for z in range(tz - R - 3, tz + R + 4) if math.hypot(x - tx, z - tz) <= R + 2.2},
                                    HIGH, glass_rock, wet=True, sky='tear')
-        self.tear_south = self.lay(self.line((tx, tz + R + 3), (tx, END[1] - 3), 1), HIGH, black_rock, roof=5)
+        self.tear_east = self.lay(self.line((tx + R + 3, tz), (END[0] - 3, tz), 1), HIGH, black_rock, roof=5)
         self.end = self.lay(self.blob(((END[0], END[1], 5.0),), 30, 0.6), HIGH, works_floor, roof=6)
 
     # ------------------------------------------------------------------ the Brink and the Still Water
@@ -809,6 +814,20 @@ class Depths:
                     b.set(x, PLATE + h, z, 'minecraft:polished_blackstone_bricks' if h < 3 else 'minecraft:polished_blackstone')
                 self.taken.add((x, z))
         b.set(cx, PLATE, cz, 'minecraft:ochre_froglight[axis=y]')    # the seal under where it hangs
+        # the housings of the wheels that stand in the wall (the Bolt hangs them: BoltEntity.MOUNTS of them, the first half a
+        # step round from the way it faces, which is south): the rim behind each is the Founder's copper, with his amber over it
+        for k in range(8):
+            a = (k + 0.5) * math.pi / 4 + math.pi / 2
+            for (x, z) in floor:
+                far = math.hypot(x - cx, z - cz)
+                off = abs(-(x - cx) * math.sin(a) + (z - cz) * math.cos(a))
+                along = (x - cx) * math.cos(a) + (z - cz) * math.sin(a)
+                if far > R - 1.2 and along > 0 and off < 2.6:
+                    for h in range(1, 5):
+                        b.set(x, PLATE + h, z, ('minecraft:waxed_copper_grate' if off < 1.2 and h < 4 else 'minecraft:waxed_cut_copper') if h < 4 or off < 1.2
+                              else 'minecraft:polished_blackstone')
+                    if off < 0.6:
+                        b.set(x, PLATE + 4, z, 'minecraft:ochre_froglight[axis=y]')
         self.arch(cx - 1, cx + 1, cz - R - 1, PLATE, 'bolt_fog')
         self.arch(cx - 1, cx + 1, cz + R + 1, PLATE, 'bolt', sealed=True)
         b.threshold('clockworks', cx - 1, PLATE + 1, cz - R - 4, cx + 1, cz - R - 3)
@@ -922,18 +941,33 @@ class Depths:
 
     # ------------------------------------------------------------------ the Tear
 
+    @staticmethod
+    def rift(dx, h):
+        """Whether a cell of the south face is of the crack: `dx` from its middle, `h` over the floor. It is five wide
+        from the floor up, draws in near its top, and has a notch or two in its edges."""
+        if h < 1 or h > RIFT_TOP:
+            return False
+        half = 2 if h <= RIFT_TOP - 4 else (1 if h <= RIFT_TOP - 1 else 0)
+        if h in (4, 9) and dx == -2 or h in (2, 7) and dx == 2:
+            return False
+        return abs(dx) <= half
+
     def tear(self):
-        """The Tear: a round hollow of black rock, still water in it, and in the middle of the water what has come
-        through. Fog in the north; in the south, behind the Coming, a seal, and the room beyond."""
+        """The Tear: a round hollow of black rock with still water in it. Its south side, opposite the way in, is a face
+        of rock from the floor up, and the crack is in that: the sky of some other place, and in it what is coming
+        through. Fog in the north; in the east a seal, and the room beyond."""
         b = self.b
         b.zone = 'tear'
         cx, cz = TEAR
         R = TEAR_R
         floor = self.tear_floor
+        wall = cz + R + 2                                          # the face the crack is in: the Coming stands a cell and a half before it
         for (x, z) in floor:
             far = math.hypot(x - cx, z - cz)
+            if abs(x - cx) <= BAY and z > cz + R - 4:
+                continue                                           # (the foot of the face: see below)
             if far > R:
-                if abs(x - cx) <= 1:
+                if (abs(x - cx) <= 1 and z < cz) or (abs(z - cz) <= 1 and x > cx):
                     self.wet.discard((x, z))
                     b.set(x, HIGH, z, black_rock(x, HIGH, z))
                     continue                                       # (the two ways through the rim)
@@ -943,14 +977,39 @@ class Depths:
                     b.set(x, HIGH + h, z, black_rock(x, HIGH + h, z) if hsh(x, h, z, 1411) < 0.93 else 'minecraft:crying_obsidian')
                 self.taken.add((x, z))
                 self.wet.discard((x, z))
-            elif far < 3.2:
-                # the tear itself: under where it stands the floor is the same black, and wet with something
-                b.set(x, HIGH, z, 'minecraft:crying_obsidian' if far > 2.0 and hsh(x, 0, z, 1412) < 0.6 else 'minecraft:obsidian')
+        # the face: the hollow is cut back to it, straight up, as high as the crack and a little over; the crack is sky - black
+        # in its middle, the last light of some horizon along its edges - and the rock round it is split, and weeps
+        for x in range(cx - BAY, cx + BAY + 1):
+            for z in range(cz + R - 3, wall):
+                for h in range(1, RIFT_TOP + 2):
+                    if not self.open(x, HIGH + h, z):
+                        b.set(x, HIGH + h, z, AIR)
+                near = math.hypot(x - cx, z - wall)
+                b.set(x, HIGH, z, ('minecraft:crying_obsidian' if hsh(x, 0, z, 1412) < 0.45 else 'minecraft:obsidian') if near < 5.2 else black_rock(x, HIGH, z))
+                self.ground[(x, z)] = HIGH
+                self.wet.discard((x, z))
+                if near < 5.2:
+                    self.taken.add((x, z))
+        for x in range(cx - BAY - 1, cx + BAY + 2):
+            for h in range(0, RIFT_TOP + 4):
+                dx = x - cx
+                if self.rift(dx, h):
+                    state = SKY % (10 if abs(dx) == 2 or not self.rift(dx, h + 1) else (5 if abs(dx) == 1 else 1))
+                elif h >= 1 and any(self.rift(dx + ex, h + eh) for ex in (-1, 0, 1) for eh in (-1, 0, 1)):
+                    state = 'minecraft:crying_obsidian' if hsh(x, h, wall, 1414) < 0.6 else 'minecraft:obsidian'
+                else:
+                    state = black_rock(x, HIGH + h, wall)
+                b.set(x, HIGH + h, wall, state)
+                b.set(x, HIGH + h, wall + 1, black_rock(x, HIGH + h, wall + 1))
+        # cracks running out from it through the face, with the same sky in them
+        for (dx, h, sx, sh, long) in ((-3, 6, -1, 1, 3), (3, 8, 1, 1, 3), (-3, 3, -1, 0, 2), (3, 11, 1, 1, 2), (-2, 12, -1, 1, 3), (3, 4, 1, -1, 2)):
+            for k in range(long):
+                b.set(cx + dx + sx * k, HIGH + h + sh * k, wall, SKY % (10 - 2 * k))
         # ribs: the rock of the rim stands up round the hollow and leans in over it, as over something held
         for k in range(10):
             a = k * math.pi / 5 + math.pi / 10
             if abs(math.cos(a)) < 0.35:
-                continue                                           # (not over the two ways in)
+                continue                                           # (not over the way in, nor over the face)
             tall = 13 + int(hsh(k, 0, 0, 1413) * 5)
             for h in range(4, tall + 1):
                 lean = (h / tall) ** 2 * 6.5
@@ -963,10 +1022,10 @@ class Depths:
                         if self.open(x, HIGH + h, z):
                             b.set(x, HIGH + h, z, black_rock(x, HIGH + h, z) if h < tall - 1 or dx or dz else 'minecraft:crying_obsidian')
         self.arch(cx - 1, cx + 1, cz - R - 1, HIGH, 'coming_fog', height=4)
-        self.arch(cx - 1, cx + 1, cz + R + 1, HIGH, 'coming', sealed=True, height=4)
+        self.arch(cz - 1, cz + 1, cx + R + 1, HIGH, 'coming', sealed=True, axis='z', height=4)
         b.threshold('tear', cx - 1, HIGH + 1, cz - R - 5, cx + 1, cz - R - 4)
-        self.mob('coming', cx, cz, 'north', 8)
-        # crystals inside the rim, far apart: the light it is fought by
+        self.mob('coming', cx, wall - 2, 'north', 9)
+        # crystals inside the rim, far apart: the light it is fought by (two of them stand either side of the crack)
         for k in range(8):
             a = k * math.pi / 4 + 0.39
             self.crystal(int(round(cx + math.cos(a) * (R - 1.5))), int(round(cz + math.sin(a) * (R - 1.5))), 3, 20 + k)
@@ -982,7 +1041,7 @@ class Depths:
         b.shard(ex - 3, HIGH + 1, ez + 1)
         self.keep(ex - 4, ez - 3, ex + 4, ez + 4)
         self.lamp_grid(self.end, 13, every=3)
-        self.lamps(self.tear_north | self.tear_south, 11, every=2)
+        self.lamps(self.tear_north | self.tear_east, 11, every=2)
 
     def film(self):
         """The still water, wherever a floor is to have it and nothing stands."""
@@ -1105,10 +1164,13 @@ class Depths:
             ('depths_east_chamber', self.eye(90.5, 755.5), (98, h + 4, 752)),
             ('depths_hearth_by_the_tear', self.eye(LAST[0] + 2.5, LAST[1] + 2.5), (LAST[0] - 3, h + 1.5, LAST[1] - 2)),
             ('depths_before_the_tear', self.eye(tx + 0.5, tz - TEAR_R - 5.5), (tx, h + 6, tz)),
-            ('depths_tear_from_the_door', self.eye(tx + 0.5, tz - TEAR_R + 1.5), (tx, h + 7, tz)),
-            ('depths_tear_from_above', self.sky_eye(tx + 10, tz - 10, 14), (tx - 2, h + 2, tz + 2)),
+            ('depths_tear_from_the_door', self.eye(tx + 0.5, tz - TEAR_R + 1.5), (tx, h + 7, tz + TEAR_R)),
+            ('depths_tear_from_above', self.sky_eye(tx + 10, tz - 10, 14), (tx - 2, h + 2, tz + 6)),
             ('depths_tear_up', self.eye(tx + 8.5, tz + 9.5), (tx - 6, h + 30, tz - 6)),
-            ('depths_beyond', self.eye(END[0] + 0.5, END[1] - 3.5), (END[0], h + 1, END[1] + 2)),
+            ('depths_tear_crack', self.eye(tx + 0.5, tz + 2.5), (tx, h + 6, tz + TEAR_R + 2)),
+            ('depths_tear_crack_aslant', self.eye(tx - 8.5, tz + 8.5), (tx + 2, h + 5, tz + TEAR_R + 2)),
+            ('depths_tear_way_out', self.eye(tx + 6.5, tz + 0.5), (tx + TEAR_R + 2, h + 2, tz)),
+            ('depths_beyond', self.eye(END[0] - 3.5, END[1] + 0.5), (END[0] + 2, h + 1, END[1] + 1)),
         ]
 
     def probes(self):

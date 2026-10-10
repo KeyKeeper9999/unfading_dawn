@@ -49,12 +49,16 @@ that was buried, the Coming, what is set and what has grown) is in `docs/story.m
   first great hollow, four over its floor -> steps of rock down -> the Still Water (`WATER`): ridges with the
   long-armed in them, wheels of the clock half sunk, crystals; east of it a chamber across a crack (`ISLE`: a chest)
   -> a neck -> the Works: a round floor with a rim like a wheel's, an axle over it from wall to wall, a great wheel
-  half in the rock either side (the Bolt; fog in the north arch, a seal in the south) -> a stair -> the chamber behind
+  half in the rock either side, and in the rim eight housings of copper where the wheels of the wall stand (the Bolt
+  hangs them; fog in the north arch, a seal in the south) -> a stair -> the chamber behind
   the pendulum (hearth `works`, an anvil) -> the Causeways, which are ways now: a thin one to a chamber of two
   clockhands, a wide winding one west to the gut's chamber, the cache (`ISLETS`), a thin one to the spire, another to
   hearth `tear`, and a wide one east to a wheel that does not turn (a chest) -> the Tear: a round hollow of still
-  water in a rim of black teeth with ribs of rock leaning in over it (the Coming, rooted in its middle; fog north, a
-  seal south) -> the room beyond, where the works of the clock lie (for what comes later: nothing is done there yet).
+  water in a rim of black teeth with ribs of rock leaning in over it; its south side, opposite the way in, is cut
+  back to a face of rock (`BAY` either side of the middle) with the crack in it from the floor up (`Depths.rift`:
+  `under_sky`, black in its middle and the horizon's tone along its edges; the Coming stands before it; fog north,
+  a seal in the east) -> the room beyond, east of it, where the works of the clock lie (for what comes later:
+  nothing is done there yet).
 - Levels: `PLATE` the Still Water and the Works, `BRINK` four over it, `HIGH` the Causeways and the Tear, `VOID` the
   bottom of a pit. The two lords' marks are 78 blocks apart, so the Bolt's death does not lift the Coming's seal.
 - A stair of the drift lies on the floor of its cell (the floor is one lower than the cell before it), so a flight is
@@ -84,34 +88,73 @@ blue - is kept small on purpose: in the glow textures and the crystals, nowhere 
 What has grown:
 
 - `StrayShadowEntity` - lies on the floor and takes three tenths of any blow there (`FLAT`); rises for `RISE` (and
-  is whole while risen: the time to strike) or snatches at the ankles from the floor (`SNATCH`).
-- `LongarmEntity` - sits in a niche (`Depths.niche`) and neither comes out nor turns (`homeYaw`, `facing()` is
-  `outward()`); `GRAB` draws whoever is before it in to the wall, `RAKE` takes the width of the way. Speed 0.
+  is whole while risen: the time to strike) or snatches at the ankles from the floor (`SNATCH`). Its box lies with
+  it: `getDefaultDimensions` gives `LYING` (1.5 by 0.3) unless `risen()`, and `tick` calls `refreshDimensions` on
+  both sides when that changes (the move and its clock are known on both).
+- `LongarmEntity` - a stain of dark on a wall with arms out of it; no body. The mob stands in a niche
+  (`Depths.niche`) and neither comes out nor turns (`homeYaw`, `facing()` is `outward()`); the model's stain
+  (`pool`) is a plate half a cell and a little before the mob's middle, so that it lies on the rock round the niche
+  and hides it - the niche keeps three cells of rock face, four high, clear before it for that. The long arms lie
+  folded in the niche; `GRAB` and `RAKE` both show the hands first. `GRAB` draws whoever is before it in to the
+  wall, `RAKE` takes the width of the way. Speed 0.
 - `HandwalkerEntity` - the fastest thing here; `LUNGE` along its length, `WHIP` of the hind end round it.
 - `DeeplingEntity` - flies as the sleep moth does; hangs still until somebody is near (phase 1, `wake`); `GULP`, and
   `GLARE`: a cone of darkness from the eyes in its mouth.
 - `UsherEntity` - three and a half blocks tall, walks and does not run; darkens the sight of whoever is within nine
   blocks; `GRASP` lifts and throws (over an edge, if there is one), `REACH` is a long blow down.
-- `GutEntity` - `CHARGE` in a straight line (it will go over an edge), `SLAM`, `GAPE`; having run into something it
-  stands open (`STAGGER`) and takes half as much again.
+- `GutEntity` - the slow tank of the place: a mound in a shell of two halves, carried on rows of hands (speed
+  0.14). Shut, half of a blow is lost on the shell (`SHELL`); while `open()` a blow tells for `SOFT` - and it has to
+  open to do anything. `HEAVE`: gathers itself and throws its weight forward a few paces (no shield holds it; into
+  a wall it ends in `STAGGER`, open); `SLAM`: rears and comes down, and stands open until `SLAM_SHUT`; `GAPE`: for
+  whoever is beside or behind it - the shell opens, the arms of its mouth come out over it, take and slow. It does
+  not turn once a move has begun (`trackUntil`).
 
 What was set (amber and brass on them: the Founder's):
 
 - `ClockhandEntity` - moves in beats (`SECOND`: stands, then is a step further); `STAB`, `SWEEP`, and `WIND`, in
   which it winds itself and is open.
-- `BoltEntity`, the first lord - the pendulum. Phase 1: it swings across the floor on its own left-right axis
-  (`AMPLITUDE`, `PERIOD`, the swing is synced as `SWING` and drawn through `SoulsMob.renderExtra` ->
-  `BossRenderState.extra`), runs down whoever is in the way, tolls (`TOLL`: a ring that widens) and drops weights
-  (`WEIGHTS`: `strikeLater`). At half health it breaks from the rod (`BREAK`) and walks on four hands of the clock:
-  `STAB`, `SWEEP` (twice round), `LEAP`. `HIDE` 0.38 of 1000.
-- `ComingEntity`, the second lord - rooted where it came through. Masked: `GAZE` (lines of violet shafts along the
-  floor: `SunShaftEntity.dusk`, the sunshaft in another hue), `SLAM` (the head, the whole length of the neck; it lies
-  until tick 84 and takes double there), `SWEEP` (an arm low), `CRUSH`. At half health `UNMASK`: the crown of arms
-  opens round the disc; then also `PULL` (draws everyone to the maw, then bites) and `RAIN` (the sky comes down in
-  marked places), and `GAZE` in three lines. `HIDE` 0.3 of 1000. It leaves `coming_soul`.
-
-Left for the next rounds of the remaking (`docs/story.md`): the stray shadow's lying box, the long-armed as a stain of dark
-on the wall, the gut as a slow tank; the Bolt's hall as his body, the Coming in the wall opposite the way in.
+- `BoltEntity`, the first lord - the pendulum, and its hall, which is the rest of the clock and its body. Phase 1:
+  it swings across the floor on its own left-right axis (`AMPLITUDE`, `PERIOD`, the swing is synced as `SWING` and
+  drawn through `SoulsMob.renderExtra` -> `BossRenderState.extra`), runs down whoever is in the way, tolls (`TOLL`:
+  a ring that widens), and the hall does three things, never the same twice running (`nextWorks`): `WEIGHTS` (a
+  weight seen coming down on its chain over every marked place), `GEARS` (`letGo`: wheels run across the floor from
+  one wheel of the wall to one about opposite, the first along the line nearest whoever it fights) and `HANDS`
+  (`strikeHour`/`handsTick`: two opposite hands of amber light go half round the floor, `HAND_STEPS` steps, every
+  place of a step lit `HAND_DELAY` ticks before it is struck). At half health it breaks from the rod (`BREAK`) and
+  walks on four hands of the clock: `STAB`, `SWEEP` (twice round), `LEAP` - and the hall goes on by itself
+  (`worksCooldown`, oftener under a quarter). `HIDE` 0.38 of 1000.
+- `GearEntity` (`gear`; `client/GearRenderer`, `GearModel`, drawn by `tools/gen_clock.py`) - the works: not a mob,
+  cannot be struck, is not saved. `MOUNT`: one of the eight wheels in the wall (`BoltEntity.tendMounts` hangs them
+  again whenever one is missing, `MOUNT_FAR` from the mark, and says how fast they turn; they go when it dies);
+  `ROLL`: a wheel let go - it winds where it stands for its warning, its line marked in sparks, then runs and
+  strikes once whoever is in its breadth; `WEIGHT`: only seen (the blow is the Bolt's `strikeLater`).
+- Learnt: the turn about x is what sends a limb of the Bolt forward. The thrust had it negative and the hand went
+  behind it; the pose sheet (`stab`) is drawn from the same numbers, so look at it from the side.
+- `ComingEntity`, the second lord - in the crack of the Tear's south face, its back to the rock. It neither walks
+  nor turns (`homeYaw`): it looks with its neck (`AIM`, synced, radians from straight out; `facing()` is turned by
+  it, `renderExtra` gives it to the model). Its mark is a cell and a half before the face (`WALL` in the generator);
+  the middle of the hall is `CENTRE` straight out, and nothing is struck outside `HALL` of that (`inHall`).
+  Masked, all of it but its neck and two arms is back in the rock (the model: `BACK_IN`): `GAZE` (a line of rays
+  from the hole in its head to the floor, out through whoever it looks at: `SunShaftEntity.ray`), `SLAM` (the head,
+  `SLAM_FAR` before the crack; it lies until `SLAM_LAIN` and takes double there), `SWEEP` (an arm low), `CRUSH`
+  (both arms at the foot of the crack), `REACH` (its hands in the floor: arms come up out of holes under and round
+  whoever it fights - `TendrilEntity`). At half health `EMERGE`: the mask goes, it comes out to the breast, a second
+  pair of arms and the crown round the disc with it, and the eye in the crack behind it opens. Then everything from
+  further out and oftener, `GAZE` in three lines, an arm out of the floor now and again whatever else it does
+  (`armClock`), `PULL` (draws the whole hall to the maw, then bites), `RAIN` (the sky comes down in marked places)
+  and `GLARE` - the eye looks: a fan of `GLARE_RAYS` rays from the crack, one after another across the hall from
+  one side to the other. `HIDE` 0.3 of 1000. It leaves `coming_soul`.
+- `TendrilEntity` (`tendril`; `client/TendrilRenderer`, `TendrilModel`, drawn by `tools/gen_coming.py`) - not a mob:
+  a hole opens (its warning), an arm comes straight up through whoever stands on it, stands (`stands()`: synced, long
+  for one summoned by hand), turns to whoever is nearest and comes down `LENGTH` along the floor through any shield.
+- `SunShaftEntity` has three lights (`SUN`, `DUSK`, `AMBER`) and may be a ray from a place (`FROM_*`): the renderer
+  turns the same column so that its top is where the ray comes from.
+- The Coming's poses are not written in the model by hand: `gen_coming.py` has them by name (`POSES`: where the neck
+  bends and where the arms point - `aim` turns a direction into the turns of a part) and writes them into
+  `ComingModel` between `// <generated poses>`; the animation goes from one to another. `gen_coming.py - x` prints
+  them and where the head is in each (the rays and `SLAM_FAR` are taken from that).
+- Learnt: a thing that stands in a wall must not turn with the mob's yaw - everything of it that is in the wall
+  swings out of it. Fix the yaw and turn a part.
 
 Left for later: the gear of the place (weapons, a shield, a spell, a charm, armour; the mask from the Coming's soul),
 anyone to talk to, the mechanism on the ledge beyond the Tear and the tower it raises. The souls of the two lords
