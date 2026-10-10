@@ -94,7 +94,7 @@ public class GearEntity extends Entity {
         Vec3 way = new Vec3(to.x - from.x, 0.0, to.z - from.z);
         double far = way.length();
         way = far < 1.0E-3 ? new Vec3(0.0, 0.0, 1.0) : way.scale(1.0 / far);
-        GearEntity gear = make(level, owner, ROLL, from, (float) Math.toDegrees(Math.atan2(way.x, way.z)), 1.0F, speed, warning);
+        GearEntity gear = make(level, owner, ROLL, from, (float) Math.toDegrees(Math.atan2(-way.x, way.z)), 1.0F, speed, warning);
         gear.way = way;
         gear.left = far;
         gear.damage = damage;

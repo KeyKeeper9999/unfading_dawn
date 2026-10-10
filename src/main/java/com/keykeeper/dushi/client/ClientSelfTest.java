@@ -1353,10 +1353,6 @@ public final class ClientSelfTest {
         attack(com.keykeeper.dushi.entity.BoltEntity.class, com.keykeeper.dushi.entity.BoltEntity.STAB, 26);
         shot("k5_side_stab");
         rest();
-        command(look(0.5, 7.0, 0, -89));
-        attack(com.keykeeper.dushi.entity.BoltEntity.class, com.keykeeper.dushi.entity.BoltEntity.STAB, 26);
-        shot("k5_stab_from_above");
-        rest();
         // its hall: a wheel as it stands in the wall and one as it runs along the floor, a weight on its chain, the light the hour is struck with
         command(gone, look(0.5, -3.0, 0, -8), "summon unfading_dawn:gear -5.5 " + GROUND + " 8.5 {Kind:0,Size10:15,Speed10:20,Rotation:[90f,0f]}",
                 "summon unfading_dawn:gear -1.0 " + GROUND + " 6.0 {Kind:0,Size10:10,Speed10:60,Rotation:[40f,0f]}",
@@ -1367,7 +1363,8 @@ public final class ClientSelfTest {
         shot("k5_works_night", 30);
         command("time set 6000", "kill @e[type=unfading_dawn:gear]", "kill @e[type=unfading_dawn:sun_shaft]");
         // the Coming: a wall behind it with the crack in it; under its mask, in the crack but for its disc and arms - and without it, out to the waist
-        command(gone, look(0.5, -12.0, 0, -16), "fill -12 " + GROUND + " 12 12 " + (GROUND + 16) + " 12 minecraft:deepslate",
+        command(gone, "fill -16 " + (GROUND - 1) + " -15 16 " + (GROUND - 1) + " -9 minecraft:stone_bricks", look(0.5, -12.0, 0, -16),
+                "fill -12 " + GROUND + " 12 12 " + (GROUND + 16) + " 12 minecraft:deepslate",
                 "fill -3 " + GROUND + " 12 3 " + (GROUND + 4) + " 12 unfading_dawn:under_sky[tone=3]",
                 "fill -4 " + (GROUND + 5) + " 12 4 " + (GROUND + 9) + " 12 unfading_dawn:under_sky[tone=3]",
                 "fill -2 " + (GROUND + 10) + " 12 2 " + (GROUND + 11) + " 12 unfading_dawn:under_sky[tone=3]",
