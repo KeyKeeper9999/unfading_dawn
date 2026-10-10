@@ -52,6 +52,7 @@ public final class SelfTest {
     private static final Map<String, Map<Integer, Integer>> MOVES = new LinkedHashMap<>();
     private static final Map<String, Integer> LAST_MOVE = new LinkedHashMap<>();
     private static final int DRILL_TICKS = 900;
+    private static final int PLAYER_TICK = 20;
     private static final List<Drill> DRILL = new ArrayList<>();
     private static int ticks = -1;
 
@@ -166,8 +167,6 @@ public final class SelfTest {
         say("spawned " + MOBS.size() + " of " + types.size() + " mobs: " + MOBS.keySet());
         say("spawn eggs: " + Dushi.SPAWN_EGGS.size() + ", weapons: " + Dushi.WEAPONS.size() + ", shields: " + Dushi.SHIELDS.size()
                 + ", spells: " + Dushi.SPELLS.size() + ", sounds: " + Dushi.SOUND_NAMES.length);
-
-        player(level);
     }
 
     /** A stand-in player: souls, levelling, the flask, every spell, the hearth and death. */
@@ -291,6 +290,11 @@ public final class SelfTest {
                         mob.setHealth(mob.getMaxHealth() * 0.45F);
                     }
                 }
+            }
+            // The stand-in player comes a second after the floor: in the tick the chunks are forced, what is put into them
+            // cannot always be found again yet (the keykeeper beside the hearth, the stain), and the checks said so at random.
+            if (ticks == PLAYER_TICK) {
+                player(level);
             }
             if (ticks == RUN_TICKS) {
                 report(level);
