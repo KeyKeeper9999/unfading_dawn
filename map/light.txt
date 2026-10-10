@@ -71,7 +71,7 @@ depths_brink 67 -43 188
 depths_water 92 -47 154
 depths_works 159 -47 135
 depths_behind 188 -41 140
-depths_way 187 -41 172
+depths_way 190 -41 173
 depths_tear 238 -41 150
 depths_veil 154 -20 140
 depths_under_the_lid 154 -19 140

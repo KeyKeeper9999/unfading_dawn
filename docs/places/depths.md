@@ -63,6 +63,10 @@ that was buried, the Coming, what is set and what has grown) is in `docs/story.m
 - `tools/preview_depths.py DIR` builds the place alone in a few seconds, walks it with `gen_map.analyse` from the
   sump, counts its dark places, and draws it: `depths_plan.png` (from above with the rock taken away; the necks edged
   in blue, a dot on every place a player can be) and `depths_cut_*.png` (cut through from top to bottom).
+- Learnt: a camera of `views()` set on the line between two cells or beside a wall takes a picture of the inside of a
+  block (a post of the drift's timber, a ridge): `Depths.eye` gives the middle of a free cell with free cells on all
+  four sides, `Depths.sky_eye` a place in a hollow's neck clear of its lip; in the drift the cameras are given whole
+  numbers (`gen_world.world` adds the half).
 - Learnt: a roof of sky blocks is seen for what it is (the owner: "looks odd") - hence the sheets and the lid.
 - Learnt: `Depths.line` paints a square round every cell of its line, so a short wide way is longer than it is: what
   must keep its own floor beside one (the stair behind the Works) is laid before it.

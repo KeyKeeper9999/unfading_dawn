@@ -1036,6 +1036,27 @@ class Depths:
                     cols.add((x + dx, z + dz))
         return {c for c in cols if c[0] >= 0 and c[1] >= 0}
 
+    def eye(self, x, z, up=2.6):
+        """Where a camera stands for a picture taken from a floor: the middle of the free cell nearest to the column
+        asked for that has free cells on all four sides of it (a camera set on the line between two cells, or beside
+        a wall, looks at the inside of a block)."""
+        def clear(c):
+            return c in self.ground and all(self.open(c[0], self.ground[c] + h, c[1]) or 'night_shallows' in str(self.b.get(c[0], self.ground[c] + h, c[1])) for h in (1, 2, 3))
+        x, z = int(math.floor(x)), int(math.floor(z))
+        for k in range(0, 7):
+            for dx in range(-k, k + 1):
+                for dz in range(-k, k + 1):
+                    c = (x + dx, z + dz)
+                    if max(abs(dx), abs(dz)) == k and clear(c) and all(clear((c[0] + ex, c[1] + ez)) and self.ground[(c[0] + ex, c[1] + ez)] == self.ground[c] for ex, ez in FOUR):
+                        return (c[0], self.ground[c] + up, c[1])
+        raise ValueError(f'no place for a camera near {(x, z)}')
+
+    def sky_eye(self, x, z, up):
+        """Where a camera hangs for a picture taken from over a floor: in the neck of a hollow, clear of its lip."""
+        best = min((c for c in self.shaft if c in self.ground and all((c[0] + ex, c[1] + ez) in self.shaft for ex in (-2, 0, 2) for ez in (-2, 0, 2))),
+                   key=lambda c: abs(c[0] - x) + abs(c[1] - z))
+        return (best[0], self.ground[best] + up, best[1])
+
     def views(self):
         """Pictures of the place for the client test: name, eye, what it looks at (plan coordinates)."""
         gx, gz = GATE
@@ -1049,49 +1070,49 @@ class Depths:
             ('depths_grate_from_the_sump', (gx + 0.5, SUMP_FLOOR + 2.6, gz - 5.5), (gx + 0.5, SUMP_FLOOR + 2.6, gz + 2)),
             ('depths_first_flight', (gx + 0.5, SUMP_FLOOR + 2.6, gz + 2.5), (gx + 0.5, SUMP_FLOOR - 8, gz + 14)),
             ('depths_flight_from_below', (gx + 0.5, self.cut[(gx, gz + 22)][0] + 2.6, gz + 22.5), (gx + 0.5, SUMP_FLOOR - 4, gz + 8)),
-            ('depths_cross_leg', (gx + 2.5, cross + 2.6, TURN_Z + 0.5), (LEG_X, cross + 2.6, TURN_Z + 0.5)),
-            ('depths_raw_rock', (LEG_X + 0.5, self.cut[(LEG_X, RAW_Z - 3)][0] + 2.6, RAW_Z - 2.5), (LEG_X + 0.5, BRINK + 2, ROOM_Z)),
-            ('depths_hearth_room', (LEG_X + 0.5, BRINK + 2.6, ROOM_Z - 2.5), (LEG_X - 2, BRINK + 1.4, ROOM_Z + 1)),
-            ('depths_out_of_the_drift', (LEG_X + 0.5, BRINK + 2.6, MOUTH_Z - 2.5), (LEG_X + 6, BRINK + 2, lz + 30)),
-            ('depths_from_the_brink', (lx + 0.5, BRINK + 2.6, lz + 3.5), (wx, p + 2, wz - 40)),
-            ('depths_brink_east', (lx + 2.5, BRINK + 2.6, lz + 0.5), (120, p + 6, 650)),
-            ('depths_brink_up', (lx + 0.5, BRINK + 2.6, lz + 2.5), (lx + 20, BRINK + 34, lz + 26)),
-            ('depths_steps', (self.steps_end[0] + 3.5, p + 2.6, self.steps_end[1] + 0.5), (lx, BRINK + 2, lz)),
-            ('depths_still_water', (61.5, p + 2.6, 629.5), (84, p + 3, 652)),
-            ('depths_first_wheel', (66.5, p + 2.6, 640.5), (76, p + 5, 646)),
-            ('depths_water_middle', (78.5, p + 2.6, 654.5), (104, p + 3, 660)),
-            ('depths_water_sky', (80.5, p + 2.6, 652.5), (86, p + 30, 656)),
-            ('depths_water_sky_aslant', (60.5, p + 2.6, 640.5), (100, p + 24, 660)),
-            ('depths_water_from_above', (62, p + 14, 672), (84, p, 652)),
-            ('depths_pit', (64.5, p + 2.6, 648.5), (68, p - 8, 652)),
-            ('depths_the_jump', (self.jump[0] - 2.5, p + 2.6, self.jump[1] + 0.5), (ISLE[0], p + 2, ISLE[1])),
-            ('depths_water_wall', (106.5, p + 2.6, 668.5), (124, p + 6, 672)),
-            ('depths_to_the_works', (wx + 0.5, p + 2.6, 680.5), (wx, p + 3, wz)),
-            ('depths_works_from_the_door', (wx + 0.5, p + 2.6, wz - WORKS_R + 2.5), (wx, p + 6, wz + 4)),
-            ('depths_works_from_above', (wx - 8, p + 14, wz - 8), (wx + 2, p + 1, wz + 3)),
-            ('depths_works_axle', (wx + 8.5, p + 2.6, wz + 9.5), (wx, p + 13, wz)),
-            ('depths_works_sky', (wx + 6.5, p + 2.6, wz - 6.5), (wx - 2, p + 30, wz + 2)),
-            ('depths_works_wheel', (wx - 4.5, p + 2.6, wz + 0.5), (wx - WORKS_R - 3, p + 4, wz)),
-            ('depths_stair_behind', (wx + 0.5, p + 2.6, wz + WORKS_R + 3.5), (bx, h + 2, bz)),
-            ('depths_behind_the_pendulum', (bx + 0.5, h + 2.6, bz - 4.5), (bx - 3, h + 1.5, bz + 1)),
-            ('depths_thin_way', (bx - 5.5, h + 2.6, bz + 0.5), (56, h + 2, 739)),
-            ('depths_winding_way_west', (53.5, h + 2.6, 739.5), (36, h + 2, 742)),
-            ('depths_west_chamber', (36.5, h + 2.6, 742.5), (26, h + 2, 746)),
-            ('depths_way_to_the_cache', (27.5, h + 2.6, 748.5), (20, h - 1, 757)),
-            ('depths_spire', (41.5, h + 2.6, 756.5), (48, h + 5, 756)),
-            ('depths_long_way_east', (LAST[0] + 4.5, h + 2.6, LAST[1] + 0.5), (90, h + 2.5, 757)),
-            ('depths_side_pit', (76.5, h + 2.6, 760.5), (SIDE_PIT[0], h - 6, SIDE_PIT[1])),
-            ('depths_east_chamber', (90.5, h + 2.6, 755.5), (98, h + 4, 752)),
-            ('depths_hearth_by_the_tear', (LAST[0] + 2.5, h + 2.6, LAST[1] + 2.5), (LAST[0] - 3, h + 1.5, LAST[1] - 2)),
-            ('depths_before_the_tear', (tx + 0.5, h + 2.6, tz - TEAR_R - 5.5), (tx, h + 6, tz)),
-            ('depths_tear_from_the_door', (tx + 0.5, h + 2.6, tz - TEAR_R + 1.5), (tx, h + 7, tz)),
-            ('depths_tear_from_above', (tx + 11, h + 15, tz - 11), (tx - 2, h + 2, tz + 2)),
-            ('depths_tear_up', (tx + 8.5, h + 2.6, tz + 9.5), (tx - 6, h + 30, tz - 6)),
-            ('depths_beyond', (END[0] + 0.5, h + 2.6, END[1] - 3.5), (END[0], h + 1, END[1] + 2)),
+            ('depths_cross_leg', (gx + 2, cross + 2.6, TURN_Z), (LEG_X, cross + 2.6, TURN_Z)),
+            ('depths_raw_rock', (LEG_X, self.cut[(LEG_X, RAW_Z - 3)][0] + 2.6, RAW_Z - 3), (LEG_X, BRINK + 2, ROOM_Z)),
+            ('depths_hearth_room', (LEG_X, BRINK + 2.6, ROOM_Z - 2), (LEG_X - 2, BRINK + 1.4, ROOM_Z + 1)),
+            ('depths_out_of_the_drift', (LEG_X, BRINK + 2.6, MOUTH_Z - 2), (LEG_X + 6, BRINK + 2, lz + 30)),
+            ('depths_from_the_brink', self.eye(lx + 0.5, lz + 3.5), (wx, p + 2, wz - 40)),
+            ('depths_brink_east', self.eye(lx + 2.5, lz + 0.5), (120, p + 6, 650)),
+            ('depths_brink_up', self.eye(lx + 0.5, lz + 2.5), (lx + 20, BRINK + 34, lz + 26)),
+            ('depths_steps', self.eye(self.steps_end[0] + 3.5, self.steps_end[1] + 0.5), (lx, BRINK + 2, lz)),
+            ('depths_still_water', self.eye(61.5, 629.5), (84, p + 3, 652)),
+            ('depths_first_wheel', self.eye(66.5, 640.5), (76, p + 5, 646)),
+            ('depths_water_middle', self.eye(78.5, 654.5), (104, p + 3, 660)),
+            ('depths_water_sky', self.eye(80.5, 652.5), (86, p + 30, 656)),
+            ('depths_water_sky_aslant', self.eye(60.5, 640.5), (100, p + 24, 660)),
+            ('depths_water_from_above', self.sky_eye(66, 668, 11), (88, p, 650)),
+            ('depths_pit', self.eye(64.5, 648.5), (68, p - 8, 652)),
+            ('depths_the_jump', self.eye(self.jump[0] - 2.5, self.jump[1] + 0.5), (ISLE[0], p + 2, ISLE[1])),
+            ('depths_water_wall', self.eye(106.5, 668.5), (124, p + 6, 672)),
+            ('depths_to_the_works', self.eye(wx + 0.5, 680.5), (wx, p + 3, wz)),
+            ('depths_works_from_the_door', self.eye(wx + 0.5, wz - WORKS_R + 2.5), (wx, p + 6, wz + 4)),
+            ('depths_works_from_above', self.sky_eye(wx - 7, wz - 7, 13), (wx + 2, p + 1, wz + 3)),
+            ('depths_works_axle', self.eye(wx + 8.5, wz + 9.5), (wx, p + 13, wz)),
+            ('depths_works_sky', self.eye(wx + 6.5, wz - 6.5), (wx - 2, p + 30, wz + 2)),
+            ('depths_works_wheel', self.eye(wx - 4.5, wz + 0.5), (wx - WORKS_R - 3, p + 4, wz)),
+            ('depths_stair_behind', self.eye(wx + 0.5, wz + WORKS_R + 3.5), (bx, h + 2, bz)),
+            ('depths_behind_the_pendulum', self.eye(bx + 0.5, bz - 4.5), (bx - 3, h + 1.5, bz + 1)),
+            ('depths_thin_way', self.eye(bx - 5.5, bz + 0.5), (56, h + 2, 739)),
+            ('depths_winding_way_west', self.eye(53.5, 739.5), (36, h + 2, 742)),
+            ('depths_west_chamber', self.eye(36.5, 742.5), (26, h + 2, 746)),
+            ('depths_way_to_the_cache', self.eye(27.5, 748.5), (20, h - 1, 757)),
+            ('depths_spire', self.eye(41.5, 756.5), (48, h + 5, 756)),
+            ('depths_long_way_east', self.eye(LAST[0] + 4.5, LAST[1] + 0.5), (90, h + 2.5, 757)),
+            ('depths_side_pit', self.eye(76.5, 760.5), (SIDE_PIT[0], h - 6, SIDE_PIT[1])),
+            ('depths_east_chamber', self.eye(90.5, 755.5), (98, h + 4, 752)),
+            ('depths_hearth_by_the_tear', self.eye(LAST[0] + 2.5, LAST[1] + 2.5), (LAST[0] - 3, h + 1.5, LAST[1] - 2)),
+            ('depths_before_the_tear', self.eye(tx + 0.5, tz - TEAR_R - 5.5), (tx, h + 6, tz)),
+            ('depths_tear_from_the_door', self.eye(tx + 0.5, tz - TEAR_R + 1.5), (tx, h + 7, tz)),
+            ('depths_tear_from_above', self.sky_eye(tx + 10, tz - 10, 14), (tx - 2, h + 2, tz + 2)),
+            ('depths_tear_up', self.eye(tx + 8.5, tz + 9.5), (tx - 6, h + 30, tz - 6)),
+            ('depths_beyond', self.eye(END[0] + 0.5, END[1] - 3.5), (END[0], h + 1, END[1] + 2)),
         ]
 
     def probes(self):
         return [('depths_drift', (GATE[0], SUMP_FLOOR + 1, GATE[1] + 2)), ('depths_room', (LEG_X, BRINK + 1, ROOM_Z + 1)),
                 ('depths_brink', (LEDGE[0], BRINK + 1, LEDGE[1] + 2)), ('depths_water', (64, PLATE + 1, 644)), ('depths_works', (WORKS[0] + 5, PLATE + 1, WORKS[1] + 5)),
-                ('depths_behind', (BEHIND[0], HIGH + 1, BEHIND[1])), ('depths_way', (46, HIGH + 1, 739)), ('depths_tear', (TEAR[0] + 6, HIGH + 1, TEAR[1] + 6)),
+                ('depths_behind', (BEHIND[0], HIGH + 1, BEHIND[1])), ('depths_way', self.eye(46, 741, 1)), ('depths_tear', (TEAR[0] + 6, HIGH + 1, TEAR[1] + 6)),
                 ('depths_veil', (WORKS[0], ROOMS['works'] - 2, WORKS[1])), ('depths_under_the_lid', (WORKS[0], ROOMS['works'] - 1, WORKS[1]))]
