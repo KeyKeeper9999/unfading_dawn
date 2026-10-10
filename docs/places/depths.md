@@ -45,6 +45,11 @@ that was buried, the Coming, what is set and what has grown) is in `docs/story.m
 - There is no wall at the two doors of fog, so each stands in an arch of its own (`Depths.arch`).
 - `tools/preview_depths.py DIR` builds the place alone in half a minute, walks it with `gen_map.analyse` from the
   sump, and draws it from above, from the side and cut through.
+- Learnt: a roof of sky one block thick is seen for what it is - where it steps up, the side of the rock over the
+  lower step shows, and the whole vault is a lattice of grey. The sky is the whole thickness of the roof but its top
+  block (`Depths.hill`), and the two wall columns are sky to the same height. Light: an unseen lamp of 13 every third
+  or fourth cell four over the floors, 15 over the two lords' floors, 11 along the drift; at 9 and 8 the pictures were
+  black.
 - Learnt: the sea's `undertow` cells stay in the Map after something is built over the sea - the hill takes its own
   columns out (`Depths.hill`), or nothing at the level of the sea is walked. A beam over the cell before a step shuts
   the step for the check (it jumps, where the game walks up a stair): timber frames of the drift keep off the steps.

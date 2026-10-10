@@ -51,7 +51,7 @@ public final class SelfTest {
     /** For every mob, how many times each of its moves was started. */
     private static final Map<String, Map<Integer, Integer>> MOVES = new LinkedHashMap<>();
     private static final Map<String, Integer> LAST_MOVE = new LinkedHashMap<>();
-    private static final int DRILL_TICKS = 780;
+    private static final int DRILL_TICKS = 900;
     private static final List<Drill> DRILL = new ArrayList<>();
     private static int ticks = -1;
 
