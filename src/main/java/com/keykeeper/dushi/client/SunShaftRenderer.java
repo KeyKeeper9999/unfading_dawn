@@ -14,6 +14,7 @@ import net.minecraft.resources.Identifier;
 /** A shaft of the sun's light from the sky to the ground: see SunShaftEntity. */
 public class SunShaftRenderer extends EntityRenderer<SunShaftEntity, SunShaftRenderState> {
     private static final Identifier TEXTURE = Dushi.id("textures/entity/sun_shaft.png");
+    private static final Identifier DUSK = Dushi.id("textures/entity/dusk_shaft.png");
     /** Full light: a shaft is not darker for standing in a shadow. */
     private static final int BRIGHT = 0xF000F0;
     private final SunShaftModel model;
@@ -32,6 +33,7 @@ public class SunShaftRenderer extends EntityRenderer<SunShaftEntity, SunShaftRen
     public void extractRenderState(SunShaftEntity entity, SunShaftRenderState state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.width = entity.width() * SunShaftEntity.share(entity.tickCount + partialTicks, entity.rise(), entity.strike(), entity.life());
+        state.dusk = entity.hue() == 1;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class SunShaftRenderer extends EntityRenderer<SunShaftEntity, SunShaftRen
             poseStack.translate(0.0F, -1.5F, 0.0F);
             // (a wide one is drawn twice over: the shaft that kindles the Warden hides him while it stands on him)
             for (int layer = state.width > 3.0F ? 2 : 1; layer > 0; layer--) {
-                collector.submitModel(this.model, state, poseStack, TEXTURE, BRIGHT, OverlayTexture.NO_OVERLAY, state.outlineColor);
+                collector.submitModel(this.model, state, poseStack, state.dusk ? DUSK : TEXTURE, BRIGHT, OverlayTexture.NO_OVERLAY, state.outlineColor);
             }
             poseStack.popPose();
         }

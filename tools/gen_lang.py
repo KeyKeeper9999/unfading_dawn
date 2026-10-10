@@ -91,6 +91,8 @@ for key, ru, en in (
         ('reaper_hat', 'Соломенная шляпа', 'Straw Hat'), ('reaper_shirt', 'Страдная рубаха', 'Harvest Shirt'),
         ('reaper_breeches', 'Порты жнеца', "Reaper's Breeches"), ('reaper_bast', 'Лапти', 'Bast Shoes'),
         ('warden_soul', 'Душа Палёного сторожа', 'Soul of the Scorched Warden'), ('miller_soul', 'Душа Пустомола', 'Soul of the Hollow Miller'),
+        ('bolt_soul', 'Душа Затвора', 'Soul of the Bolt'), ('coming_soul', 'Душа Грядущего', 'Soul of the Coming'),
+        ('depths_key', 'Ключ от Нижней решётки', 'Key to the Lower Grate'),
         ('oilskin_souwester', 'Зюйдвестка', "Sou'wester"), ('oilskin_smock', 'Промасленная роба', 'Oilskin Smock'),
         ('oilskin_trousers', 'Промасленные порты', 'Oilskin Trousers'), ('oilskin_boots', 'Бахилы', 'Sea Boots'),
         ('tattered_cloth', 'Ветошь', 'Tattered Cloth'), ('rust_scrap', 'Ржавый лом', 'Rust Scrap')):
@@ -140,6 +142,9 @@ MOBS = (('withered_prisoner', 'Истлевший узник', 'Withered Prisone
         ('scorched', 'Палёный', 'The Scorched'), ('scarecrow', 'Пугало', 'Scarecrow'), ('stook', 'Суслон', 'The Stook'),
         ('sungazer', 'Солнцегляд', 'Sungazer'), ('scorched_warden', 'Палёный сторож', 'The Scorched Warden'),
         ('hollow_miller', 'Пустомол', 'The Hollow Miller'), ('millstone', 'Жёрнов', 'Millstone'),
+        ('usher', 'Провожатый', 'The Usher'), ('stray_shadow', 'Отставшая тень', 'Stray Shadow'), ('longarm', 'Долгорукий', 'The Long-Armed'),
+        ('handwalker', 'Рукоход', 'Handwalker'), ('deepling', 'Глубинница', 'Deepling'), ('gut', 'Утроба', 'The Gut'),
+        ('clockhand', 'Стрелочник', 'The Clockhand'), ('bolt', 'Затвор', 'The Bolt'), ('coming', 'Грядущее', 'The Coming'),
         ('thrown_flour_sack', 'Мешок муки', 'Sack of Flour'), ('flour_cloud', 'Мучная пыль', 'Flour Dust'),
         ('gilded_knight', 'Золочёный рыцарь', 'Gilded Knight'), ('rust_knight', 'Ржавый рыцарь', 'Rust Knight'),
         ('keykeeper', 'Слепой ключник', 'Blind Keykeeper'), ('overseer', 'Надзиратель Острога', 'Overseer of the Stockade'),
@@ -279,12 +284,20 @@ t(f'place.{M}.stubble', 'ЖНИВЬЁ', 'THE STUBBLE')
 t(f'place.{M}.watch_field', 'СТОРОЖЕВОЕ ПОЛЕ', 'THE WATCHED FIELD')
 t(f'place.{M}.threshing', 'ГУМНО', 'THE THRESHING YARD')
 t(f'place.{M}.great_mill', 'БОЛЬШАЯ МЕЛЬНИЦА', 'THE GREAT MILL')
+# the Sky Beneath
+t(f'place.{M}.under_sky', 'ИСПОДНЕЕ НЕБО', 'THE SKY BENEATH')
+t(f'place.{M}.still_water', 'СТОЯЧАЯ ВОДА', 'THE STILL WATER')
+t(f'place.{M}.clockworks', 'НУТРО ЧАСОВ', 'THE WORKS OF THE CLOCK')
+t(f'place.{M}.causeways', 'ГАТИ НАД НЕБОМ', 'THE CAUSEWAYS OVER THE SKY')
+t(f'place.{M}.tear', 'РАЗРЫВ', 'THE TEAR')
 t(f'message.{M}.gate_locked.stubble', 'Заперто. Из-за решётки тянет сухим теплом и соломой. Ключ унесли к морю — встречать тех, кому везли хлеб.',
   'Locked. Dry heat and straw on the draught through the grate. The key went down to the sea, to meet those the bread was for.')
 t(f'message.{M}.gate_opened.stubble', 'Жнецкие ворота отперты', "The Reapers' Gate is unlocked")
 t(f'message.{M}.undertow', 'Тянет на дно', 'The sea is taking you under')
 t(f'block.{M}.shallows', 'Мелкая вода', 'Shallows')
 t(f'block.{M}.sea_shallows', 'Вода на песке', 'Water on the Sand')
+t(f'block.{M}.night_shallows', 'Стоячая вода', 'Still Water')
+t(f'block.{M}.under_sky', 'Исподнее небо', 'Sky Beneath')
 t(f'block.{M}.sludge', 'Тина', 'Sludge')
 t(f'entity.{M}.mud_glob', 'Ком тины', 'Clot of Sludge')
 t(f'entity.{M}.root', 'Корень Плакучей', 'Root of the Weeping Mother')
@@ -321,6 +334,7 @@ for key, ru, en in (('none', 'Очаг (%s, %s, %s)', 'A hearth (%s, %s, %s)'), 
                     ('harbour', 'Под обрывом', 'Under the Cliff'), ('karbas', 'Под перевёрнутым карбасом', 'Under the Upturned Karbas'),
                     ('lighthouse', 'Маяк', 'The Lighthouse'),
                     ('balk', 'У межи', 'By the Balk'), ('kiln', 'Овин', 'The Drying Barn'), ('granary', 'Мельничный амбар', "The Miller's Granary"),
+                    ('brink', 'Над обрывом', 'Over the Brink'), ('works', 'За маятником', 'Behind the Pendulum'), ('tear', 'У Разрыва', 'By the Tear'),
                     ('reliquary', 'Свечная кладовая', 'The Candle Store')):
     t(f'hearth.{M}.{key}', ru, en)
 t(f'screen.{M}.hearth.level', 'Уровень: %s', 'Level: %s')
@@ -456,6 +470,77 @@ SUBTITLES = {
     'entity.warden.slam': ('Жердь бьёт оземь', 'A pole strikes the ground'), 'entity.warden.kindle': ('Сторож занимается', 'Warden catches fire'),
     'entity.warden.roar': ('Сторож ревёт', 'Warden roars'),
     'entity.sun.gather': ('Собирается свет', 'Light gathers'), 'entity.sun.burn': ('Жжёт солнце', 'The sun burns'),
+    'entity.usher.ambient': ('Шуршат пальцы', 'Fingers rustle'),
+    'entity.usher.hurt': ('Провожатый вздрагивает', 'Usher shudders'),
+    'entity.usher.death': ('Провожатый складывается', 'Usher folds up'),
+    'entity.usher.open': ('Ладони раскрываются', 'Palms open'),
+    'entity.usher.take': ('Провожатый берёт', 'Usher takes hold'),
+    'entity.usher.reach': ('Длинная рука идёт вниз', 'A long arm comes down'),
+    'entity.usher.step': ('Неспешный шаг', 'An unhurried step'),
+    'entity.shadow.ambient': ('Шепчет тень', 'A shadow whispers'),
+    'entity.shadow.hurt': ('Тень рвётся', 'A shadow tears'),
+    'entity.shadow.death': ('Тень уходит в пол', 'A shadow soaks away'),
+    'entity.shadow.rise': ('Тень встаёт', 'A shadow stands up'),
+    'entity.shadow.claw': ('Тень когтит', 'A shadow claws'),
+    'entity.shadow.snatch': ('Тень хватает за ноги', 'A shadow snatches'),
+    'entity.longarm.ambient': ('Скребётся в стене', 'Something scrapes in the wall'),
+    'entity.longarm.hurt': ('Долгорукий дёргается', 'Long-armed one flinches'),
+    'entity.longarm.death': ('Руки обвисают', 'Arms go slack'),
+    'entity.longarm.reach': ('Руки расправляются', 'Arms unfold'),
+    'entity.longarm.take': ('Долгорукий тянет', 'Long-armed one pulls'),
+    'entity.handwalker.ambient': ('Шлёпают ладони', 'Palms patter'),
+    'entity.handwalker.hurt': ('Рукоход шипит', 'Handwalker hisses'),
+    'entity.handwalker.death': ('Рукоход сворачивается', 'Handwalker curls up'),
+    'entity.handwalker.rear': ('Рукоход встаёт на дыбы', 'Handwalker rears'),
+    'entity.handwalker.whip': ('Хлещет хвост', 'A tail whips'),
+    'entity.handwalker.step': ('Топочут ладони', 'Palms run'),
+    'entity.deepling.ambient': ('Булькает глубинница', 'Deepling gurgles'),
+    'entity.deepling.hurt': ('Глубинница дёргается', 'Deepling jerks'),
+    'entity.deepling.death': ('Глубинница всплывает брюхом', 'Deepling goes belly up'),
+    'entity.deepling.wake': ('Под огоньком раскрывается пасть', 'A mouth opens under the light'),
+    'entity.deepling.gulp': ('Клацает пасть', 'Jaws snap'),
+    'entity.deepling.glare': ('Из пасти смотрят', 'Something looks out of a mouth'),
+    'entity.gut.ambient': ('Утроба сопит спиной', 'Gut breathes through its back'),
+    'entity.gut.hurt': ('Утроба ревёт', 'Gut bellows'),
+    'entity.gut.death': ('Утроба валится', 'Gut goes down'),
+    'entity.gut.bellow': ('Утроба трубит', 'Gut trumpets'),
+    'entity.gut.step': ('Тяжёлый топот', 'Heavy tread'),
+    'entity.gut.crash': ('Утроба врезается', 'Gut crashes'),
+    'entity.gut.slam': ('Кулаки бьют оземь', 'Fists strike the ground'),
+    'entity.gut.gape': ('Спина раскрывается', 'A back opens'),
+    'entity.clockhand.hurt': ('Звенит пружина', 'A spring twangs'),
+    'entity.clockhand.death': ('Стрелочник рассыпается', 'Clockhand comes apart'),
+    'entity.clockhand.tick': ('Тик', 'Tick'),
+    'entity.clockhand.stab': ('Колет минутная стрелка', 'A minute hand thrusts'),
+    'entity.clockhand.sweep': ('Идёт часовая стрелка', 'An hour hand comes round'),
+    'entity.clockhand.wind': ('Стрелочник заводится', 'Clockhand winds itself'),
+    'entity.bolt.ambient': ('Гудит янтарь', 'Amber hums'),
+    'entity.bolt.hurt': ('Звенит линза', 'A lens rings'),
+    'entity.bolt.death': ('Затвор раскалывается', 'The Bolt splits'),
+    'entity.bolt.tock': ('Так', 'Tock'),
+    'entity.bolt.strike': ('Маятник сбивает', 'The pendulum strikes'),
+    'entity.bolt.toll': ('Бьют часы', 'A clock tolls'),
+    'entity.bolt.chain': ('Гремят цепи гирь', 'Weight chains rattle'),
+    'entity.bolt.weight': ('Падает гиря', 'A weight falls'),
+    'entity.bolt.strain': ('Стонет стержень', 'A rod groans'),
+    'entity.bolt.snap': ('Стержень лопается', 'A rod parts'),
+    'entity.bolt.stab': ('Колет стрелка', 'A hand thrusts'),
+    'entity.bolt.sweep': ('Вертятся стрелки', 'Hands whirl'),
+    'entity.bolt.land': ('Затвор рушится сверху', 'The Bolt comes down'),
+    'entity.bolt.step': ('Цокают стрелки', 'Hands click on stone'),
+    'entity.coming.ambient': ('Гудит исподнее небо', 'The sky beneath hums'),
+    'entity.coming.hurt': ('Грядущее вздрагивает', 'The Coming shudders'),
+    'entity.coming.death': ('Грядущее уходит в разрыв', 'The Coming goes back through'),
+    'entity.coming.gaze': ('Грядущее смотрит', 'The Coming looks'),
+    'entity.coming.rear': ('Шея выгибается', 'A neck rears'),
+    'entity.coming.slam': ('Рушится голова', 'A head comes down'),
+    'entity.coming.sweep': ('Идёт рука', 'An arm comes round'),
+    'entity.coming.strain': ('Трещит золото', 'Gold cracks'),
+    'entity.coming.unmask': ('Маска спадает', 'A mask falls'),
+    'entity.coming.pull': ('Тянет к пасти', 'Something draws in'),
+    'entity.coming.bite': ('Смыкается пасть', 'A maw shuts'),
+    'entity.coming.star': ('Свет встаёт на воде', 'Light stands on the water'),
+    'entity.coming.burst': ('Падает звезда', 'A star falls'),
     'entity.miller.ambient': ('Сипит Пустомол', 'Miller wheezes'), 'entity.miller.hurt': ('Пустомол кряхтит', 'Miller grunts'),
     'entity.miller.death': ('Пустомол оседает', 'Miller sinks down'), 'entity.miller.swing': ('Идёт вага', 'A bar comes round'),
     'entity.miller.slam': ('Вага бьёт в пол', 'A bar strikes the floor'), 'entity.miller.shout': ('Пустомол ухает', 'Miller heaves'),

@@ -8,4 +8,6 @@ public class BossRenderState extends LivingEntityRenderState {
     public float attackTime;
     public int phase = 1;
     public boolean onGround = true;
+    /** Whatever else a kind of mob wants its model to know (SoulsMob.renderExtra): how far the Bolt has swung. */
+    public float extra;
 }

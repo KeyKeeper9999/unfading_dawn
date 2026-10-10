@@ -1,0 +1,524 @@
+{
+  "variants": {
+    "tone=0": [
+      {
+        "model": "unfading_dawn:block/under_sky_0_0",
+        "weight": 11
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_0_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "tone=1": [
+      {
+        "model": "unfading_dawn:block/under_sky_1_0",
+        "weight": 11
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_1_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "tone=2": [
+      {
+        "model": "unfading_dawn:block/under_sky_2_0",
+        "weight": 11
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_2_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "tone=3": [
+      {
+        "model": "unfading_dawn:block/under_sky_3_0",
+        "weight": 11
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_3_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "tone=4": [
+      {
+        "model": "unfading_dawn:block/under_sky_4_0",
+        "weight": 11
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_4_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "tone=5": [
+      {
+        "model": "unfading_dawn:block/under_sky_5_0",
+        "weight": 11
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_5_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "tone=6": [
+      {
+        "model": "unfading_dawn:block/under_sky_6_0",
+        "weight": 11
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_6_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "tone=7": [
+      {
+        "model": "unfading_dawn:block/under_sky_7_0",
+        "weight": 11
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/under_sky_7_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "tone=8": {
+      "model": "unfading_dawn:block/under_sky_8_0",
+      "weight": 1
+    },
+    "tone=9": {
+      "model": "unfading_dawn:block/under_sky_9_0",
+      "weight": 1
+    },
+    "tone=10": {
+      "model": "unfading_dawn:block/under_sky_10_0",
+      "weight": 1
+    },
+    "tone=11": {
+      "model": "unfading_dawn:block/under_sky_11_0",
+      "weight": 1
+    }
+  }
+}

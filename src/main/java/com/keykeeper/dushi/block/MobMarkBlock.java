@@ -92,7 +92,16 @@ public class MobMarkBlock extends Block implements EntityBlock {
         STOOK("stook", () -> Dushi.STOOK.get(), false),
         SUNGAZER("sungazer", () -> Dushi.SUNGAZER.get(), false),
         SCORCHED_WARDEN("scorched_warden", () -> Dushi.SCORCHED_WARDEN.get(), true),
-        HOLLOW_MILLER("hollow_miller", () -> Dushi.HOLLOW_MILLER.get(), true);
+        HOLLOW_MILLER("hollow_miller", () -> Dushi.HOLLOW_MILLER.get(), true),
+        USHER("usher", () -> Dushi.USHER.get(), false),
+        STRAY_SHADOW("stray_shadow", () -> Dushi.STRAY_SHADOW.get(), false),
+        LONGARM("longarm", () -> Dushi.LONGARM.get(), false),
+        HANDWALKER("handwalker", () -> Dushi.HANDWALKER.get(), false),
+        DEEPLING("deepling", () -> Dushi.DEEPLING.get(), false),
+        GUT("gut", () -> Dushi.GUT.get(), false),
+        CLOCKHAND("clockhand", () -> Dushi.CLOCKHAND.get(), false),
+        BOLT("bolt", () -> Dushi.BOLT.get(), true),
+        COMING("coming", () -> Dushi.COMING.get(), true);
 
         public final String id;
         private final Supplier<EntityType<? extends Mob>> type;

@@ -38,6 +38,9 @@ python3 tools/gen_fieldhand.py ${P:+$P/fieldhand.png}
 python3 tools/gen_scarecrow.py ${P:+$P/scarecrow.png}
 python3 tools/gen_stook.py ${P:+$P/stook.png}
 python3 tools/gen_sungazer.py ${P:+$P/sungazer.png}
+python3 tools/gen_dusk.py ${P:+$P/dusk.png}
+python3 tools/gen_clock.py ${P:+$P/clock.png}
+python3 tools/gen_coming.py ${P:+$P/coming.png}
 python3 tools/gen_items.py ${P:+$P/items.png}
 python3 tools/gen_shields.py ${P:+$P/shields.png}
 python3 tools/gen_armor.py ${P:+$P/armor.png}

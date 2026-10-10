@@ -19,12 +19,13 @@ kinds = re.findall(r'^\s+[A-Z_]+\("(withered_\w+)"', open(f'{J}/entity/WitheredE
 mobs = kinds + ['rust_knight', 'gilded_knight', 'keykeeper', 'overseer', 'chaplain', 'carrion_hound', 'gravedigger', 'blind_crawler', 'unhewn', 'taskmaster',
                'stone_eater', 'bone_pike', 'lanky', 'wisp', 'wallower', 'weeping_mother', 'wakeful', 'waker', 'sleeper', 'waxen', 'sleep_moth', 'shatun', 'elder',
                'dockhand', 'harpooner', 'oarsman', 'pilot', 'sand_crab', 'skua', 'helmsman', 'capsized',
-               'reaper', 'mower', 'sackman', 'scorched', 'scarecrow', 'stook', 'sungazer', 'scorched_warden', 'hollow_miller']
+               'reaper', 'mower', 'sackman', 'scorched', 'scarecrow', 'stook', 'sungazer', 'scorched_warden', 'hollow_miller',
+               'usher', 'stray_shadow', 'longarm', 'handwalker', 'deepling', 'gut', 'clockhand', 'bolt', 'coming']
 charms = re.findall(r'^\s+[A-Z_]+\("(\w+)", \d+\)', open(f'{J}/Charm.java').read(), re.M)
 armour = re.findall(r'"((?:prisoner|guard|rust|chaplain|vigil|mason|scale|oilskin|reaper)_\w+)"', open(f'{J}/ArmorSet.java').read())
 items |= set(armour)
 items |= set(charms) | set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate', 'mob_mark', 'forge'}
-blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name', 'shard_heap', 'locked_gate', 'shallows', 'sludge', 'sea_shallows'}
+blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name', 'shard_heap', 'locked_gate', 'shallows', 'sludge', 'sea_shallows', 'night_shallows', 'under_sky'}
 entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot', 'powder_pot', 'thrown_wedge', 'mud_glob', 'root', 'thrown_harpoon', 'thrown_anchor'}
 lang = {l: json.load(open(f'{A}/lang/{l}.json', encoding='utf-8')) for l in ('ru_ru', 'en_us')}
 
@@ -72,7 +73,8 @@ for name in sorted(items):
 for name in blocks:
     if need(f'{A}/blockstates/{name}.json', f'block {name}'):
         for variant in json.load(open(f'{A}/blockstates/{name}.json'))['variants'].values():
-            model_ok(variant['model'])
+            for entry in variant if isinstance(variant, list) else [variant]:        # (one model, or several to pick among)
+                model_ok(entry['model'])
 for name in entities:
     for l, d in lang.items():
         if f'entity.{M}.{name}' not in d:
@@ -84,7 +86,9 @@ for kind in kinds + ['blind_crawler', 'unhewn', 'unhewn_glow', 'taskmaster', 'ta
                      'waxen', 'waxen_glow', 'sleep_moth', 'sleep_moth_glow', 'shatun', 'shatun_glow', 'elder', 'elder_glow', 'elder_asleep_glow',
                      'dockhand', 'harpooner', 'oarsman', 'pilot', 'pilot_glow', 'helmsman', 'helmsman_glow', 'sand_crab', 'skua', 'capsized', 'capsized_glow',
                      'reaper', 'mower', 'sackman', 'scorched', 'scorched_glow', 'hollow_miller', 'hollow_miller_glow', 'scarecrow', 'scorched_warden',
-                     'scorched_warden_glow', 'stook', 'sungazer', 'sungazer_glow', 'millstone']:
+                     'scorched_warden_glow', 'stook', 'sungazer', 'sungazer_glow', 'millstone', 'dusk_shaft',
+                     'usher', 'usher_glow', 'stray_shadow', 'stray_shadow_glow', 'longarm', 'longarm_glow', 'handwalker', 'handwalker_glow', 'deepling',
+                     'deepling_glow', 'gut', 'gut_glow', 'clockhand', 'clockhand_glow', 'bolt', 'bolt_glow', 'coming', 'coming_glow']:
     need(f'{A}/textures/entity/{kind}.png', 'entity texture')
 sounds = json.load(open(f'{A}/sounds.json'))
 registered = set(re.findall(r'"((?:entity|ui|block|item|player|music|ambient)\.[\w.]+)"', main[main.index('SOUND_NAMES'):main.index('static {', main.index('SOUND_NAMES'))]))

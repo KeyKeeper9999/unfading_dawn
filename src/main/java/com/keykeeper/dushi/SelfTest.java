@@ -130,13 +130,23 @@ public final class SelfTest {
         types.add(Dushi.SUNGAZER.get());
         types.add(Dushi.SCORCHED_WARDEN.get());
         types.add(Dushi.HOLLOW_MILLER.get());
+        types.add(Dushi.USHER.get());
+        types.add(Dushi.STRAY_SHADOW.get());
+        types.add(Dushi.LONGARM.get());
+        types.add(Dushi.HANDWALKER.get());
+        types.add(Dushi.DEEPLING.get());
+        types.add(Dushi.GUT.get());
+        types.add(Dushi.CLOCKHAND.get());
+        types.add(Dushi.BOLT.get());
+        types.add(Dushi.COMING.get());
         types.add(Dushi.KEYKEEPER.get());
         types.add(Dushi.OVERSEER.get());
         types.add(Dushi.CHAPLAIN.get());
         int index = 0;
         for (EntityType<? extends Mob> type : types) {
-            int x = -30 + (index % 7) * 10;
-            int z = -30 + (index / 7) * 12;
+            // (nine to a row: the last rows of seven stood off the edge of the floor, where nothing is loaded)
+            int x = -34 + (index % 9) * 8;
+            int z = -34 + (index / 9) * 10;
             BlockPos at = new BlockPos(x, FLOOR_Y + 1, z);
             Mob mob = type.spawn(level, at, EntitySpawnReason.COMMAND);
             String name = EntityType.getKey(type).getPath();
@@ -419,6 +429,17 @@ public final class SelfTest {
         plan.put(Dushi.SUNGAZER.get(), new int[] {1, 2});
         plan.put(Dushi.SCORCHED_WARDEN.get(), new int[] {1, 2, 3, 4, 5, 6, 7});
         plan.put(Dushi.HOLLOW_MILLER.get(), new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9});
+        // the Sky Beneath (the Bolt's third move is its tearing off the rod, and the rest are made on its legs; the
+        // Coming's fifth is the loss of its mask)
+        plan.put(Dushi.USHER.get(), new int[] {1, 2});
+        plan.put(Dushi.STRAY_SHADOW.get(), new int[] {1, 2});
+        plan.put(Dushi.LONGARM.get(), new int[] {1, 2});
+        plan.put(Dushi.HANDWALKER.get(), new int[] {1, 2});
+        plan.put(Dushi.DEEPLING.get(), new int[] {1, 2});
+        plan.put(Dushi.GUT.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.CLOCKHAND.get(), new int[] {1, 2, 3});
+        plan.put(Dushi.BOLT.get(), new int[] {1, 2, 3, 4, 5, 6});
+        plan.put(Dushi.COMING.get(), new int[] {1, 2, 3, 4, 5, 6, 7});
         return plan;
     }
 

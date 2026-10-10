@@ -119,6 +119,24 @@ public final class DushiClient {
                 context -> new QuarryRenderer<>(context, new StookModel(context.bakeLayer(StookModel.LAYER)), "stook", 0.9F, false, false));
         event.registerEntityRenderer(Dushi.SUNGAZER.get(),
                 context -> new QuarryRenderer<>(context, new SungazerModel(context.bakeLayer(SungazerModel.LAYER)), "sungazer", 0.45F, true, true));
+        event.registerEntityRenderer(Dushi.USHER.get(),
+                context -> new QuarryRenderer<>(context, new UsherModel(context.bakeLayer(UsherModel.LAYER)), "usher", 0.4F, true, true));
+        event.registerEntityRenderer(Dushi.STRAY_SHADOW.get(),
+                context -> new QuarryRenderer<>(context, new StrayShadowModel(context.bakeLayer(StrayShadowModel.LAYER)), "stray_shadow", 0.0F, true, true));
+        event.registerEntityRenderer(Dushi.LONGARM.get(),
+                context -> new QuarryRenderer<>(context, new LongarmModel(context.bakeLayer(LongarmModel.LAYER)), "longarm", 0.5F, true, true));
+        event.registerEntityRenderer(Dushi.HANDWALKER.get(),
+                context -> new QuarryRenderer<>(context, new HandwalkerModel(context.bakeLayer(HandwalkerModel.LAYER)), "handwalker", 0.7F, true, true));
+        event.registerEntityRenderer(Dushi.DEEPLING.get(),
+                context -> new QuarryRenderer<>(context, new DeeplingModel(context.bakeLayer(DeeplingModel.LAYER)), "deepling", 0.4F, true, true));
+        event.registerEntityRenderer(Dushi.GUT.get(),
+                context -> new QuarryRenderer<>(context, new GutModel(context.bakeLayer(GutModel.LAYER)), "gut", 1.1F, true, true));
+        event.registerEntityRenderer(Dushi.CLOCKHAND.get(),
+                context -> new QuarryRenderer<>(context, new ClockhandModel(context.bakeLayer(ClockhandModel.LAYER)), "clockhand", 0.4F, true, true));
+        event.registerEntityRenderer(Dushi.BOLT.get(),
+                context -> new QuarryRenderer<>(context, new BoltModel(context.bakeLayer(BoltModel.LAYER)), "bolt", 1.2F, true, true));
+        event.registerEntityRenderer(Dushi.COMING.get(),
+                context -> new QuarryRenderer<>(context, new ComingModel(context.bakeLayer(ComingModel.LAYER)), "coming", 2.0F, true, true));
         event.registerEntityRenderer(Dushi.MILLSTONE.get(),
                 context -> new QuarryRenderer<>(context, new MillstoneModel(context.bakeLayer(MillstoneModel.LAYER)), "millstone", 0.8F, false, false));
         event.registerEntityRenderer(Dushi.FLOUR_SACK_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.4F, false));
@@ -173,6 +191,15 @@ public final class DushiClient {
         event.registerLayerDefinition(ScarecrowModel.GIANT, ScarecrowModel::createGiantLayer);
         event.registerLayerDefinition(StookModel.LAYER, StookModel::createLayer);
         event.registerLayerDefinition(SungazerModel.LAYER, SungazerModel::createLayer);
+        event.registerLayerDefinition(UsherModel.LAYER, UsherModel::createLayer);
+        event.registerLayerDefinition(StrayShadowModel.LAYER, StrayShadowModel::createLayer);
+        event.registerLayerDefinition(LongarmModel.LAYER, LongarmModel::createLayer);
+        event.registerLayerDefinition(HandwalkerModel.LAYER, HandwalkerModel::createLayer);
+        event.registerLayerDefinition(DeeplingModel.LAYER, DeeplingModel::createLayer);
+        event.registerLayerDefinition(GutModel.LAYER, GutModel::createLayer);
+        event.registerLayerDefinition(ClockhandModel.LAYER, ClockhandModel::createLayer);
+        event.registerLayerDefinition(BoltModel.LAYER, BoltModel::createLayer);
+        event.registerLayerDefinition(ComingModel.LAYER, ComingModel::createLayer);
         event.registerLayerDefinition(MillstoneModel.LAYER, MillstoneModel::createLayer);
         event.registerLayerDefinition(KeykeeperModel.LAYER, KeykeeperModel::createLayer);
         event.registerLayerDefinition(OverseerModel.LAYER, OverseerModel::createLayer);

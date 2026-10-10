@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """The hearth and the fog gate: models, textures, block states, loot. Run from the repo root; pass a file name for a preview."""
 import json
+import math
 import os
 import random
 import sys
@@ -233,6 +234,80 @@ def shallows_texture(frames=16, sea=False):
     return img
 
 
+SKY_TONES = 12                  # must match UnderSkyBlock.TONES
+SKY_STARS = 3                   # the pictures with stars that a tone has beside its plain one
+SKY_STARRY = 8                  # the tones that have stars at all: towards the horizon there are none
+SKY_RAMP = ((0.0, (2, 2, 7)), (0.35, (5, 6, 18)), (0.6, (9, 12, 36)), (0.82, (16, 22, 62)), (1.0, (36, 38, 98)))
+
+
+def sky_colour(u):
+    """The sky an hour after sunset, from overhead (0) down to the edge of the world (1): black, then a dark blue, and
+    along the horizon the last of the light, which has some violet in it."""
+    for (u0, c0), (u1, c1) in zip(SKY_RAMP, SKY_RAMP[1:]):
+        if u <= u1:
+            k = (u - u0) / (u1 - u0)
+            return tuple(a + (b - a) * k for a, b in zip(c0, c1))
+    return SKY_RAMP[-1][1]
+
+
+def sky_stars(tone, n):
+    """Where the stars of picture `n` of a tone are, and how bright: one to three of them, most of them faint."""
+    rnd = random.Random(f'sky{tone}:{n}')
+    out = []
+    for _ in range(rnd.choice((1, 1, 2, 2, 3))):
+        k = rnd.random()
+        c = (236, 238, 255) if k < 0.2 else ((176, 182, 226) if k < 0.5 else ((120, 126, 170) if k < 0.85 else (190, 160, 240)))
+        dim = 1.0 - 0.6 * tone / SKY_STARRY              # they pale towards the horizon
+        out.append((rnd.randrange(16), rnd.randrange(16), tuple(int(v * dim) for v in c)))
+    return out
+
+
+def sky_textures(tone, n):
+    """The two pictures of a piece of sky: its sides, which go from this tone at the top to the next at the bottom, and
+    its top and bottom, which are this tone all over. Picture 0 has no stars."""
+    side, end = Image.new('RGBA', (16, 16)), Image.new('RGBA', (16, 16))
+    for y in range(16):
+        for x in range(16):
+            # (a little grain, so that sixteen rows of a slow change do not show as sixteen bands)
+            g = (blotch(f'skyg{tone}', x, y, 1.0) - 0.5) / SKY_TONES * 0.6
+            u = min(1.0, max(0.0, (tone + (y + 0.5) / 16) / SKY_TONES + g))
+            side.putpixel((x, y), tuple(int(round(v)) for v in sky_colour(u)) + (255,))
+            end.putpixel((x, y), tuple(int(round(v)) for v in sky_colour(min(1.0, max(0.0, tone / SKY_TONES + g)))) + (255,))
+    if n:
+        for x, y, c in sky_stars(tone, n):
+            side.putpixel((x, y), c + (255,))
+            end.putpixel((x, y), c + (255,))
+    return side, end
+
+
+def night_film(n, frames=16):
+    """The still water of the Sky Beneath: all but black, a slow dark swell on it, and (pictures 1 and up) stars in
+    it that come and go. One frame under another; it tiles and closes on itself."""
+    size = 16
+    img = Image.new('RGBA', (size, size * frames), (0, 0, 0, 0))
+    stars = sky_stars(0, n + 40) if n else []
+    for f in range(frames):
+        phase = f / frames
+        for x in range(size):
+            for y in range(size):
+                def wrapped(seed, sx, sy, cell):
+                    xs, ys = (x + sx * size) % size, (y + sy * size) % size
+                    tx, ty = xs / size, ys / size
+                    a = blotch(seed, xs, ys, cell) * (1 - tx) + blotch(seed, xs - size, ys, cell) * tx
+                    b = blotch(seed, xs, ys - size, cell) * (1 - tx) + blotch(seed, xs - size, ys - size, cell) * tx
+                    return a * (1 - ty) + b * ty
+                w = 0.55 * wrapped('night1', phase, 0.0, 5.0) + 0.45 * wrapped('night2', 0.0, 1 - phase, 3.0)
+                swell = max(0.0, w - 0.6) * 2.5
+                c = (int(3 + 10 * swell), int(4 + 13 * swell), int(12 + 34 * swell))
+                img.putpixel((x, f * size + y), c + (int(214 + 30 * swell),))
+        for i, (x, y, c) in enumerate(stars):
+            # a star in the water is there, fades and is there again, each in its own time
+            k = 0.5 + 0.5 * math.cos((phase + i * 0.37) * 2 * math.pi)
+            bright = 0.25 + 0.75 * k
+            img.putpixel((x, f * size + y), tuple(int(v * bright) for v in c) + (255,))
+    return img
+
+
 def sludge_texture(frames=8):
     """The bog's own sludge: nearly black, a green skin on it, bubbles coming up through it and bursting."""
     size = 16
@@ -369,6 +444,43 @@ if __name__ == '__main__':
     model['elements'][0]['faces'] = {'up': model['elements'][0]['faces']['up']}
     write_json(f'{A}/models/block/sea_shallows.json', model)
     write_json(f'{A}/blockstates/sea_shallows.json', {'variants': {'': {'model': f'{MOD}:block/sea_shallows'}}})
+
+    # the same film over the black floors of the Sky Beneath: several pictures of it, most without stars, laid by chance
+    # and turned by chance, so that the stars in the water are not in rows
+    entries = []
+    for n in range(SKY_STARS + 1):
+        night_film(n).save(f'{A}/textures/block/night_shallows_{n}.png')
+        write_json(f'{A}/textures/block/night_shallows_{n}.png.mcmeta', {'animation': {'frametime': 7, 'interpolate': True}})
+        model = json.load(open(f'{A}/models/block/sea_shallows.json'))
+        model['textures'] = {'t': f'{MOD}:block/night_shallows_{n}', 'particle': f'{MOD}:block/night_shallows_{n}'}
+        write_json(f'{A}/models/block/night_shallows_{n}.json', model)
+        if n == 0:
+            entries.append({'model': f'{MOD}:block/night_shallows_0', 'weight': 14})
+        else:
+            entries += [{'model': f'{MOD}:block/night_shallows_{n}', 'y': turn, 'weight': 1} if turn else {'model': f'{MOD}:block/night_shallows_{n}', 'weight': 1}
+                        for turn in (0, 90, 180, 270)]
+    write_json(f'{A}/blockstates/night_shallows.json', {'variants': {'': entries}})
+
+    # the sky of the Sky Beneath (UnderSkyBlock): for every tone a plain cube and a few with stars, all of them drawn
+    # without shading - a roof of it must not be darker than a wall of it
+    variants = {}
+    for tone in range(SKY_TONES):
+        entries = []
+        for n in range(SKY_STARS + 1 if tone < SKY_STARRY else 1):
+            side, end = sky_textures(tone, n)
+            side.save(f'{A}/textures/block/under_sky_{tone}_{n}.png')
+            end.save(f'{A}/textures/block/under_sky_{tone}_{n}_end.png')
+            faces = {d: {'uv': [0, 0, 16, 16], 'texture': '#end' if d in ('up', 'down') else '#side', 'cullface': d} for d in ('up', 'down', 'north', 'south', 'west', 'east')}
+            write_json(f'{A}/models/block/under_sky_{tone}_{n}.json', {
+                'textures': {'side': f'{MOD}:block/under_sky_{tone}_{n}', 'end': f'{MOD}:block/under_sky_{tone}_{n}_end', 'particle': f'{MOD}:block/under_sky_{tone}_0'},
+                'elements': [{'from': [0, 0, 0], 'to': [16, 16, 16], 'shade': False, 'faces': faces}]})
+            if n == 0:
+                entries.append({'model': f'{MOD}:block/under_sky_{tone}_0', 'weight': 11 if tone < SKY_STARRY else 1})
+            else:
+                entries += [{'model': f'{MOD}:block/under_sky_{tone}_{n}', 'y': turn, 'weight': 1} if turn else {'model': f'{MOD}:block/under_sky_{tone}_{n}', 'weight': 1}
+                            for turn in (0, 90, 180, 270)]
+        variants[f'tone={tone}'] = entries if len(entries) > 1 else entries[0]
+    write_json(f'{A}/blockstates/under_sky.json', {'variants': variants})
 
     # a pool of sludge (SludgeBlock): thicker than the film it may lie in, so that it shows over it
     sludge = sludge_texture()

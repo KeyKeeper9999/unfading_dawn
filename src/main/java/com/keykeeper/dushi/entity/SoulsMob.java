@@ -196,6 +196,11 @@ public abstract class SoulsMob extends Monster {
         this.setPhase(phase);
     }
 
+    /** One number more for the model, if a kind has a use for it (see BossRenderState.extra). */
+    public float renderExtra() {
+        return 0.0F;
+    }
+
     public boolean canStartAttack() {
         return this.attackId() == 0 && this.attackCooldown <= 0;
     }

@@ -1554,6 +1554,258 @@ S['flour/blast'] = reverb(place(d, (0.0, thump(1.2, 100, 22, 0.25) * 3.0), (0.0,
                                 (0.2, fire(1.4, 700, 60, 10) * decay(1.4, 0.4) * 1.0)), 1.4, 0.3, 0.8)
 
 
+# ============================================================== the Sky Beneath: what grew in a day kept in the dark, and what was set to keep it
+HOLLOW = ((240, 70, 1.0), (620, 120, 0.6), (1500, 260, 0.25))        # a throat with nothing behind it
+WET = ((340, 100, 1.0), (880, 170, 0.7), (2100, 300, 0.3))
+
+
+def under(x, seconds=1.6, mix=0.42, tail=1.2):
+    """The room of the place: wide, dark, with a long way for a sound to go."""
+    return reverb(x, seconds, mix, tail, 3200)
+
+
+def patter(d, count, lo=500, hi=1600, seed=0):
+    """Palms on stone: soft slaps, close together."""
+    r = np.random.default_rng(2600 + seed)
+    out = np.zeros(int(SR * d))
+    for i in range(count):
+        at = (i + r.uniform(0, 0.6)) * d / (count + 1)
+        n = 0.07
+        slap = bandpass(r.standard_normal(int(SR * n)), lo, hi) * decay(n, 0.012) * r.uniform(0.5, 1.0) + thump(n, 150, 80, 0.02) * 0.5
+        j = int(at * SR)
+        out[j:j + len(slap)] += slap[:len(out) - j]
+    return out
+
+
+def drone(d, f, seed=0, beat=0.7):
+    """A hum that is felt more than heard, slowly beating against itself."""
+    r = np.random.default_rng(2700 + seed)
+    x = tone(f, d) + 0.8 * tone(f * 1.007, d, 1.0) + 0.5 * tone(f * 1.5 * 1.004, d, 2.0) + 0.3 * tone(f * 2.02, d)
+    air = lowpass(r.standard_normal(int(SR * d)), f * 3) * 0.5
+    return (x + air) * (0.75 + 0.25 * np.sin(2 * np.pi * beat * t(d))) * env(d, d * 0.3, d * 0.35)
+
+
+def layer(*xs):
+    """Sounds of different lengths, one over another from the start."""
+    out = np.zeros(max(len(x) for x in xs))
+    for x in xs:
+        out[:len(x)] += x
+    return out
+
+
+def backwards(x):
+    """A sound heard from its end: it swells, and stops where it should have begun."""
+    return x[::-1].copy()
+
+
+# the usher: it has no mouth; what is heard is its hands
+for k in (0, 1):
+    d = 2.4
+    S[f'usher/ambient{k + 1}'] = under(rustle(d, 2600 - 300 * k, 26, 61 + k) * env(d, 0.8, 1.0) * 0.5 + drone(d, 52 - 4 * k, 1 + k) * 0.7)
+d = 0.6
+S['usher/hurt'] = under(voice(contour(d, (0, 90), (0.2, 70), (1, 58)), d, HOLLOW, breath=1.6, jitter=0.05) * env(d, 0.02, 0.4) + rustle(d, 2400, 40, 63) * decay(d, 0.15) * 0.6, 0.9, 0.3, 0.6)
+d = 2.6
+S['usher/death'] = under(place(d, (0.0, voice(contour(1.9, (0, 84), (0.4, 60), (1, 34)), 1.9, HOLLOW, breath=1.8, jitter=0.06) * env(1.9, 0.05, 1.4)),
+                               (0.3, rustle(1.8, 2400, 50, 64) * env(1.8, 0.2, 1.2) * 0.7), (1.6, thump(0.7, 70, 30, 0.14) * 1.4)))
+d = 1.1
+S['usher/open'] = under(place(d, (0.0, rustle(0.9, 3000, 60, 65) * env(0.9, 0.3, 0.4) * 0.9), (0.2, creak(0.6, 70, 30, (600, 1300, 2400)) * env(0.6, 0.05, 0.4) * 0.3),
+                              (0.4, tone(contour(0.6, (0, 240), (1, 380)), 0.6) * env(0.6, 0.4, 0.15) * 0.12)), 1.0, 0.35, 0.7)
+d = 0.7
+S['usher/take'] = under(place(d, (0.0, patter(0.25, 5, 600, 2000, 66) * 1.2), (0.05, thump(0.4, 100, 46, 0.08) * 1.0), (0.1, rustle(0.5, 2800, 60, 67) * decay(0.5, 0.15) * 0.5)), 0.8, 0.3, 0.5)
+d = 0.9
+S['usher/reach'] = under(place(d, (0.0, whoosh(0.7, 120, 1500, 0.55, 0.5) * 1.6), (0.5, thump(0.35, 90, 40, 0.07) * 0.8)), 0.8, 0.25, 0.5)
+for k in (0, 1):
+    S[f'usher/step{k + 1}'] = under(thump(0.4, 78 - 8 * k, 36, 0.09) * 1.2 + lowpass(noise(0.4), 500) * decay(0.4, 0.05) * 0.5, 0.7, 0.3, 0.5)
+
+# the stray shadow: no body to make a sound with - only the air it moves
+for k in (0, 1):
+    d = 1.9
+    S[f'shadow/ambient{k + 1}'] = under(moving_bandpass(noise(d), contour(d, (0, 700 + 100 * k), (0.5, 1500), (1, 600)), 0.3) * env(d, 0.7, 0.9) * 0.8
+                                        * (0.6 + 0.4 * np.clip(lowpass(noise(d), 9) * 6, -1, 1)), 1.4, 0.45, 1.0)
+d = 0.45
+S['shadow/hurt'] = under(backwards(bandpass(noise(d), 900, 5000) * decay(d, 0.09)) * 0.9 + tone(contour(d, (0, 500), (1, 240)), d) * env(d, 0.02, 0.3) * 0.15, 0.8, 0.35, 0.5)
+d = 1.6
+S['shadow/death'] = under(moving_bandpass(noise(d), contour(d, (0, 2600), (1, 180)), 0.4) * env(d, 0.02, 1.2) * 1.2 + thump(d, 110, 30, 0.5) * 0.4)
+d = 0.9
+S['shadow/rise'] = under(backwards(moving_bandpass(noise(d), contour(d, (0, 2400), (1, 300)), 0.35) * decay(d, 0.3)) * 1.1 + tone(contour(d, (0, 70), (1, 190)), d) * env(d, 0.6, 0.1) * 0.25,
+                         0.9, 0.35, 0.6)
+d = 0.5
+S['shadow/claw'] = under(layer(whoosh(0.4, 900, 6000, 0.4, 0.4) * 1.3, place(d, (0.18, bandpass(noise(0.2), 2000, 7000) * decay(0.2, 0.02) * 0.7))), 0.6, 0.25, 0.4)
+d = 0.6
+S['shadow/snatch'] = under(place(d, (0.0, whoosh(0.35, 300, 2400, 0.6, 0.5) * 1.0), (0.25, thump(0.3, 120, 60, 0.05) * 0.9), (0.25, patter(0.2, 3, 500, 1500, 68) * 0.8)), 0.6, 0.25, 0.4)
+
+# the long-armed: stone it is in, and joints
+for k in (0, 1):
+    d = 2.0
+    S[f'longarm/ambient{k + 1}'] = under(grind(d, 300 + 80 * k, 1800, 71 + k) * env(d, 0.5, 0.8) * 0.35 + rattle(d, 5 + k, 700, 1700, seed=72 + k) * 0.5, 1.2, 0.4, 0.8)
+d = 0.5
+S['longarm/hurt'] = under(voice(contour(d, (0, 130), (0.2, 160), (1, 90)), d, WET, breath=1.3, jitter=0.1, rough=0.7) * env(d, 0.01, 0.35) + rattle(d, 4, 900, 2200, seed=73) * 0.5,
+                          0.8, 0.3, 0.5)
+d = 2.0
+S['longarm/death'] = under(place(d, (0.0, voice(contour(1.4, (0, 140), (0.3, 100), (1, 50)), 1.4, WET, breath=1.4, jitter=0.1, rough=0.6) * env(1.4, 0.03, 1.0)),
+                                 (0.5, rattle(1.2, 9, 600, 1600, seed=74) * env(1.2, 0.05, 0.8) * 0.8), (1.3, thump(0.5, 90, 40, 0.1) * 1.0)))
+d = 0.8
+S['longarm/reach'] = under(place(d, (0.0, rattle(0.5, 7, 900, 2400, seed=75) * 0.8), (0.1, whoosh(0.6, 200, 2600, 0.6, 0.5) * 1.5)), 0.7, 0.25, 0.5)
+d = 0.7
+S['longarm/take'] = under(place(d, (0.0, patter(0.2, 4, 600, 1800, 76) * 1.2), (0.05, grind(0.6, 200, 900, 77) * env(0.6, 0.05, 0.4) * 1.0)), 0.7, 0.25, 0.5)
+
+# the handwalker: a great many palms
+for k in (0, 1):
+    d = 1.4
+    S[f'handwalker/ambient{k + 1}'] = under(patter(d, 12 + 3 * k, 500, 1700, 81 + k) * env(d, 0.2, 0.5) * 0.9 + rattle(d, 4, 2200, 4200, seed=82 + k) * 0.25, 0.9, 0.3, 0.6)
+d = 0.4
+S['handwalker/hurt'] = under(highpass(noise(d), 2400) * env(d, 0.01, 0.3) * (0.6 + 0.4 * np.sign(tone(46, d))) * 0.8 + rattle(d, 5, 1800, 4000, seed=83) * 0.5, 0.6, 0.25, 0.4)
+d = 1.5
+S['handwalker/death'] = under(place(d, (0.0, highpass(noise(0.9), 2000) * env(0.9, 0.01, 0.8) * (0.6 + 0.4 * np.sign(tone(contour(0.9, (0, 50), (1, 16)), 0.9))) * 0.8),
+                                    (0.2, patter(1.1, 14, 400, 1500, 84) * env(1.1, 0.05, 0.9) * 1.0)))
+d = 0.8
+S['handwalker/rear'] = under(place(d, (0.0, rattle(0.6, 10, 1600, 4200, seed=85) * env(0.6, 0.1, 0.3) * 0.9), (0.1, highpass(noise(0.6), 3000) * env(0.6, 0.3, 0.1) * 0.6)), 0.7, 0.3, 0.5)
+d = 0.6
+S['handwalker/whip'] = under(layer(whoosh(0.5, 400, 4200, 0.45, 0.45) * 1.6, place(d, (0.25, patter(0.2, 4, 600, 1800, 86) * 0.6))), 0.6, 0.25, 0.4)
+for k in (0, 1):
+    S[f'handwalker/step{k + 1}'] = patter(0.22, 4, 520 + 60 * k, 1700, 87 + k) * 0.9
+
+# the deepling: under water, though there is none
+for k in (0, 1):
+    d = 1.8
+    S[f'deepling/ambient{k + 1}'] = under(lowpass(bubbles(d, 9 + 2 * k, 180, 520), 1400) * 1.2 + voice(contour(d, (0, 66), (0.5, 58 - 4 * k), (1, 62)), d, WET, breath=0.4, jitter=0.05)
+                                          * env(d, 0.6, 0.8) * 0.5, 1.3, 0.45, 1.0)
+d = 0.5
+S['deepling/hurt'] = under(lowpass(voice(contour(d, (0, 210), (0.15, 260), (1, 120)), d, WET, breath=0.9, jitter=0.1, rough=0.5), 1800) * env(d, 0.01, 0.35) + bubbles(d, 6, 300, 900) * 0.5,
+                           0.8, 0.35, 0.5)
+d = 1.8
+S['deepling/death'] = under(place(d, (0.0, lowpass(voice(contour(1.3, (0, 200), (0.3, 150), (1, 60)), 1.3, WET, breath=1.0, jitter=0.1, rough=0.5), 1500) * env(1.3, 0.02, 1.0)),
+                                  (0.4, bubbles(1.3, 16, 200, 900) * env(1.3, 0.05, 0.9) * 0.9)))
+d = 1.2
+S['deepling/wake'] = under(place(d, (0.0, squelch(0.5, 200) * 1.0), (0.25, lowpass(voice(contour(0.9, (0, 70), (1, 150)), 0.9, WET, breath=0.8, jitter=0.07, rough=0.8), 1600) * env(0.9, 0.3, 0.2) * 1.1)),
+                           1.0, 0.35, 0.7)
+d = 0.5
+S['deepling/gulp'] = under(place(d, (0.0, whoosh(0.3, 200, 1800, 0.6, 0.5) * 0.9), (0.2, stone_hit(0.25, 1500, 200, 0.2) * 0.8), (0.2, squelch(0.25, 300) * 0.8)), 0.6, 0.3, 0.4)
+d = 2.2
+S['deepling/glare'] = under(place(d, (0.0, squelch(0.5, 180) * 0.6), (0.3, tone(contour(1.9, (0, 300), (0.4, 620), (1, 590)) * (1 + 0.01 * np.sin(2 * np.pi * 6 * t(1.9))), 1.9) * env(1.9, 0.7, 0.6) * 0.3),
+                                  (0.3, drone(1.9, 74, 9, 3.0) * 0.8)))
+
+# the gut: a great beast with its breath in its back
+for k in (0, 1):
+    d = 2.6
+    S[f'gut/ambient{k + 1}'] = under(voice(contour(d, (0, 44 - 3 * k), (0.4, 54 - 3 * k), (1, 40 - 3 * k)), d, HOLLOW, breath=2.0, jitter=0.07, rough=0.9) * env(d, 0.7, 1.0) * 1.2
+                                     + squelch(d, 120) * 0.25, 1.2, 0.35, 0.8)
+d = 0.8
+S['gut/hurt'] = under(voice(contour(d, (0, 80), (0.15, 104), (1, 52)), d, HOLLOW, breath=1.0, jitter=0.1, rough=1.2) * env(d, 0.01, 0.6) * 1.4, 0.9, 0.3, 0.6)
+d = 3.0
+S['gut/death'] = under(place(d, (0.0, voice(contour(2.2, (0, 92), (0.2, 76), (0.7, 48), (1, 28)), 2.2, HOLLOW, breath=1.4, jitter=0.1, rough=1.1) * env(2.2, 0.04, 1.6) * 1.4),
+                             (1.8, thump(1.0, 62, 22, 0.24) * 2.4), (1.8, squelch(0.8, 160) * 0.9)))
+d = 1.6
+S['gut/bellow'] = under(voice(contour(d, (0, 58), (0.3, 96), (0.8, 88), (1, 60)), d, HOLLOW, breath=0.7, jitter=0.07, rough=1.2) * env(d, 0.12, 0.5) * 1.5, 1.4, 0.4, 1.0)
+for k in (0, 1):
+    S[f'gut/step{k + 1}'] = under(thump(0.45, 68 - 6 * k, 26, 0.1) * 1.8 + lowpass(noise(0.45), 420) * decay(0.45, 0.06) * 0.8, 0.6, 0.25, 0.4)
+d = 1.4
+S['gut/crash'] = under(place(d, (0.0, stone_hit(0.8, 380, 80, 1.0) * 1.8), (0.0, thump(1.0, 66, 22, 0.24) * 2.6), (0.15, voice(contour(0.9, (0, 110), (1, 50)), 0.9, HOLLOW, breath=1.0, jitter=0.1, rough=1.2)
+                                                                                                                  * env(0.9, 0.02, 0.7) * 0.9)), 1.0, 0.3, 0.7)
+d = 1.1
+S['gut/slam'] = under(place(d, (0.0, thump(0.9, 80, 24, 0.2) * 2.6), (0.0, stone_hit(0.6, 440, 100, 0.9) * 1.2), (0.06, stone_hit(0.5, 380, 90, 0.8) * 0.9)), 0.9, 0.3, 0.6)
+d = 1.0
+S['gut/gape'] = under(place(d, (0.0, squelch(0.6, 220) * 1.4), (0.1, creak(0.6, 60, 22, (300, 700, 1500)) * env(0.6, 0.05, 0.4) * 0.5), (0.5, stone_hit(0.3, 1300, 180, 0.2) * 0.9)), 0.8, 0.3, 0.5)
+
+# the clockhand: a clock
+d = 0.4
+S['clockhand/hurt'] = under(layer(clang(1700, 0.35, strike=0.7) * 0.5, tone(contour(d, (0, 900), (1, 300)), d) * decay(d, 0.08) * 0.3 * (1 + 0.5 * np.sin(2 * np.pi * 60 * t(d)))), 0.6, 0.25, 0.4)
+d = 1.6
+S['clockhand/death'] = under(place(d, (0.0, clang(1200, 0.6, strike=0.8) * 0.7), (0.1, rattle(1.2, 14, 1200, 5200, seed=91) * env(1.2, 0.02, 0.9) * 0.9),
+                                   (0.2, tone(contour(1.2, (0, 1400), (1, 90)), 1.2) * env(1.2, 0.02, 1.0) * 0.2 * (1 + 0.6 * np.sin(2 * np.pi * 40 * t(1.2)))),
+                                   (0.9, clang(700, 0.6, strike=0.5) * 0.5)))
+for k in (0, 1):
+    d = 0.2
+    S[f'clockhand/tick{k + 1}'] = under(wood_knock(d, 1500 + 240 * k, 0.25) * 0.5 + clang(4200 - 600 * k, d, strike=0.9) * 0.25, 0.5, 0.25, 0.35)
+d = 0.6
+S['clockhand/stab'] = under(place(d, (0.0, whoosh(0.3, 1400, 7000, 0.6, 0.35) * 1.2), (0.22, clang(2300, 0.35, strike=0.9) * 0.45)), 0.6, 0.25, 0.4)
+d = 0.7
+S['clockhand/sweep'] = under(place(d, (0.0, whoosh(0.5, 500, 4200, 0.5, 0.4) * 1.5), (0.3, clang(1500, 0.35, strike=0.6) * 0.3)), 0.6, 0.25, 0.4)
+d = 0.5
+S['clockhand/wind'] = under(rattle(d, 12, 2400, 6000, seed=92) * env(d, 0.02, 0.1) * 0.9 + tone(contour(d, (0, 500), (1, 900)), d) * env(d, 0.1, 0.1) * 0.1, 0.5, 0.2, 0.3)
+
+# the Bolt: the pendulum of a clock as big as a hall
+for k in (0, 1):
+    d = 2.6
+    S[f'bolt/ambient{k + 1}'] = under(drone(d, 98 - 8 * k, 11 + k, 1.3) * 0.8 + bell(392 - 30 * k, d, 0.5) * env(d, 1.0, 1.0) * 0.12)
+d = 0.8
+S['bolt/hurt'] = under(layer(clang(520, 0.7, strike=0.8) * 0.9, bell(660, 0.8, 1.4) * 0.3), 1.0, 0.35, 0.7)
+d = 4.0
+S['bolt/death'] = under(place(d, (0.0, clang(300, 1.6, strike=1.0) * 1.2), (0.0, crackle(1.6, 120, 3600) * decay(1.6, 0.35) * 1.0), (0.4, bell(110, 3.4, 0.8) * 0.9),
+                              (0.9, rattle(1.8, 22, 900, 5200, seed=93) * env(1.8, 0.02, 1.4) * 0.8), (1.4, thump(1.2, 60, 20, 0.3) * 2.2)), 2.0, 0.4, 1.5)
+for k in (0, 1):
+    d = 0.9
+    S[f'bolt/tock{k + 1}'] = under(layer(wood_knock(0.6, 190 - 30 * k, 1.6) * 1.4, thump(0.6, 70, 34, 0.12) * 1.2, clang(900 - 120 * k, 0.5, strike=0.3) * 0.15), 1.4, 0.4, 1.0)
+d = 1.0
+S['bolt/strike'] = under(place(d, (0.0, thump(0.7, 90, 30, 0.14) * 2.2), (0.0, clang(430, 0.8, strike=0.9) * 0.9)), 1.0, 0.3, 0.7)
+d = 4.5
+S['bolt/toll'] = under(place(d, (0.0, backwards(bell(98, 1.1, 0.7) * env(1.1, 0.01, 0.9)) * 0.7), (1.05, bell(98, 3.4, 1.0) * 1.3), (1.05, bell(147, 3.0, 0.7) * 0.5),
+                             (1.05, thump(1.0, 60, 26, 0.3) * 1.6)), 2.4, 0.45, 2.0)
+d = 1.6
+S['bolt/chain'] = under(rattle(d, 26, 900, 3800, seed=94) * env(d, 0.05, 0.6) * 1.1 + grind(d, 200, 900, 95) * env(d, 0.2, 0.6) * 0.5, 1.2, 0.35, 0.8)
+for k in (0, 1):
+    d = 1.3
+    S[f'bolt/weight{k + 1}'] = under(place(d, (0.0, thump(1.0, 76 - 8 * k, 22, 0.22) * 2.6), (0.0, clang(340 + 60 * k, 0.9, strike=0.9) * 0.8), (0.0, stone_hit(0.6, 500, 90, 1.0) * 1.0),
+                                           (0.15, rattle(0.9, 10, 1000, 3600, seed=96 + k) * decay(0.9, 0.25) * 0.6)), 1.2, 0.35, 0.8)
+d = 2.0
+S['bolt/strain'] = under(creak(d, 46, 110, (320, 760, 1900)) * env(d, 0.2, 0.3) * 1.2 + tone(contour(d, (0, 140), (1, 420)), d) * env(d, 1.2, 0.1) * 0.15, 1.2, 0.35, 0.8)
+d = 2.2
+S['bolt/snap'] = under(place(d, (0.0, clang(260, 1.4, strike=1.0) * 1.4), (0.0, highpass(noise(0.2), 1800) * decay(0.2, 0.02) * 1.2), (0.05, tone(contour(1.2, (0, 2600), (1, 300)), 1.2) * decay(1.2, 0.3) * 0.3),
+                             (0.5, thump(1.2, 70, 20, 0.3) * 2.6), (0.5, stone_hit(0.8, 420, 80, 1.0) * 1.4), (0.6, rattle(1.4, 20, 900, 4200, seed=98) * decay(1.4, 0.4) * 0.8)), 1.8, 0.4, 1.2)
+d = 0.8
+S['bolt/stab'] = under(place(d, (0.0, whoosh(0.45, 300, 3600, 0.6, 0.45) * 1.8), (0.3, stone_hit(0.45, 900, 130, 0.8) * 1.3), (0.3, clang(1100, 0.4, strike=0.7) * 0.4)), 0.8, 0.3, 0.5)
+d = 1.1
+S['bolt/sweep'] = under(layer(whoosh(0.95, 140, 2200, 0.5, 0.5) * 2.2, rattle(d, 8, 1500, 4200, seed=99) * env(d, 0.2, 0.5) * 0.3), 0.8, 0.3, 0.5)
+d = 1.6
+S['bolt/land'] = under(place(d, (0.0, thump(1.2, 72, 20, 0.28) * 3.0), (0.0, stone_hit(0.9, 380, 80, 1.0) * 1.8), (0.0, clang(360, 1.0, strike=0.8) * 0.9),
+                             (0.1, crackle(1.0, 90, 2000) * decay(1.0, 0.3) * 0.9)), 1.4, 0.35, 1.0)
+for k in (0, 1):
+    S[f'bolt/step{k + 1}'] = under(layer(stone_hit(0.3, 1700 + 200 * k, 150, 0.3) * 0.9, clang(2600 - 300 * k, 0.25, strike=0.6) * 0.2), 0.6, 0.3, 0.4)
+
+# the Coming: a bell heard from its end, and something under every other sound of the place
+for k in (0, 1):
+    d = 4.0
+    S[f'coming/ambient{k + 1}'] = under(drone(d, 38 - 3 * k, 21 + k, 0.45) * 1.3 + backwards(bell(82 - 6 * k, d, 0.6)) * env(d, 0.2, 0.3) * 0.35, 2.2, 0.45, 1.6)
+d = 1.0
+S['coming/hurt'] = under(layer(backwards(bell(196, 0.8, 1.2) * env(0.8, 0.01, 0.6)) * 0.9, voice(contour(d, (0, 60), (0.4, 78), (1, 46)), d, HOLLOW, breath=1.2, jitter=0.08, rough=1.0)
+                               * env(d, 0.05, 0.5) * 1.0), 1.4, 0.4, 1.0)
+d = 6.0
+S['coming/death'] = under(place(d, (0.0, voice(contour(4.6, (0, 76), (0.2, 96), (0.6, 60), (1, 20)), 4.6, HOLLOW, breath=1.4, jitter=0.1, rough=1.1) * env(4.6, 0.1, 3.4) * 1.5),
+                                (0.4, backwards(bell(65, 3.6, 0.9)) * 1.0), (4.0, bell(49, 2.0, 0.6) * 1.2), (4.0, thump(1.6, 52, 16, 0.4) * 2.6),
+                                (1.0, moving_bandpass(noise(4.0), contour(4.0, (0, 3000), (1, 120)), 0.4) * env(4.0, 0.3, 3.0) * 0.8)), 2.8, 0.45, 2.2)
+d = 2.4
+S['coming/gaze'] = under(tone(contour(d, (0, 180), (0.5, 520), (1, 560)) * (1 + 0.006 * np.sin(2 * np.pi * 5 * t(d))), d) * env(d, 1.2, 0.5) * 0.35
+                         + tone(contour(d, (0, 271), (0.5, 782), (1, 842)), d) * env(d, 1.4, 0.4) * 0.18 + drone(d, 60, 23, 2.0) * 0.6, 1.6, 0.4, 1.2)
+d = 1.8
+S['coming/rear'] = under(voice(contour(d, (0, 44), (0.6, 70), (1, 92)), d, HOLLOW, breath=1.3, jitter=0.07, rough=1.0) * env(d, 0.5, 0.2) * 1.4
+                         + whoosh(d, 80, 700, 0.75, 0.6) * 1.4, 1.4, 0.4, 1.0)
+d = 2.0
+S['coming/slam'] = under(place(d, (0.0, thump(1.6, 66, 16, 0.36) * 3.2), (0.0, splash(1.2, 1.6, 3000) * 1.4), (0.0, stone_hit(0.9, 300, 70, 1.0) * 1.4),
+                               (0.2, bell(55, 1.6, 0.5) * 0.7)), 2.0, 0.4, 1.4)
+d = 1.5
+S['coming/sweep'] = under(layer(whoosh(1.3, 70, 1300, 0.55, 0.55) * 2.6, lowpass(noise(d), 200) * env(d, 0.5, 0.6) * 0.8), 1.2, 0.35, 0.8)
+d = 2.4
+S['coming/strain'] = under(creak(d, 30, 90, (260, 640, 1500)) * env(d, 0.3, 0.3) * 1.0 + rattle(d, 12, 2600, 7000, seed=101) * env(d, 0.8, 0.2) * 0.4
+                           + voice(contour(d, (0, 52), (1, 96)), d, HOLLOW, breath=1.0, jitter=0.08, rough=1.0) * env(d, 0.8, 0.2) * 1.0, 1.6, 0.4, 1.0)
+d = 3.6
+S['coming/unmask'] = under(place(d, (0.0, clang(880, 1.0, strike=1.0) * 1.0), (0.0, crackle(1.0, 140, 4200) * decay(1.0, 0.25) * 1.0), (0.3, rattle(1.2, 16, 2400, 7000, seed=102) * decay(1.2, 0.4) * 0.7),
+                                 (0.2, voice(contour(3.2, (0, 60), (0.15, 150), (0.6, 132), (1, 70)), 3.2, HOLLOW, breath=0.8, jitter=0.08, rough=1.2) * env(3.2, 0.1, 1.6) * 1.8),
+                                 (0.2, backwards(bell(130, 2.6, 1.2)) * 0.8)), 2.6, 0.45, 2.0)
+d = 4.4
+S['coming/pull'] = under(backwards(moving_bandpass(noise(d), contour(d, (0, 2400), (0.3, 500), (1, 90)), 0.45) * decay(d, 1.6)) * 1.8
+                         + tone(contour(d, (0, 40), (1, 110)), d) * env(d, 3.0, 0.2) * 0.5 + drone(d, 46, 25, 1.4) * 0.6, 1.8, 0.4, 0.6)
+d = 1.4
+S['coming/bite'] = under(place(d, (0.0, stone_hit(0.6, 700, 110, 0.5) * 1.6), (0.0, thump(1.1, 70, 20, 0.26) * 2.8), (0.02, squelch(0.6, 240) * 1.2),
+                               (0.1, bell(73, 1.2, 0.5) * 0.5)), 1.4, 0.4, 1.0)
+for k in (0, 1):
+    d = 1.2
+    S[f'coming/star{k + 1}'] = under(layer(backwards(chime(1320 + 220 * k, 1.0, 1.2) * env(1.0, 0.01, 0.8)) * 0.5, tone(contour(d, (0, 1800 + 200 * k), (1, 2600)), d) * env(d, 0.9, 0.1) * 0.06), 0.9, 0.4, 0.5)
+for k in (0, 1):
+    d = 1.1
+    S[f'coming/burst{k + 1}'] = under(place(d, (0.0, chime(990 - 110 * k, 0.9, 1.4) * 0.6), (0.0, thump(0.6, 110, 34, 0.1) * 1.2), (0.0, highpass(noise(0.25), 3000) * decay(0.25, 0.04) * 0.6),
+                                            (0.03, whoosh(0.5, 800, 5000, 0.2, 0.6) * 0.6)), 1.0, 0.4, 0.7)
+
+
 
 EVENTS = {
     'entity.withered.ambient': ['withered/ambient1', 'withered/ambient2', 'withered/ambient3'],
@@ -1660,6 +1912,28 @@ EVENTS = {
     'entity.miller.swing': ['miller/swing'], 'entity.miller.slam': ['miller/slam'], 'entity.miller.shout': ['miller/shout'], 'entity.miller.lantern': ['miller/lantern'],
     'entity.millstone.rumble': ['millstone/rumble'], 'entity.millstone.check': ['millstone/check'], 'entity.millstone.crash': ['millstone/crash'],
     'entity.flour.puff': ['flour/puff'], 'entity.flour.blast': ['flour/blast'],
+    'entity.usher.ambient': ['usher/ambient1', 'usher/ambient2'], 'entity.usher.hurt': ['usher/hurt'], 'entity.usher.death': ['usher/death'],
+    'entity.usher.open': ['usher/open'], 'entity.usher.take': ['usher/take'], 'entity.usher.reach': ['usher/reach'], 'entity.usher.step': ['usher/step1', 'usher/step2'],
+    'entity.shadow.ambient': ['shadow/ambient1', 'shadow/ambient2'], 'entity.shadow.hurt': ['shadow/hurt'], 'entity.shadow.death': ['shadow/death'],
+    'entity.shadow.rise': ['shadow/rise'], 'entity.shadow.claw': ['shadow/claw'], 'entity.shadow.snatch': ['shadow/snatch'],
+    'entity.longarm.ambient': ['longarm/ambient1', 'longarm/ambient2'], 'entity.longarm.hurt': ['longarm/hurt'], 'entity.longarm.death': ['longarm/death'],
+    'entity.longarm.reach': ['longarm/reach'], 'entity.longarm.take': ['longarm/take'],
+    'entity.handwalker.ambient': ['handwalker/ambient1', 'handwalker/ambient2'], 'entity.handwalker.hurt': ['handwalker/hurt'], 'entity.handwalker.death': ['handwalker/death'],
+    'entity.handwalker.rear': ['handwalker/rear'], 'entity.handwalker.whip': ['handwalker/whip'], 'entity.handwalker.step': ['handwalker/step1', 'handwalker/step2'],
+    'entity.deepling.ambient': ['deepling/ambient1', 'deepling/ambient2'], 'entity.deepling.hurt': ['deepling/hurt'], 'entity.deepling.death': ['deepling/death'],
+    'entity.deepling.wake': ['deepling/wake'], 'entity.deepling.gulp': ['deepling/gulp'], 'entity.deepling.glare': ['deepling/glare'],
+    'entity.gut.ambient': ['gut/ambient1', 'gut/ambient2'], 'entity.gut.hurt': ['gut/hurt'], 'entity.gut.death': ['gut/death'], 'entity.gut.bellow': ['gut/bellow'],
+    'entity.gut.step': ['gut/step1', 'gut/step2'], 'entity.gut.crash': ['gut/crash'], 'entity.gut.slam': ['gut/slam'], 'entity.gut.gape': ['gut/gape'],
+    'entity.clockhand.hurt': ['clockhand/hurt'], 'entity.clockhand.death': ['clockhand/death'], 'entity.clockhand.tick': ['clockhand/tick1', 'clockhand/tick2'],
+    'entity.clockhand.stab': ['clockhand/stab'], 'entity.clockhand.sweep': ['clockhand/sweep'], 'entity.clockhand.wind': ['clockhand/wind'],
+    'entity.bolt.ambient': ['bolt/ambient1', 'bolt/ambient2'], 'entity.bolt.hurt': ['bolt/hurt'], 'entity.bolt.death': ['bolt/death'],
+    'entity.bolt.tock': ['bolt/tock1', 'bolt/tock2'], 'entity.bolt.strike': ['bolt/strike'], 'entity.bolt.toll': ['bolt/toll'], 'entity.bolt.chain': ['bolt/chain'],
+    'entity.bolt.weight': ['bolt/weight1', 'bolt/weight2'], 'entity.bolt.strain': ['bolt/strain'], 'entity.bolt.snap': ['bolt/snap'], 'entity.bolt.stab': ['bolt/stab'],
+    'entity.bolt.sweep': ['bolt/sweep'], 'entity.bolt.land': ['bolt/land'], 'entity.bolt.step': ['bolt/step1', 'bolt/step2'],
+    'entity.coming.ambient': ['coming/ambient1', 'coming/ambient2'], 'entity.coming.hurt': ['coming/hurt'], 'entity.coming.death': ['coming/death'],
+    'entity.coming.gaze': ['coming/gaze'], 'entity.coming.rear': ['coming/rear'], 'entity.coming.slam': ['coming/slam'], 'entity.coming.sweep': ['coming/sweep'],
+    'entity.coming.strain': ['coming/strain'], 'entity.coming.unmask': ['coming/unmask'], 'entity.coming.pull': ['coming/pull'], 'entity.coming.bite': ['coming/bite'],
+    'entity.coming.star': ['coming/star1', 'coming/star2'], 'entity.coming.burst': ['coming/burst1', 'coming/burst2'],
     'entity.keykeeper.ambient': ['keykeeper/ambient1', 'keykeeper/ambient2'],
     'entity.keykeeper.give': ['keykeeper/give'],
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],

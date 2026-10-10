@@ -27,6 +27,8 @@ public class SunShaftEntity extends Entity {
     private static final EntityDataAccessor<Integer> RISE = SynchedEntityData.defineId(SunShaftEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> STRIKE = SynchedEntityData.defineId(SunShaftEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> LIFE = SynchedEntityData.defineId(SunShaftEntity.class, EntityDataSerializers.INT);
+    /** 0: the sun's own light. 1: the light of the Sky Beneath, which is the colour of the hour after sunset. */
+    private static final EntityDataAccessor<Integer> HUE = SynchedEntityData.defineId(SunShaftEntity.class, EntityDataSerializers.INT);
 
     public SunShaftEntity(EntityType<? extends SunShaftEntity> type, Level level) {
         super(type, level);
@@ -44,6 +46,23 @@ public class SunShaftEntity extends Entity {
         shaft.entityData.set(LIFE, Math.max(strike + 1, life));
         level.addFreshEntity(shaft);
         return shaft;
+    }
+
+    /** The same shaft in the light of the Sky Beneath: violet, for what the Coming looks at. */
+    public static SunShaftEntity dusk(ServerLevel level, Vec3 at, float width, int rise, int strike, int life) {
+        SunShaftEntity shaft = new SunShaftEntity(Dushi.SUN_SHAFT.get(), level);
+        shaft.setPos(at.x, at.y, at.z);
+        shaft.entityData.set(WIDTH, width);
+        shaft.entityData.set(RISE, Math.max(1, rise));
+        shaft.entityData.set(STRIKE, strike);
+        shaft.entityData.set(LIFE, Math.max(strike + 1, life));
+        shaft.entityData.set(HUE, 1);
+        level.addFreshEntity(shaft);
+        return shaft;
+    }
+
+    public int hue() {
+        return this.entityData.get(HUE);
     }
 
     public float width() {
@@ -80,6 +99,7 @@ public class SunShaftEntity extends Entity {
         builder.define(RISE, 10);
         builder.define(STRIKE, 30);
         builder.define(LIFE, 40);
+        builder.define(HUE, 0);
     }
 
     @Override
@@ -126,5 +146,6 @@ public class SunShaftEntity extends Entity {
         this.entityData.set(RISE, Math.max(1, input.getIntOr("Rise", 10)));
         this.entityData.set(STRIKE, input.getIntOr("Strike", 30));
         this.entityData.set(LIFE, input.getIntOr("Life", 40));
+        this.entityData.set(HUE, input.getIntOr("Hue", 0));
     }
 }

@@ -191,7 +191,16 @@ MAP_CHESTS = {
     # the Stubble (tools/gen_stubble.py)
     'stubble_field': [(GREAT, 3), (M + 'rye_straw', 4), (M + 'return_ember', 2), (M + 'reaper_sickle', 1), (M + 'reaper_hat', 1)],   # what somebody left in the corn
     'stubble_barn': [(GREAT, 4), (M + 'flour_sack', 4), (M + 'rye_straw', 4), (M + 'thresh_flail', 1), (M + 'reaper_shirt', 1)],
-    'stubble_mill': [(GREAT, 7), (M + 'return_ember', 3), (M + 'flour_sack', 6), (M + 'twin_ear', 1), (M + 'dry_wind', 1)],        # the Miller's own                 # the keeper's own, hung by the lamp
+    'stubble_mill': [(GREAT, 7), (M + 'return_ember', 3), (M + 'flour_sack', 6), (M + 'twin_ear', 1), (M + 'dry_wind', 1),
+                     (M + 'depths_key', 1)],                                                       # the Miller's own; and the key of the Lower Grate
+    # the Sky Beneath (tools/gen_depths.py): nothing of its own is made yet - what lies there is souls and what gets one out
+    'depths_brink': [(GREAT, 4), (M + 'return_ember', 3)],
+    'depths_water': [(GREAT, 5), (M + 'return_ember', 2), (M + 'tar_pot', 4)],
+    'depths_island': [(GREAT, 6), (M + 'powder_pot', 4)],
+    'depths_works': [(GREAT, 8), (M + 'return_ember', 3), (M + 'rust_scrap', 6)],
+    'depths_causeway': [(GREAT, 7), (M + 'return_ember', 2)],
+    'depths_ledge': [(GREAT, 6), (M + 'powder_pot', 4), (M + 'tar_pot', 4)],
+    'depths_tear': [(GREAT, 12), (M + 'return_ember', 4)],
 }
 for _name, _items in MAP_CHESTS.items():
     CHESTS['map/' + _name] = [pool(item(_id, count=(_n, _n)) if _n > 1 else item(_id)) for _id, _n in _items]
@@ -298,7 +307,35 @@ STUBBLE = {
     'temperature': 1.6,
 }
 
+# The biome of the Sky Beneath: the hour after sunset, kept under a hill. The place is shut in on every side and no sky
+# of the game's is seen from it - its sky is blocks (UnderSkyBlock) that are drawn at their own brightness; what the
+# biome gives is the fog, a dark blue, which is the horizon those blocks fade into a long way off, and a little light
+# of the same colour that is everywhere and comes from nowhere, so that the dark of the place is blue and not black.
+# Its hour is noon (PlaceNameBlock.BLUE_HOUR): at night the game would blacken the fog.
+UNDER_SKY = {
+    'attributes': {
+        'minecraft:visual/fog_color': '#0b0f2e',
+        'minecraft:visual/sky_color': '#03040b',
+        'minecraft:visual/fog_start_distance': 26.0,
+        'minecraft:visual/fog_end_distance': 124.0,
+        'minecraft:visual/sky_fog_end_distance': 110.0,
+        'minecraft:visual/cloud_fog_end_distance': 128.0,
+        'minecraft:visual/sky_light_factor': 0.2,
+        'minecraft:visual/sky_light_color': '#6a70c8',
+        'minecraft:visual/ambient_light_color': '#0e1130',
+        'minecraft:visual/water_fog_color': '#05061a',
+        'minecraft:visual/ambient_particles': {'argument': [{'particle': {'type': 'minecraft:white_ash'}, 'probability': 0.0025}], 'modifier': 'append'},
+    },
+    'carvers': [],
+    'downfall': 0.0,
+    'effects': {'dry_foliage_color': '#2a2c4a', 'foliage_color': '#2a2c4a', 'grass_color': '#2a2c4a', 'water_color': '#0c0e2a'},
+    'features': [],
+    'has_precipitation': False,
+    'temperature': 0.5,
+}
+
 if __name__ == '__main__':
+    write_json(f'{DATA}/{MOD}/worldgen/biome/under_sky.json', UNDER_SKY)
     write_json(f'{DATA}/{MOD}/worldgen/biome/stubble.json', STUBBLE)
     write_json(f'{DATA}/{MOD}/worldgen/biome/mire.json', MIRE)
     write_json(f'{DATA}/{MOD}/worldgen/biome/shore.json', SHORE)

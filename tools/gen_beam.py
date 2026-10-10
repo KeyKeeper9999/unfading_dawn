@@ -18,10 +18,14 @@ LIGHT = (255, 238, 178)
 CORE = (255, 250, 222)
 
 
-def make():
+DUSK = (150, 112, 232)          # the same shaft in the light of the Sky Beneath (SunShaftEntity.dusk)
+DUSK_CORE = (214, 204, 255)
+
+
+def make(light=LIGHT, core=CORE):
     p = Painter(M, 1)
     for _, _, b in M.boxes():
-        strength, colour = (190, LIGHT) if b.tag == 'outer' else (240, CORE)
+        strength, colour = (190, light) if b.tag == 'outer' else (240, core)
         for face, (fx, fy, fw, fh) in b.faces().items():
             for py in range(fh):
                 for px in range(fw):
@@ -44,5 +48,6 @@ if __name__ == '__main__':
     M.write_java(JAVA)
     tex = make()
     tex.save(f'{A}/textures/entity/sun_shaft.png')
+    make(DUSK, DUSK_CORE).save(f'{A}/textures/entity/dusk_shaft.png')
     if len(sys.argv) > 1:
         tex.resize((512, 512), 0).save(sys.argv[1])

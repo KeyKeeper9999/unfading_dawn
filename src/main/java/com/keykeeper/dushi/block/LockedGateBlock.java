@@ -52,6 +52,8 @@ public class LockedGateBlock extends Block {
         SHORE("shore", () -> Dushi.SHORE_KEY.get()),
         /** The Reapers' Gate, in the west cliff of the yard before the town's north gate; its key hangs in the lighthouse, by the lamp. */
         STUBBLE("stubble", () -> Dushi.STUBBLE_KEY.get()),
+        /** The Lower Grate, in the south wall of the quarry's sump: the way down to the Sky Beneath. Its key lies in the granary behind the Hollow Miller. */
+        DEPTHS("depths", () -> Dushi.DEPTHS_KEY.get()),
         /** A gate whose key is not in the map yet: a way that is being kept for a place still to come. Nothing opens it. */
         NONE("none", () -> null);
 

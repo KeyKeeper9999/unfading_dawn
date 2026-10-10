@@ -1,0 +1,67 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "unfading_dawn:block/night_shallows_0",
+        "weight": 14
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/night_shallows_3",
+        "y": 270,
+        "weight": 1
+      }
+    ]
+  }
+}

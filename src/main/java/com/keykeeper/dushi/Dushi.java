@@ -155,6 +155,19 @@ public class Dushi {
             "entity.miller.ambient", "entity.miller.hurt", "entity.miller.death", "entity.miller.swing", "entity.miller.slam",
             "entity.miller.shout", "entity.miller.lantern", "entity.millstone.rumble", "entity.millstone.check", "entity.millstone.crash",
             "entity.flour.puff", "entity.flour.blast",
+            "entity.usher.ambient", "entity.usher.hurt", "entity.usher.death", "entity.usher.open", "entity.usher.take", "entity.usher.reach", "entity.usher.step",
+            "entity.shadow.ambient", "entity.shadow.hurt", "entity.shadow.death", "entity.shadow.rise", "entity.shadow.claw", "entity.shadow.snatch",
+            "entity.longarm.ambient", "entity.longarm.hurt", "entity.longarm.death", "entity.longarm.reach", "entity.longarm.take",
+            "entity.handwalker.ambient", "entity.handwalker.hurt", "entity.handwalker.death", "entity.handwalker.rear", "entity.handwalker.whip",
+            "entity.handwalker.step",
+            "entity.deepling.ambient", "entity.deepling.hurt", "entity.deepling.death", "entity.deepling.wake", "entity.deepling.gulp", "entity.deepling.glare",
+            "entity.gut.ambient", "entity.gut.hurt", "entity.gut.death", "entity.gut.bellow", "entity.gut.step", "entity.gut.crash", "entity.gut.slam", "entity.gut.gape",
+            "entity.clockhand.hurt", "entity.clockhand.death", "entity.clockhand.tick", "entity.clockhand.stab", "entity.clockhand.sweep", "entity.clockhand.wind",
+            "entity.bolt.ambient", "entity.bolt.hurt", "entity.bolt.death", "entity.bolt.tock", "entity.bolt.strike", "entity.bolt.toll", "entity.bolt.chain",
+            "entity.bolt.weight", "entity.bolt.strain", "entity.bolt.snap", "entity.bolt.stab", "entity.bolt.sweep", "entity.bolt.land", "entity.bolt.step",
+            "entity.coming.ambient", "entity.coming.hurt", "entity.coming.death", "entity.coming.gaze", "entity.coming.rear", "entity.coming.slam",
+            "entity.coming.sweep", "entity.coming.strain", "entity.coming.unmask", "entity.coming.pull", "entity.coming.bite", "entity.coming.star",
+            "entity.coming.burst",
             "block.hearth.rest", "block.fog_gate.pass",
             "item.flask.drink", "item.flask.empty", "item.spell.shard", "item.spell.shard_hit", "item.spell.mend", "item.spell.rebuke",
             "item.spell.fire", "item.spell.fire_burst", "item.spell.fizzle",
@@ -218,6 +231,14 @@ public class Dushi {
     public static final DeferredBlock<com.keykeeper.dushi.block.ShallowsBlock> SEA_SHALLOWS = BLOCKS.registerBlock("sea_shallows", com.keykeeper.dushi.block.ShallowsBlock::new,
             props -> props.mapColor(MapColor.WATER).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
                     .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.WET_GRASS));
+    /** The same thing over the black floors of the Sky Beneath: all but black, with stars in it that are not over it. It shines, a very little. */
+    public static final DeferredBlock<com.keykeeper.dushi.block.ShallowsBlock> NIGHT_SHALLOWS = BLOCKS.registerBlock("night_shallows", com.keykeeper.dushi.block.ShallowsBlock::new,
+            props -> props.mapColor(MapColor.COLOR_BLACK).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
+                    .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.WET_GRASS).emissiveRendering((state, level, pos) -> true));
+    /** The sky of the Sky Beneath: what its roof, its far walls and its pits are made of. See {@link com.keykeeper.dushi.block.UnderSkyBlock}. No item; maps set it. */
+    public static final DeferredBlock<com.keykeeper.dushi.block.UnderSkyBlock> UNDER_SKY = BLOCKS.registerBlock("under_sky", com.keykeeper.dushi.block.UnderSkyBlock::new,
+            props -> props.mapColor(MapColor.COLOR_BLACK).strength(-1.0F, 3600000.0F).noLootTable().pushReaction(PushReaction.IMMOVEABLE)
+                    .sound(SoundType.STONE).emissiveRendering((state, level, pos) -> true));
     /** A pool of sludge that lies a while and is gone: see {@link com.keykeeper.dushi.block.SludgeBlock}. No item; the Wallower spits it. */
     public static final DeferredBlock<com.keykeeper.dushi.block.SludgeBlock> SLUDGE = BLOCKS.registerBlock("sludge", com.keykeeper.dushi.block.SludgeBlock::new,
             props -> props.mapColor(MapColor.COLOR_BROWN).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
@@ -476,6 +497,10 @@ public class Dushi {
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 62000));
     public static final DeferredItem<SoulItem> MILLER_SOUL = ITEMS.registerItem("miller_soul",
             props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 70000));
+    public static final DeferredItem<SoulItem> BOLT_SOUL = ITEMS.registerItem("bolt_soul",
+            props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 78000));
+    public static final DeferredItem<SoulItem> COMING_SOUL = ITEMS.registerItem("coming_soul",
+            props -> new SoulItem(props.stacksTo(1).rarity(Rarity.EPIC).fireResistant(), 90000));
     /** Opens the Quarrymen's Gate of the borough: see {@link LockedGateBlock}. */
     public static final DeferredItem<Item> QUARRY_KEY = ITEMS.registerItem("quarry_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     /** Opens the Mire Gate, at the other end of the same street. */
@@ -486,6 +511,8 @@ public class Dushi {
     public static final DeferredItem<Item> SHORE_KEY = ITEMS.registerItem("shore_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     /** Opens the Reapers' Gate, in the cliff of the yard before the town's north gate: the way out to the Stubble. */
     public static final DeferredItem<Item> STUBBLE_KEY = ITEMS.registerItem("stubble_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
+    /** Opens the Lower Grate, in the south wall of the quarry's sump: the way down to the Sky Beneath. It lies in the Miller's granary. */
+    public static final DeferredItem<Item> DEPTHS_KEY = ITEMS.registerItem("depths_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     public static final DeferredItem<com.keykeeper.dushi.item.PowderPotItem> POWDER_POT = ITEMS.registerItem("powder_pot",
             props -> new com.keykeeper.dushi.item.PowderPotItem(props.stacksTo(16)));
     public static final DeferredItem<ReturnEmberItem> RETURN_EMBER = ITEMS.registerItem("return_ember", props -> new ReturnEmberItem(props.stacksTo(16)));
@@ -623,6 +650,29 @@ public class Dushi {
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.FlourCloudEntity>> FLOUR_CLOUD = ENTITIES.registerEntityType(
             "flour_cloud", com.keykeeper.dushi.entity.FlourCloudEntity::new, MobCategory.MISC, b -> b.sized(0.5F, 0.5F).clientTrackingRange(8).updateInterval(20).fireImmune());
 
+    /**
+     * The Sky Beneath, under the black hill: what a day kept too long in the dark has turned into, the two kinds of thing
+     * the Founder's rite set there to keep it, and the two lords.
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.UsherEntity>> USHER = ENTITIES.registerEntityType(
+            "usher", com.keykeeper.dushi.entity.UsherEntity::new, MobCategory.MONSTER, b -> b.sized(0.8F, 3.5F).eyeHeight(3.2F).clientTrackingRange(12));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.StrayShadowEntity>> STRAY_SHADOW = ENTITIES.registerEntityType(
+            "stray_shadow", com.keykeeper.dushi.entity.StrayShadowEntity::new, MobCategory.MONSTER, b -> b.sized(0.8F, 1.7F).eyeHeight(0.4F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.LongarmEntity>> LONGARM = ENTITIES.registerEntityType(
+            "longarm", com.keykeeper.dushi.entity.LongarmEntity::new, MobCategory.MONSTER, b -> b.sized(0.9F, 2.2F).eyeHeight(1.8F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.HandwalkerEntity>> HANDWALKER = ENTITIES.registerEntityType(
+            "handwalker", com.keykeeper.dushi.entity.HandwalkerEntity::new, MobCategory.MONSTER, b -> b.sized(1.3F, 0.9F).eyeHeight(0.6F).clientTrackingRange(8));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.DeeplingEntity>> DEEPLING = ENTITIES.registerEntityType(
+            "deepling", com.keykeeper.dushi.entity.DeeplingEntity::new, MobCategory.MONSTER, b -> b.sized(1.0F, 1.0F).eyeHeight(0.6F).clientTrackingRange(10));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.GutEntity>> GUT = ENTITIES.registerEntityType(
+            "gut", com.keykeeper.dushi.entity.GutEntity::new, MobCategory.MONSTER, b -> b.sized(1.7F, 1.8F).eyeHeight(1.4F).clientTrackingRange(10));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ClockhandEntity>> CLOCKHAND = ENTITIES.registerEntityType(
+            "clockhand", com.keykeeper.dushi.entity.ClockhandEntity::new, MobCategory.MONSTER, b -> b.sized(0.7F, 2.3F).eyeHeight(2.0F).clientTrackingRange(8).fireImmune());
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.BoltEntity>> BOLT = ENTITIES.registerEntityType(
+            "bolt", com.keykeeper.dushi.entity.BoltEntity::new, MobCategory.MONSTER, b -> b.sized(2.2F, 2.6F).eyeHeight(1.4F).clientTrackingRange(12).updateInterval(1).fireImmune());
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ComingEntity>> COMING = ENTITIES.registerEntityType(
+            "coming", com.keykeeper.dushi.entity.ComingEntity::new, MobCategory.MONSTER, b -> b.sized(2.4F, 7.5F).eyeHeight(6.5F).clientTrackingRange(14).fireImmune());
+
     /** A root of the Weeping Mother, out of the ground: see {@link com.keykeeper.dushi.entity.RootEntity}. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.RootEntity>> ROOT = ENTITIES.registerEntityType(
             "root", com.keykeeper.dushi.entity.RootEntity::new, MobCategory.MISC, b -> b.sized(1.2F, 2.6F).clientTrackingRange(8).updateInterval(20).fireImmune());
@@ -672,6 +722,15 @@ public class Dushi {
         egg("sungazer", SUNGAZER);
         egg("scorched_warden", SCORCHED_WARDEN);
         egg("hollow_miller", HOLLOW_MILLER);
+        egg("usher", USHER);
+        egg("stray_shadow", STRAY_SHADOW);
+        egg("longarm", LONGARM);
+        egg("handwalker", HANDWALKER);
+        egg("deepling", DEEPLING);
+        egg("gut", GUT);
+        egg("clockhand", CLOCKHAND);
+        egg("bolt", BOLT);
+        egg("coming", COMING);
         egg("keykeeper", KEYKEEPER);
         egg("overseer", OVERSEER);
         egg("chaplain", CHAPLAIN);
@@ -698,6 +757,7 @@ public class Dushi {
                 output.accept(FIRWOOD_KEY.get());
                 output.accept(SHORE_KEY.get());
                 output.accept(STUBBLE_KEY.get());
+                output.accept(DEPTHS_KEY.get());
                 output.accept(NAMELESS_SOUL.get());
                 output.accept(GREAT_SOUL.get());
                 output.accept(OVERSEER_SOUL.get());
@@ -713,6 +773,8 @@ public class Dushi {
                 output.accept(CAPSIZED_SOUL.get());
                 output.accept(WARDEN_SOUL.get());
                 output.accept(MILLER_SOUL.get());
+                output.accept(BOLT_SOUL.get());
+                output.accept(COMING_SOUL.get());
                 WEAPONS.forEach(item -> output.accept(item.get()));
                 output.accept(SHORT_BOW.get());
                 SHIELDS.forEach(item -> output.accept(item.get()));
@@ -789,6 +851,15 @@ public class Dushi {
             event.put(SCORCHED_WARDEN.get(), com.keykeeper.dushi.entity.ScorchedWardenEntity.createAttributes().build());
             event.put(HOLLOW_MILLER.get(), com.keykeeper.dushi.entity.HollowMillerEntity.createAttributes().build());
             event.put(MILLSTONE.get(), com.keykeeper.dushi.entity.MillstoneEntity.createAttributes().build());
+            event.put(USHER.get(), com.keykeeper.dushi.entity.UsherEntity.createAttributes().build());
+            event.put(STRAY_SHADOW.get(), com.keykeeper.dushi.entity.StrayShadowEntity.createAttributes().build());
+            event.put(LONGARM.get(), com.keykeeper.dushi.entity.LongarmEntity.createAttributes().build());
+            event.put(HANDWALKER.get(), com.keykeeper.dushi.entity.HandwalkerEntity.createAttributes().build());
+            event.put(DEEPLING.get(), com.keykeeper.dushi.entity.DeeplingEntity.createAttributes().build());
+            event.put(GUT.get(), com.keykeeper.dushi.entity.GutEntity.createAttributes().build());
+            event.put(CLOCKHAND.get(), com.keykeeper.dushi.entity.ClockhandEntity.createAttributes().build());
+            event.put(BOLT.get(), com.keykeeper.dushi.entity.BoltEntity.createAttributes().build());
+            event.put(COMING.get(), com.keykeeper.dushi.entity.ComingEntity.createAttributes().build());
             event.put(KEYKEEPER.get(), KeykeeperEntity.createAttributes().build());
             event.put(OVERSEER.get(), OverseerEntity.createAttributes().build());
             event.put(CHAPLAIN.get(), ChaplainEntity.createAttributes().build());

@@ -44,6 +44,7 @@ public class QuarryRenderer<T extends SoulsMob, M extends EntityModel<BossRender
         state.attackTime = entity.attackTime + partialTicks;
         state.phase = entity.phase();
         state.onGround = entity.onGround();
+        state.extra = entity.renderExtra();
     }
 
     @Override

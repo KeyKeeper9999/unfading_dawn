@@ -51,6 +51,12 @@ public class PlaceNameBlock extends Block {
      */
     public static final int AFTERNOON = 8000;
 
+    /**
+     * The hour of the Sky Beneath. No sun is seen there, and its dusk is its biome's (worldgen/biome/under_sky.json):
+     * the hour is noon only because the game leaves a biome's colours alone at noon and blackens them at night.
+     */
+    public static final int BLUE_HOUR = 6000;
+
     public enum Place implements StringRepresentable {
         STOCKADE("stockade", DUSK, true),
         WARD("ward", DUSK, true),
@@ -104,7 +110,14 @@ public class PlaceNameBlock extends Block {
         WATCH_FIELD("watch_field", AFTERNOON, true),
         THRESHING("threshing", AFTERNOON, true),
         GREAT_MILL("great_mill", AFTERNOON, true),
-        TO_AFTERNOON("to_afternoon", AFTERNOON, false);
+        TO_AFTERNOON("to_afternoon", AFTERNOON, false),
+        /** Under the black hill south of the quarry: where the day that was not let begin has been kept. */
+        UNDER_SKY("under_sky", BLUE_HOUR, true),
+        STILL_WATER("still_water", BLUE_HOUR, true),
+        CLOCKWORKS("clockworks", BLUE_HOUR, true),
+        CAUSEWAYS("causeways", BLUE_HOUR, true),
+        TEAR("tear", BLUE_HOUR, true),
+        TO_BLUE_HOUR("to_blue_hour", BLUE_HOUR, false);
 
         public final String id;
         /** The hour of the day at this place; the world's clock is set to it when a player comes. */
