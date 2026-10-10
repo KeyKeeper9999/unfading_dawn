@@ -1343,7 +1343,7 @@ public final class ClientSelfTest {
         shot("k5_side_stab");
         rest();
         // the Coming: under its mask, and without it
-        command(gone, look(0.5, -11.0, 0, -16), summon("coming", 0.5, 7.0, ""));
+        command(gone, look(0.5, -7.0, 0, -16), summon("coming", 0.5, 7.0, ""));
         shot("k6_coming", 24);
         command("time set 18000");
         shot("k6_coming_night", 30);
@@ -1370,7 +1370,7 @@ public final class ClientSelfTest {
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 44);
         shot("k6_side_slam");
         rest();
-        command(look(0.5, -11.0, 0, -16));
+        command(look(0.5, -7.0, 0, -16));
         phase(2);
         shot("k7_bare", 20);
         command("time set 18000");

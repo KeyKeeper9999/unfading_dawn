@@ -329,8 +329,8 @@ public final class SelfTest {
         }
         int index = 0;
         for (Map.Entry<EntityType<? extends SoulsMob>, int[]> entry : drillPlan().entrySet()) {
-            // eight to a row: six rows are all the floor holds, and one set down past its edge falls and finishes nothing
-            BlockPos at = new BlockPos(-35 + (index % 8) * 10, FLOOR_Y + 1, -34 + (index / 8) * 13);
+            // nine to a row: six rows are all the floor holds, and one set down past its edge falls and finishes nothing
+            BlockPos at = new BlockPos(-36 + (index % 9) * 9, FLOOR_Y + 1, -34 + (index / 9) * 13);
             if (entry.getKey() == Dushi.BONE_PIKE.get()) {
                 // a pike is drilled in water: on a dry floor all it does is flounder
                 for (BlockPos pos : BlockPos.betweenClosed(at.offset(-2, -2, -2), at.offset(2, -1, 9))) {

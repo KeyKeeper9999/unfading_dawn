@@ -73,9 +73,9 @@ def smooth(x, z, scale, salt):
 def black_rock(x, y, z):
     """The hill, and whatever of the place is bare rock."""
     n = hsh(x, y, z, 1300)
-    if smooth(x + y, z - y, 6, 1301) > 0.68:
-        return 'minecraft:blackstone' if n < 0.7 else 'minecraft:basalt[axis=y]'
-    return 'minecraft:deepslate' if n < 0.52 else ('minecraft:cobbled_deepslate' if n < 0.78 else ('minecraft:blackstone' if n < 0.9 else 'minecraft:tuff'))
+    if smooth(x + y, z - y, 6, 1301) > 0.62:
+        return 'minecraft:blackstone' if n < 0.72 else 'minecraft:basalt[axis=y]'
+    return 'minecraft:blackstone' if n < 0.38 else ('minecraft:deepslate' if n < 0.74 else ('minecraft:cobbled_deepslate' if n < 0.9 else 'minecraft:smooth_basalt'))
 
 
 def glass_rock(x, y, z):
@@ -106,8 +106,8 @@ def massif(x, z):
 
 
 def sky_tone(y):
-    """Which piece of sky a wall is at a height: lightest at the horizon, black a dozen layers over it and under."""
-    return int(max(0, min(TONES - 1, round(TONES - 1 - abs(y - HORIZON) * 0.92))))
+    """Which piece of sky a wall is at a height: lightest at the horizon, black two dozen layers over it and a dozen under."""
+    return int(max(0, min(TONES - 1, round(TONES - 1 - abs(y - HORIZON) * (0.5 if y > HORIZON else 0.85)))))
 
 
 def roof_tone(x, z):
@@ -170,13 +170,14 @@ class Depths:
                 b.set(x, VOID, z, SKY % 0)
                 for y in range(VOID + 1, roof):
                     b.set(x, y, z, AIR)
-                b.set(x, roof, z, SKY % roof_tone(x, z))
-                for y in range(roof + 1, top + 1):
-                    b.set(x, y, z, black_rock(x, y, z))
+                # (the sky is five thick: where the roof steps up, what is seen in the step is more sky, not the rock over it)
+                for y in range(roof, top):
+                    b.set(x, y, z, SKY % roof_tone(x, z))
+                b.set(x, top, z, black_rock(x, top, z))
             else:
                 wall = d >= WALL - 1                               # the two columns of rock next the hollow are sky on their inner side
                 for y in range(1, top + 1):
-                    b.set(x, y, z, SKY % sky_tone(y) if wall and y <= top - 5 else black_rock(x, y, z))
+                    b.set(x, y, z, SKY % (sky_tone(y) if y <= top - 5 else roof_tone(x, z)) if wall and y < top else black_rock(x, y, z))
             # its back: bare, a little gravel in the hollows of it
             if hsh(x, 0, z, 1313) < 0.16:
                 b.set(x, top, z, 'minecraft:gravel' if hsh(x, 1, z, 1313) < 0.6 else 'minecraft:coarse_dirt')
@@ -505,7 +506,7 @@ class Depths:
                 b.set(x, y + 2, z, 'minecraft:soul_lantern[hanging=true]') if b.get(x, y + 3, z) not in (None, AIR) else None
         for i, (x, y, z, way) in enumerate(path):
             if z > gz + 1 and i % 5 == 2 and b.free(x, y + 3, z):
-                b.set(x, y + 3, z, 'minecraft:light[level=8,waterlogged=false]')
+                b.set(x, y + 3, z, 'minecraft:light[level=11,waterlogged=false]')
         for z in range(raw_from + 2, MOUTH_Z - 9, 6):
             side = -1 if (z // 6) % 2 else 1
             y = floor[(LEG_X + side, z)][0]
@@ -585,7 +586,7 @@ class Depths:
         self.steps_end = (steps[-1][0], steps[-1][2])
         self.crystal(lx - 5, lz + 1, 3, 1)
         self.crystal(lx + 4, lz - 4, 2, 2)
-        self.lamp_grid(ledge | spur, 11)
+        self.lamp_grid(ledge | spur, 13)
         return ledge
 
     def water(self):
@@ -687,7 +688,7 @@ class Depths:
         for (x, z) in sorted(cells):
             if hsh(x, 8, z, 1390) < 0.016 and self.free(x, z, 1):
                 self.crystal(x, z, 1 + int(hsh(x, 9, z, 1391) * 3), 5)
-        self.lamp_grid(cells | self.neck, 11)
+        self.lamp_grid(cells | self.neck, 13)
 
     # ------------------------------------------------------------------ the Works
 
@@ -749,7 +750,7 @@ class Depths:
         self.wheel(cx - R - 3, cz, 8, 'x', 0.35, y=PLATE - 3, salt=4)
         self.wheel(cx + R + 3, cz, 7, 'x', 0.3, y=PLATE - 2, salt=5)
         self.mob('bolt', cx, cz, 'south', 3)
-        self.lamp_grid(floor | out, 13, up=5)
+        self.lamp_grid(floor | out, 15, up=5)
         self.keep(cx - 2, cz - R - 2, cx + 2, cz + R + 4)
         return (cx, cz + R + 3)
 
@@ -781,7 +782,7 @@ class Depths:
         self.keep(cx + 2, cz - 2, cx + 4, cz)
         self.crystal(cx + 3, cz + 3, 3, 6)
         self.crystal(cx - 1, cz + 5, 2, 7)
-        self.lamp_grid(plate | {(f[0], f[2]) for f in flight}, 11, every=3)
+        self.lamp_grid(plate | {(f[0], f[2]) for f in flight}, 13, every=3)
         self.keep(cx - 1, start[1], cx + 1, cz - 4)
         return plate
 
@@ -864,7 +865,7 @@ class Depths:
             self.plate(stub, HIGH, black_rock, wet=False, thick=2)
             if all(b.free(x, HIGH + h, z) for h in (1, 2, 3)):
                 self.mob('deepling', x, z, facing, 3)
-        self.lamp_grid(cells, 11, every=3)
+        self.lamp_grid(cells, 13, every=3)
         return cells
 
     # ------------------------------------------------------------------ the Tear
@@ -926,7 +927,7 @@ class Depths:
         for k in range(8):
             a = k * math.pi / 4 + 0.39
             self.crystal(int(round(cx + math.cos(a) * (R - 1.5))), int(round(cz + math.sin(a) * (R - 1.5))), 3, 20 + k)
-        self.lamp_grid({c for c in floor if math.hypot(c[0] - cx, c[1] - cz) < R}, 13, up=6)
+        self.lamp_grid({c for c in floor if math.hypot(c[0] - cx, c[1] - cz) < R}, 15, up=6)
         # the ledge beyond: the works of the clock itself, lying where they were left. (What is done with them comes later.)
         ex, ez = END
         ledge = self.blob(((ex, ez, 5.0),), 30, 0.6)
@@ -940,7 +941,7 @@ class Depths:
         b.loot(ex + 3, HIGH + 1, ez, 'depths_tear', 'west')
         b.shard(ex - 3, HIGH + 1, ez + 1)
         self.keep(ex - 4, ez - 3, ex + 4, ez + 4)
-        self.lamp_grid(ledge | north | south, 11, every=3)
+        self.lamp_grid(ledge | north | south, 13, every=3)
         return floor
 
     def far(self):
@@ -1035,7 +1036,7 @@ class Depths:
         p, h = PLATE, HIGH
         return [
             ('depths_grate_from_the_sump', (gx + 0.5, SUMP_FLOOR + 2.6, gz - 5.5), (gx + 0.5, SUMP_FLOOR + 2.6, gz + 2)),
-            ('depths_drift', (gx + 0.5, SUMP_FLOOR + 2.6, gz + 3.5), (gx + 0.5, SUMP_FLOOR + 6, gz + 24)),
+            ('depths_drift', (gx + 0.5, SUMP_FLOOR + 2.6, gz + 5.5), (gx + 0.5, SUMP_FLOOR + 6, gz + 24)),
             ('depths_cross_leg', (gx + 2.5, 14.6, TURN_Z + 0.5), (LEG_X, 14.6, TURN_Z + 0.5)),
             ('depths_raw_rock', (LEG_X + 0.5, 15.2, TURN_Z + 8.5), (LEG_X + 0.5, 16, ROOM_Z)),
             ('depths_hearth_room', (LEG_X + 0.5, BRINK + 2.6, ROOM_Z - 2.5), (LEG_X - 2, BRINK + 1.4, ROOM_Z + 1)),
@@ -1045,7 +1046,7 @@ class Depths:
             ('depths_brink_up', (lx + 0.5, BRINK + 2.6, lz + 2.5), (lx + 20, BRINK + 34, lz + 26)),
             ('depths_brink_down', (lx + 4.5, BRINK + 2.6, lz + 5.5), (lx + 12, 2, lz + 12)),
             ('depths_steps', (self.steps_end[0] + 3.5, p + 2.6, self.steps_end[1] + 0.5), (lx, BRINK + 2, lz)),
-            ('depths_still_water', (50.5, p + 2.6, 634.5), (80, p + 3, 650)),
+            ('depths_still_water', (61.5, p + 2.6, 629.5), (84, p + 3, 652)),
             ('depths_first_wheel', (66.5, p + 2.6, 640.5), (76, p + 5, 646)),
             ('depths_water_middle', (78.5, p + 2.6, 654.5), (104, p + 3, 660)),
             ('depths_water_from_above', (60, p + 30, 690), (84, p, 652)),
