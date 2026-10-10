@@ -37,29 +37,30 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * The Coming: what was to arrive on the day that was not let begin. It is in the Tear - a crack in the wall of the last
- * hollow of the Sky Beneath, with some other sky behind it - and it is coming out of it: a breast it crawls on, arms it
- * drags itself by, a neck like a tower, and where a head would be a black disc with a rim of light and nothing in the
- * middle of it. The Founder's rite nailed a mask of gold over the disc. The second lord of the place, and the last.
+ * hollow of the Sky Beneath, with some other sky behind it - and it is coming out of it. It has no head: it is a mass
+ * of shoulders as wide as a gate, and set in the breast of the mass a black disc with a rim of light and nothing in
+ * the middle of it, a broken ring of light and a crown of arms round the disc; two arms a house long are what it drags
+ * itself by. The Founder's rite nailed a mask of gold over the disc. The second lord of the place, and the last.
  * <p>
- * It does not leave the crack and does not turn in it: it stands where its mark is, its back to the rock, and looks
- * at whoever it fights with its neck ({@link #aim}). All of its hall is in its reach.
+ * It does not leave the crack and does not turn in it: it stands where its mark is, its back to the rock, and turns
+ * the mass on its waist to whoever it fights ({@link #aim}). All of its hall is in its reach.
  * <p>
- * Masked (phase 1) it has got no further than its neck, and looks out and down. Rays come out of the slits of the
- * mask to the floor, in a line that runs out from the crack through whoever it is looking at; it brings its head down
- * full length before the crack, and lies so a moment (the time to strike it); it sweeps an arm round, low; whoever
- * hides at the foot of the crack, it brings both arms down on; and it puts its hands into the floor, and what it
- * reaches with comes up out of holes elsewhere - under whoever stands off from it - stands, and comes down along the
- * floor ({@link TendrilEntity}).
+ * Masked (phase 1) all of it but the disc and the two arms is still in the rock: the mask stands in the crack and
+ * looks out. Rays come out of the slits of the mask to the floor, in a line that runs out from the crack through
+ * whoever it is looking at; it throws the whole mass of itself out of the crack and down on its face, and lies so a
+ * moment (the time to strike it); it sweeps an arm round, low; whoever hides at the foot of the crack, it brings both
+ * arms down on; and it puts its hands into the floor, and what it reaches with comes up out of holes elsewhere - under
+ * whoever stands off from it - stands, and comes down along the floor ({@link TendrilEntity}).
  * <p>
- * Hurt enough, the mask goes, and it comes out to the breast ({@link #EMERGE}): a second pair of arms, a crown of them
- * round the disc, and an eye opens in the crack behind it, as tall as the crack (phase 2). Everything it did it does
+ * Hurt enough, the mask goes, and it comes out to the waist ({@link #EMERGE}): the crown opens round the disc like
+ * the rays of it, and an eye opens in the crack behind it, as tall as the crack (phase 2). Everything it did it does
  * from further out and oftener; the rays are three lines; an arm comes up out of the floor now and again whatever
- * else it is doing; it draws everything in the hall towards the mouth in its neck, and bites; the sky of the place
+ * else it is doing; it draws everything in the hall towards the mouth in its belly, and bites; the sky of the place
  * comes down wherever anybody stands; and the eye looks - a fan of rays from the crack that goes across the whole
  * hall from one side to the other, to be gone through and not run from.
  */
 public class ComingEntity extends SoulsMob {
-    /** How far round from straight out of the crack its neck is turned, in radians: synced, for the model. */
+    /** How far round from straight out of the crack the mass is turned on its waist, in radians: synced, for the model. */
     private static final EntityDataAccessor<Float> AIM = SynchedEntityData.defineId(ComingEntity.class, EntityDataSerializers.FLOAT);
 
     public static final int GAZE = 1;
@@ -97,12 +98,12 @@ public class ComingEntity extends SoulsMob {
     public static final int GLARE_STEP = 8;
     public static final int GLARE_RAYS = 11;
     public static final int GLARE_UNTIL = GLARE_FROM + GLARE_STEP * GLARE_RAYS;
-    /** How far before the crack the head comes down, masked and bare (where the model's head is in those poses), and how wide. */
-    public static final double SLAM_FAR = 4.0;
-    public static final double SLAM_FAR_BARE = 7.2;
-    public static final double SLAM_RADIUS = 3.1;
-    public static final double SWEEP_REACH = 6.5;
-    public static final double SWEEP_REACH_BARE = 8.5;
+    /** How far before the crack the mass comes down, masked and bare (where the model's disc is in those poses), and how wide. */
+    public static final double SLAM_FAR = 4.6;
+    public static final double SLAM_FAR_BARE = 5.8;
+    public static final double SLAM_RADIUS = 3.5;
+    public static final double SWEEP_REACH = 7.5;
+    public static final double SWEEP_REACH_BARE = 9.5;
     public static final double CRUSH_REACH = 4.4;
     public static final double PULL_RANGE = 38.0;
     public static final double STAR_RADIUS = 1.9;
@@ -113,7 +114,7 @@ public class ComingEntity extends SoulsMob {
     public static final double HALL = 17.0;
     /** The share of a blow that gets through to it (nothing has more than 1024 health; it needs more). */
     public static final float HIDE = 0.3F;
-    private static final float AIM_MAX = 1.3F;
+    private static final float AIM_MAX = 1.0F;
 
     private float homeYaw = Float.NaN;
     private int gazeCooldown = 70;
@@ -168,12 +169,12 @@ public class ComingEntity extends SoulsMob {
         return this.phase() >= 2;
     }
 
-    /** Its head lying where it came down: when a blow tells for double. */
+    /** The mass of it lying where it came down: when a blow tells for double. */
     public boolean open() {
         return this.attackId() == SLAM && this.attackTime > SLAM_IMPACT + 2 && this.attackTime < SLAM_LAIN;
     }
 
-    /** How far round its neck is turned from straight out of the crack, in radians. */
+    /** How far round it is turned on its waist from straight out of the crack, in radians. */
     public float aim() {
         return this.entityData.get(AIM);
     }
@@ -192,23 +193,23 @@ public class ComingEntity extends SoulsMob {
         return Vec3.directionFromRotation(0.0F, this.home());
     }
 
-    /** The way it looks: out of the crack, turned by its neck. */
+    /** The way it looks: out of the crack, turned on its waist. */
     @Override
     public Vec3 facing() {
         return Vec3.directionFromRotation(0.0F, this.home() + (float) Math.toDegrees(this.aim()));
     }
 
-    /** Where the hole in its head is, about (the rays come from it): higher and further back while it looks, lower out of its mask. */
+    /** Where the hole in the middle of its disc is while it looks, about (the rays come from it): the model's `gaze` poses. */
     public Vec3 head() {
         Vec3 way = this.facing();
-        double far = this.bare() ? 1.7 : 2.4;
-        return this.position().add(way.x * far, this.bare() ? 10.4 : 8.1, way.z * far);
+        double far = this.bare() ? 2.4 : 1.2;
+        return this.position().add(way.x * far, this.bare() ? 7.2 : 6.7, way.z * far);
     }
 
     /** Where the eye in the crack behind it is. */
     public Vec3 eye() {
         Vec3 out = this.outward();
-        return this.position().add(-out.x * 1.3, 7.8, -out.z * 1.3);
+        return this.position().add(-out.x * 1.3, 8.4, -out.z * 1.3);
     }
 
     /** Whether a place is on the floor of its hall. */
@@ -348,7 +349,7 @@ public class ComingEntity extends SoulsMob {
         this.pullCooldown = Math.max(0, this.pullCooldown - 1);
         this.rainCooldown = Math.max(0, this.rainCooldown - 1);
         this.glareCooldown = Math.max(0, this.glareCooldown - 1);
-        // it is in the crack: it neither goes anywhere nor turns, and looks with its neck
+        // it is in the crack: it neither goes anywhere nor turns, and looks by turning on its waist
         Vec3 motion = this.getDeltaMovement();
         if (motion.x != 0.0 || motion.z != 0.0) {
             this.setDeltaMovement(0.0, motion.y, 0.0);
@@ -412,7 +413,7 @@ public class ComingEntity extends SoulsMob {
                     this.playSound(Dushi.sound("entity.coming.gaze"), 4.0F, 1.0F);
                 }
                 if (time == GAZE_LOOK) {
-                    // where it looks: rays from the hole in its head to the floor, in a line out from the crack past whoever it
+                    // where it looks: rays from the hole in its disc to the floor, in a line out from the crack past whoever it
                     // is looking at; three lines with the mask off
                     Vec3 forward = this.facing();
                     Vec3 head = this.head();
@@ -450,10 +451,6 @@ public class ComingEntity extends SoulsMob {
                             shove(victim, new Vec3(away.x * 0.7, 0.4, away.z * 0.7));
                         }
                     }
-                    // and along the neck, from the crack to the head
-                    for (double on = 1.5; on < far - SLAM_RADIUS + 0.5; on += 1.5) {
-                        this.hitAround(level, this.position().add(this.facing().scale(on)), 1.5, damage, 0.9, this.damageSources().mobAttack(this));
-                    }
                     level.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 0.2, at.z, 120, 2.0, 0.2, 2.0, 0.3);
                     level.sendParticles(ParticleTypes.END_ROD, at.x, at.y + 0.5, at.z, 40, 2.0, 0.5, 2.0, 0.08);
                     level.playSound(null, at.x, at.y, at.z, Dushi.sound("entity.coming.slam"), this.getSoundSource(), 4.0F, 1.0F);
@@ -477,7 +474,7 @@ public class ComingEntity extends SoulsMob {
                     this.playSound(Dushi.sound("entity.coming.sweep"), 3.0F, 0.8F);
                 }
                 if (time == CRUSH_IMPACT) {
-                    Vec3 at = this.position().add(this.outward().scale(1.5));
+                    Vec3 at = this.position().add(this.outward().scale(bare ? 3.0 : 1.8));
                     this.hitAround(level, at, CRUSH_REACH, damage * 0.9F, 2.0, this.damageSources().mobAttack(this));
                     level.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 0.2, at.z, 100, 3.0, 0.2, 3.0, 0.3);
                     this.playSound(Dushi.sound("entity.coming.slam"), 3.0F, 1.2F);
@@ -563,7 +560,7 @@ public class ComingEntity extends SoulsMob {
                     this.playSound(Dushi.sound("entity.coming.rear"), 4.0F, 1.3F);
                 }
                 if (time == PULL_BITE) {
-                    // the mouth comes down before the crack: from its foot out to where the head ends
+                    // the mouth comes down before the crack: from its foot out to where the mass ends
                     this.hitAround(level, this.position().add(this.facing().scale(2.6)), 3.4, damage * 1.7F, 1.6, this.damageSources().mobAttack(this));
                     this.hitAround(level, this.position().add(this.facing().scale(6.2)), 3.2, damage * 1.7F, 1.6, this.damageSources().mobAttack(this));
                     this.playSound(Dushi.sound("entity.coming.bite"), 4.0F, 1.0F);

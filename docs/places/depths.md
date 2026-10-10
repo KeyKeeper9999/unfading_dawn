@@ -56,7 +56,8 @@ that was buried, the Coming, what is set and what has grown) is in `docs/story.m
   hearth `tear`, and a wide one east to a wheel that does not turn (a chest) -> the Tear: a round hollow of still
   water in a rim of black teeth with ribs of rock leaning in over it; its south side, opposite the way in, is cut
   back to a face of rock (`BAY` either side of the middle) with the crack in it from the floor up (`Depths.rift`:
-  `under_sky`, black in its middle and the horizon's tone along its edges; the Coming stands before it; fog north,
+  seven cells wide, nine at the height of the Coming's shoulders; `under_sky`, black in its middle and the horizon's
+  tone along its edges; the Coming stands before it; fog north,
   a seal in the east) -> the room beyond, east of it, where the works of the clock lie (for what comes later:
   nothing is done there yet).
 - Levels: `PLATE` the Still Water and the Works, `BRINK` four over it, `HIGH` the Causeways and the Tear, `VOID` the
@@ -130,29 +131,32 @@ What was set (amber and brass on them: the Founder's):
   strikes once whoever is in its breadth; `WEIGHT`: only seen (the blow is the Bolt's `strikeLater`).
 - Learnt: the turn about x is what sends a limb of the Bolt forward. The thrust had it negative and the hand went
   behind it; the pose sheet (`stab`) is drawn from the same numbers, so look at it from the side.
-- `ComingEntity`, the second lord - in the crack of the Tear's south face, its back to the rock. It neither walks
-  nor turns (`homeYaw`): it looks with its neck (`AIM`, synced, radians from straight out; `facing()` is turned by
-  it, `renderExtra` gives it to the model). Its mark is a cell and a half before the face (`WALL` in the generator);
-  the middle of the hall is `CENTRE` straight out, and nothing is struck outside `HALL` of that (`inHall`).
-  Masked, all of it but its neck and two arms is back in the rock (the model: `BACK_IN`): `GAZE` (a line of rays
-  from the hole in its head to the floor, out through whoever it looks at: `SunShaftEntity.ray`), `SLAM` (the head,
-  `SLAM_FAR` before the crack; it lies until `SLAM_LAIN` and takes double there), `SWEEP` (an arm low), `CRUSH`
+- `ComingEntity`, the second lord - in the crack of the Tear's south face, its back to the rock. No head and no neck
+  (it was a neck with the disc on top twice, and the owner saw a giraffe): a mass of shoulders with the disc set in
+  its breast, a ring of light and a crown of twelve arms round the disc, two arms a house long, lesser ones down its
+  flanks, a belly that opens. It neither walks nor turns (`homeYaw`): it turns the mass on its waist (`AIM`, synced,
+  radians from straight out; `facing()` is turned by it, `renderExtra` gives it to the model). Its mark is a cell
+  and a half before the face (`WALL` in the generator); the middle of the hall is `CENTRE` straight out, and nothing
+  is struck outside `HALL` of that (`inHall`). Masked, all of it but the disc and the two arms is back in the rock
+  (every masked pose says how far: `BACK_*` in the model): `GAZE` (a line of rays from the hole in the disc to the
+  floor, out through whoever it looks at: `SunShaftEntity.ray`), `SLAM` (the whole mass out of the crack and down on
+  its face, `SLAM_FAR` before it; it lies until `SLAM_LAIN` and takes double there), `SWEEP` (an arm low), `CRUSH`
   (both arms at the foot of the crack), `REACH` (its hands in the floor: arms come up out of holes under and round
-  whoever it fights - `TendrilEntity`). At half health `EMERGE`: the mask goes, it comes out to the breast, a second
-  pair of arms and the crown round the disc with it, and the eye in the crack behind it opens. Then everything from
+  whoever it fights - `TendrilEntity`). At half health `EMERGE`: the mask goes, it comes out to the waist
+  (`OUT_FRONT`), the crown opens, the ring shows, and the eye in the crack behind it opens. Then everything from
   further out and oftener, `GAZE` in three lines, an arm out of the floor now and again whatever else it does
-  (`armClock`), `PULL` (draws the whole hall to the maw, then bites), `RAIN` (the sky comes down in marked places)
-  and `GLARE` - the eye looks: a fan of `GLARE_RAYS` rays from the crack, one after another across the hall from
-  one side to the other. `HIDE` 0.3 of 1000. It leaves `coming_soul`.
+  (`armClock`), `PULL` (draws the whole hall to the mouth in its belly, then bites), `RAIN` (the sky comes down in
+  marked places) and `GLARE` - the eye looks: a fan of `GLARE_RAYS` rays from the crack, one after another across
+  the hall from one side to the other. `HIDE` 0.3 of 1000. It leaves `coming_soul`.
 - `TendrilEntity` (`tendril`; `client/TendrilRenderer`, `TendrilModel`, drawn by `tools/gen_coming.py`) - not a mob:
   a hole opens (its warning), an arm comes straight up through whoever stands on it, stands (`stands()`: synced, long
   for one summoned by hand), turns to whoever is nearest and comes down `LENGTH` along the floor through any shield.
 - `SunShaftEntity` has three lights (`SUN`, `DUSK`, `AMBER`) and may be a ray from a place (`FROM_*`): the renderer
   turns the same column so that its top is where the ray comes from.
-- The Coming's poses are not written in the model by hand: `gen_coming.py` has them by name (`POSES`: where the neck
-  bends and where the arms point - `aim` turns a direction into the turns of a part) and writes them into
-  `ComingModel` between `// <generated poses>`; the animation goes from one to another. `gen_coming.py - x` prints
-  them and where the head is in each (the rays and `SLAM_FAR` are taken from that).
+- The Coming's poses are not written in the model by hand: `gen_coming.py` has them by name (`POSES`: how far the
+  waist and the mass are bowed and where the arms point - `aim` turns a direction into the turns of a part) and
+  writes them into `ComingModel` between `// <generated poses>`; the animation goes from one to another.
+  `gen_coming.py - x` prints where the middle of the disc is in each (the rays and `SLAM_FAR` are taken from that).
 - Learnt: a thing that stands in a wall must not turn with the mob's yaw - everything of it that is in the wall
   swings out of it. Fix the yaw and turn a part.
 

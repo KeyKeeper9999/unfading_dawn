@@ -1366,10 +1366,12 @@ public final class ClientSelfTest {
         command("time set 18000");
         shot("k5_works_night", 30);
         command("time set 6000", "kill @e[type=unfading_dawn:gear]", "kill @e[type=unfading_dawn:sun_shaft]");
-        // the Coming: a wall behind it with the crack in it; under its mask, in the crack to the neck - and without it, out to the breast
-        command(gone, look(0.5, -9.0, 0, -18), "fill -9 " + GROUND + " 12 9 " + (GROUND + 15) + " 12 minecraft:deepslate",
-                "fill -2 " + GROUND + " 12 2 " + (GROUND + 11) + " 12 unfading_dawn:under_sky[tone=3]",
-                "fill -1 " + (GROUND + 12) + " 12 1 " + (GROUND + 13) + " 12 unfading_dawn:under_sky[tone=3]", summon("coming", 0.5, 10.5, ""));
+        // the Coming: a wall behind it with the crack in it; under its mask, in the crack but for its disc and arms - and without it, out to the waist
+        command(gone, look(0.5, -12.0, 0, -16), "fill -12 " + GROUND + " 12 12 " + (GROUND + 16) + " 12 minecraft:deepslate",
+                "fill -3 " + GROUND + " 12 3 " + (GROUND + 4) + " 12 unfading_dawn:under_sky[tone=3]",
+                "fill -4 " + (GROUND + 5) + " 12 4 " + (GROUND + 9) + " 12 unfading_dawn:under_sky[tone=3]",
+                "fill -2 " + (GROUND + 10) + " 12 2 " + (GROUND + 11) + " 12 unfading_dawn:under_sky[tone=3]",
+                "fill -1 " + (GROUND + 12) + " 12 1 " + (GROUND + 12) + " 12 unfading_dawn:under_sky[tone=3]", summon("coming", 0.5, 10.5, ""));
         shot("k6_coming", 24);
         command("time set 18000");
         shot("k6_coming_night", 30);
@@ -1395,12 +1397,12 @@ public final class ClientSelfTest {
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.EMERGE, 70);
         shot("k6_emerge");
         rest();
-        command(look(-14.0, 6.0, -90, -14));
+        command(look(-16.0, 8.0, -90, -14));
         shot("k6_coming_side", 16);
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 44);
         shot("k6_side_slam");
         rest();
-        command(look(0.5, -9.0, 0, -18));
+        command(look(0.5, -12.0, 0, -16));
         phase(2);
         shot("k7_bare", 20);
         command("time set 18000");
@@ -1425,15 +1427,15 @@ public final class ClientSelfTest {
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.GLARE, 70);
         shot("k7_glare");
         rest();
-        command(look(0.5, 4.0, 0, -50));
+        command(look(0.5, 2.0, 0, -45));
         shot("k7_bare_from_below", 16);
-        command(look(-14.0, 6.0, -90, -14));
+        command(look(-16.0, 8.0, -90, -14));
         shot("k7_bare_side", 16);
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 44);
         shot("k7_side_slam");
         rest();
         // what it reaches with: the hole with its fingers, the arm up out of it; and a ray such as comes out of its head
-        command(gone, look(0.5, -3.0, 0, -12), "fill -9 " + GROUND + " 12 9 " + (GROUND + 15) + " 12 minecraft:air",
+        command(gone, look(0.5, -3.0, 0, -12), "fill -12 " + GROUND + " 12 12 " + (GROUND + 16) + " 12 minecraft:air",
                 "fill -16 " + GROUND + " 12 16 " + (GROUND + 9) + " 12 minecraft:deepslate_bricks",
                 "summon unfading_dawn:tendril -3.5 " + GROUND + " 7.0 {Warning:600}", "summon unfading_dawn:tendril 0.5 " + GROUND + " 8.0 {Warning:2,Yaw:150}",
                 "summon unfading_dawn:sun_shaft 4.5 " + GROUND + " 6.0 {Width10:17,Rise:1,Strike:400,Life:600,Hue:1,FromX10:-40,FromY10:90,FromZ10:50}");

@@ -4,16 +4,19 @@ shines of it; and what it reaches into the hall with (TendrilModel.java: an arm 
 the floor).
 
 It is in the Tear - a crack in the wall of the last hollow of the Sky Beneath, from the floor up, with the sky of some
-other place behind it - and it is coming out of it: a breast as broad as a gate, on which it crawls, and long arms it
-drags itself by; from the breast a neck like a tower, of the night itself, cracked, with light in the cracks; at the
-top of the neck, where a head would be, a black disc with a rim of light - a sun that has not risen, and nothing in the
-middle of it. The Founder's rite nailed a mask of gold over the disc. Masked (its first phase) it has got no further
-than its neck: the breast is still in the rock, and it looks out of the crack and down. With the mask off (its second)
-it comes out to the breast and rears; a second pair of arms comes with it, the arms folded behind the disc open into a
-crown round it, the front of the neck opens - and behind it, in the crack, an eye opens that is as tall as the crack.
+other place behind it - and it is coming out of it. It has no head and no neck, and nothing of a beast about it: it
+is a mass of shoulders as wide as a gate, of the night itself, cracked, with light in the cracks; and set in the
+breast of that mass, as tall as the breast, a black disc with a rim of light - a sun that has not risen, and nothing in
+the middle of it - with a broken ring of light round it and a crown of arms round that, like the rays of it. Two arms
+a house long are what it drags itself by; lesser ones grow down its flanks; under the disc its belly opens. The
+Founder's rite nailed a mask of gold over the disc. Masked (its first phase) all of it but the disc and its two arms
+is still in the rock: the mask looks out of the crack. With the mask off (its second) it comes out to the waist and
+hangs over the hall; the crown opens round the disc - and behind it, in the crack, an eye opens that is as tall as
+the crack.
 
 'body' is all of it that comes and goes: masked, the model draws it BACK_IN further back, which is in the rock. 'eye'
-stays in the crack. The face of the rock is WALL behind where it stands.
+stays in the crack. The face of the rock is WALL behind where it stands. (It was a neck like a tower with the disc on
+top of it, twice; the owner saw a giraffe in the second. Nothing is to stand on a stalk.)
 Run from the repo root; pass a file name to also get a preview sheet (and a second argument to leave the Java alone)."""
 import math
 import sys
@@ -28,49 +31,56 @@ A = 'src/main/resources/assets/unfading_dawn'
 JAVA = 'src/main/java/com/keykeeper/dushi/client/ComingModel.java'
 TENDRIL_JAVA = 'src/main/java/com/keykeeper/dushi/client/TendrilModel.java'
 SCALE = 2.4                     # must match MODEL_SCALE in ComingModel.java
-CROWN = 8                       # the arms round the disc
-CROWN_R = 10.0
+CROWN = 12                      # the arms round the disc
+DISC_R = 20                     # the disc is so far from its middle to its rim
+HALO_R = 28                     # and the ring of light round it
 WALL = 10                       # the face of the rock, so far behind where it stands (a block and a half)
-BACK_IN = 24                    # masked, it is so far back in the crack (ComingModel.BACK_IN)
+BACK_IN = 14                    # masked, it is so far back in the crack (ComingModel.BACK_IN)
+OUT_FRONT = 8                   # bare, it is so far out before where it stands (ComingModel.OUT_FRONT)
 BACK = (26, 28, 44)
 
-M = Model(256, 256, SCALE)
+M = Model(512, 256, SCALE)
 M.part('all', None, (0, 24, 0))
-M.part('eye', 'all', (0, -52, WALL - 0.5), boxes=[Box(-17, -26, 0, 34, 52, 1, 'eye', 'eye')])
-M.part('body', 'all', (0, 0, 0), boxes=[Box(-8, -19, 14, 16, 17, 22, 'hide', 'hind')])
-M.part('chest', 'body', (0, -13, 2), boxes=[Box(-10, -11, -8, 20, 22, 22, 'hide', 'chest'), Box(-13, -12, -10, 26, 9, 11, 'hide', 'shoulders'),
-                                            Box(-7, -3, -13, 14, 14, 6, 'hide', 'brisket'), Box(-0.5, -16, 1, 1, 4, 13, 'ridge', 'ridge0')])
-M.part('neck1', 'chest', (0, -9, -7), (0.15, 0, 0), boxes=[Box(-6, -18, -6, 12, 18, 12, 'hide', 'neck1'), Box(-0.5, -18, 6, 1, 18, 4, 'ridge', 'ridge1')])
-M.part('neck2', 'neck1', (0, -18, 0), (0.2, 0, 0), boxes=[Box(-5, -16, -5, 10, 16, 10, 'hide', 'neck2'), Box(-0.5, -16, 5, 1, 16, 4, 'ridge', 'ridge2')])
-M.part('neck3', 'neck2', (0, -16, 0), (0.25, 0, 0), boxes=[Box(-4, -14, -4, 8, 14, 8, 'hide', 'neck3'), Box(-0.5, -14, 4, 1, 14, 3, 'ridge', 'ridge3'),
-                                                           Box(-3, -12, -4.5, 6, 10, 1, 'throat', 'throat')])
-M.part('maw_r', 'neck3', (-4, -12.5, -5), boxes=[Box(0, 0, -1, 4, 11, 1, 'lip', 'lip')])
-M.mirror('maw_r', 'maw_l', parent='neck3')
-M.part('head', 'neck3', (0, -14, 0), (0.3, 0, 0), boxes=[Box(-11, -11, -4, 22, 22, 3, 'disc', 'disc'), Box(-2, -2, -1, 4, 4, 2, 'hide', 'stem')])
-M.part('mask', 'head', (0, 0, -4), boxes=[Box(-8, -11, -1.5, 16, 20, 1, 'mask', 'mask'), Box(-15, -24, -1, 30, 14, 1, 'horn', 'horn')])
+M.part('eye', 'all', (0, -56, WALL - 0.5), boxes=[Box(-19, -34, 0, 38, 68, 1, 'eye', 'eye')])
+M.part('body', 'all', (0, 0, 0), boxes=[Box(-9, -16, 10, 18, 16, 26, 'hide', 'hind')])
+# the waist: what joins the mass to what of it is still in the crack; its belly opens (two lips of hide over the red)
+M.part('waist', 'body', (0, -6, 8), (0.2, 0, 0), boxes=[Box(-12, -24, -8, 24, 32, 16, 'hide', 'waist'), Box(-8, -21, -8.6, 16, 19, 1, 'throat', 'throat')])
+M.part('maw_r', 'waist', (-8, -21, -9), boxes=[Box(0, 0, -1, 8, 19, 1, 'lip', 'lip')])
+M.mirror('maw_r', 'maw_l', parent='waist')
+# the mass: shoulders over a breast, a hump where a head would be
+M.part('torso', 'waist', (0, -24, 0), (0.25, 0, 0), boxes=[Box(-26, -36, -11, 52, 21, 22, 'hide', 'shoulders'), Box(-18, -15, -9, 36, 17, 18, 'hide', 'chest'),
+                                                           Box(-14, -42, -7, 28, 6, 15, 'hide', 'hump'), Box(-0.5, -46, -5, 1, 4, 14, 'ridge', 'ridge0'),
+                                                           Box(-0.5, -38, 11, 1, 36, 4, 'ridge', 'ridge1')])
+# the disc in the breast of it, the ring round the disc, the mask over it
+M.part('disc', 'torso', (0, -20, -12), boxes=[Box(-DISC_R, -DISC_R, -3, 2 * DISC_R, 2 * DISC_R, 3, 'disc', 'disc')])
+M.part('halo', 'disc', (0, 0, -0.5), boxes=[Box(-HALO_R, -HALO_R, 0, 2 * HALO_R, 2 * HALO_R, 1, 'ring', 'ring')])
+M.part('mask', 'disc', (0, 0, -3), boxes=[Box(-15, -DISC_R, -1.5, 30, 38, 1, 'mask', 'mask'), Box(-24, -39, -1, 48, 23, 1, 'horn', 'horn')])
 for i in range(CROWN):
     ang = (i + 0.5) * 2 * math.pi / CROWN
-    M.part(f'crown{i}', 'head', (round(math.sin(ang) * CROWN_R, 2), round(-math.cos(ang) * CROWN_R, 2), -1), (-2.5, 0, round(ang, 4)),
-           boxes=[Box(-1, -11, -1, 2, 11, 2, 'limb', 'crown_upper')])
-    M.part(f'crownf{i}', f'crown{i}', (0, -11, 0), (2.4, 0, 0), boxes=[Box(-0.5, -10, -0.5, 1, 10, 1, 'limb', 'crown_fore'), Box(-2.5, -17, -0.5, 5, 8, 1, 'claw', 'crown_claw')])
-# the arms it drags itself by: from the shoulders of the breast, elbows out, the hands on the floor before it
-M.part('arm_r', 'chest', (-13, -8, -6), boxes=[Box(-2.5, -20, -2.5, 5, 20, 5, 'hide', 'arm')])
-M.part('fore_r', 'arm_r', (0, -20, 0), boxes=[Box(-2, -20, -2, 4, 20, 4, 'hide', 'fore')])
-M.part('hand_r', 'fore_r', (0, -20, 0), boxes=[Box(-3, -5, -1.5, 6, 5, 3, 'hide', 'palm'), Box(-3, -13, -0.5, 1, 8, 1, 'talon', 't0'),
-                                               Box(-1, -14, -0.5, 1, 9, 1, 'talon', 't1'), Box(1, -14, -0.5, 1, 9, 1, 'talon', 't2'),
-                                               Box(3, -12, -0.5, 1, 7, 1, 'talon', 't3'), Box(-5, -6, -0.5, 2, 1, 1, 'talon', 'thumb')])
-# the second pair, thinner, from under the first: seen only when the breast is out
-M.part('arm2_r', 'chest', (-10, 3, 2), boxes=[Box(-1.5, -18, -1.5, 3, 18, 3, 'hide', 'arm2')])
-M.part('fore2_r', 'arm2_r', (0, -18, 0), boxes=[Box(-1, -18, -1, 2, 18, 2, 'limb', 'fore2'), Box(-2.5, -26, -0.5, 5, 8, 1, 'claw', 'claw2')])
-for src, dst, parent in (('arm_r', 'arm_l', 'chest'), ('fore_r', 'fore_l', 'arm_l'), ('hand_r', 'hand_l', 'fore_l'), ('arm2_r', 'arm2_l', 'chest'),
-                         ('fore2_r', 'fore2_l', 'arm2_l')):
+    M.part(f'crown{i}', 'disc', (round(math.sin(ang) * (DISC_R - 2), 2), round(-math.cos(ang) * (DISC_R - 2), 2), -1), (-2.5, 0, round(ang, 4)),
+           boxes=[Box(-1, -16, -1, 2, 16, 2, 'limb', 'crown_upper')])
+    M.part(f'crownf{i}', f'crown{i}', (0, -16, 0), (2.4, 0, 0), boxes=[Box(-0.5, -14, -0.5, 1, 14, 1, 'limb', 'crown_fore'), Box(-2.5, -21, -0.5, 5, 8, 1, 'claw', 'crown_claw')])
+# the two arms it drags itself by, from the ends of the shoulders: each a house long, a hand on it that would hold a man
+M.part('arm_r', 'torso', (-25, -27, 0), boxes=[Box(-4, -30, -4, 8, 30, 8, 'hide', 'arm')])
+M.part('fore_r', 'arm_r', (0, -30, 0), boxes=[Box(-3.5, -30, -3.5, 7, 30, 7, 'hide', 'fore')])
+M.part('hand_r', 'fore_r', (0, -30, 0), boxes=[Box(-6, -8, -2, 12, 8, 4, 'hide', 'palm'), Box(-6, -18, -1, 2, 10, 2, 'talon', 't0'), Box(-2.7, -21, -1, 2, 13, 2, 'talon', 't1'),
+                                               Box(0.7, -21, -1, 2, 13, 2, 'talon', 't2'), Box(4, -18, -1, 2, 10, 2, 'talon', 't3'), Box(-9, -6, -1, 3, 2, 2, 'talon', 'thumb')])
+for src, dst, parent in (('arm_r', 'arm_l', 'torso'), ('fore_r', 'fore_l', 'arm_l'), ('hand_r', 'hand_l', 'fore_l')):
     M.mirror(src, dst, parent=parent)
+# the lesser arms down its flanks: they hang, and work
+RIBS = 5
+for k in range(RIBS):
+    under = 'torso' if k < 3 else 'waist'
+    y = (-12 + k * 6) if k < 3 else (-20 + (k - 3) * 9)
+    M.part(f'rib_r{k}', under, (-18 if k < 3 else -12, y, -1), (-0.7, 0, -1.9 + 0.12 * k), boxes=[Box(-0.75, -9, -0.75, 1.5, 9, 1.5, 'limb', 'rib')])
+    M.part(f'ribf_r{k}', f'rib_r{k}', (0, -9, 0), (-0.9, 0, 0), boxes=[Box(-0.5, -8, -0.5, 1, 8, 1, 'limb', 'rib_fore'), Box(-2, -13, -0.5, 4, 6, 1, 'claw', 'rib_claw')])
+    M.mirror(f'rib_r{k}', f'rib_l{k}', parent=under)
+    M.mirror(f'ribf_r{k}', f'ribf_l{k}', parent=f'rib_l{k}')
 M.pack()
 
 CORONA = (236, 226, 255)
 FLAME = VIOLET                  # the ridge down its back
 FLAME_L = VIOLET_L
-ARMS = ('arm', 'fore', 'hand', 'arm2', 'fore2')
 
 
 def aim(pose, part, to):
@@ -86,100 +96,109 @@ def aim(pose, part, to):
     return pose
 
 
-def arms(pose, upper, fore, hand=None, sides='rl', pair=''):
-    """Both arms of a pair (or one): where the upper arm and the forearm point, given for the right one (x is mirrored
-    for the left), and how the hand is turned on the wrist."""
+def arms(pose, upper, fore, hand=(0.0, 0, 0), sides='rl'):
+    """Both great arms (or one): where the upper arm and the forearm point, given for the right one (x is mirrored for
+    the left), and how the hand is turned on the wrist. Said after the lean of the pose: the arms hang from the mass."""
     for side in sides:
         m = np.array([1, 1, 1]) if side == 'r' else np.array([-1, 1, 1])
-        aim(pose, f'arm{pair}_{side}', np.array(upper) * m)
-        aim(pose, f'fore{pair}_{side}', np.array(fore) * m)
-        if hand is not None and not pair:
-            pose[f'hand_{side}'] = hand
+        aim(pose, f'arm_{side}', np.array(upper) * m)
+        aim(pose, f'fore_{side}', np.array(fore) * m)
+        pose[f'hand_{side}'] = hand
     return pose
 
 
 def crown_open(spread=0.0, curl=0.6):
     pose = {}
     for i in range(CROWN):
-        pose[f'crown{i}'] = (2.5 + 0.25 + spread, 0, 0.35)
-        pose[f'crownf{i}'] = (-2.4 - curl, 0, 0)
+        pose[f'crown{i}'] = (2.5 - 0.35 + spread, 0, 0)
+        pose[f'crownf{i}'] = (-2.4 + 0.5 - curl, 0, 0)
     return pose
 
 
-def neck(pose, n1=0.0, n2=0.0, n3=0.0, head=0.0, yaw=0.0):
-    pose.update(neck1=(n1, yaw, 0), neck2=(n2, 0, 0), neck3=(n3, 0, 0), head=(head, 0, 0))
+def lean(pose, waist=0.0, torso=0.0, disc=0.0, off=None):
+    """How far forward the waist and the mass on it are bowed, and the disc turned in the breast (added to their rest)."""
+    pose.update(waist=(waist, 0, 0), torso=(torso, 0, 0), disc=(disc, 0, 0))
+    if off is not None:
+        pose['body'] = {'off': off}
     return pose
 
 
-def out(extra=None):
-    """Its second phase, at rest: the breast out of the rock, both pairs of arms down, the crown open (the rest pose
-    of the mesh has the arms straight up: every pose of the sheet says where they are)."""
-    pose = dict(crown_open())
-    arms(pose, (-0.62, 0.55, -0.56), (-0.1, 0.62, -0.78), (0.9, 0, 0))
-    arms(pose, (-0.8, 0.2, -0.56), (-0.25, 0.9, -0.36), pair='2')
-    pose.update(extra or {})
+PLANTED = ((-0.5, 0.78, -0.38), (0.1, 0.88, -0.46), (1.1, 0, 0))      # the hands on the floor before it, elbows out
+GRIP = ((-0.3, 0.55, -0.78), (0.42, 0.85, -0.32), (1.1, 0, 0))         # masked: out of the crack and down, the hands at its foot
+
+
+def out(waist=0.0, torso=0.0, disc=0.0, hands=PLANTED, crown=None, **extra):
+    """Its second phase: the mass out of the rock and hanging over the hall, the crown open (the rest pose of the mesh
+    has the arms straight up: every pose says where they are)."""
+    pose = dict(crown or crown_open())
+    lean(pose, waist, torso, disc, (0, 0, -OUT_FRONT))
+    arms(pose, *hands)
+    pose.update(extra)
     return pose
 
 
-def masked(extra=None):
-    """Its first phase, at rest: back in the crack to the neck, which comes out of it and down; the hands on the lips of
-    the crack."""
-    pose = {'body': {'off': (0, 0, BACK_IN)}}
-    neck(pose, 0.8, 0.25, -0.3, -0.8)
-    arms(pose, (-0.53, 0.34, -0.78), (0.59, 0.55, -0.59), (0.9, 0, 0))
-    arms(pose, (0, 0.2, 1.0), (0, 0.1, 1.0), pair='2')
-    pose.update(extra or {})
+def masked(waist=-0.2, torso=-0.25, disc=0.0, hands=GRIP, off=(0, 0, BACK_IN), **extra):
+    """Its first phase: back in the crack, upright, so that the mask stands in it and looks out; the two arms out and down."""
+    pose = {}
+    lean(pose, waist, torso, disc, off)
+    arms(pose, *hands)
+    pose.update(extra)
     return pose
 
 
-def with_neck(pose, *a, **k):
-    return neck(dict(pose), *a, **k)
+def one(pose, upper, fore, hand=(0.4, 0, 0)):
+    return arms(dict(pose), upper, fore, hand, sides='r')
 
 
-def with_arms(pose, *a, **k):
-    return arms(dict(pose), *a, **k)
-
-
-# what ComingModel asks for by name: (the pose, whether the mask is on). The numbers it has are printed by `python3
-# tools/gen_coming.py - x` (every part's turn from the rest of the mesh)
+SWEEP_BACK = ((-0.9, 0.1, -0.42), (-0.85, 0.35, -0.4))
+SWEEP_ROUND = ((0.55, 0.45, -0.7), (0.8, 0.4, -0.45))
+UP = ((-0.45, -0.75, -0.48), (-0.15, -0.9, -0.4), (0.3, 0, 0))
+DOWN = ((-0.25, 0.6, -0.76), (0.1, 0.92, -0.38), (1.4, 0, 0))
+SUNK = ((-0.5, 0.7, -0.5), (0.25, 0.95, -0.2), (1.5, 0, 0))
+# what ComingModel asks for by name. `python3 tools/gen_coming.py - x` prints where the middle of the disc is in each
 POSES = {
     'masked': masked(),
-    # the head lifted and held on whoever it looks at: the rays come out of the middle of it
-    'gaze': with_neck(masked(), 0.5, 0.1, -0.3, -0.8),
-    # the neck drawn up and back into the crack, and down full length before it
-    'slam_back': with_neck(masked(), 0.3, -0.25, -0.4, -0.7),
-    'slam': with_neck(masked(), 1.25, 0.25, 0.1, -0.8),
-    # an arm let go of the rock and brought round, low
-    'sweep_back': with_arms(masked(), (-0.85, 0.2, -0.5), (-0.9, 0.3, -0.3), (0.4, 0, 0), sides='r'),
-    'sweep': with_arms(masked(), (0.45, 0.35, -0.82), (0.75, 0.4, -0.53), (0.4, 0, 0), sides='r'),
+    # the mask thrust out of the crack and tipped down at whoever it looks at: the rays come out of its slits
+    'gaze': masked(-0.05, -0.05, 0.3, off=(0, 0, BACK_IN - 8)),
+    # drawn back into the dark, and then the whole mass of it out and down on its face before the crack
+    'slam_back': masked(-0.4, -0.4, -0.2, off=(0, 0, BACK_IN + 8)),
+    'slam': masked(0.75, 0.45, 0.0, hands=((-0.75, 0.2, -0.63), (-0.3, 0.6, -0.74), (0.6, 0, 0)), off=(0, 0, 0)),
+    # an arm let go of the floor and brought round, low
+    'sweep_back': one(masked(), *SWEEP_BACK),
+    'sweep': one(masked(), *SWEEP_ROUND),
     # both arms up, and down on whoever is at the foot of the crack
-    'crush_up': with_arms(with_neck(masked(), 0.6, 0.2, -0.2, -0.2), (-0.35, -0.7, -0.6), (-0.1, -0.8, -0.6), (0.3, 0, 0)),
-    'crush': with_arms(masked(), (-0.35, 0.4, -0.85), (0.2, 0.75, -0.63), (1.2, 0, 0)),
+    'crush_up': masked(-0.3, -0.3, hands=UP),
+    'crush': masked(-0.05, 0.0, hands=DOWN),
     # its hands in the floor of the hall: what it reaches with comes up elsewhere
-    'reach': with_arms(with_neck(masked(), 0.95, 0.35, -0.1, -0.5), (-0.5, 0.3, -0.81), (0.3, 0.9, -0.3), (1.5, 0, 0)),
+    'reach': masked(0.0, 0.1, 0.2, hands=SUNK, off=(0, 0, BACK_IN - 6)),
     'bare': out(),
-    'bare_gaze': with_neck(out(), -0.1, -0.1, -0.2, -0.25),
-    'bare_slam_back': with_neck(out(), -0.4, -0.3, -0.3, -0.5),
-    'bare_slam': with_neck(out(), 1.08, 0.42, 0.2, -0.75),
-    'bare_sweep_back': with_arms(out(), (-0.9, 0.15, -0.4), (-0.9, 0.3, -0.3), (0.4, 0, 0), sides='r'),
-    'bare_sweep': with_arms(out(), (0.75, 0.3, -0.6), (0.6, 0.35, -0.7), (0.4, 0, 0), sides='r'),
-    'bare_crush_up': with_arms(out(), (-0.5, -0.75, -0.4), (-0.2, -0.85, -0.5), (0.3, 0, 0)),
-    'bare_crush': with_arms(out(), (-0.45, 0.6, -0.66), (-0.05, 0.92, -0.4), (1.2, 0, 0)),
-    'bare_reach': with_arms(with_neck(out(), 0.5, 0.4, 0.2, -0.3), (-0.5, 0.5, -0.7), (0.1, 0.95, -0.3), (1.5, 0, 0)),
-    'pull': with_neck(dict(out(crown_open(0.2)), maw_r=(0, 1.35, 0), maw_l=(0, -1.35, 0)), 0.25, 0.25, 0.2, -0.7),
-    'bite': with_neck(dict(out(), maw_r=(0, 0.2, 0), maw_l=(0, -0.2, 0)), 0.75, 0.45, 0.3, -0.6),
-    # the sky called down: the second pair up, the head thrown back
-    'rain': with_neck(arms(out(crown_open(0.35, 0.2)), (-0.55, -0.75, -0.35), (-0.2, -0.95, -0.2), pair='2'), -0.25, 0.0, 0.0, -0.9),
-    # the eye behind it looks: it lies low, out of the way of it
-    'glare': with_neck(out(crown_open(-0.3, 1.0)), 0.6, 0.5, 0.35, -0.2),
+    'bare_gaze': out(-0.15, -0.15, 0.2),
+    'bare_slam_back': out(-0.3, -0.35, -0.2, hands=((-0.8, 0.45, -0.4), (-0.2, 0.75, -0.63), (0.8, 0, 0))),
+    'bare_slam': out(0.75, 0.42, 0.0, hands=((-0.8, 0.25, -0.55), (-0.35, 0.55, -0.76), (0.6, 0, 0))),
+    'bare_sweep_back': one(out(), *SWEEP_BACK),
+    'bare_sweep': one(out(), *SWEEP_ROUND),
+    'bare_crush_up': out(-0.2, -0.2, hands=UP),
+    'bare_crush': out(0.1, 0.1, hands=DOWN),
+    'bare_reach': out(0.2, 0.15, 0.1, hands=SUNK),
+    'pull': out(0.0, -0.2, 0.1, crown=crown_open(0.25), maw_r=(0, 1.35, 0), maw_l=(0, -1.35, 0)),
+    'bite': out(0.55, 0.3, 0.0, maw_r=(0, 0.2, 0), maw_l=(0, -0.2, 0)),
+    # the sky called down: both arms up, the mass thrown back, the crown wide
+    'rain': out(-0.2, -0.3, -0.35, hands=UP, crown=crown_open(0.35, 0.2)),
+    # the eye behind it looks: it bows down out of the way of it, the crown shut over the disc
+    'glare': out(0.6, 0.45, 0.1, crown=crown_open(-0.9, 1.2)),
 }
 MASK_ON = ('masked', 'gaze', 'slam_back', 'slam', 'sweep_back', 'sweep', 'crush_up', 'crush', 'reach')
-# the parts a pose turns, in the order ComingModel keeps them
-POSED = ('neck1', 'neck2', 'neck3', 'head', 'arm_r', 'fore_r', 'hand_r', 'arm_l', 'fore_l', 'hand_l', 'arm2_r', 'fore2_r', 'arm2_l', 'fore2_l', 'maw_r', 'maw_l')
+# the parts a pose turns, in the order ComingModel keeps them; and how far back in the crack a pose is (masked only)
+POSED = ('waist', 'torso', 'disc', 'arm_r', 'fore_r', 'hand_r', 'arm_l', 'fore_l', 'hand_l', 'maw_r', 'maw_l')
+
+
+def back_of(pose):
+    return float(pose.get('body', {}).get('off', (0, 0, 0))[2])
 
 
 def write_poses(path, indent='    '):
-    """The poses as ComingModel has them: a row of three turns for every part of POSED, between the markers."""
+    """The poses as ComingModel has them: a row of three turns for every part of POSED, between the markers; and for
+    the masked ones, how far back in the crack the whole of it is."""
     lines = []
     for label, pose in POSES.items():
         rows = []
@@ -188,11 +207,13 @@ def write_poses(path, indent='    '):
             v = v.get('rot', (0, 0, 0)) if isinstance(v, dict) else v
             rows.append('{' + ', '.join(f'{float(x):.3f}F' for x in v) + '}')
         lines.append(f'{indent}private static final float[][] {label.upper()} = {{' + ', '.join(rows) + '};')
+    for label in MASK_ON:
+        lines.append(f'{indent}private static final float BACK_{label.upper()} = {back_of(POSES[label]):.1f}F;')
+    lines.append(f'{indent}private static final float OUT_FRONT = {float(OUT_FRONT):.1f}F;')
     src = open(path, encoding='utf-8').read()
     a = src.index(indent + '// <generated poses>')
     b = src.index(indent + '// </generated poses>')
     open(path, 'w', encoding='utf-8').write(src[:a] + indent + '// <generated poses>\n' + '\n'.join(lines) + '\n' + src[b:])
-
 
 
 def make(wall=False):
@@ -209,19 +230,15 @@ def make(wall=False):
                 return c
             p.fill_box(b, hide)
             starry(p, b, 'c', 0.008)
-            if b.tag in ('neck1', 'neck2', 'neck3'):
-                cracks(p, b, 'c', 1, colour=BLUE, bright=BLUE_L)
-            elif b.tag == 'chest':
-                cracks(p, b, 'cc', 2, faces=('left', 'right'), colour=BLUE, bright=BLUE_L)
-            elif b.tag == 'shoulders':
-                cracks(p, b, 'cs', 1, faces=('front',), colour=VIOLET_D, bright=VIOLET)
-            elif b.tag == 'brisket':
-                # eyes in the breast of it, low, where no eyes should be: they are what looks at whoever is under it
-                for x, y in ((2, 3), (5, 5), (9, 4), (11, 2), (4, 9), (8, 8), (10, 11), (6, 1)):
-                    p.put(b, 'front', x, y, STAR, glow=True)
-                    p.put(b, 'front', x, y + 1, NIGHT_D)
-            elif b.tag in ('arm', 'arm2'):
-                cracks(p, b, 'cv', 1, faces=('front',), colour=VIOLET_D, bright=VIOLET)
+            if b.tag in ('shoulders', 'chest', 'waist'):
+                cracks(p, b, 'c' + b.tag, 2, colour=BLUE, bright=BLUE_L)
+            elif b.tag in ('arm', 'fore'):
+                cracks(p, b, 'cv', 1, colour=VIOLET_D, bright=VIOLET)
+            if b.tag == 'hump':
+                # eyes along the hump where a head would be, small, and too many
+                for x in range(2, b.tw - 2, 3):
+                    p.put(b, 'front', x, 2 + (x // 3) % 2, STAR, glow=True)
+                    p.put(b, 'front', x, 3 + (x // 3) % 2, NIGHT_D)
         elif b.mat == 'ridge':
             def ridge(face, px, py, fw, fh, rnd, lying=b.tag == 'ridge0'):
                 if lying:
@@ -263,12 +280,13 @@ def make(wall=False):
                 if abs(cx) > half - 1.2:
                     return NIGHT_D
                 r = math.hypot(cx, cy * 0.55)
-                if abs(cx) < 0.9 + 1.6 * max(0.0, 1.0 - (cy / 15.0) ** 2) and abs(cy) < 15.0:
+                iris = fw * 0.31
+                if abs(cx) < 1.0 + 2.0 * max(0.0, 1.0 - (cy / (fh * 0.29)) ** 2) and abs(cy) < fh * 0.29:
                     return (2, 2, 6)                                  # the slit
-                if r < 10.5:
+                if r < iris:
                     spoke = blotch('iris', math.atan2(cy, cx) * 5.0, r, 0.9)
-                    return mix(VIOLET_D, VIOLET_L, min(1.0, max(0.0, (r - 3.0) / 7.5)) * (0.6 + 0.4 * spoke))
-                if r < 11.6:
+                    return mix(VIOLET_D, VIOLET_L, min(1.0, max(0.0, (r - 3.0) / (iris - 3.0))) * (0.6 + 0.4 * spoke))
+                if r < iris + 1.2:
                     return CORONA
                 return mix(NIGHT, (58, 44, 96), blotch('white', px, py, 3.0))
             p.fill_box(b, eye)
@@ -286,12 +304,13 @@ def make(wall=False):
                     return None
                 r = math.hypot(px - (fw - 1) / 2, py - (fh - 1) / 2)
                 ang = math.atan2(py - (fh - 1) / 2, px - (fw - 1) / 2)
-                ray = 10.2 + 0.9 * math.cos(ang * 9) * math.cos(ang * 4 + 1.0)
+                R = fw / 2
+                ray = R - 1.0 + 1.0 * math.cos(ang * 11) * math.cos(ang * 4 + 1.0)
                 if r > ray:
                     return None
                 if face == 'back':
                     return shade(NIGHT, 0.8)
-                return (2, 2, 6) if r < 7.8 else CORONA
+                return (2, 2, 6) if r < R * 0.72 else CORONA
             p.fill_box(b, disc)
             fx, fy, fw, fh = b.faces()['front']
             for x in range(fw):
@@ -299,33 +318,55 @@ def make(wall=False):
                     c = p.tex.getpixel((fx + x, fy + y))
                     if c[3] and c[0] > 100:
                         r = math.hypot(x - (fw - 1) / 2, y - (fh - 1) / 2)
-                        col = CORONA if r < 9.0 else VIOLET_L
+                        col = CORONA if r < fw / 2 * 0.86 else VIOLET_L
                         p.px(fx + x, fy + y, col, glow=True)
+        elif b.mat == 'ring':
+            def ring(face, px, py, fw, fh, rnd):
+                if face not in ('front', 'back'):
+                    return None
+                # a ring of light round the disc, broken in places: it does not close
+                R = fw / 2
+                r = math.hypot(px - (fw - 1) / 2, py - (fh - 1) / 2)
+                ang = math.atan2(py - (fh - 1) / 2, px - (fw - 1) / 2)
+                if not (R - 3.4 < r < R - 0.4) or math.cos(ang * 7 + 0.6) < -0.5:
+                    return None
+                return VIOLET_L if r > R - 1.5 else (VIOLET if r > R - 2.5 else VIOLET_D)
+            p.fill_box(b, ring)
+            for face in ('front', 'back'):
+                fx, fy, fw, fh = b.faces()[face]
+                for x in range(fw):
+                    for y in range(fh):
+                        c = p.tex.getpixel((fx + x, fy + y))
+                        if c[3]:
+                            p.glow.putpixel((fx + x, fy + y), c[:3] + (255,))
         elif b.mat == 'mask':
             def mask(face, px, py, fw, fh, rnd):
                 if face not in ('front', 'back'):
                     return None
                 mid = (fw - 1) / 2
                 # a long face: wide at the brow, drawn in to a chin
-                half = fw / 2 - (0 if py < 6 else (py - 6) * 0.42)
+                brow = int(fh * 0.3)
+                half = fw / 2 - (0 if py < brow else (py - brow) * 0.42)
                 if abs(px - mid) > half:
                     return None
                 c = GOLD_L if blotch('mask', px, py, 3.0) > 0.6 else GOLD
-                if abs(px - mid) < 0.6 and py > 7:
+                if abs(px - mid) < 1.1 and py > brow + 2:
                     c = GOLD_D                                        # a ridge where a nose would be
-                if py in (0, 1) or abs(abs(px - mid) - half) < 1.0:
+                if py in (0, 1) or abs(abs(px - mid) - half) < 1.5:
                     c = GOLD_D
                 return shade(c, (1.0 - 0.12 * (py / fh)) * (1.0 if face == 'front' else 0.55))
             p.fill_box(b, mask)
             # the slits it looks through: narrow, slanting to the middle, and something behind them
             for side in (-1, 1):
-                for k in range(5):
-                    x = int(round((b.tw - 1) / 2 + side * (1.5 + k)))
-                    y = 6 - (k // 2)
-                    p.put(b, 'front', x, y, STAR if k in (1, 2, 3) else VIOLET_L, glow=True)
+                for k in range(9):
+                    x = int(round((b.tw - 1) / 2 + side * (2.5 + k)))
+                    y = int(b.th * 0.3) + 1 - (k // 3)
+                    p.put(b, 'front', x, y, STAR if 1 <= k <= 6 else VIOLET_L, glow=True)
+                    p.put(b, 'front', x, y + 1, GOLD_D)
             # nails: where it was fixed on
-            for x, y in ((1, 1), (b.tw - 2, 1), (int((b.tw - 1) / 2), b.th - 2), (3, 9), (b.tw - 4, 9)):
-                p.put(b, 'front', x, y, NIGHT)
+            for x, y in ((2, 2), (b.tw - 3, 2), (int((b.tw - 1) / 2), b.th - 3), (5, 16), (b.tw - 6, 16), (9, 26), (b.tw - 10, 26)):
+                for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1)):
+                    p.put(b, 'front', x + dx, y + dy, NIGHT)
         elif b.mat == 'horn':
             def horn(face, px, py, fw, fh, rnd):
                 if face not in ('front', 'back'):
@@ -333,11 +374,12 @@ def make(wall=False):
                 x = px if face == 'front' else fw - 1 - px
                 # a crescent lying on its back over the brow, one tip longer than the other
                 cx = (fw - 1) / 2
+                R = fw / 2
                 r = math.hypot(x - cx, py + 1.5)
-                inner = math.hypot(x - cx - 1.8, py + 5.2)
-                if r > 14.9 or inner < 14.2:
+                inner = math.hypot(x - cx - R * 0.12, py + R * 0.36)
+                if r > R - 0.1 or inner < R * 0.95:
                     return None
-                return shade(GOLD_L if r > 13.9 else GOLD, 1.0 if face == 'front' else 0.6)
+                return shade(GOLD_L if r > R - 1.3 else GOLD, 1.0 if face == 'front' else 0.6)
             p.fill_box(b, horn)
         elif b.mat == 'limb':
             p.fill_box(b, night('cl', light=1.25))
@@ -351,7 +393,7 @@ def make(wall=False):
                     return shade(RAW_D, 0.5)
                 return shade(RAW if blotch('thr', px, py, 2.0) > 0.55 else RAW_D, 0.8)
             p.fill_box(b, throat)
-            for x, y in ((1, 1), (4, 2), (2, 4), (3, 6), (1, 7), (4, 8), (2, 2)):
+            for x, y in ((2, 2), (9, 3), (5, 5), (12, 7), (3, 9), (8, 11), (13, 13), (4, 15), (10, 16), (6, 1)):
                 p.put(b, 'front', x, y, STAR, glow=True)
                 p.put(b, 'front', x, y + 1, NIGHT_D)
         elif b.mat == 'lip':
@@ -438,10 +480,10 @@ def make_tendril():
     return p.tex, p.glow
 
 
-def head_at(pose):
+def disc_at(pose):
     """Where the middle of the disc is in a pose, in blocks: (out before where it stands, up)."""
-    m, t = M.transform('head', pose)
-    return round(-t[2] * SCALE / 16.0, 2), round((24.0 - t[1]) * SCALE / 16.0, 2)
+    m, t = M.transform('disc', pose)
+    return round(float(-t[2] * SCALE / 16.0), 2), round(float((24.0 - t[1]) * SCALE / 16.0), 2)
 
 
 if __name__ == '__main__':
@@ -456,22 +498,18 @@ if __name__ == '__main__':
     ttex.save(f'{A}/textures/entity/tendril.png')
     tglow.save(f'{A}/textures/entity/tendril_glow.png')
     if len(sys.argv) > 1 and sys.argv[1] == '-':
-        # the numbers ComingModel has: every part's turn in every pose, and where the head is
+        # where the middle of the disc is in every pose: ComingEntity takes where its rays come from and where it falls from this
         for label, pose in POSES.items():
-            print(label, 'head', head_at(pose))
-            print('   ', {k: v for k, v in pose.items() if not k.startswith('crown')})
+            print(label, 'disc (out, up):', disc_at(pose))
     elif len(sys.argv) > 1:
-        cam = dict(size=(330, 440), zoom=1.5, centre=(0, -50), glow=glow, background=(58, 58, 66))
+        cam = dict(size=(330, 400), zoom=1.3, centre=(0, -50), glow=glow, background=(40, 40, 50))
         shots, labels = [], []
         for label, pose in POSES.items():
-            hidden = ('eye',) if label in MASK_ON else ('mask',)
-            for yaw in ((-0.5, -1.45) if label in ('masked', 'bare') else (-0.5,)):
+            hidden = ('eye', 'halo') if label in MASK_ON else ('mask',)
+            for yaw in ((-0.55, 0.0, -1.45) if label in ('masked', 'bare') else (-0.55,)):
                 shots.append(M.render(tex, yaw=yaw, pitch=0.12, pose=pose, hidden=hidden, **cam))
                 labels.append(label)
-        shots.append(M.render(tex, yaw=0.0, pitch=0.12, pose=POSES['masked'], hidden=('eye',), **cam))
-        shots.append(M.render(tex, yaw=0.0, pitch=0.12, pose=POSES['bare'], hidden=('mask',), **cam))
-        labels += ['masked', 'bare']
-        tcam = dict(size=(330, 440), zoom=3.4, centre=(0, -30), glow=tglow, background=(58, 58, 66))
+        tcam = dict(size=(330, 400), zoom=3.2, centre=(0, -30), glow=tglow, background=(40, 40, 50))
         for label, pose in TENDRIL_POSES:
             shots.append(T.render(ttex, yaw=-1.2, pitch=0.2, pose=pose, **tcam))
             labels.append('tendril ' + label)

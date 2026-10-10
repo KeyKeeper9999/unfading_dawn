@@ -162,7 +162,7 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   that is no roof is sheets of the one under a tiling of the other. With them `night_shallows`, the shallows in a
   film that shines a little. Maps set them (the Sky Beneath); see `docs/places/depths.md`.
 - A mob that must send one more number to its model every frame says it in `SoulsMob.renderExtra()`
-  (`BossRenderState.extra`: the Bolt's swing, how far round the Coming's neck is turned). `SunShaftEntity` has a hue
+  (`BossRenderState.extra`: the Bolt's swing, how far round the Coming is turned on its waist). `SunShaftEntity` has a hue
   (`dusk(...)`: the Coming's violet, `amber(...)`: the Bolt's hall) and may be a ray from a place (`ray(...)`).
 - What a lord strikes with that is not itself is an entity that is not a mob, cannot be struck and is not saved, with
   the lord for its owner: `RootEntity`, `GearEntity` (the Bolt's wheels and weights), `TendrilEntity` (the Coming's arms).

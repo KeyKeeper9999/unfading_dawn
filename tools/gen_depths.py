@@ -943,14 +943,14 @@ class Depths:
 
     @staticmethod
     def rift(dx, h):
-        """Whether a cell of the south face is of the crack: `dx` from its middle, `h` over the floor. It is five wide
-        from the floor up, draws in near its top, and has a notch or two in its edges."""
-        if h < 1 or h > RIFT_TOP:
-            return False
-        half = 2 if h <= RIFT_TOP - 4 else (1 if h <= RIFT_TOP - 1 else 0)
-        if h in (4, 9) and dx == -2 or h in (2, 7) and dx == 2:
-            return False
-        return abs(dx) <= half
+        """Whether a cell of the south face is of the crack: `dx` from its middle, `h` over the floor. It is seven wide
+        from the floor up, nine where the shoulders of what is in it have forced it, draws in to its top, and has a
+        notch or two in its edges."""
+        return 1 <= h <= RIFT_TOP and abs(dx) <= Depths.rift_half(h) and not (h in (3, 12) and dx == -Depths.rift_half(h) or h in (2, 9) and dx == Depths.rift_half(h))
+
+    @staticmethod
+    def rift_half(h):
+        return 3 if h <= 5 else (4 if h <= 10 else (2 if h <= RIFT_TOP - 1 else 1))
 
     def tear(self):
         """The Tear: a round hollow of black rock with still water in it. Its south side, opposite the way in, is a face
@@ -994,7 +994,8 @@ class Depths:
             for h in range(0, RIFT_TOP + 4):
                 dx = x - cx
                 if self.rift(dx, h):
-                    state = SKY % (10 if abs(dx) == 2 or not self.rift(dx, h + 1) else (5 if abs(dx) == 1 else 1))
+                    edge = self.rift_half(h) - abs(dx)
+                    state = SKY % (10 if edge == 0 or not self.rift(dx, h + 1) or not self.rift(dx + (1 if dx > 0 else -1), h) else (5 if edge == 1 else 1))
                 elif h >= 1 and any(self.rift(dx + ex, h + eh) for ex in (-1, 0, 1) for eh in (-1, 0, 1)):
                     state = 'minecraft:crying_obsidian' if hsh(x, h, wall, 1414) < 0.6 else 'minecraft:obsidian'
                 else:
@@ -1002,7 +1003,7 @@ class Depths:
                 b.set(x, HIGH + h, wall, state)
                 b.set(x, HIGH + h, wall + 1, black_rock(x, HIGH + h, wall + 1))
         # cracks running out from it through the face, with the same sky in them
-        for (dx, h, sx, sh, long) in ((-3, 6, -1, 1, 3), (3, 8, 1, 1, 3), (-3, 3, -1, 0, 2), (3, 11, 1, 1, 2), (-2, 12, -1, 1, 3), (3, 4, 1, -1, 2)):
+        for (dx, h, sx, sh, long) in ((-5, 8, -1, 1, 3), (5, 6, 1, 1, 3), (-4, 3, -1, 0, 2), (3, 11, 1, 1, 3), (-3, 12, -1, 1, 3), (4, 4, 1, -1, 2)):
             for k in range(long):
                 b.set(cx + dx + sx * k, HIGH + h + sh * k, wall, SKY % (10 - 2 * k))
         # ribs: the rock of the rim stands up round the hollow and leans in over it, as over something held
