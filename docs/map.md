@@ -6,10 +6,13 @@ The places themselves are in `docs/places/`, one file each.
 `map/views.txt`, `map/light.txt`, `map/census.json` (for `balance.py`) and `map/biomes.txt` (the boxes of the world that
 get a biome of their own - the Mire's, the shore's: `MapBuilder.biomes` fills them, and says in `map.log` how many cells
 it changed). The plan's origin is the place where the newcomer wakes; the game puts it at
-0, -46, 0 and turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the
+0, 10, 0 and turns the plan a quarter, so the plan's north is the world's west and the way through the map leads into the
 sunset. The dead of the town are of tier 0, of the lower fortress tier 1, of the upper city tier 2 (`World.tiers`);
 the quarry's are of tier 0 and strong by birth. The valley's ground is the plan's layer 16 (`GY`): the flat world has
-sixteen blocks of ground under its grass, and the quarry uses thirteen.
+73 blocks of ground under its grass (bedrock, 69 of stone, 3 of dirt: the workflow), of which the plan can write the
+72 over the bedrock (`gen_world.UNDER`) - its layers go under zero, down to `Map.low` (-56), and the file is written
+from there (`size` is the whole height, `origin` counted from the lowest layer). The quarry uses thirteen of them, the
+Sky Beneath the rest.
 
 A new place is a new file like `gen_village.py`: it builds into the world's `Map` at an offset, and `gen_world.py` gives
 it a piece of the gorge (`in_gorge`), a road, and - if its hour differs - a passage where the clock is turned. The yard
@@ -43,7 +46,10 @@ Things learnt the hard way:
 - Rock is put only under what stands on the ground (`bedrock`), straight down: corbels and other overhangs must not grow rock.
 - `chiseled_sandstone` has a creeper's face on it; the city's stone is smooth and cut sandstone.
 - A flat world's sea is at y = -63 and the game cools a biome with height above its sea: with the ground at y = 63 the
-  forest outside the plan grew up under snow, which the plan's own forest did not have. The ground is at y = -47.
+  forest outside the plan grew up under snow, which the plan's own forest did not have. The ground is at y = 9 (it was
+  at -47 until the Sky Beneath needed stone under the map): the cooling starts 17 over the sea, is a twentieth of a
+  degree to forty blocks with a noise of eight blocks either way, and the taiga's 0.25 goes under 0.15 - snow, and ice
+  on open water - about y = 26. Firs on the ground at 9 stay under that; water on a height of the map would not.
 - With natural regeneration switched off (as the map does) hunger is held full. The game's own mobs do not spawn
   (`SPAWN_MOBS`): the night would fill with them.
 - A block with a direction of its own must turn with the plan (`rotate`): the fog gate did not, and stood edge-on in
@@ -55,7 +61,8 @@ Things learnt the hard way:
 - A lord's death lifts every seal in a box of forty blocks either way round his mark (`FogGateBlock.lift`): two lords
   of one place must stand further apart than that, or the first opens the way past the second.
 - Under the ground the plan holds only what differs from the world's stone: the hollows, and a skin of rock round them
-  so that the check sees walls (`Quarry.skin`). Above the ground everything is in the plan; a place cut open from
+  so that the check sees walls (`Quarry.skin`, `Depths.skin`). The check drops and the lamps' light is followed down
+  to `Map.low`; the sky's light is not followed under layer 1. Above the ground everything is in the plan; a place cut open from
   above gives its columns to `open_sky`, or firs are planted in the air over it.
 - Painted pots swallow what is put into them; a player who may not build cannot use them (`SoulMechanics.onUsePot`).
 - The check knows water (`gen_map.is_water`): it is stood in and swum, left only onto what is level with its top,

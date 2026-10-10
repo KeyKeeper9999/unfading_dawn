@@ -1,0 +1,382 @@
+{
+  "variants": {
+    "mist=0": [
+      {
+        "model": "unfading_dawn:block/sky_veil_0_0",
+        "weight": 9
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_0_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "mist=1": [
+      {
+        "model": "unfading_dawn:block/sky_veil_1_0",
+        "weight": 9
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_1_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "mist=2": [
+      {
+        "model": "unfading_dawn:block/sky_veil_2_0",
+        "weight": 9
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_2_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "mist=3": [
+      {
+        "model": "unfading_dawn:block/sky_veil_3_0",
+        "weight": 9
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_3_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "mist=4": [
+      {
+        "model": "unfading_dawn:block/sky_veil_4_0",
+        "weight": 9
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_4_3",
+        "y": 270,
+        "weight": 1
+      }
+    ],
+    "mist=5": [
+      {
+        "model": "unfading_dawn:block/sky_veil_5_0",
+        "weight": 9
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_1",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_1",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_1",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_1",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_2",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_2",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_2",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_2",
+        "y": 270,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_3",
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_3",
+        "y": 90,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_3",
+        "y": 180,
+        "weight": 1
+      },
+      {
+        "model": "unfading_dawn:block/sky_veil_5_3",
+        "y": 270,
+        "weight": 1
+      }
+    ]
+  }
+}

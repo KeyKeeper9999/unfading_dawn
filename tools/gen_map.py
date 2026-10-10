@@ -1741,7 +1741,7 @@ def analyse(b, blocked=frozenset(), quiet=False, stages=None):
                     yield (nx, y, nz)
                     break
                 if reach == 1:
-                    for ny in range(y - 1, 0, -1):          # a drop
+                    for ny in range(y - 1, b.low, -1):      # a drop
                         if solid((nx, ny, nz), od, os_):
                             break
                         if stands((nx, ny, nz), od, os_):
@@ -1897,7 +1897,7 @@ def lights(b):
             roof[(x, z)] = y
     six = ((1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1), (0, 1, 0), (0, -1, 0))
 
-    def spread(seeds):
+    def spread(seeds, floor=1):
         level = dict(seeds)
         buckets = {}
         for c, v in seeds.items():
@@ -1909,7 +1909,7 @@ def lights(b):
                 x, y, z = c
                 for dx, dy, dz in six:
                     n = (x + dx, y + dy, z + dz)
-                    if n[1] < 1 or n[1] > roof.get((n[0], n[2]), -1) or level.get(n, 0) >= v - 1 or not clear(n):
+                    if n[1] < floor or n[1] > roof.get((n[0], n[2]), -1) or level.get(n, 0) >= v - 1 or not clear(n):
                         continue                              # under the open sky nothing needs working out
                     level[n] = v - 1
                     buckets.setdefault(v - 1, []).append(n)
@@ -1936,7 +1936,7 @@ def lights(b):
             for dz in range(-15 + abs(dx), 16 - abs(dx)):
                 roof_all.setdefault((x + dx, z + dz), 10 ** 6)
     roof = roof_all
-    block = spread(lamps)
+    block = spread(lamps, b.low + 1)             # (lamps burn under the ground too; the sky's light is not followed down there)
     roof = saved
     return roof, sky, block
 

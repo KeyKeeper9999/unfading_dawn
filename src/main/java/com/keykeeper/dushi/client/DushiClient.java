@@ -46,6 +46,7 @@ public final class DushiClient {
 
     @SubscribeEvent
     static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(Dushi.SKY_LID_ENTITY.get(), SkyLidRenderer::new);
         event.registerEntityRenderer(Dushi.SOUL_STAIN.get(), context -> new ThrownItemRenderer<>(context, 2.2F, true));
         event.registerEntityRenderer(Dushi.SPELL_BOLT.get(), context -> new ThrownItemRenderer<>(context, 1.6F, true));
         event.registerEntityRenderer(Dushi.TAR_POT_ENTITY.get(), ThrownItemRenderer::new);

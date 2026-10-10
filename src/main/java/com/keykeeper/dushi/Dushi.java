@@ -239,6 +239,16 @@ public class Dushi {
     public static final DeferredBlock<com.keykeeper.dushi.block.UnderSkyBlock> UNDER_SKY = BLOCKS.registerBlock("under_sky", com.keykeeper.dushi.block.UnderSkyBlock::new,
             props -> props.mapColor(MapColor.COLOR_BLACK).strength(-1.0F, 3600000.0F).noLootTable().pushReaction(PushReaction.IMMOVEABLE)
                     .sound(SoundType.STONE).emissiveRendering(state -> true));
+    /** A sheet of mist with stars in it, over the great hollows of the Sky Beneath: see {@link com.keykeeper.dushi.block.SkyVeilBlock}. No item; maps set it. */
+    public static final DeferredBlock<com.keykeeper.dushi.block.SkyVeilBlock> SKY_VEIL = BLOCKS.registerBlock("sky_veil", com.keykeeper.dushi.block.SkyVeilBlock::new,
+            props -> props.mapColor(MapColor.COLOR_BLACK).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
+                    .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.WOOL).emissiveRendering(state -> true));
+    /** The sky over the last of those sheets: see {@link com.keykeeper.dushi.block.SkyLidBlock}. No item; maps set it. */
+    public static final DeferredBlock<com.keykeeper.dushi.block.SkyLidBlock> SKY_LID = BLOCKS.registerBlock("sky_lid", com.keykeeper.dushi.block.SkyLidBlock::new,
+            props -> props.mapColor(MapColor.COLOR_BLACK).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
+                    .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.STONE));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.keykeeper.dushi.block.SkyLidBlockEntity>> SKY_LID_ENTITY = BLOCK_ENTITIES.register("sky_lid",
+            () -> new BlockEntityType<>(com.keykeeper.dushi.block.SkyLidBlockEntity::new, SKY_LID.get()));
     /** A pool of sludge that lies a while and is gone: see {@link com.keykeeper.dushi.block.SludgeBlock}. No item; the Wallower spits it. */
     public static final DeferredBlock<com.keykeeper.dushi.block.SludgeBlock> SLUDGE = BLOCKS.registerBlock("sludge", com.keykeeper.dushi.block.SludgeBlock::new,
             props -> props.mapColor(MapColor.COLOR_BROWN).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()

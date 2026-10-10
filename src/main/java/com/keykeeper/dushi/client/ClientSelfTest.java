@@ -1399,6 +1399,21 @@ public final class ClientSelfTest {
                 "summon unfading_dawn:sun_shaft 3.5 " + GROUND + " 6.5 {Width10:17,Rise:1,Strike:400,Life:600,Hue:1}",
                 "summon unfading_dawn:sun_shaft -3.5 " + GROUND + " 8.5 {Width10:17,Rise:1,Strike:400,Life:600,Hue:1}");
         shot("k8_sky_and_water", 16);
+        // the sky over a great hollow: sheets of mist one over another, thin and thick places in each, and the lid over the last
+        command("fill -8 " + (GROUND + 12) + " 2 8 " + (GROUND + 12) + " 11 minecraft:air", look(0.5, 3.0, 0, -62));
+        for (int sheet = 0; sheet < 4; sheet++) {
+            for (int x = -8; x <= 8; x++) {
+                int mist = Math.floorMod(x + sheet * 3, 9) - 2;
+                if (mist >= 0 && mist < com.keykeeper.dushi.block.SkyVeilBlock.MISTS) {
+                    command("fill " + x + " " + (GROUND + 8 + sheet * 3) + " 0 " + x + " " + (GROUND + 8 + sheet * 3) + " 10 unfading_dawn:sky_veil[mist=" + mist + "]");
+                }
+            }
+        }
+        command("fill -9 " + (GROUND + 12) + " -1 -9 " + (GROUND + 20) + " 11 minecraft:blackstone", "fill 9 " + (GROUND + 12) + " -1 9 " + (GROUND + 20) + " 11 minecraft:blackstone",
+                "fill -9 " + (GROUND + 20) + " -1 9 " + (GROUND + 20) + " 11 minecraft:blackstone", "fill -8 " + (GROUND + 19) + " 0 8 " + (GROUND + 19) + " 10 minecraft:air",
+                "setblock 0 " + (GROUND + 19) + " 5 unfading_dawn:sky_lid");
+        shot("k9_veils_and_lid", 16);
+        command("fill -9 " + (GROUND + 12) + " -1 9 " + (GROUND + 20) + " 11 minecraft:air");
         command("time set 18000");
         shot("k8_sky_and_water_night", 30);
         command(look(0.5, 6.0, 0, -80));

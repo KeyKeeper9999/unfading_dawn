@@ -5,54 +5,70 @@ that was buried, the Coming, what is set and what has grown) is in `docs/story.m
 
 ## The place
 
-- The Sky Beneath (`tools/gen_depths.py`), the last place with anything to fight in it. South of the White Pit a hill
-  of black rock goes down into the sea as a cape (`massif`, `Depths.mask`); it is hollow (`Depths.hollow`: every
-  column more than `WALL` columns inside it). The ground of the valley is only sixteen blocks deep, so the place could
-  not go under the fields: it is over the ground, in a hill of its own, and reached from below.
-- Its sky is a block. `block/UnderSkyBlock` (`under_sky[tone=0..11]`) is drawn at full brightness whatever the light
-  (`emissiveRendering`, `getShadeBrightness` 1), so a wall of it has no faces and no corners to the eye: black with a
-  few stars at tone 0, a dark blue with a violet seam at tone 11. The roof of the hollow is tones 0-3 (`roof_tone`: one
-  lighter band across it), its sides are lightest at layer `HORIZON` and black a dozen layers over and under it
-  (`sky_tone`), and its bottom, at layer `VOID`, is black again. The bottom is not a floor: whoever stands on the
-  block is gone (`UnderSkyBlock.stepOn`, and `SoulMechanics.ground` for whoever comes to it otherwise); the stain is
-  left where they last stood (`SoulMechanics.deathPlace`). The star textures are several to a tone, chosen by the game
-  at random (`gen_blocks.py`).
-- The rest of the look is the biome's (`worldgen/biome/under_sky.json`, `gen_data.UNDER_SKY`: fog of the sky's own
-  blue from 26 to 124 blocks, `ambient_light_color`, a little white ash in the air) and the hour's: the place is kept
-  at noon (`PlaceNameBlock.BLUE_HOUR`, 6000) only because the game darkens fog at night - nothing of the game's sky
-  is seen. `map/biomes.txt` lists it last, so it lies over the shore's where the cape stands in the sea.
-- What is stood on hangs between the two skies: plates of black rock (`Depths.plate`: thin at the edge, thicker
-  inwards). On the wet ones lies `night_shallows` - the mod's shallows in a film that shines a little, over black
-  concrete and obsidian: a mirror with stars in it. The light is the crystals' (amethyst, an unseen lamp in each) and
-  a grid of unseen lamps over every floor (`lamp_grid`); nothing else gives any.
+- The Sky Beneath (`tools/gen_depths.py`), the last place with anything to fight in it. It is under the ground: its
+  floors are 51-57 layers under the valley's (`DOWN`), in the world's own stone, of which there are 72 layers under the
+  grass (`gen_world.UNDER`; the plan's layers go under zero: `Map.low`). First it was a hollow hill over the ground with
+  plates hanging in a void; the owner had it remade into caves (2026-10-10), keeping the way through it.
+- How it is built: every floor is laid first (`lay`: columns, the layer of the floor, how high the roof of rock, or the
+  hollow it belongs to if that has a sky), and the pits (`pit`); then all of it is hollowed at once (`carve`: a column
+  is open as high as it is far from the wall - three cells at the wall, two more with every column inwards up to the
+  roof); then the drift is cut, the skies are hung (`skies`) and everything is dressed; last a skin of rock is put
+  round every cell the place wrote (`skin`), because under the ground the plan holds only what differs from the world's
+  stone and the check takes a cell the plan does not have for room. While the place builds, `b.set` is watched: writing
+  into a cell somebody else set is reported as a PROBLEM.
+- Under the ground a cell that is not in the plan is rock: the place asks `Depths.open` (air), never `b.free`.
+- Three kinds of way: thin ones (three wide, three to five high), wide winding ones (`way`: half-width, how far it
+  swings off the straight line), and round chambers with a roof of rock. Only the three great hollows have a sky
+  (`ROOMS`: the Still Water with the Brink, the Works, the Tear): their walls lean in to a neck (three cells at the
+  wall, three more with every column, the neck four to six columns in: `Depths.shaft`), and `FLARE` layers under the
+  lid the hollow is as wide as itself again and one column wider, so that nothing of the sky's own walls is seen past
+  the lip.
+- The sky of such a hollow: four sheets of mist one over another, three layers apart (`sky_veil[mist=0..5]`,
+  `block/SkyVeilBlock`: one flat picture in the middle of its cell, seen through, drawn at full brightness, nothing to
+  the touch; each sheet has thin places, thick places and gaps of its own, from a slow noise), and over the last the
+  lid (`sky_lid`, `block/SkyLidBlock` with a block entity, `client/SkyLidRenderer`): the block is nothing, its
+  renderer draws a level square 17 cells wide round it with the game's own picture of the gate to its End
+  (`RenderTypes.endPortal()`). A hollow's roof is tiled with these (`LID_TILE`); one whose middle falls in the rock
+  stands in the rock - what of its square is inside rock is not seen. The renderer gives its own bounding box and
+  draws off screen: the block itself is seldom in sight.
+- Pits: no floor, and at layer `VOID` the old sky block (`under_sky[tone=0]`, which kills whoever comes to stand on it:
+  `UnderSkyBlock.stepOn`, `SoulMechanics.ground`), with a breath of mist two over it. Two in the Still Water (`PITS`),
+  the crack before the chamber with the chest (three cells: jumped), the pit under the cache's one cell of rock, one
+  beside the long way east (`SIDE_PIT`). Nowhere else can one fall: there are walls.
+- The rest of the look is the biome's (`worldgen/biome/under_sky.json`, `gen_data.UNDER_SKY`: fog of a dark blue from
+  26 to 124 blocks, `ambient_light_color`, a little white ash in the air) and the hour's (`PlaceNameBlock.BLUE_HOUR`,
+  noon, only because the game darkens fog at night). Its boxes in `map/biomes.txt` are between two heights (two more
+  numbers on the line: `MapBuilder.biomes`), the bottom of the world and a little under the sump: other places lie
+  over it.
+- The light is the crystals' (amethyst, an unseen lamp in each), a grid of unseen lamps over the floors of the hollows
+  (`lamp_grid`, 13; 15 over the two lords') and along the ways (`lamps`, 11-12).
 - The way: the Lower Grate in the south wall of the quarry's sump (`locked_gate[lock=depths]`; its key lies in the
-  granary behind the Hollow Miller, chest `stubble_mill`) -> a drift that climbs under the plateau, turns east (the
-  clock is turned in the cross leg) and south, and stops being cut stone -> a room in the last of the rock (hearth
-  `brink`) -> the Brink, a ledge over all of it -> steps down a spur -> the Still Water, the great plate (`WATER`,
-  with holes in it, `HOLES`): ridges with the long-armed in them, wheels of the clock half sunk, crystals; a lesser
-  plate off its east side across three cells of nothing (`ISLE`: a chest) -> a neck -> the Works: a round floor with a
-  rim like a wheel's, an axle over it on two frames, great wheels standing either side (the Bolt; fog in the north
-  arch, a seal in the south) -> a stair in the open -> the plate behind the pendulum (hearth `works`, an anvil) -> the
-  Causeways: ways three wide over the sky from islet to islet (`ISLETS`: west a gut's, a cache one cell wide to get
-  to, a spire with something in it, east a wheel that does not turn) -> hearth `tear` -> the Tear: a bowl of still
+  granary behind the Hollow Miller, chest `stubble_mill`) -> the drift (`drift_plan`): flights of eight stairs south
+  and down with a landing between, a cross leg east (the clock is turned in it), two more flights south; forty layers
+  down in all; from `RAW_Z` it is raw black rock -> a room (hearth `brink`) -> the Brink, a ledge in the wall of the
+  first great hollow, four over its floor -> steps of rock down -> the Still Water (`WATER`): ridges with the
+  long-armed in them, wheels of the clock half sunk, crystals; east of it a chamber across a crack (`ISLE`: a chest)
+  -> a neck -> the Works: a round floor with a rim like a wheel's, an axle over it from wall to wall, a great wheel
+  half in the rock either side (the Bolt; fog in the north arch, a seal in the south) -> a stair -> the chamber behind
+  the pendulum (hearth `works`, an anvil) -> the Causeways, which are ways now: a thin one to a chamber of two
+  clockhands, a wide winding one west to the gut's chamber, the cache (`ISLETS`), a thin one to the spire, another to
+  hearth `tear`, and a wide one east to a wheel that does not turn (a chest) -> the Tear: a round hollow of still
   water in a rim of black teeth with ribs of rock leaning in over it (the Coming, rooted in its middle; fog north, a
-  seal south) -> the ledge beyond, where the works of the clock lie (for what comes later: nothing is done there yet).
-- Levels: the bottom of the sky 1, the Still Water and the Works `PLATE` (10), the Brink 14, the Causeways and the
-  Tear `HIGH` (16). The two lords' marks are 78 blocks apart, so the Bolt's death does not lift the Coming's seal.
-- What is not come to (`Depths.far`): rocks that hang as the plates do, each with a crystal; wheels of the clock
-  standing in nothing; chains down out of the stars with a weight, a pan or a crystal at the end. Each is kept eight
-  cells clear of every floor.
-- There is no wall at the two doors of fog, so each stands in an arch of its own (`Depths.arch`).
-- `tools/preview_depths.py DIR` builds the place alone in half a minute, walks it with `gen_map.analyse` from the
-  sump, and draws it from above, from the side and cut through.
-- Learnt: a roof of sky one block thick is seen for what it is - where it steps up, the side of the rock over the
-  lower step shows, and the whole vault is a lattice of grey. The sky is the whole thickness of the roof but its top
-  block (`Depths.hill`), and the two wall columns are sky to the same height. Light: an unseen lamp of 13 every third
-  or fourth cell four over the floors, 15 over the two lords' floors, 11 along the drift; at 9 and 8 the pictures were
-  black.
-- Learnt: the sea's `undertow` cells stay in the Map after something is built over the sea - the hill takes its own
-  columns out (`Depths.hill`), or nothing at the level of the sea is walked. A beam over the cell before a step shuts
-  the step for the check (it jumps, where the game walks up a stair): timber frames of the drift keep off the steps.
+  seal south) -> the room beyond, where the works of the clock lie (for what comes later: nothing is done there yet).
+- Levels: `PLATE` the Still Water and the Works, `BRINK` four over it, `HIGH` the Causeways and the Tear, `VOID` the
+  bottom of a pit. The two lords' marks are 78 blocks apart, so the Bolt's death does not lift the Coming's seal.
+- A stair of the drift lies on the floor of its cell (the floor is one lower than the cell before it), so a flight is
+  walked, not jumped, both ways. No beam stands over the landing cell a flight is climbed from: the check jumps where
+  the game walks up a stair.
+- `tools/preview_depths.py DIR` builds the place alone in a few seconds, walks it with `gen_map.analyse` from the
+  sump, counts its dark places, and draws it: `depths_plan.png` (from above with the rock taken away; the necks edged
+  in blue, a dot on every place a player can be) and `depths_cut_*.png` (cut through from top to bottom).
+- Learnt: a roof of sky blocks is seen for what it is (the owner: "looks odd") - hence the sheets and the lid.
+- Learnt: `Depths.line` paints a square round every cell of its line, so a short wide way is longer than it is: what
+  must keep its own floor beside one (the stair behind the Works) is laid before it.
+- Learnt (world): with the ground at y = 9 the firs of the world's own forest are clear of snow (see
+  `MapBuilder.ORIGIN`); the map has no water higher than its valley, so nothing freezes either. A place that puts
+  water high up in the taiga's own biome would have it freeze over about y = 26.
 
 ## Its dead and its lords
 
@@ -89,6 +105,9 @@ What was set (amber and brass on them: the Founder's):
   until tick 84 and takes double there), `SWEEP` (an arm low), `CRUSH`. At half health `UNMASK`: the crown of arms
   opens round the disc; then also `PULL` (draws everyone to the maw, then bites) and `RAIN` (the sky comes down in
   marked places), and `GAZE` in three lines. `HIDE` 0.3 of 1000. It leaves `coming_soul`.
+
+Left for the next rounds of the remaking (`docs/story.md`): the stray shadow's lying box, the long-armed as a stain of dark
+on the wall, the gut as a slow tank; the Bolt's hall as his body, the Coming in the wall opposite the way in.
 
 Left for later: the gear of the place (weapons, a shield, a spell, a charm, armour; the mask from the Coming's soul),
 anyone to talk to, the mechanism on the ledge beyond the Tear and the tower it raises. The souls of the two lords

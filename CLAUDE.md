@@ -68,7 +68,7 @@ a model class that asks for a part its mesh does not have (see "mirror" below) s
 and would stop a player's too.
 
 The map (see "The map" below) is built by the same workflow when `.ci/map` exists: a dedicated server is started in a
-flat world of forest (the `generator-settings` in the workflow: its top layer is at y = -47) with
+flat world of forest (the `generator-settings` in the workflow: 73 blocks of ground, its top layer at y = 9) with
 `DUSHI_BUILDMAP=map/high_stockade.plan.txt`; `MapBuilder.java` fells the forest where the map goes, sets the plan down,
 works the light out again, sets the rules of the world, saves and stops; the world folder is zipped. `ci-out` then also has:
 
@@ -155,9 +155,12 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   hand's depth of water over a floor, which is a floor: no fluid in it, so nobody is slowed and the roll works. `block/SludgeBlock` (`sludge`) lies some seconds where a clot burst, slows
   whoever is not of the dead (`makeStuckInBlock`: the roll too), and leaves the shallows again if it lay in them.
   A mob mark can stand in water (`waterlogged`).
-- `block/UnderSkyBlock` (`under_sky`, twelve tones) - a piece of sky: drawn at full brightness whatever the light, so
-  a wall, a roof or a floor of it has no faces to the eye; whoever stands on it is gone, as into the void. With it
-  `night_shallows`, the shallows in a film that shines a little. Maps set them (the Sky Beneath); see `docs/places/depths.md`.
+- `block/UnderSkyBlock` (`under_sky`, twelve tones) - a piece of sky: drawn at full brightness whatever the light;
+  whoever stands on it is gone, as into the void (the bottom of a pit). `block/SkyVeilBlock` (`sky_veil`, six
+  thicknesses) - a sheet of mist with stars, seen through, nothing to the touch; `block/SkyLidBlock` (`sky_lid`, a
+  block entity; `client/SkyLidRenderer`) - a square of sky drawn the way the game draws the gate to its End: a roof
+  that is no roof is sheets of the one under a tiling of the other. With them `night_shallows`, the shallows in a
+  film that shines a little. Maps set them (the Sky Beneath); see `docs/places/depths.md`.
 - A mob that must send one more number to its model every frame says it in `SoulsMob.renderExtra()`
   (`BossRenderState.extra`: the Bolt's swing). `SunShaftEntity` has a hue (`dusk(...)`: the Coming's violet shafts).
 - `client/` - models, renderers, `SoulsHud`, `HearthScreen`, `ShopScreen`, the roll key.
@@ -186,7 +189,7 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
     it puts together the land, `gen_village.py` (the Dead Borough), `gen_map.py` (the High Stockade),
     `gen_quarry.py` (the White Pit), `gen_swamp.py` (the Mire), `gen_skete.py` (the Black Firwood), `gen_shore.py`
     (the Morning Wharf), `gen_stubble.py` (the Stubble and its open country; `preview_stubble.py DIR` builds that place alone, in half a minute)
-    and `gen_depths.py` (the Sky Beneath: a hollow hill with a sky inside; `preview_depths.py DIR` builds it alone and walks it); without a preview directory it takes about two and a half minutes, with one about five;
+    and `gen_depths.py` (the Sky Beneath: caves far under the ground, the great ones with a sky; `preview_depths.py DIR` builds it alone in seconds and walks it); without a preview directory it takes about three and a half minutes, with one about six;
   - `balance.py` - the sums of the map's progression (`PYTHONPATH=tools python3 tools/balance.py`): it reads
     `map/census.json`, which `gen_world.py` writes (what comes into reach before each lord), so it takes a second -
     run it after `gen_world.py` when the map changed, and by itself when only numbers in the Java changed.

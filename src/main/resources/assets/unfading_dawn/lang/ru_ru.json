@@ -443,6 +443,8 @@
   "block.unfading_dawn.sea_shallows": "Вода на песке",
   "block.unfading_dawn.night_shallows": "Стоячая вода",
   "block.unfading_dawn.under_sky": "Исподнее небо",
+  "block.unfading_dawn.sky_veil": "Звёздная мгла",
+  "block.unfading_dawn.sky_lid": "Исподнее небо",
   "block.unfading_dawn.sludge": "Тина",
   "entity.unfading_dawn.mud_glob": "Ком тины",
   "entity.unfading_dawn.root": "Корень Плакучей",

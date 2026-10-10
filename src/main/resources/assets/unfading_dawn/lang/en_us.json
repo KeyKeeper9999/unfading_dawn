@@ -443,6 +443,8 @@
   "block.unfading_dawn.sea_shallows": "Water on the Sand",
   "block.unfading_dawn.night_shallows": "Still Water",
   "block.unfading_dawn.under_sky": "Sky Beneath",
+  "block.unfading_dawn.sky_veil": "Starry Mist",
+  "block.unfading_dawn.sky_lid": "Sky Beneath",
   "block.unfading_dawn.sludge": "Sludge",
   "entity.unfading_dawn.mud_glob": "Clot of Sludge",
   "entity.unfading_dawn.root": "Root of the Weeping Mother",

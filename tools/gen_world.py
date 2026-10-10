@@ -27,8 +27,9 @@ from gen_map import (BARS, BELL, CY, FLOOR_LANTERN, GAL, L0, L1, L2, LANTERN, LC
 from gen_structures import AIR, COLOURS, MOD
 
 OUT = 'map/high_stockade.plan.txt'
-GY = 16                             # the ground block of the valley; the flat world's own top layer is put at this height (and has this much stone
-                                    # under it: the quarry goes down thirteen)
+GY = 16                             # the ground block of the valley; the flat world's own top layer is put at this height. The quarry goes down
+                                    # thirteen under it, and the Sky Beneath far further: the world has UNDER layers of its own stone below it
+UNDER = 72                          # (and bedrock under those: see the workflow), so the plan's lowest layer is GY - UNDER, under zero
 OX, OZ = 138, 42                    # where the fortress's own plan lies in this one
 DY = GY - castle.GROUND             # and how much lower: its ground is the valley's
 W, H, D = 492, 138, 1012                # (grown east for the Mire, and far south for the sea; the origin is the place of waking, so nothing moved)
@@ -36,7 +37,7 @@ AX = OX + castle.CX                 # the axis of the fortress: its bridge, the 
 TX = AX + 16                        # the tunnel comes out this much further east: the bend
 VX, VZ = TX - 62, 408               # the corner of the village's grid of tiles; its north gate is on the tunnel's line
 SPUR = (354, 402)                   # the spur of the plateau between the two halves of the gorge
-WORLD_GROUND = -47                  # the y of the flat world's top layer (see the workflow; low, so that no snow lies on its forest)
+WORLD_GROUND = 9                    # the y of the flat world's top layer (see the workflow; no higher, so that no snow lies on its forest: MapBuilder.ORIGIN)
 
 
 def C(x, y, z):
@@ -119,6 +120,7 @@ def spruce(b, x, y, z, height, salt=0, foot=1):
 class World:
     def __init__(self):
         self.b = Map('high_stockade', W, H, D)
+        self.b.low = GY - UNDER
         self.village = gen_village.Village(self.b, VX, VZ, GY)
         self.quarry = gen_quarry.Quarry(self.b, GY, self.village)
         self.swamp = gen_swamp.Swamp(self.b, GY, self.village)
@@ -438,7 +440,7 @@ class World:
         b.zone = 'stubble'
         self.stubble.build(self.height)
         b.zone = 'under_sky'
-        self.depths.build(self.height)
+        self.depths.build()
         self.woods()
         self.tiers()
         return b
@@ -446,7 +448,7 @@ class World:
 
 def world(x, y, z, spawn):
     """Where a point of the plan is in the finished world (see MapBuilder.java: the plan's origin cell - the place where
-    the newcomer wakes - is put at 0, -46, 0 and the plan is turned a quarter counter-clockwise)."""
+    the newcomer wakes - is put at 0, WORLD_GROUND + 1, 0 and the plan is turned a quarter counter-clockwise)."""
     return (z - spawn[2] + 0.5, WORLD_GROUND + 1 + y - spawn[1], -(x - spawn[0]) + 0.5)
 
 
@@ -588,7 +590,7 @@ def probes(w):
 
 
 EXTRA_COLOURS = castle.EXTRA_COLOURS + [
-    ('polished_blackstone', (40, 36, 44)), ('under_sky', (16, 20, 52)), ('night_shallows', (46, 58, 120)), ('amethyst', (154, 104, 224)), ('black_concrete', (18, 18, 24)),
+    ('polished_blackstone', (40, 36, 44)), ('under_sky', (16, 20, 52)), ('sky_veil', (60, 50, 150)), ('sky_lid', (230, 230, 255)), ('night_shallows', (46, 58, 120)), ('amethyst', (154, 104, 224)), ('black_concrete', (18, 18, 24)),
     ('crying_obsidian', (70, 24, 130)), ('obsidian', (28, 22, 42)), ('netherite', (58, 52, 56)), ('copper', (190, 112, 82)), ('basalt', (74, 74, 80)),
     ('shard_heap', (120, 255, 255)), ('spruce_leaves', (44, 70, 46)), ('podzol', (90, 66, 36)), ('moss', (88, 110, 44)), ('water', (50, 80, 200)),
     ('white_terracotta', (210, 178, 160)), ('light_gray_terracotta', (135, 107, 98)), ('mud_bricks', (137, 104, 79)), ('froglight', (250, 220, 120)),
@@ -609,8 +611,9 @@ if __name__ == '__main__':
     COLOURS[0:0] = EXTRA_COLOURS
     PASSABLE_MORE = ('fern', 'short_grass', 'hanging_roots', 'moss_carpet', 'tall_grass', 'dry_grass', 'sunflower', 'cornflower')
     castle.PASSABLE = castle.PASSABLE + PASSABLE_MORE
-    castle.NO_FOOTING = castle.NO_FOOTING + ('under_sky',)
-    castle.CLEAR = castle.CLEAR + ('fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water', 'hanging_roots', 'waterlogged=true',
+    castle.NO_FOOTING = castle.NO_FOOTING + ('under_sky', 'sky_veil', 'sky_lid')
+    castle.PASSABLE = castle.PASSABLE + ('sky_veil', 'sky_lid')
+    castle.CLEAR = castle.CLEAR + ('sky_veil', 'sky_lid', 'fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water', 'hanging_roots', 'waterlogged=true',
                                    'brown_mushroom', 'red_mushroom', 'tall_grass', 'dry_grass', 'sunflower', 'cornflower')
     w = World()
     b = w.build()
@@ -700,6 +703,8 @@ if __name__ == '__main__':
             f.write('gate ' + ' '.join(f'{v_:.2f}' for v_ in world(*sorted(b.seals[key])[0], spawn)) + '\n')
     # the columns that get a biome of their own (MapBuilder lays it): boxes of the world, four blocks wide - the game
     # keeps a biome for every four blocks each way - a line each
+    # (the Sky Beneath lies under other places: its boxes are between two heights, the bottom of the world and a little under the sump's floor)
+    under = f' {WORLD_GROUND - UNDER - 1} {WORLD_GROUND - GY - 1}'
     with open('map/biomes.txt', 'w') as f:
         for biome, columns in (('mire', w.swamp.biome_columns()), ('shore', w.shore.biome_columns()), ('stubble', w.stubble.biome_columns()),
                                ('under_sky', w.depths.biome_columns())):
@@ -712,7 +717,7 @@ if __name__ == '__main__':
                 start = prev = run[0]
                 for qz in run[1:] + [None]:
                     if qz is None or qz != prev + 1:
-                        f.write(f'{MOD}:{biome} {qx * 4} {start * 4} {qx * 4 + 3} {prev * 4 + 3}\n')
+                        f.write(f'{MOD}:{biome} {qx * 4} {start * 4} {qx * 4 + 3} {prev * 4 + 3}{under if biome == "under_sky" else ""}\n')
                         start = qz
                     prev = qz
     with open('map/light.txt', 'w') as f:
@@ -861,12 +866,8 @@ if __name__ == '__main__':
         sub.cells = {c: s for c, s in b.cells.items() if tx0 <= c[0] < 200 and tz0 <= c[2] < tz1 and c[1] >= GY and gen_stubble.Stubble.inside(w.stubble, c[0], c[2])}
         sub.iso(scale=5).save(f'{out}/stubble_iso.png')
         # the Sky Beneath: its floors with a dot on every place a player can be
-        img = b.top_down(gen_depths.HIGH + 12, scale=5).crop((0, 530 * 5, 164 * 5, 830 * 5))
-        draw = ImageDraw.Draw(img)
-        for (x, y, z) in seen:
-            if x < 164 and 530 <= z < 830 and y <= gen_depths.HIGH + 12:
-                px, pz = x * 5 + 2, (z - 530) * 5 + 2
-                draw.rectangle([px, pz, px + 1, pz + 1], fill=(255, 60, 60))
+        import preview_depths
+        img = preview_depths.plan(b, w.depths, 5, [(x, z, (255, 60, 60)) for (x, y, z) in seen if y < 4])
         img.save(f'{out}/depths_ground.png')
         sub = Map('part', W, H, D)
         sub.cells = {c: s for c, s in b.cells.items() if 388 <= c[0] < 474 and 326 <= c[2] < 450 and c[1] >= GY and 'spruce_leaves' not in str(s)}

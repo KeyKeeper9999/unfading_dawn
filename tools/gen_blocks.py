@@ -280,6 +280,33 @@ def sky_textures(tone, n):
     return side, end
 
 
+VEIL_MISTS = 6                             # SkyVeilBlock.MISTS
+VEIL_STARS = 3
+
+
+def veil_texture(mist, n):
+    """A sheet of mist: one thin colour all over it - the same at every edge, so that a sky of such sheets has no
+    seams - a little grain, and (pictures 1 and up) a star or two. Thicker mist is more violet and hides more."""
+    img = Image.new('RGBA', (16, 16))
+    k = mist / (VEIL_MISTS - 1)
+    base = (22 + 30 * k, 30 + 6 * k, 86 + 44 * k)
+    alpha = 12 + 86 * k ** 1.25
+    for y in range(16):
+        for x in range(16):
+            g = blotch(f'veil{mist}', x, y, 1.0) - 0.5
+            img.putpixel((x, y), tuple(int(round(min(255, max(0, v + g * 10)))) for v in base) + (int(round(alpha + g * 6)),))
+    if n:
+        rnd = random.Random(f'veilstars{mist},{n}')
+        for _ in range(1 + (n + mist) % 2):
+            x, y = rnd.randrange(1, 15), rnd.randrange(1, 15)
+            c = rnd.choice(((226, 230, 255), (226, 230, 255), (196, 160, 255), (160, 190, 255)))
+            img.putpixel((x, y), c + (255,))
+            if rnd.random() < 0.3:                                 # (a bright one has a little glow round it)
+                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    img.putpixel((x + dx, y + dy), c + (110,))
+    return img
+
+
 def night_film(n, frames=16):
     """The still water of the Sky Beneath: all but black, a slow dark swell on it, and (pictures 1 and up) stars in
     it that come and go. One frame under another; it tiles and closes on itself."""
@@ -481,6 +508,28 @@ if __name__ == '__main__':
                             for turn in (0, 90, 180, 270)]
         variants[f'tone={tone}'] = entries if len(entries) > 1 else entries[0]
     write_json(f'{A}/blockstates/under_sky.json', {'variants': variants})
+
+    # the sheets of mist over the great hollows of the Sky Beneath (SkyVeilBlock): one flat picture in the middle of the
+    # cell, seen from both sides; for every thickness a plain one and a few with stars, laid and turned by chance
+    variants = {}
+    for mist in range(VEIL_MISTS):
+        entries = []
+        for n in range(VEIL_STARS + 1):
+            veil_texture(mist, n).save(f'{A}/textures/block/sky_veil_{mist}_{n}.png')
+            write_json(f'{A}/models/block/sky_veil_{mist}_{n}.json', {
+                'textures': {'t': f'{MOD}:block/sky_veil_{mist}_{n}', 'particle': f'{MOD}:block/sky_veil_{mist}_0'},
+                'elements': [{'from': [0, 8, 0], 'to': [16, 8, 16], 'shade': False,
+                              'faces': {'up': {'uv': [0, 0, 16, 16], 'texture': '#t'}, 'down': {'uv': [0, 0, 16, 16], 'texture': '#t'}}}]})
+            if n == 0:
+                entries.append({'model': f'{MOD}:block/sky_veil_{mist}_0', 'weight': 9})
+            else:
+                entries += [{'model': f'{MOD}:block/sky_veil_{mist}_{n}', 'y': turn, 'weight': 1} if turn else {'model': f'{MOD}:block/sky_veil_{mist}_{n}', 'weight': 1}
+                            for turn in (0, 90, 180, 270)]
+        variants[f'mist={mist}'] = entries
+    write_json(f'{A}/blockstates/sky_veil.json', {'variants': variants})
+    # the lid over them (SkyLidBlock) is drawn by its renderer; the game still wants to know what it crumbles into
+    write_json(f'{A}/models/block/sky_lid.json', {'textures': {'particle': f'{MOD}:block/under_sky_0_0'}})
+    write_json(f'{A}/blockstates/sky_lid.json', {'variants': {'': {'model': f'{MOD}:block/sky_lid'}}})
 
     # a pool of sludge (SludgeBlock): thicker than the film it may lie in, so that it shows over it
     sludge = sludge_texture()

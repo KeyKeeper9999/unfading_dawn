@@ -25,9 +25,10 @@ class Build:
         self.name, self.w, self.h, self.d = name, w, h, d
         self.cells = {}                     # (x, y, z) -> block state string, or ('chest', loot table, state)
         self.marks = []                     # (kind, x, y, z) for the report
+        self.low = 0                        # the lowest layer: under 0 for a map that goes down into the world's own stone
 
     def inside(self, x, y, z):
-        return 0 <= x < self.w and 0 <= y < self.h and 0 <= z < self.d
+        return 0 <= x < self.w and self.low <= y < self.h and 0 <= z < self.d
 
     def set(self, x, y, z, state):
         if not self.inside(x, y, z):
@@ -96,31 +97,37 @@ class Build:
         tokens = []
         run_value, run = None, 0
 
-        def flush():
-            if run:
-                tokens.append(f'{run}*{run_value}' if run > 1 else str(run_value))
-        for y in range(self.h):
+        def push(value, count=1):
+            nonlocal run_value, run
+            if value == run_value:
+                run += count
+            else:
+                if run:
+                    tokens.append(f'{run}*{run_value}' if run > 1 else str(run_value))
+                run_value, run = value, count
+        rows = {}                           # (most rows of a map are empty: they are not gone through cell by cell)
+        for (x, y, z) in self.cells:
+            rows.setdefault((y, z), []).append(x)
+        for y in range(self.low, self.h):
             for z in range(self.d):
+                if (y, z) not in rows:
+                    push('_', self.w)
+                    continue
                 for x in range(self.w):
                     state = self.cells.get((x, y, z))
                     if state is None or (skip_air and state == AIR):
-                        value = '_'
+                        push('_')
                     else:
                         if state not in palette:
                             palette[state] = len(order)
                             order.append(state)
-                        value = palette[state]
-                    if value == run_value:
-                        run += 1
-                    else:
-                        flush()
-                        run_value, run = value, 1
-        flush()
+                        push(palette[state])
+        push(None, 0)
         path = path or f'{DATA}/plan/{self.name}.txt'
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'w') as f:
-            f.write(f'size {self.w} {self.h} {self.d}\n')
-            f.write('origin {} {} {}\n'.format(*origin))
+            f.write(f'size {self.w} {self.h - self.low} {self.d}\n')
+            f.write('origin {} {} {}\n'.format(origin[0], origin[1] - self.low, origin[2]))
             f.write(f'palette {len(order)}\n')
             for state in order:
                 f.write((f'chest {state[1]} {state[2]}' if isinstance(state, tuple) else state) + '\n')

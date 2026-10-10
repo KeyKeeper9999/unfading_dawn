@@ -2,46 +2,58 @@
 """The Sky Beneath: the map's eighth place and its last with anything to fight in it, built into the world's Map by
 gen_world.py (it has no plan of its own).
 
-South of the White Pit, between it and the sea, a hill of black rock goes down into the water as a cape. It is hollow.
-Inside it is where the day that was not let begin has been kept - and that day has an hour, the one after sunset, and a
-sky: the roof and the far walls of the hollow are blocks that are drawn as a sky (UnderSkyBlock), black overhead with
-stars, a dark blue low down; and so is its bottom. What can be stood on hangs between the two: plates of black rock
-with a hand's depth of still water on them, stars in the water, and nothing under their edges. Whoever steps off is
-gone. The only light is the crystals, and it is violet.
+It is under the ground: forty blocks under the floor of the White Pit's sump, in the stone the world itself is made of
+(the plan's layers under zero: see gen_world.UNDER). That is where the day that was not let begin has been kept, and
+that day has an hour, the one after sunset, and a sky. The place is caves: thin dark ways of black rock with a roof of
+rock, wide ones that wind, and great round hollows - and only the great hollows have the sky. Their walls lean in to a
+neck, and over the neck there is no roof: sheets of mist with stars in them, one over another (the block sky_veil),
+and over the last of them the sky itself (sky_lid, drawn as the game draws the gate to its End). Here and there the
+floor is gone and the sky is under it: whoever steps into a pit is gone too. The only light is the crystals', violet.
 
 The way in is the Lower Grate, in the south wall of the quarry's sump (a hearth); its key lies in the granary behind the
-Hollow Miller. (The two barred ways the quarry had before lead north, under the fields, where the ground is sixteen
-blocks deep: there is no room for a sky there.)
+Hollow Miller.
 
-    the Lower Grate -> a drift that climbs, turns twice (the hour is turned in its cross leg) and stops being a drift
-    -> a hearth in the last of the rock -> the Brink: a ledge over all of it -> down to the Still Water, the great
-    plate: ridges, crystals, the wheels of a clock as big as a hall, half sunk; a lesser plate off its east side that
-    is jumped to -> a neck -> the Works: the round floor the pendulum swings over (the Bolt; a seal behind it) -> a
-    stair up -> a hearth behind the pendulum -> the Causeways: narrow ways over the sky from islet to islet, west,
-    round and back east -> a hearth by the Tear -> the Tear: a bowl of black rock and still water (the Coming, in
-    the middle of it; a seal behind it) -> the ledge beyond, where the clock's own works are, for what comes later.
+    the Lower Grate -> a drift that goes down: flights of stairs south, a cross leg east (the hour is turned in it),
+    more flights south, and the cut stone gives out -> a hearth in the last of it -> the Brink: a ledge in the wall of
+    the first great hollow -> down to the Still Water: its floor, ridges, crystals, the wheels of a clock as big as a
+    hall, two pits; a side chamber across a crack that is jumped -> a neck -> the Works: the round hall the pendulum
+    swings in (the Bolt; a seal behind it) -> a stair up -> a hearth behind the pendulum -> the Causeways, which are
+    ways now: a thin one, a wide winding one west, round chambers (a gut's, a spire, a cache over a pit by one cell
+    of rock), a wide winding one east -> a hearth by the Tear -> the Tear: a round hollow of still water (the Coming,
+    in the middle of it; a seal behind it) -> the room beyond, where the clock's own works are, for what comes later.
 
-Levels: the bottom of the sky is layer 1; the Still Water and the Works are PLATE, the Brink BRINK, the Causeways and
-the Tear HIGH. Nothing here is a way up or out: the plates have nothing round them but air, the rims of the two lords'
-floors are higher than a thrown man goes, and the hill outside is sheer on every side and in the sea on three."""
+Levels: the Still Water and the Works are PLATE, the Brink BRINK, the Causeways and the Tear HIGH; a pit's bottom is
+VOID. Nothing here is a way up or out: it is rock on every side, and over the three skies more rock.
+
+How it is built: first every floor is laid (`lay`: a column, the layer of its floor, what roof it has), and the pits
+(`pit`); then all of it is hollowed at once (`carve`: how high a column is open follows from how far it is from the
+wall); then the drift is cut, the skies are hung (`skies`), everything is dressed, and a skin of rock is put round
+whatever was opened (`skin`: under the ground the plan holds only what differs from the world's stone)."""
 import math
 
 from gen_map import BARS, hsh, stairs
 from gen_structures import AIR, MOD
 
 SKY = MOD + ':under_sky[tone=%d]'
+VEIL = MOD + ':sky_veil[mist=%d]'
+LID = MOD + ':sky_lid'
 FILM = MOD + ':night_shallows'
-TONES = 12                                   # see UnderSkyBlock
-VOID = 1                                     # the bottom of the sky
-PLATE = 10                                   # the floor block of the Still Water and of the Works
-BRINK = 14                                   # of the ledge the drift comes out on
-HIGH = 16                                    # of the Causeways and the Tear
-HORIZON = 15                                 # the layer the sky is lightest at
-WALL = 7                                     # how much rock there is between the hollow and the outside, at the least
+DOWN = -51                                   # how far under the layers it was first built at the place lies
+VOID = 1 + DOWN                              # the bottom of a pit: sky
+PLATE = 10 + DOWN                            # the floor block of the Still Water and of the Works
+BRINK = 14 + DOWN                            # of the ledge the drift comes out on
+HIGH = 16 + DOWN                             # of the Causeways and the Tear
+ROOMS = {'water': PLATE + 28, 'works': PLATE + 30, 'tear': HIGH + 28}     # the hollows that have a sky: the layer of its lid
+VEILS = 4                                    # sheets of mist under a lid
+MISTS = 6                                    # and how many thicknesses mist has (SkyVeilBlock.MISTS)
+VEIL_STEP = 3                                # and how far apart they hang
+FLARE = 12                                   # so far under its lid a hollow is as wide as itself again, and wider: its sky has no walls to see
+LID_TILE = 17                                # a lid draws a square this wide round itself (SkyLidRenderer.REACH * 2 + 1)
 GATE = (17, 540)                             # the Lower Grate: its middle cell, in the south wall of the sump
 SUMP_FLOOR = 3                               # (Quarry.LOW)
 TURN_Z = 577                                 # the drift's cross leg
 LEG_X = 30                                   # and the line its last leg runs south on
+RAW_Z = 591                                  # south of this nobody cut it
 ROOM_Z = 602                                 # the hearth in the last of the rock: its middle
 MOUTH_Z = 610                                # where the drift ends
 LEDGE = (30, 617)                            # the Brink
@@ -51,13 +63,14 @@ BEHIND = (78, 740)                           # the hearth behind the pendulum
 TEAR = (62, 784)                             # the Tear: its middle
 TEAR_R = 18
 LAST = (62, 757)                             # the hearth by the Tear
-END = (62, 808)                              # the ledge beyond it
-# the Still Water: round these the great plate lies (x, z, how far), and here it has holes
-WATER = ((44, 632, 9), (58, 640, 15), (80, 648, 17), (104, 654, 14), (118, 664, 9), (92, 668, 13), (72, 664, 11), (78, 678, 8))
-HOLES = ((68, 652, 3.6), (99, 661, 3.0), (52, 646, 2.4), (86, 672, 2.2))
-ISLE = (128, 646, 5.5)                       # the lesser plate off its east side: jumped to
-# the Causeways: the islets (x, z, how far) and the ways between them (from, to, half-width)
-ISLETS = {'mid': (56, 739, 4.2), 'west': (31, 744, 7.5), 'cache': (20, 758, 3.4), 'spire': (48, 758, 5.2), 'wheel': (96, 754, 7.5)}
+END = (62, 808)                              # the room beyond it
+# the Still Water: round these its floor lies (x, z, how far), and here the floor is gone
+WATER = ((44, 632, 9), (58, 640, 15), (80, 648, 17), (104, 654, 14), (118, 664, 9), (92, 668, 13), (72, 664, 11), (78, 678, 8), (40, 627, 6))
+PITS = ((68, 652, 3.6), (99, 661, 3.0))
+ISLE = (128, 646, 5.5)                       # the chamber off its east side: jumped to, over a crack
+# the Causeways: the chambers (x, z, how far, how high) and the ways between them
+ISLETS = {'mid': (56, 739, 4.2, 7), 'west': (31, 744, 7.5, 8), 'cache': (20, 758, 3.4, 5), 'spire': (48, 758, 5.2, 9), 'wheel': (96, 754, 7.5, 9)}
+SIDE_PIT = (79, 765, 3.0)                    # beside the long way east
 
 
 def smooth(x, z, scale, salt):
@@ -71,7 +84,7 @@ def smooth(x, z, scale, salt):
 
 
 def black_rock(x, y, z):
-    """The hill, and whatever of the place is bare rock."""
+    """The rock of the place, wherever it is bare."""
     n = hsh(x, y, z, 1300)
     if smooth(x + y, z - y, 6, 1301) > 0.62:
         return 'minecraft:blackstone' if n < 0.72 else 'minecraft:basalt[axis=y]'
@@ -96,130 +109,155 @@ def works_floor(x, y, z):
     return 'minecraft:polished_blackstone' if n < 0.5 else ('minecraft:polished_blackstone_bricks' if n < 0.78 else ('minecraft:deepslate_tiles' if n < 0.94 else 'minecraft:netherite_block'))
 
 
-def massif(x, z):
-    """How far inside the black hill a column is, roughly (negative: outside it). The land part of it is a block with
-    the corners off; the cape is a long round."""
-    wob = (smooth(x, z, 13, 1310) - 0.5) * 7
-    land = -max(7 - x, x - 150, 599 - z, z - 730)
-    cape = (1.0 - math.hypot((x - 62) / 60.0, (z - 742) / 78.0)) * 60.0
-    return max(land, cape) + wob
-
-
-def sky_tone(y):
-    """Which piece of sky a wall is at a height: lightest at the horizon, black two dozen layers over it and a dozen under."""
-    return int(max(0, min(TONES - 1, round(TONES - 1 - abs(y - HORIZON) * (0.5 if y > HORIZON else 0.85)))))
-
-
-def roof_tone(x, z):
-    """Overhead it is black, but for one band across it that is a little lighter: as the sky has."""
-    band = math.exp(-((x * 0.8 + (z - 700) * 0.55 - 78) / 20.0) ** 2) * (0.35 + 0.9 * smooth(x, z, 8, 1320))
-    return int(max(0, min(3, round(band * 3.0))))
+FOUR = ((1, 0), (-1, 0), (0, 1), (0, -1))
 
 
 class Depths:
     def __init__(self, b, gy):
         self.b, self.g = b, gy
-        self.mask = {}                   # every column of the hill: how deep inside it it is, in columns (1 at its edge)
-        cols = {(x, z) for x in range(4, 160) for z in range(590, 826) if massif(x, z) > 0}
-        ring = [c for c in cols if any((c[0] + dx, c[1] + dz) not in cols for dx in (-1, 0, 1) for dz in (-1, 0, 1))]
-        for c in ring:
-            self.mask[c] = 1
-        d = 1
-        while ring:
-            d += 1
-            grown = []
-            for (x, z) in ring:
-                for dx in (-1, 0, 1):
-                    for dz in (-1, 0, 1):
-                        n = (x + dx, z + dz)
-                        if n in cols and n not in self.mask:
-                            self.mask[n] = d
-                            grown.append(n)
-            ring = grown
-        self.hollow = {c for c, d in self.mask.items() if d > WALL}
         self.ground = {}                 # every column that can be stood on: the layer of its floor block
-        self.wet = set()                 # and those of them the still water lies on
+        self.mat = {}                    # what that block is: a function of the position
+        self.kind = {}                   # for every column laid: (how high its roof of rock is, the hollow it is of - if that has a sky)
+        self.pits = {}                   # the columns that have no floor: the layer of the floor beside them
+        self.cut = {}                    # the drift's own columns: (floor, the way it runs, where on the path, whether a stair)
+        self.top = {}                    # the highest open layer of every column
+        self.open_sky = {}               # the columns that have a sky over them: the layer of its lid
+        self.shaft = set()               # and those of them that are open all the way up from the floor: the neck
+        self.wet = set()                 # the columns the still water lies on
         self.taken = set()               # columns something stands on or a way runs over: nothing more is put there
         self.lit = []                    # where the place's own light is (crystals): for the pictures
+        self.own = set()                 # every cell the place wrote
+        self.met = []                    # and those of them that were somebody else's already
         self.mobs = True
 
-    # ------------------------------------------------------------------ the hill
+    def open(self, x, y, z):
+        """Whether a cell is air. (Under the ground a cell the plan does not have is rock, not room.)"""
+        return self.b.get(x, y, z) == AIR
 
-    def inside(self, x, z):
-        return (x, z) in self.mask
+    # ------------------------------------------------------------------ the hollows
 
-    def top(self, x, z):
-        """How high the hill stands at a column: a sheer face at its edge, then up to a back."""
-        d = self.mask[(x, z)]
-        return int(self.g + 14 + min(d, 13) * 2.2 + smooth(x, z, 9, 1311) * 4 + (smooth(x, z, 4, 1312) - 0.5) * 2)
-
-    def ceiling(self, x, z):
-        """The layer of the sky over a column of the hollow."""
-        return self.top(x, z) - 5
-
-    def hill(self, height):
-        """The hill itself, solid from the bottom of the world's stone to its back; then the hollow in it, which is
-        sky at the bottom, sky at the top and sky round the sides."""
-        b = self.b
-        b.undertow = {c for c in b.undertow if (c[0], c[2]) not in self.mask}     # (the cape stands where the sea was)
-        for (x, z), d in self.mask.items():
-            top = self.top(x, z)
-            if (x, z) in self.hollow:
-                # only what will be seen from outside, and a skin over the sky: the rest is taken out below
-                roof = self.ceiling(x, z)
-                b.set(x, VOID, z, SKY % 0)
-                for y in range(VOID + 1, roof):
-                    b.set(x, y, z, AIR)
-                # (the sky is five thick: where the roof steps up, what is seen in the step is more sky, not the rock over it)
-                for y in range(roof, top):
-                    b.set(x, y, z, SKY % roof_tone(x, z))
-                b.set(x, top, z, black_rock(x, top, z))
-            else:
-                wall = d >= WALL - 1                               # the two columns of rock next the hollow are sky on their inner side
-                for y in range(1, top + 1):
-                    b.set(x, y, z, SKY % (sky_tone(y) if y <= top - 5 else roof_tone(x, z)) if wall and y < top else black_rock(x, y, z))
-            # its back: bare, a little gravel in the hollows of it
-            if hsh(x, 0, z, 1313) < 0.16:
-                b.set(x, top, z, 'minecraft:gravel' if hsh(x, 1, z, 1313) < 0.6 else 'minecraft:coarse_dirt')
-            if hsh(x, 2, z, 1314) < 0.012 and d > 2:
-                b.set(x, top + 1, z, 'minecraft:dead_bush')
-            height[(x, z)] = 0                                    # (nothing of the world's grows on it: see gen_world.woods)
-
-    # ------------------------------------------------------------------ what is stood on
-
-    def plate(self, cells, y, mat=None, wet=True, thick=5):
-        """A plate of rock hanging in the hollow, its top at layer y: thin at its edge and thicker inwards, like the
-        underside of a floe. `cells` is a set of columns; `mat(x, y, z)` its top (the black of the still water if none)."""
-        b = self.b
-        cells = {c for c in cells if c in self.hollow}
-        edge = {c: 1 for c in cells if any((c[0] + dx, c[1] + dz) not in cells for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)))}
-        ring = list(edge)
-        d = 1
-        while ring and d < thick:
-            d += 1
-            grown = []
-            for (x, z) in ring:
-                for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                    n = (x + dx, z + dz)
-                    if n in cells and n not in edge:
-                        edge[n] = d
-                        grown.append(n)
-            ring = grown
-        for (x, z) in cells:
-            deep = edge.get((x, z), thick) + (1 if hsh(x, 3, z, 1330) < 0.4 else 0)
-            for yy in range(max(VOID + 2, y - deep), y):
-                b.set(x, yy, z, black_rock(x, yy, z))
-            b.set(x, y, z, (mat or glass_rock)(x, y, z))
-            for yy in range(y + 1, y + 4):
-                if b.get(x, yy, z) not in (None, AIR) and 'under_sky' not in str(b.get(x, yy, z)):
-                    continue
-                b.set(x, yy, z, AIR)
-            self.ground[(x, z)] = y
+    def lay(self, cells, y, mat=None, wet=False, roof=5, sky=None):
+        """Floor at layer y under these columns, for all of them that have none yet. `roof`: how many cells are open
+        over it in its middle (less at its walls); `sky`: the hollow it belongs to, if that has a sky instead."""
+        new = set()
+        for c in cells:
+            if c in self.ground or c in self.pits or c in self.cut:
+                continue
+            self.ground[c] = y
+            self.mat[c] = mat or (glass_rock if wet else black_rock)
+            self.kind[c] = (roof, sky)
             if wet:
-                self.wet.add((x, z))
+                self.wet.add(c)
+            new.add(c)
+        return new
+
+    def pit(self, cells, rim, roof=6, sky=None):
+        """No floor under these columns: the sky is down there. `rim` is the layer of the floor beside them."""
+        new = set()
+        for c in cells:
+            if c in self.ground or c in self.pits or c in self.cut:
+                continue
+            self.pits[c] = rim
+            self.kind[c] = (roof, sky)
+            new.add(c)
+        return new
+
+    def carve(self):
+        """Everything laid is hollowed out. A column is open as high as it is far from the wall: under a roof of rock
+        three cells at the wall and two more with every column inwards, up to the roof; in a hollow with a sky three
+        and three more, and from the neck inwards all the way up to the lid. Over the neck such a hollow opens out
+        again, wider than its floor: from below, nothing of the sky's own walls is seen past the lip."""
+        b = self.b
+        inside = set(self.ground) | set(self.pits)
+        whole = inside | set(self.cut)
+        groups = {}
+        for c in inside:
+            groups.setdefault(self.kind[c][1], set()).add(c)
+        dist = {}
+        for room, cols in groups.items():
+            within = whole if room is None else cols              # (the wall of a hollow with a sky goes all the way round it: ways come in under it)
+            ring = [c for c in cols if any((c[0] + dx, c[1] + dz) not in within for dx, dz in FOUR)]
+            for c in ring:
+                dist[c] = 1
+            d = 1
+            while ring and d < 9:
+                d += 1
+                grown = []
+                for (x, z) in ring:
+                    for dx, dz in FOUR:
+                        n = (x + dx, z + dz)
+                        if n in cols and n not in dist:
+                            dist[n] = d
+                            grown.append(n)
+                ring = grown
+        for c in sorted(inside):
+            x, z = c
+            roof, room = self.kind[c]
+            d = dist.get(c, 9)
+            base = self.pits[c] if c in self.pits else self.ground[c]
+            if room is not None and d >= 4 + int(smooth(x, z, 7, 1321) * 2.4):
+                top = ROOMS[room]
+                self.shaft.add(c)
+            elif room is not None:
+                top = base + 3 + (d - 1) * 3 + int(hsh(x, 10, z, 1322) * 2)
             else:
-                self.wet.discard((x, z))
-        return cells
+                top = base + min(roof + int(smooth(x, z, 3, 1323) * 1.6), 3 + (d - 1) * 2 + (1 if hsh(x, 11, z, 1324) < 0.3 else 0))
+            if c in self.pits:
+                b.set(x, VOID, z, SKY % 0)
+                low = VOID + 1
+            else:
+                b.set(x, base, z, self.mat[c](x, base, z))
+                low = base + 1
+            for y in range(low, top + 1):
+                b.set(x, y, z, AIR)
+            if c in self.pits:
+                b.set(x, VOID + 2, z, VEIL % 1)                   # (a breath of mist over the stars down there: the blocks are not seen for blocks)
+            self.top[c] = top
+        for room, lid in ROOMS.items():
+            cols = groups[room]
+            for (x, z) in cols | {(x + dx, z + dz) for (x, z) in cols for dx in (-1, 0, 1) for dz in (-1, 0, 1)}:
+                self.open_sky[(x, z)] = lid
+                self.kind.setdefault((x, z), (0, room))
+                for y in range(lid - FLARE, lid + 1):
+                    if b.get(x, y, z) is None:
+                        b.set(x, y, z, AIR)
+
+    def skies(self):
+        """Over every hollow that has one: sheets of mist one over another, each with thin places, thick places and
+        gaps of its own (so the eye goes through them unevenly, as through cloud), thicker upwards; and the lid over
+        the last."""
+        b = self.b
+        for (x, z), lid in self.open_sky.items():
+            for k in range(VEILS):                                 # (k = 0 is the highest)
+                n = smooth(x, z, 9, 1326 + k * 2) * 0.62 + smooth(x, z, 4, 1327 + k * 2) * 0.38
+                mist = int((n - 0.3 + (VEILS - 1 - k) * -0.035) * 13.0)
+                if mist >= 0:
+                    b.set(x, lid - 2 - k * VEIL_STEP, z, VEIL % min(MISTS - 1, mist))
+        for room, lid in ROOMS.items():
+            cols = [c for c, top in self.open_sky.items() if self.kind[c][1] == room]
+            x0, z0 = min(c[0] for c in cols), min(c[1] for c in cols)
+            tiles = {((x - x0) // LID_TILE, (z - z0) // LID_TILE) for (x, z) in cols}
+            for (i, j) in sorted(tiles):
+                # (the lid stands in the middle of the square it draws; where that is in the rock it is in the rock)
+                b.set(x0 + i * LID_TILE + LID_TILE // 2, lid, z0 + j * LID_TILE + LID_TILE // 2, LID)
+
+    def skin(self):
+        """Rock round everything the place opened or set, wherever the plan has nothing. (The check takes a cell the
+        plan does not have for room; so does the reckoning of the light.)"""
+        b = self.b
+        cells = b.cells
+        count = 0
+        for (x, y, z) in list(self.own):
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    for dz in (-1, 0, 1):
+                        if dx and dy and dz:
+                            continue
+                        n = (x + dx, y + dy, z + dz)
+                        if n not in cells and n[1] <= self.g and n[2] > GATE[1] and b.inside(*n):
+                            cells[n] = (cut_rock if n[2] < RAW_Z else black_rock)(*n)
+                            count += 1
+        return count
 
     @staticmethod
     def blob(circles, salt=0, rough=1.6):
@@ -263,7 +301,7 @@ class Depths:
                 c = (x + dx, z + dz)
                 if c not in self.ground or c in self.taken or self.ground[c] != self.ground.get((x, z)):
                     return False
-                if not all(self.b.free(c[0], self.ground[c] + h, c[1]) for h in range(1, height + 1)):
+                if not all(self.open(c[0], self.ground[c] + h, c[1]) for h in range(1, height + 1)):
                     return False
         return True
 
@@ -272,7 +310,7 @@ class Depths:
         if (x, z) not in self.ground:
             raise ValueError(f'the {kind} at {(x, z)} would stand on nothing')
         y = self.ground[(x, z)]
-        if not all(b.free(x, y + h, z) for h in range(1, tall + 1)):
+        if not all(self.open(x, y + h, z) for h in range(1, tall + 1)):
             raise ValueError(f'no room for the {kind} at {(x, z)}: {[b.get(x, y + h, z) for h in range(1, tall + 1)]}')
         if self.mobs:
             b.mob(kind, x, y + 1, z, facing)
@@ -287,7 +325,7 @@ class Depths:
         if (x, z) not in self.ground or (x, z) in self.taken:
             return False
         y = self.ground[(x, z)]
-        if not all(b.free(x, y + h, z) for h in range(1, tall + 3)):
+        if not all(self.open(x, y + h, z) for h in range(1, tall + 3)):
             return False
         b.set(x, y + 1, z, 'minecraft:calcite' if hsh(x, 4, z, 1350 + salt) < 0.5 else 'minecraft:smooth_basalt')
         for h in range(2, tall + 1):
@@ -295,7 +333,7 @@ class Depths:
         b.set(x, y + tall + 1, z, 'minecraft:amethyst_cluster[facing=up,waterlogged=false]')
         b.set(x, y + tall + 2, z, 'minecraft:light[level=10,waterlogged=false]')
         for dx, dz, facing in ((1, 0, 'east'), (-1, 0, 'west'), (0, 1, 'south'), (0, -1, 'north')):
-            if tall >= 2 and hsh(x + dx, 5, z + dz, 1351 + salt) < 0.6 and b.free(x + dx, y + 2, z + dz) and (x + dx, z + dz) not in self.taken:
+            if tall >= 2 and hsh(x + dx, 5, z + dz, 1351 + salt) < 0.6 and self.open(x + dx, y + 2, z + dz) and (x + dx, z + dz) not in self.taken:
                 b.set(x + dx, y + 2, z + dz, f'minecraft:amethyst_cluster[facing={facing},waterlogged=false]')
         self.keep(x - 1, z - 1, x + 1, z + 1)
         self.lit.append((x, y + tall + 1, z))
@@ -340,8 +378,8 @@ class Depths:
                 yy = hub - dv
                 if yy <= y0 or not b.inside(x, yy, z):
                     continue
-                if b.get(x, yy, z) not in (None, AIR) and 'night_shallows' not in str(b.get(x, yy, z)):
-                    continue
+                if b.get(x, yy, z) != AIR and 'night_shallows' not in str(b.get(x, yy, z)):
+                    continue                                       # (whatever of it is not in the open is in the rock)
                 n = hsh(x, yy, z, 1370 + salt)
                 state = 'minecraft:netherite_block' if boss else ('minecraft:waxed_cut_copper' if tooth and n < 0.3 else
                                                                  ('minecraft:polished_blackstone' if n < 0.7 else 'minecraft:polished_blackstone_bricks'))
@@ -370,7 +408,7 @@ class Depths:
                 if dx * fx + dz * fz > 0:
                     continue                                       # (the two cells beside the way out stay as they are)
                 for h in range(1, 5):
-                    if b.free(c[0], y + h, c[1]):
+                    if self.open(c[0], y + h, c[1]):
                         b.set(c[0], y + h, c[1], black_rock(c[0], y + h, c[1]))
                 self.taken.add(c)
                 self.wet.discard(c)
@@ -385,7 +423,7 @@ class Depths:
             c = (x + fx * k, z + fz * k)
             if c in self.ground:
                 for h in (1, 2, 3):
-                    if not b.free(c[0], y + h, c[1]) and 'mob_mark' not in str(b.get(c[0], y + h, c[1])):
+                    if not self.open(c[0], y + h, c[1]) and 'mob_mark' not in str(b.get(c[0], y + h, c[1])):
                         b.set(c[0], y + h, c[1], AIR)
                 self.taken.add(c)
 
@@ -394,9 +432,10 @@ class Depths:
         b = self.b
         for (x, z) in cells:
             if x % every == 0 and z % every == 0 and (x, z) in self.ground:
-                y = self.ground[(x, z)] + up
-                if b.free(x, y, z):
-                    b.set(x, y, z, f'minecraft:light[level={level},waterlogged=false]')
+                for h in range(up, 1, -1):                         # (lower under a low roof)
+                    if self.open(x, self.ground[(x, z)] + h, z):
+                        b.set(x, self.ground[(x, z)] + h, z, f'minecraft:light[level={level},waterlogged=false]')
+                        break
 
     def arch(self, x0, x1, z, y, name, sealed=False, axis='x', height=4):
         """A doorway for fog where there is no wall: two posts and a beam of black stone across a way that runs along z
@@ -420,68 +459,123 @@ class Depths:
             self.taken.add((c[0], c[2]))
             self.wet.discard((c[0], c[2]))
 
+    @staticmethod
+    def way(a, c, half, bend=0.0, salt=0):
+        """The columns of a way that winds from a to c: it swings `bend` columns off the straight line on its way, and is
+        `half` either side of its middle, a little more or less as it goes."""
+        out = set()
+        length = math.hypot(c[0] - a[0], c[1] - a[1]) or 1.0
+        nx, nz = -(c[1] - a[1]) / length, (c[0] - a[0]) / length
+        mx, mz = (a[0] + c[0]) / 2 + nx * bend * 2, (a[1] + c[1]) / 2 + nz * bend * 2
+        steps = int(length * 3) + 2
+        last = None
+        for i in range(steps + 1):
+            t = i / steps
+            px = round((1 - t) ** 2 * a[0] + 2 * t * (1 - t) * mx + t * t * c[0])
+            pz = round((1 - t) ** 2 * a[1] + 2 * t * (1 - t) * mz + t * t * c[1])
+            if (px, pz) == last:
+                continue
+            mid = [(px, pz)]
+            if last is not None and last[0] != px and last[1] != pz:
+                mid.append((px, last[1]))
+            r = half + (smooth(px, pz, 5, 1345 + salt) - 0.4) * (1.4 if half > 1 else 0.0)
+            for (ux, uz) in mid:
+                k = int(r + 1)
+                for dx in range(-k, k + 1):
+                    for dz in range(-k, k + 1):
+                        if max(abs(dx), abs(dz)) <= half if half <= 1 else math.hypot(dx, dz) <= r + 0.3:
+                            out.add((ux + dx, uz + dz))
+            last = (px, pz)
+        return out
+
+    def lamps(self, cells, level, every=3):
+        """Light without a lamp along a way with a roof of rock: under the roof, wherever that is."""
+        b = self.b
+        for (x, z) in cells:
+            if (x + 2 * z) % (every * 2 + 1) == 0 and (x, z) in self.ground:
+                y = self.ground[(x, z)]
+                for up in (4, 3, 2):
+                    if self.open(x, y + up, z):
+                        b.set(x, y + up, z, f'minecraft:light[level={level},waterlogged=false]')
+                        break
+
+    def near(self, x, z, r=0, tall=3, reach=5):
+        """The floor nearest to a column that is free `r` round and `tall` up."""
+        for k in range(0, reach + 1):
+            for dx in range(-k, k + 1):
+                for dz in range(-k, k + 1):
+                    if max(abs(dx), abs(dz)) == k and self.free(x + dx, z + dz, r, tall):
+                        return (x + dx, z + dz)
+        raise ValueError(f'no free floor near {(x, z)}')
+
     # ------------------------------------------------------------------ the way in
 
-    def drift(self, height):
-        """From the Lower Grate: south, climbing; a cross leg east, in which the hour is turned; south again, and the
-        cut stone gives out. A room with a hearth in the last of the rock, and the mouth."""
-        b = self.b
+    def drift_plan(self):
+        """The line of the drift, with the layer of its floor at every cell: from the Lower Grate south and down by
+        flights of eight with a landing between, a cross leg east, south and down again. A cell of a flight has its
+        floor one lower than the cell before it and a stair lying on that floor."""
         gx, gz = GATE
-        # the middle line of it, with the layer of its floor at every cell
         path = []
-        y = SUMP_FLOOR
-        for z in range(gz, TURN_Z + 1):
-            if z >= gz + 9 and (z - gz) % 3 == 0 and y < 12:
-                y += 1
-            path.append((gx, y, z, 'south'))
+        y, z = SUMP_FLOOR, gz
+        for kind, n in (('flat', 3), ('down', 8), ('flat', 2), ('down', 8), ('flat', 2), ('down', 8), ('flat', 2), ('down', 4), ('flat', 1)):
+            for _ in range(n):
+                y -= kind == 'down'
+                path.append((gx, y, z, 'south', kind == 'down'))
+                z += 1
+        assert z - 1 == TURN_Z
         for x in range(gx + 1, LEG_X + 1):
-            path.append((x, y, TURN_Z, 'east'))
-        for z in range(TURN_Z + 1, MOUTH_Z + 1):
-            if z >= TURN_Z + 5 and (z - TURN_Z) % 4 == 1 and y < BRINK:
-                y += 1
-            path.append((LEG_X, y, z, 'south'))
+            path.append((x, y, TURN_Z, 'east', False))
+        z = TURN_Z + 1
+        for kind, n in (('flat', 2), ('down', 8), ('flat', 2), ('down', 4), ('flat', MOUTH_Z - TURN_Z - 16)):
+            for _ in range(n):
+                y -= kind == 'down'
+                path.append((LEG_X, y, z, 'south', kind == 'down'))
+                z += 1
+        assert y == BRINK and z - 1 == MOUTH_Z, (y, z)
         floor = {}
-        for i, (x, y, z, way) in enumerate(path):
+        for i, (x, y, z, way, stair) in enumerate(path):
             for d in (-1, 0, 1):
                 c = (x + d, z) if way == 'south' else (x, z + d)
-                floor.setdefault(c, (y, way, i))
+                floor.setdefault(c, (y, way, i, stair))
             if i and path[i - 1][3] != way or (i + 1 < len(path) and path[i + 1][3] != way):   # the corners, filled out
                 for dx in (-1, 0, 1):
                     for dz in (-1, 0, 1):
-                        floor.setdefault((x + dx, z + dz), (y, way, i))
-        raw_from = TURN_Z + 14                                     # south of this nobody cut it
-        met = [(x, y + h, z) for (x, z), (y, way, i) in floor.items() for h in range(0, 4)
-               if z > gz + 1 and z < 596 and y + h <= self.g and b.get(x, y + h, z) is not None]      # (over the ground it is in the plateau's own rock)
-        if met:
-            print(f'  PROBLEM: the drift to the Sky Beneath cuts through {len(met)} cells of something else, as {met[0]}: {b.get(*met[0])}')
-        for (x, z), (y, way, i) in floor.items():
+                        floor.setdefault((x + dx, z + dz), (y, way, i, False))
+        self.path = path
+        self.cut = floor
+        # the room: the last place with a wall on every side
+        self.room = {}
+        for x in range(LEG_X - 4, LEG_X + 5):
+            for z in range(ROOM_Z - 3, ROOM_Z + 4):
+                edge = abs(x - LEG_X) == 4 or abs(z - ROOM_Z) == 3
+                if (x, z) in floor or (edge and hsh(x, 7, z, 1381) < 0.5):
+                    continue
+                self.room[(x, z)] = BRINK
+        for c in self.room:
+            self.cut[c] = (BRINK, 'south', 0, False)
+
+    def drift(self):
+        """The drift is cut: stone and stairs, timber on its landings while it is a drift, lamps; then raw rock and
+        crystals. A room with a hearth in the last of the rock, and the mouth."""
+        b = self.b
+        gx, gz = GATE
+        path = self.path
+        for (x, z), (y, way, i, stair) in self.cut.items():
             if z <= gz:
                 continue
-            rock = cut_rock if z < raw_from else black_rock
-            prev = path[i - 1][1] if i else y
+            rock = cut_rock if z < RAW_Z else black_rock
             b.set(x, y, z, rock(x, y, z))
-            if y > prev and (x, z) == (path[i][0] + (0 if way != 'south' else x - path[i][0]), path[i][2]) and way == 'south':
-                b.set(x, y, z, stairs('cobbled_deepslate', 'south'))
-                b.flights.append((x, y, z))
-            high = 3 if z < raw_from else 3 + int(smooth(x, z, 3, 1380) * 2)
+            top = y
+            if stair:
+                top = y + 1
+                b.set(x, top, z, stairs('cobbled_deepslate' if z < RAW_Z else 'blackstone', 'north'))
+                b.flights.append((x, top, z))
+            high = 3 if z < RAW_Z else 3 + int(smooth(x, z, 3, 1380) * 2)
+            if (x, z) in self.room or abs(z - ROOM_Z) <= 3:
+                high = 4
             for h in range(1, high + 1):
-                b.set(x, y + h, z, AIR)
-            for h in range(high + 1, high + 3):
-                if b.get(x, y + h, z) in (None,) or 'under_sky' in str(b.get(x, y + h, z)):
-                    b.set(x, y + h, z, rock(x, y + h, z))
-            if b.get(x, y - 1, z) is None:
-                b.set(x, y - 1, z, rock(x, y - 1, z))
-        # rock round it wherever the plan has none (under the ground it holds only what was cut; the check must see walls)
-        for (x, z), (y, way, i) in floor.items():
-            for dx in (-1, 0, 1):
-                for dz in (-1, 0, 1):
-                    n = (x + dx, z + dz)
-                    if n in floor or n[1] < gz:
-                        continue
-                    for yy in range(y - 2, y + 7):
-                        if b.get(n[0], yy, n[1]) is None or 'under_sky' in str(b.get(n[0], yy, n[1])):
-                            b.set(n[0], yy, n[1], (cut_rock if n[1] < raw_from else black_rock)(n[0], yy, n[1]))
-        # the grate: three wide, three high, in the sump's wall; a lamp over it on the sump's side
+                b.set(x, top + h, z, AIR)
+        # the grate: three wide, three high, in the sump's wall
         gate = [(x, y, gz) for x in (gx - 1, gx, gx + 1) for y in (SUMP_FLOOR + 1, SUMP_FLOOR + 2, SUMP_FLOOR + 3)]
         for cell in gate:
             b.set(*cell, f'{MOD}:locked_gate[axis=x,lock=depths]')
@@ -489,12 +583,12 @@ class Depths:
             b.set(x, SUMP_FLOOR, gz, cut_rock(x, SUMP_FLOOR, gz))
             b.set(x, SUMP_FLOOR + 4, gz, cut_rock(x, SUMP_FLOOR + 4, gz))
         b.seals['depths_key'] = gate
-        # timber while it is a drift, a lamp now and then; after that crystals, small, and far apart
-        for i, (x, y, z, way) in enumerate(path):
-            if z <= gz + 1 or z >= raw_from:
+        # timber on the landings (never over the cell a flight is climbed from: the check jumps where the game walks
+        # up a stair), a lamp over every flight; light without a lamp all the way
+        for i, (x, y, z, way, stair) in enumerate(path):
+            if z <= gz + 1 or z >= RAW_Z or stair or i + 1 >= len(path):
                 continue
-            flat = 0 < i < len(path) - 1 and path[i - 1][1] == y == path[i + 1][1]
-            if i % 7 in (3, 4) and flat and not (i % 7 == 4 and 0 < i - 1 and path[i - 2][1] == path[i - 1][1] == y):
+            if not path[i - 1][4] and (path[i + 1][4] or i % 5 == 0) and path[i - 1][3] == way == path[i + 1][3]:
                 for d in (-1, 1):
                     c = (x + d, z) if way == 'south' else (x, z + d)
                     b.set(c[0], y + 1, c[1], 'minecraft:spruce_log[axis=y]')
@@ -502,74 +596,43 @@ class Depths:
                 for d in (-1, 0, 1):
                     c = (x + d, z) if way == 'south' else (x, z + d)
                     b.set(c[0], y + 3, c[1], 'minecraft:spruce_log[axis=%s]' % ('x' if way == 'south' else 'z'))
-            if i % 14 == 9 and b.free(x, y + 2, z):
-                b.set(x, y + 2, z, 'minecraft:soul_lantern[hanging=true]') if b.get(x, y + 3, z) not in (None, AIR) else None
-        for i, (x, y, z, way) in enumerate(path):
-            if z > gz + 1 and i % 5 == 2 and b.free(x, y + 3, z):
-                b.set(x, y + 3, z, 'minecraft:light[level=11,waterlogged=false]')
-        for z in range(raw_from + 2, MOUTH_Z - 9, 6):
-            side = -1 if (z // 6) % 2 else 1
-            y = floor[(LEG_X + side, z)][0]
-            b.set(LEG_X + side, y + 1, z, 'minecraft:amethyst_cluster[facing=up,waterlogged=false]')
-            b.set(LEG_X + side, y + 2, z, 'minecraft:light[level=7,waterlogged=false]')
-        # the hour: towards the quarry night, towards the hollow its own
-        b.threshold('to_night', gx - 1, floor[(gx, gz + 6)][0] + 1, gz + 6, gx + 1, gz + 7)
-        tz = TURN_Z
-        b.threshold('to_blue_hour', gx + 6, floor[(gx + 6, tz)][0] + 1, tz - 1, gx + 7, tz + 1)
-        # the room: the last place with a wall on every side
-        ry = floor[(LEG_X, ROOM_Z)][0]
-        for x in range(LEG_X - 4, LEG_X + 5):
-            for z in range(ROOM_Z - 3, ROOM_Z + 4):
-                edge = abs(x - LEG_X) == 4 or abs(z - ROOM_Z) == 3
-                if edge and hsh(x, 7, z, 1381) < 0.5 and not abs(x - LEG_X) <= 1:
-                    continue
-                y = floor.get((x, z), (ry,))[0]
-                if abs(x - LEG_X) > 1:
-                    y = ry
-                    b.set(x, y, z, black_rock(x, y, z))
-                    if b.get(x, y - 1, z) is None:
-                        b.set(x, y - 1, z, black_rock(x, y - 1, z))
-                for h in range(1, 5):
-                    b.set(x, y + h, z, AIR)
-                for h in (5, 6):
-                    if 'under_sky' in str(b.get(x, y + h, z)) or b.get(x, y + h, z) is None:
-                        b.set(x, y + h, z, black_rock(x, y + h, z))
-        for x in range(LEG_X - 6, LEG_X + 7):                      # (and rock, not sky, round the room)
-            for z in range(ROOM_Z - 5, ROOM_Z + 6):
-                for yy in range(ry - 1, ry + 8):
-                    if 'under_sky' in str(b.get(x, yy, z)) or b.get(x, yy, z) is None:
-                        b.set(x, yy, z, black_rock(x, yy, z))
-        b.hearth(LEG_X - 3, ry + 1, ROOM_Z, 'brink')
-        b.loot(LEG_X + 3, ry + 1, ROOM_Z + 1, 'depths_brink', 'west')
-        b.set(LEG_X + 3, ry + 1, ROOM_Z - 2, 'minecraft:amethyst_cluster[facing=up,waterlogged=false]')
-        b.set(LEG_X + 3, ry + 3, ROOM_Z - 2, 'minecraft:light[level=12,waterlogged=false]')
-        b.set(LEG_X - 3, ry + 4, ROOM_Z + 2, 'minecraft:light[level=12,waterlogged=false]')
-        self.path = path
-        self.drift_floor = floor
-        return floor[(LEG_X, MOUTH_Z)][0]
+        run = 0
+        for i, (x, y, z, way, stair) in enumerate(path):
+            run = run + 1 if stair else 0
+            if run == 4 and z < RAW_Z:
+                b.set(x, y + 4, z, 'minecraft:soul_lantern[hanging=true]')
+            if z > gz + 1 and i % 5 == 2:
+                for up in (y + (4 if stair else 3), y + (3 if stair else 2)):       # (under a beam, if there is one)
+                    if self.open(x, up, z):
+                        b.set(x, up, z, 'minecraft:light[level=11,waterlogged=false]')
+                        break
+        for z in range(RAW_Z + 4, MOUTH_Z - 9, 5):
+            side = -1 if (z // 5) % 2 else 1
+            y, _, _, stair = self.cut[(LEG_X + side, z)]
+            if not stair and self.open(LEG_X + side, y + 1, z):
+                b.set(LEG_X + side, y + 1, z, 'minecraft:amethyst_cluster[facing=up,waterlogged=false]')
+                b.set(LEG_X + side, y + 2, z, 'minecraft:light[level=7,waterlogged=false]')
+        # the hour: towards the quarry night, towards the place its own
+        b.threshold('to_night', gx - 1, SUMP_FLOOR + 1, gz + 1, gx + 1, gz + 2)
+        ty = self.cut[(gx + 6, TURN_Z)][0]
+        b.threshold('to_blue_hour', gx + 6, ty + 1, TURN_Z - 1, gx + 7, TURN_Z + 1)
+        b.hearth(LEG_X - 3, BRINK + 1, ROOM_Z, 'brink')
+        b.loot(LEG_X + 3, BRINK + 1, ROOM_Z + 1, 'depths_brink', 'west')
+        b.set(LEG_X + 3, BRINK + 1, ROOM_Z - 2, 'minecraft:amethyst_cluster[facing=up,waterlogged=false]')
+        b.set(LEG_X + 3, BRINK + 3, ROOM_Z - 2, 'minecraft:light[level=12,waterlogged=false]')
+        b.set(LEG_X - 3, BRINK + 4, ROOM_Z + 2, 'minecraft:light[level=12,waterlogged=false]')
 
-    # ------------------------------------------------------------------ the Brink and the Still Water
+    # ------------------------------------------------------------------ every floor of the place
 
-    def brink(self, y_mouth):
-        """Where the drift comes out: a ledge of the rock with all of the hollow before it, and steps down its east
-        side to the water."""
-        b = self.b
+    def layout(self):
         lx, lz = LEDGE
-        # the last of the drift is open to the sky of the place: its walls end
+        wx, wz = WORKS
+        bx, bz = BEHIND
+        tx, tz = TEAR
+        # the Brink: a ledge in the wall of the first hollow, and steps of rock down its east side
         ledge = self.blob(((lx, lz, 7.5), (lx, MOUTH_Z + 1, 3.5)), 1, 1.0)
-        ledge = {c for c in ledge if c[1] >= MOUTH_Z - 1}
-        self.plate(ledge, BRINK, black_rock, wet=False, thick=7)
-        # (whatever the drift's mouth left between itself and the ledge)
-        for x in range(lx - 2, lx + 3):
-            for z in range(MOUTH_Z - 6, MOUTH_Z + 2):
-                if (x, z) in self.hollow and (x, z) not in self.ground and abs(x - lx) <= 1:
-                    self.plate({(x, z)}, BRINK, black_rock, wet=False, thick=7)
-        b.threshold('under_sky', lx - 1, BRINK + 1, MOUTH_Z + 1, lx + 1, MOUTH_Z + 2)
-        self.keep(lx - 1, MOUTH_Z - 2, lx + 1, lz + 2)
-        # the steps: east off the ledge and down, a flight of rock on a spur of its own
-        x, y = lx + 7, BRINK
-        z = lz + 2
-        spur = set()
+        self.ledge = self.lay({c for c in ledge if c[1] >= MOUTH_Z - 1}, BRINK, black_rock, sky='water')
+        x, y, z = lx + 7, BRINK, lz + 2
         steps = []
         while y > PLATE:
             for _ in range(2):
@@ -577,59 +640,101 @@ class Depths:
                 steps.append((x, y, z))
             y -= 1
         steps.append((x + 1, y, z))
+        self.spur = set()
         for (sx, sy, sz) in steps:
-            for dz in (-1, 0, 1):
-                self.plate({(sx, sz + dz)}, sy, black_rock, wet=False, thick=4)
-                spur.add((sx, sz + dz))
-        for c in spur:
-            self.taken.add(c)
+            self.spur |= self.lay({(sx, sz + dz) for dz in (-1, 0, 1)}, sy, black_rock, sky='water')
         self.steps_end = (steps[-1][0], steps[-1][2])
-        self.crystal(lx - 5, lz + 1, 3, 1)
-        self.crystal(lx + 4, lz - 4, 2, 2)
-        self.lamp_grid(ledge | spur, 13)
-        return ledge
-
-    def water(self):
-        """The Still Water: the great plate. Ridges across it, crystals, three wheels of the clock; the ways through
-        it are between these, and there is more than one."""
-        b = self.b
-        b.zone = 'still_water'
-        sx, sz = self.steps_end
-        cells = self.blob(WATER + ((sx + 4, sz, 4.5),), 2)
-        for hx, hz, hr in HOLES:
-            cells -= self.blob(((hx, hz, hr),), 3, 0.8)
-        cells -= {c for c in cells if c in self.ground}             # (not over the steps)
-        self.plate(cells, PLATE)
-        self.plate(self.line((sx, sz), (sx + 3, sz), 1), PLATE)
-        b.threshold('still_water', sx + 1, PLATE + 1, sz - 1, sx + 2, sz + 1)
-        self.keep(sx, sz - 1, sx + 4, sz + 1)
-        # the lesser plate east of it: three cells of nothing between, and a chest for whoever jumps them
+        # the Still Water: its pits, the chamber east of it over a crack, and the floor itself
+        for hx, hz, hr in PITS:
+            self.pit(self.blob(((hx, hz, hr),), 3, 0.8), PLATE, sky='water')
         ix, iz, ir = ISLE
         isle = self.blob(((ix, iz, ir),), 4, 0.7)
         gap_x = min(x for (x, z) in isle if z == iz) - 1
         isle -= {c for c in isle if c[0] <= gap_x}
-        self.plate(isle, PLATE)
-        # (the main plate is brought up square to the jump, three cells off)
-        self.plate({(x, iz + dz) for x in range(gap_x - 8, gap_x - 2) for dz in (-1, 0, 1)}, PLATE)
-        for x in range(gap_x - 2, gap_x + 1):
-            for dz in (-1, 0, 1):
-                self.ground.pop((x, iz + dz), None)
+        self.pit({(x, iz + dz) for x in range(gap_x - 2, gap_x + 1) for dz in range(-5, 6)}, PLATE, sky='water')
+        self.isle = self.lay(isle, PLATE, wet=True, sky='water')
+        self.lay({(x, iz + dz) for x in range(gap_x - 8, gap_x - 2) for dz in (-1, 0, 1)}, PLATE, wet=True, sky='water')
         self.jump = (gap_x - 3, iz)
+        sx, sz = self.steps_end
+        self.water_cells = self.lay(self.blob(WATER + ((sx + 4, sz, 4.5),), 2), PLATE, wet=True, sky='water')
+        self.neck = self.lay(self.line((wx, 682), (wx, wz - WORKS_R - 1), 2), PLATE, works_floor, roof=5)
+        # the Works: the round floor, a recess either side of it for a great wheel, the way out south
+        R = WORKS_R
+        self.works_floor = self.lay({(x, z) for x in range(wx - R - 2, wx + R + 3) for z in range(wz - R - 2, wz + R + 3) if math.hypot(x - wx, z - wz) <= R + 0.3},
+                                    PLATE, works_floor, sky='works')
+        self.lay({(x, z) for x in range(wx - R - 8, wx + R + 9) for z in range(wz - 11, wz + 12)
+                  if math.hypot((abs(x - wx) - R - 2) / 5.4, (z - wz) / 10.6) <= 1.0 + (smooth(x, z, 3, 1342) - 0.5) * 0.3}, PLATE, black_rock, sky='works')
+        # a stair up (laid before the way out of the Works, which is wider than it is long), and the chamber behind the pendulum
+        x, z, y = wx, wz + R + 3, PLATE
+        self.flight = []
+        while y < HIGH:
+            z += 1
+            y += 1
+            self.flight.append((x, y, z))
+            z += 1
+            self.flight.append((x, y, z))
+        for (fx, fy, fz) in self.flight:
+            self.lay({(fx + dx, fz) for dx in (-1, 0, 1)}, fy, works_floor, roof=4)
+        self.works_out = self.lay(self.line((wx, wz + R + 1), (wx, wz + R + 3), 2), PLATE, works_floor, roof=5)
+        self.behind_cells = self.lay(self.blob(((bx, bz, 6.2),), 6, 0.8) | self.line((x, z), (bx, bz - 5), 1), HIGH, black_rock, roof=6)
+        # the Causeways: the chambers first, then the cache's one cell of rock over its pit, then the ways
+        rooms = {name: self.lay(self.blob(((x, z, r),), 10 + i, 0.7), HIGH, black_rock, roof=high) for i, (name, (x, z, r, high)) in enumerate(ISLETS.items())}
+        last = self.lay(self.blob(((LAST[0], LAST[1], 5.2),), 20, 0.6), HIGH, black_rock, roof=6)
+        mid, west, cache, spire, wheel = (ISLETS[k] for k in ('mid', 'west', 'cache', 'spire', 'wheel'))
+        a, c = (west[0] - 4, west[1] + 5), (cache[0], cache[1] - 2)
+        self.bridge = self.lay(self.line(a, c, 0), HIGH, black_rock, roof=6)
+        self.pit(self.blob((((a[0] + c[0]) / 2, (a[1] + c[1]) / 2, 4.2),), 31, 0.6), HIGH, roof=6)
+        self.ways = [self.way((bx - 5, bz), (mid[0], mid[1]), 1, 1.5, 1), self.way((mid[0], mid[1]), (west[0] + 5, west[1] - 2), 2, -2.5, 2),
+                     self.way((west[0] + 2, west[1] + 5), (spire[0] - 3, spire[1]), 1, 2.0, 3),
+                     self.way((spire[0] + 3, spire[1]), (LAST[0] - 3, LAST[1]), 1, -1.0, 4),
+                     self.way((LAST[0] + 3, LAST[1]), (wheel[0] - 5, wheel[1] + 1), 3, 2.6, 5)]
+        cells = set().union(*rooms.values()) | last | self.bridge
+        for way, high in zip(self.ways, (4, 6, 4, 4, 6)):
+            cells |= self.lay(way, HIGH, black_rock, roof=high)
+        self.pit(self.blob((SIDE_PIT,), 32, 0.6), HIGH, roof=6)
+        for (x, z) in ((40, 751), (72, 761)):                       # a stub of rock off a way, for a deepling to hang over
+            near = min(((abs(x - c[0]) + abs(z - c[1])), c) for c in cells)[1]
+            cells |= self.lay({(x, z)} | self.line((x, z), near, 0), HIGH, black_rock, roof=5)
+        self.causeway_cells = cells
+        # the Tear, the way to it and the room beyond
+        R = TEAR_R
+        self.tear_north = self.lay(self.line((tx, tz - R - 3), (tx, LAST[1] + 4), 1), HIGH, black_rock, roof=5)
+        self.tear_floor = self.lay({(x, z) for x in range(tx - R - 3, tx + R + 4) for z in range(tz - R - 3, tz + R + 4) if math.hypot(x - tx, z - tz) <= R + 2.2},
+                                   HIGH, glass_rock, wet=True, sky='tear')
+        self.tear_south = self.lay(self.line((tx, tz + R + 3), (tx, END[1] - 3), 1), HIGH, black_rock, roof=5)
+        self.end = self.lay(self.blob(((END[0], END[1], 5.0),), 30, 0.6), HIGH, works_floor, roof=6)
+
+    # ------------------------------------------------------------------ the Brink and the Still Water
+
+    def brink(self):
+        b = self.b
+        lx, lz = LEDGE
+        b.threshold('under_sky', lx - 1, BRINK + 1, MOUTH_Z + 1, lx + 1, MOUTH_Z + 2)
+        self.keep(lx - 1, MOUTH_Z - 2, lx + 1, lz + 2)
+        for c in self.spur:
+            self.taken.add(c)
+        self.crystal(lx - 5, lz + 1, 3, 1)
+        self.crystal(lx + 4, lz - 4, 2, 2)
+        self.lamp_grid(self.ledge | self.spur, 13)
+
+    def water(self):
+        """The Still Water: ridges across it, crystals, three wheels of the clock; the ways through it are between
+        these, and there is more than one."""
+        b = self.b
+        b.zone = 'still_water'
+        sx, sz = self.steps_end
+        cells = self.water_cells
+        b.threshold('still_water', sx + 1, PLATE + 1, sz - 1, sx + 2, sz + 1)
+        self.keep(sx, sz - 1, sx + 4, sz + 1)
+        # the chamber east of it: three cells of nothing between, and a chest for whoever jumps them
+        ix, iz, ir = ISLE
         b.loot(ix + 2, PLATE + 1, iz, 'depths_island', 'west')
         self.keep(ix + 1, iz - 1, ix + 3, iz + 1)
+        self.keep(self.jump[0] - 4, iz - 1, self.jump[0] + 5, iz + 1)
         self.crystal(ix, iz - 3, 3, 3)
         self.crystal(ix - 1, iz + 3, 2, 4)
         if self.free(ix - 2, iz + 1):
             self.mob('stray_shadow', ix - 2, iz + 1, 'west')
-        # the neck to the Works, and the doorway of fog in it
-        wx, wz = WORKS
-        neck = self.line((wx, 682), (wx, wz - WORKS_R - 1), 2)
-        self.plate(neck, PLATE, works_floor, wet=False, thick=3)
-        self.neck = neck
-        return cells | isle
-
-    def water_dress(self, cells):
-        b = self.b
         wx, wz = WORKS
         self.keep(wx - 2, 680, wx + 2, wz - WORKS_R)
         # ridges: each with a way round both its ends
@@ -658,50 +763,33 @@ class Depths:
                                          ('handwalker', 80, 676, 'north', 2),
                                          ('usher', 100, 640, 'west', 4), ('gut', 120, 664, 'west', 3),
                                          ('clockhand', 75, 683, 'north', 3), ('clockhand', 81, 683, 'north', 3)):
-            if not self.free(x, z, 0, tall):
-                # (a mark is moved to the nearest free floor rather than left out)
-                found = None
-                for r in range(1, 5):
-                    for dx in range(-r, r + 1):
-                        for dz in range(-r, r + 1):
-                            if found is None and self.free(x + dx, z + dz, 0, tall):
-                                found = (x + dx, z + dz)
-                if found is None:
-                    raise ValueError(f'no floor near {(x, z)} for the {kind}')
-                x, z = found
+            x, z = self.near(x, z, 0, tall)                        # (a mark is moved to the nearest free floor rather than left out)
             self.mob(kind, x, z, facing, tall)
         # what is to be found
-        for (x, z, table, facing) in ((119, 669, 'depths_water', 'north'),):
-            for r in range(0, 4):
-                spot = next(((x + dx, z + dz) for dx in range(-r, r + 1) for dz in range(-r, r + 1) if self.free(x + dx, z + dz, 1)), None)
-                if spot:
-                    b.loot(spot[0], PLATE + 1, spot[1], table, facing)
-                    self.keep(spot[0] - 1, spot[1] - 1, spot[0] + 1, spot[1] + 1)
-                    break
-            else:
-                raise ValueError('no place for the chest of the Still Water')
-        for (x, z) in ((58, 652),):
-            spot = next(((x + dx, z + dz) for r in range(0, 4) for dx in range(-r, r + 1) for dz in range(-r, r + 1) if self.free(x + dx, z + dz)), None)
-            b.shard(spot[0], PLATE + 1, spot[1])
-            self.taken.add(spot)
-        # crystals: by chance, but never in a way, and more of them towards the middle of the plate
+        spot = self.near(119, 669, 1, 3, 4)
+        b.loot(spot[0], PLATE + 1, spot[1], 'depths_water', 'north')
+        self.keep(spot[0] - 1, spot[1] - 1, spot[0] + 1, spot[1] + 1)
+        spot = self.near(58, 652, 0, 3, 4)
+        b.shard(spot[0], PLATE + 1, spot[1])
+        self.taken.add(spot)
+        # crystals: by chance, but never in a way, and more of them towards the middle of the floor
         for (x, z) in sorted(cells):
             if hsh(x, 8, z, 1390) < 0.016 and self.free(x, z, 1):
                 self.crystal(x, z, 1 + int(hsh(x, 9, z, 1391) * 3), 5)
-        self.lamp_grid(cells | self.neck, 13)
+        self.lamp_grid(cells | self.isle, 13)
+        self.lamps(self.neck, 11)
 
     # ------------------------------------------------------------------ the Works
 
     def works(self):
         """The Works: the floor of the clock, round, with a rim like the rim of a wheel - and it is one. The pendulum
-        swings across it from east to west, from an axle that lies over it north to south. Fog in the north; in the
-        south, behind the Bolt, a seal."""
+        swings across it from east to west, from an axle that lies over it north to south, its ends in the rock. Fog
+        in the north; in the south, behind the Bolt, a seal."""
         b = self.b
         b.zone = 'clockworks'
         cx, cz = WORKS
         R = WORKS_R
-        floor = {(x, z) for x in range(cx - R - 2, cx + R + 3) for z in range(cz - R - 2, cz + R + 3) if math.hypot(x - cx, z - cz) <= R + 0.3}
-        self.plate(floor, PLATE, works_floor, wet=False, thick=4)
+        floor = self.works_floor
         for (x, z) in floor:
             far = math.hypot(x - cx, z - cz)
             ang = math.atan2(z - cz, x - cx)
@@ -721,60 +809,40 @@ class Depths:
                     b.set(x, PLATE + h, z, 'minecraft:polished_blackstone_bricks' if h < 3 else 'minecraft:polished_blackstone')
                 self.taken.add((x, z))
         b.set(cx, PLATE, cz, 'minecraft:ochre_froglight[axis=y]')    # the seal under where it hangs
-        # the ways in and out: the neck from the north, and a like one south; an arch for the fog in each
-        out = self.line((cx, cz + R + 1), (cx, cz + R + 3), 2)
-        self.plate(out, PLATE, works_floor, wet=False, thick=3)
         self.arch(cx - 1, cx + 1, cz - R - 1, PLATE, 'bolt_fog')
         self.arch(cx - 1, cx + 1, cz + R + 1, PLATE, 'bolt', sealed=True)
         b.threshold('clockworks', cx - 1, PLATE + 1, cz - R - 4, cx + 1, cz - R - 3)
-        # the axle over it, on two frames at the rim: what the pendulum hangs from
+        # the axle over it, from wall to wall: what the pendulum hangs from
         top = PLATE + 13
         for z in range(cz - R - 1, cz + R + 2):
-            b.set(cx, top, z, 'minecraft:netherite_block' if (z - cz) % 4 else 'minecraft:waxed_cut_copper')
+            if self.open(cx, top, z):
+                b.set(cx, top, z, 'minecraft:netherite_block' if (z - cz) % 4 else 'minecraft:waxed_cut_copper')
             if abs(z - cz) <= 1:
                 for dx in (-1, 1):
                     b.set(cx + dx, top, z, 'minecraft:polished_blackstone')
-        for sz in (cz - R - 1, cz + R + 1):
-            for dx in (-2, 2):
-                for y in range(PLATE + 6, top + 1):
-                    b.set(cx + dx, y, sz, 'minecraft:polished_blackstone_bricks')
-            for dx in (-1, 0, 1):
-                b.set(cx + dx, top, sz, 'minecraft:polished_blackstone')
-        # chains out of the dark, with nothing on most of them
+        # chains down out of the sky, with nothing on most of them
         for (dx, dz, low) in ((-9, -6, 7), (8, -8, 9), (-7, 9, 6), (10, 5, 8), (-11, 2, 10), (4, 11, 7)):
             x, z = cx + dx, cz + dz
-            for y in range(PLATE + low, min(self.ceiling(x, z), PLATE + 30)):
+            if (x, z) not in self.shaft:
+                continue
+            for y in range(PLATE + low, self.open_sky[(x, z)]):
                 b.set(x, y, z, 'minecraft:iron_chain[axis=y,waterlogged=false]')
             b.set(x, PLATE + low - 1, z, 'minecraft:netherite_block' if low % 2 else 'minecraft:polished_blackstone')
-        # two great wheels standing behind the rim, east and west: seen across the floor
+        # two great wheels standing behind the rim, east and west, half in the rock: seen across the floor
         self.wheel(cx - R - 3, cz, 8, 'x', 0.35, y=PLATE - 3, salt=4)
         self.wheel(cx + R + 3, cz, 7, 'x', 0.3, y=PLATE - 2, salt=5)
         self.mob('bolt', cx, cz, 'south', 3)
-        self.lamp_grid(floor | out, 15, up=5)
+        self.lamp_grid(floor, 15, up=5)
+        self.lamps(self.works_out, 11)
         self.keep(cx - 2, cz - R - 2, cx + 2, cz + R + 4)
-        return (cx, cz + R + 3)
 
-    def behind(self, start):
-        """A stair up from the Works, in the open, and the plate behind the pendulum: a hearth, an anvil, what the Bolt kept."""
+    def behind(self):
+        """The chamber behind the pendulum: a hearth, an anvil, what the Bolt kept."""
         b = self.b
-        cx, cz, _ = BEHIND + (0,)
-        x, z = start
-        y = PLATE
-        flight = []
-        while y < HIGH:
-            z += 1
-            y += 1
-            flight.append((x, y, z))
-            z += 1
-            flight.append((x, y, z))
-        for (fx, fy, fz) in flight:
-            for dx in (-1, 0, 1):
-                self.plate({(fx + dx, fz)}, fy, works_floor, wet=False, thick=3)
-                self.taken.add((fx + dx, fz))
-        plate = self.blob(((cx, cz, 6.2),), 6, 0.8) | self.line((x, z), (cx, cz - 5), 1)
-        plate -= {c for c in plate if c in self.ground}
-        self.plate(plate, HIGH, black_rock, wet=False)
+        cx, cz = BEHIND
         b.zone = 'clockworks'
+        for (fx, fy, fz) in self.flight:
+            self.keep(fx - 1, fz, fx + 1, fz)
         b.hearth(cx - 3, HIGH + 1, cz, 'works')
         b.set(cx - 3, HIGH + 1, cz + 2, f'{MOD}:forge')
         b.loot(cx + 3, HIGH + 1, cz - 1, 'depths_works', 'west')
@@ -782,58 +850,53 @@ class Depths:
         self.keep(cx + 2, cz - 2, cx + 4, cz)
         self.crystal(cx + 3, cz + 3, 3, 6)
         self.crystal(cx - 1, cz + 5, 2, 7)
-        self.lamp_grid(plate | {(f[0], f[2]) for f in flight}, 13, every=3)
-        self.keep(cx - 1, start[1], cx + 1, cz - 4)
-        return plate
+        self.lamp_grid(self.behind_cells, 13, every=3)
+        self.lamps({(f[0] + dx, f[2]) for f in self.flight for dx in (-1, 0, 1)}, 11, every=2)
+        self.keep(cx - 1, self.flight[-1][2], cx + 1, cz - 4)
+        self.keep(cx - 6, cz - 1, cx - 4, cz + 1)
 
     # ------------------------------------------------------------------ the Causeways
 
     def causeways(self):
-        """From the plate behind the pendulum west, round and back east to the Tear: ways three wide, and less, from
-        islet to islet, with the sky under them."""
+        """From the chamber behind the pendulum west, round and back east to the Tear: a thin way, a wide winding one,
+        round chambers of rock, and the long way east."""
         b = self.b
         b.zone = 'causeways'
         bx, bz = BEHIND
-        islets = {name: self.blob(((x, z, r),), 10 + i, 0.7) for i, (name, (x, z, r)) in enumerate(ISLETS.items())}
-        last = self.blob(((LAST[0], LAST[1], 5.2),), 20, 0.6)
-        ways = (self.line((bx - 5, bz), (ISLETS['mid'][0], ISLETS['mid'][1]), 1), self.line((ISLETS['mid'][0], ISLETS['mid'][1]), (ISLETS['west'][0] + 5, ISLETS['west'][1] - 2), 1),
-                self.line((ISLETS['west'][0] + 2, ISLETS['west'][1] + 5), (ISLETS['spire'][0] - 3, ISLETS['spire'][1]), 1),
-                self.line((ISLETS['west'][0] - 4, ISLETS['west'][1] + 5), (ISLETS['cache'][0], ISLETS['cache'][1] - 2), 0),
-                self.line((ISLETS['spire'][0] + 3, ISLETS['spire'][1]), (LAST[0] - 3, LAST[1]), 1),
-                self.line((LAST[0] + 3, LAST[1]), (ISLETS['wheel'][0] - 5, ISLETS['wheel'][1] + 1), 1))
-        cells = set().union(*islets.values()) | last | set().union(*ways)
-        cells -= {c for c in cells if c in self.ground}
-        self.plate(cells, HIGH, black_rock, wet=False, thick=4)
-        for way in ways:
-            for c in way:
-                self.taken.add(c)
+        cells = self.causeway_cells
+        for way, (a, c, bend, salt) in zip(self.ways, (((bx - 5, bz), ISLETS['mid'][:2], 1.5, 1), (ISLETS['mid'][:2], (ISLETS['west'][0] + 5, ISLETS['west'][1] - 2), -2.5, 2),
+                                                       ((ISLETS['west'][0] + 2, ISLETS['west'][1] + 5), (ISLETS['spire'][0] - 3, ISLETS['spire'][1]), 2.0, 3),
+                                                       ((ISLETS['spire'][0] + 3, ISLETS['spire'][1]), (LAST[0] - 3, LAST[1]), -1.0, 4),
+                                                       ((LAST[0] + 3, LAST[1]), (ISLETS['wheel'][0] - 5, ISLETS['wheel'][1] + 1), 2.6, 5))):
+            self.taken |= self.way(a, c, 0, bend, salt) & way       # (the middle of every way is kept clear)
+        self.taken |= self.bridge
         b.threshold('causeways', bx - 8, HIGH + 1, bz - 1, bx - 7, bz + 1)
-        # the middle islet: two of the clock's own, at a wheel
-        mx, mz, _ = ISLETS['mid']
+        # the middle chamber: two of the clock's own, at a wheel
+        mx, mz = ISLETS['mid'][:2]
         self.wheel(mx, mz - 4, 3, 'z', 0.3, salt=6)
-        self.mob('clockhand', mx - 2, mz + 2, 'east', 3)
-        self.mob('clockhand', mx + 2, mz + 2, 'east', 3)
-        # the west islet: a gut's
-        wx, wz, _ = ISLETS['west']
+        for dx in (-2, 2):
+            self.mob('clockhand', *self.near(mx + dx, mz + 2, 0, 3), 'east', 3)
+        # the west chamber: a gut's
+        wx, wz = ISLETS['west'][:2]
         self.ridge(((wx - 5, wz - 4), (wx - 2, wz - 6)), 5, 9)
-        self.mob('gut', wx - 1, wz + 1, 'east', 3)
+        self.mob('gut', *self.near(wx - 1, wz + 1, 0, 3), 'east', 3)
         self.crystal(wx + 3, wz - 5, 3, 8)
         self.crystal(wx - 5, wz + 2, 2, 9)
         if self.free(wx + 4, wz + 3):
             self.mob('stray_shadow', wx + 4, wz + 3, 'north')
-        # the cache: one cell wide to get to, and worth it
-        kx, kz, _ = ISLETS['cache']
+        # the cache: one cell of rock over a pit to get to, and worth it
+        kx, kz = ISLETS['cache'][:2]
         b.loot(kx, HIGH + 1, kz + 1, 'depths_causeway', 'north')
         self.keep(kx - 1, kz, kx + 1, kz + 2)
         self.crystal(kx - 2, kz - 1, 2, 10)
         b.shard(kx + 2, HIGH + 1, kz)
         self.taken.add((kx + 2, kz))
-        # the spire: a tooth of rock on its islet, and something in it
-        sx, sz, _ = ISLETS['spire']
+        # the spire: a tooth of rock in its chamber, and something in it
+        sx, sz = ISLETS['spire'][:2]
         self.ridge(((sx - 1, sz - 4), (sx + 1, sz - 3)), 8, 10, half=1)
         self.niche(sx, sz - 2, 'south')
-        self.mob('handwalker', sx + 3, sz + 2, 'west')
-        self.mob('deepling', sx - 3, sz + 3, 'east', 3)
+        self.mob('handwalker', *self.near(sx + 3, sz + 2, 0, 2), 'west')
+        self.mob('deepling', *self.near(sx - 3, sz + 3, 0, 3), 'east', 3)
         # the hearth by the Tear
         lx, lz = LAST
         b.zone = 'tear'
@@ -841,52 +904,39 @@ class Depths:
         self.keep(lx - 4, lz - 3, lx - 2, lz - 1)
         self.crystal(lx + 3, lz - 3, 3, 11)
         b.zone = 'causeways'
-        # the wheel islet, east: one of the clock's own keeping a wheel that does not turn; what it kept
-        ex, ez, _ = ISLETS['wheel']
+        # the east chamber: one of the clock's own keeping a wheel that does not turn; what it kept
+        ex, ez = ISLETS['wheel'][:2]
         self.wheel(ex + 2, ez - 2, 5, 'x', 0.4, salt=7)
-        for (x, z, facing) in ((ex - 3, ez - 1, 'west'),):
-            spot = next(((x + dx, z + dz) for r in range(0, 4) for dx in range(-r, r + 1) for dz in range(-r, r + 1) if self.free(x + dx, z + dz, 0, 3)), None)
-            self.mob('clockhand', spot[0], spot[1], facing, 3)
-        spot = next(((ex + dx, ez + 5 + dz) for r in range(0, 4) for dx in range(-r, r + 1) for dz in range(-r, r + 1) if self.free(ex + dx, ez + 5 + dz, 1)), None)
+        self.mob('clockhand', *self.near(ex - 3, ez - 1, 0, 3), 'west', 3)
+        spot = self.near(ex, ez + 5, 1, 3, 4)
         b.loot(spot[0], HIGH + 1, spot[1], 'depths_ledge', 'north')
         self.keep(spot[0] - 1, spot[1] - 1, spot[0] + 1, spot[1] + 1)
-        # on the long ways: one that walks them, one that waits at the turn, and lights over the sky beside them
-        for kind, x, z, facing, tall in (('usher', 76, 757, 'west', 4), ('handwalker', 42, 740, 'east', 2), ('stray_shadow', 84, 756, 'west', 2)):
-            spot = next(((x + dx, z + dz) for r in range(0, 5) for dx in range(-r, r + 1) for dz in range(-r, r + 1)
-                         if (x + dx, z + dz) in self.ground and self.ground[(x + dx, z + dz)] == HIGH
-                         and all(b.free(x + dx, HIGH + h, z + dz) for h in range(1, tall + 1))), None)
-            self.mob(kind, spot[0], spot[1], facing, tall)
-        for (x, z, facing) in ((40, 751, 'east'), (72, 761, 'north')):
-            # a stub of rock off the way, for a deepling to hang over
-            stub = {(x, z)}
-            near = min(((abs(x - c[0]) + abs(z - c[1])), c) for c in cells)[1]
-            stub |= self.line((x, z), near, 0)
-            stub -= {c for c in stub if c in self.ground}
-            self.plate(stub, HIGH, black_rock, wet=False, thick=2)
-            if all(b.free(x, HIGH + h, z) for h in (1, 2, 3)):
-                self.mob('deepling', x, z, facing, 3)
-        self.lamp_grid(cells, 13, every=3)
-        return cells
+        # on the long ways: one that walks them, one that waits at the turn; and those that hang over the stubs
+        for kind, x, z, facing, tall in (('usher', 76, 759, 'west', 4), ('handwalker', 44, 738, 'east', 2), ('stray_shadow', 84, 757, 'west', 2),
+                                         ('deepling', 40, 751, 'east', 3), ('deepling', 72, 761, 'north', 3)):
+            self.mob(kind, *self.near(x, z, 0, tall), facing, tall)
+        for (x, z) in sorted(cells):                                # crystals: few, small, in the chambers and at the walls of the wide ways
+            if hsh(x, 8, z, 1392) < 0.012 and self.free(x, z, 1):
+                self.crystal(x, z, 1 + int(hsh(x, 9, z, 1393) * 2), 12)
+        self.lamps(cells, 12, every=2)
 
     # ------------------------------------------------------------------ the Tear
 
     def tear(self):
-        """The Tear: a bowl of black rock, still water in it, and in the middle of the water what has come through.
-        Fog in the north; in the south, behind the Coming, a seal, and the ledge beyond."""
+        """The Tear: a round hollow of black rock, still water in it, and in the middle of the water what has come
+        through. Fog in the north; in the south, behind the Coming, a seal, and the room beyond."""
         b = self.b
         b.zone = 'tear'
         cx, cz = TEAR
         R = TEAR_R
-        floor = {(x, z) for x in range(cx - R - 3, cx + R + 4) for z in range(cz - R - 3, cz + R + 4) if math.hypot(x - cx, z - cz) <= R + 2.2}
-        self.plate(floor, HIGH, glass_rock, wet=True, thick=6)
+        floor = self.tear_floor
         for (x, z) in floor:
             far = math.hypot(x - cx, z - cz)
             if far > R:
-                if abs(x - cx) <= 1 and (z < cz or z > cz):
-                    if far <= R + 2.5 and abs(x - cx) <= 1:
-                        self.wet.discard((x, z))
-                        b.set(x, HIGH, z, black_rock(x, HIGH, z))
-                        continue                                   # (the two ways through the rim)
+                if abs(x - cx) <= 1:
+                    self.wet.discard((x, z))
+                    b.set(x, HIGH, z, black_rock(x, HIGH, z))
+                    continue                                       # (the two ways through the rim)
                 # the rim: black rock in teeth, three high and more
                 top = 3 + int(smooth(x, z, 2, 1410) * 3) + (1 if far > R + 1.2 else 0)
                 for h in range(1, top + 1):
@@ -896,7 +946,7 @@ class Depths:
             elif far < 3.2:
                 # the tear itself: under where it stands the floor is the same black, and wet with something
                 b.set(x, HIGH, z, 'minecraft:crying_obsidian' if far > 2.0 and hsh(x, 0, z, 1412) < 0.6 else 'minecraft:obsidian')
-        # ribs: the rock of the rim stands up round the bowl and leans in over it, as over something held
+        # ribs: the rock of the rim stands up round the hollow and leans in over it, as over something held
         for k in range(10):
             a = k * math.pi / 5 + math.pi / 10
             if abs(math.cos(a)) < 0.35:
@@ -910,15 +960,8 @@ class Depths:
                 for dx in range(-wide, wide + 1):
                     for dz in range(-wide, wide + 1):
                         x, z = int(round(px)) + dx, int(round(pz)) + dz
-                        if b.free(x, HIGH + h, z):
+                        if self.open(x, HIGH + h, z):
                             b.set(x, HIGH + h, z, black_rock(x, HIGH + h, z) if h < tall - 1 or dx or dz else 'minecraft:crying_obsidian')
-        # the ways in and out, and an arch for the fog in each
-        north = self.line((cx, cz - R - 3), (cx, LAST[1] + 4), 1)
-        north -= {c for c in north if c in self.ground}
-        self.plate(north, HIGH, black_rock, wet=False, thick=3)
-        south = self.line((cx, cz + R + 3), (cx, END[1] - 3), 1)
-        south -= {c for c in south if c in self.ground}
-        self.plate(south, HIGH, black_rock, wet=False, thick=3)
         self.arch(cx - 1, cx + 1, cz - R - 1, HIGH, 'coming_fog', height=4)
         self.arch(cx - 1, cx + 1, cz + R + 1, HIGH, 'coming', sealed=True, height=4)
         b.threshold('tear', cx - 1, HIGH + 1, cz - R - 5, cx + 1, cz - R - 4)
@@ -928,11 +971,8 @@ class Depths:
             a = k * math.pi / 4 + 0.39
             self.crystal(int(round(cx + math.cos(a) * (R - 1.5))), int(round(cz + math.sin(a) * (R - 1.5))), 3, 20 + k)
         self.lamp_grid({c for c in floor if math.hypot(c[0] - cx, c[1] - cz) < R}, 15, up=6)
-        # the ledge beyond: the works of the clock itself, lying where they were left. (What is done with them comes later.)
+        # the room beyond: the works of the clock itself, lying where they were left. (What is done with them comes later.)
         ex, ez = END
-        ledge = self.blob(((ex, ez, 5.0),), 30, 0.6)
-        ledge -= {c for c in ledge if c in self.ground}
-        self.plate(ledge, HIGH, works_floor, wet=False, thick=4)
         for dx in range(-2, 3):
             for dz in range(-2, 3):
                 far = math.hypot(dx, dz)
@@ -941,89 +981,59 @@ class Depths:
         b.loot(ex + 3, HIGH + 1, ez, 'depths_tear', 'west')
         b.shard(ex - 3, HIGH + 1, ez + 1)
         self.keep(ex - 4, ez - 3, ex + 4, ez + 4)
-        self.lamp_grid(ledge | north | south, 13, every=3)
-        return floor
-
-    def far(self):
-        """What is not come to: rocks that hang in the sky as the plates do, a crystal on each; wheels of the clock
-        that came to rest in nothing; chains down out of the stars with a weight at the end of each, or without."""
-        b = self.b
-        def clear(x, z, r):
-            return all((x + dx, z + dz) in self.hollow and (x + dx, z + dz) not in self.ground
-                       for dx in range(-r, r + 1) for dz in range(-r, r + 1))
-        for i, (x, z, y, r) in enumerate(((112, 624, 13, 3.2), (136, 676, 8, 2.6), (122, 704, 15, 4.0), (104, 728, 11, 2.4), (34, 668, 12, 3.4), (26, 700, 17, 2.8),
-                                          (46, 712, 9, 2.2), (112, 756, 19, 3.0), (100, 778, 12, 2.4), (28, 782, 14, 2.6), (128, 632, 22, 2.0), (22, 644, 20, 2.2),
-                                          (140, 706, 24, 3.0), (118, 688, 26, 1.8), (40, 690, 24, 2.0), (90, 796, 22, 2.2), (132, 660, 30, 2.4), (60, 700, 30, 1.6))):
-            if not clear(x, z, int(r) + 8):
-                continue
-            for (cx, cz) in self.blob(((x, z, r),), 40 + i, 0.6):
-                d = math.hypot(cx - x, cz - z)
-                deep = int((r - d + 1) * 2.2 + hsh(cx, 0, cz, 1420) * 2)
-                for yy in range(y - max(1, deep), y + 1):
-                    b.set(cx, yy, cz, black_rock(cx, yy, cz))
-            tall = 1 + int(hsh(x, 1, z, 1421) * 3)
-            for h in range(1, tall + 1):
-                b.set(x, y + h, z, 'minecraft:amethyst_block' if h > 1 or tall == 1 else 'minecraft:calcite')
-            b.set(x, y + tall + 1, z, 'minecraft:amethyst_cluster[facing=up,waterlogged=false]')
-            b.set(x, y + tall + 2, z, 'minecraft:light[level=11,waterlogged=false]')
-        for (x, z, r, axis, hub) in ((128, 700, 10, 'z', 12), (30, 676, 8, 'x', 20), (104, 742, 6, 'x', 8), (140, 640, 7, 'z', 26)):
-            if clear(x, z, 2) and all(clear(*((x, z + d) if axis == 'x' else (x + d, z)), 0) for d in range(-r - 6, r + 7)):
-                self.wheel(x, z, r, axis, 0.0, y=hub - 2 - r, salt=20 + x)
-        for i, (x, z) in enumerate(((120, 640), (134, 690), (110, 712), (96, 690), (40, 660), (24, 716), (50, 722), (116, 744), (104, 770), (22, 770),
-                                    (34, 800), (126, 668), (58, 690), (142, 722), (86, 728))):
-            if not clear(x, z, 3):
-                continue
-            low = 14 + int(hsh(x, 2, z, 1422) * 18)
-            for y in range(low, self.ceiling(x, z)):
-                b.set(x, y, z, 'minecraft:iron_chain[axis=y,waterlogged=false]')
-            kind = int(hsh(x, 3, z, 1423) * 4)
-            if kind == 0:
-                b.set(x, low - 1, z, 'minecraft:netherite_block')
-                b.set(x, low - 2, z, 'minecraft:netherite_block')
-            elif kind == 1:
-                for dx in (-1, 0, 1):
-                    for dz in (-1, 0, 1):
-                        b.set(x + dx, low - 1, z + dz, 'minecraft:polished_blackstone' if dx or dz else 'minecraft:netherite_block')
-            elif kind == 2:
-                b.set(x, low - 1, z, 'minecraft:amethyst_block')
-                b.set(x, low - 2, z, 'minecraft:amethyst_cluster[facing=down,waterlogged=false]')
-                b.set(x + 1, low - 1, z, 'minecraft:light[level=9,waterlogged=false]')
+        self.lamp_grid(self.end, 13, every=3)
+        self.lamps(self.tear_north | self.tear_south, 11, every=2)
 
     def film(self):
-        """The still water, wherever a plate is to have it and nothing stands."""
+        """The still water, wherever a floor is to have it and nothing stands."""
         b = self.b
         for (x, z) in self.wet:
             y = self.ground[(x, z)]
-            if b.free(x, y + 1, z):
+            if self.open(x, y + 1, z):
                 b.set(x, y + 1, z, FILM)
 
     # ------------------------------------------------------------------ all of it
 
-    def build(self, height):
+    def build(self, height=None):
         b = self.b
         b.zone = 'under_sky'
-        self.hill(height)
-        y = self.drift(height)
-        self.brink(y)
-        cells = self.water()
-        self.water_dress(cells)
-        way = self.works()
-        self.behind(way)
-        self.causeways()
-        self.tear()
-        self.far()
-        self.film()
+        plain = b.set
+
+        def record(x, y, z, state):
+            c = (x, y, z)
+            if c not in self.own:
+                if b.cells.get(c) is not None and z > GATE[1] + 1:
+                    self.met.append(c)
+                self.own.add(c)
+            plain(x, y, z, state)
+        b.set = record                                             # (everything the place writes is known: for its skin, and for what it runs into)
+        try:
+            self.drift_plan()
+            self.layout()
+            self.carve()
+            self.drift()
+            self.skies()
+            self.brink()
+            self.water()
+            self.works()
+            self.behind()
+            self.causeways()
+            self.tear()
+            self.film()
+        finally:
+            del b.set
+        if self.met:
+            print(f'  PROBLEM: the Sky Beneath cuts through {len(self.met)} cells of something else, as {self.met[0]}: {b.get(*self.met[0])}')
+        self.skin()
 
     def biome_columns(self):
-        """The columns that get the place's biome: the hill, a little round it, and the last of the drift."""
+        """The columns that get the place's biome (under the ground only: gen_world.py gives the layers): everything
+        that is open, a little round it, and the drift from its cross leg on."""
         cols = set()
-        for (x, z) in self.mask:
-            for dx in (-2, 0, 2):
-                for dz in (-2, 0, 2):
+        for (x, z) in list(self.ground) + list(self.pits) + [c for c in self.cut if c[1] >= TURN_Z - 2]:
+            for dx in (-6, 0, 6):
+                for dz in (-6, 0, 6):
                     cols.add((x + dx, z + dz))
-        for x in range(GATE[0] + 6, LEG_X + 5):
-            for z in range(TURN_Z - 4, 600):
-                cols.add((x, z))
         return {c for c in cols if c[0] >= 0 and c[1] >= 0}
 
     def views(self):
@@ -1034,46 +1044,54 @@ class Depths:
         bx, bz = BEHIND
         tx, tz = TEAR
         p, h = PLATE, HIGH
+        cross = self.cut[(gx + 6, TURN_Z)][0]
         return [
             ('depths_grate_from_the_sump', (gx + 0.5, SUMP_FLOOR + 2.6, gz - 5.5), (gx + 0.5, SUMP_FLOOR + 2.6, gz + 2)),
-            ('depths_drift', (gx + 0.5, SUMP_FLOOR + 2.6, gz + 5.5), (gx + 0.5, SUMP_FLOOR + 6, gz + 24)),
-            ('depths_cross_leg', (gx + 2.5, 14.6, TURN_Z + 0.5), (LEG_X, 14.6, TURN_Z + 0.5)),
-            ('depths_raw_rock', (LEG_X + 0.5, 15.2, TURN_Z + 8.5), (LEG_X + 0.5, 16, ROOM_Z)),
+            ('depths_first_flight', (gx + 0.5, SUMP_FLOOR + 2.6, gz + 2.5), (gx + 0.5, SUMP_FLOOR - 8, gz + 14)),
+            ('depths_flight_from_below', (gx + 0.5, self.cut[(gx, gz + 22)][0] + 2.6, gz + 22.5), (gx + 0.5, SUMP_FLOOR - 4, gz + 8)),
+            ('depths_cross_leg', (gx + 2.5, cross + 2.6, TURN_Z + 0.5), (LEG_X, cross + 2.6, TURN_Z + 0.5)),
+            ('depths_raw_rock', (LEG_X + 0.5, self.cut[(LEG_X, RAW_Z - 3)][0] + 2.6, RAW_Z - 2.5), (LEG_X + 0.5, BRINK + 2, ROOM_Z)),
             ('depths_hearth_room', (LEG_X + 0.5, BRINK + 2.6, ROOM_Z - 2.5), (LEG_X - 2, BRINK + 1.4, ROOM_Z + 1)),
             ('depths_out_of_the_drift', (LEG_X + 0.5, BRINK + 2.6, MOUTH_Z - 2.5), (LEG_X + 6, BRINK + 2, lz + 30)),
             ('depths_from_the_brink', (lx + 0.5, BRINK + 2.6, lz + 3.5), (wx, p + 2, wz - 40)),
             ('depths_brink_east', (lx + 2.5, BRINK + 2.6, lz + 0.5), (120, p + 6, 650)),
             ('depths_brink_up', (lx + 0.5, BRINK + 2.6, lz + 2.5), (lx + 20, BRINK + 34, lz + 26)),
-            ('depths_brink_down', (lx + 4.5, BRINK + 2.6, lz + 5.5), (lx + 12, 2, lz + 12)),
             ('depths_steps', (self.steps_end[0] + 3.5, p + 2.6, self.steps_end[1] + 0.5), (lx, BRINK + 2, lz)),
             ('depths_still_water', (61.5, p + 2.6, 629.5), (84, p + 3, 652)),
             ('depths_first_wheel', (66.5, p + 2.6, 640.5), (76, p + 5, 646)),
             ('depths_water_middle', (78.5, p + 2.6, 654.5), (104, p + 3, 660)),
-            ('depths_water_from_above', (60, p + 30, 690), (84, p, 652)),
+            ('depths_water_sky', (80.5, p + 2.6, 652.5), (86, p + 30, 656)),
+            ('depths_water_sky_aslant', (60.5, p + 2.6, 640.5), (100, p + 24, 660)),
+            ('depths_water_from_above', (62, p + 14, 672), (84, p, 652)),
+            ('depths_pit', (64.5, p + 2.6, 648.5), (68, p - 8, 652)),
             ('depths_the_jump', (self.jump[0] - 2.5, p + 2.6, self.jump[1] + 0.5), (ISLE[0], p + 2, ISLE[1])),
-            ('depths_edge_of_the_plate', (106.5, p + 2.6, 668.5), (130, p - 6, 690)),
-            ('depths_to_the_works', (wx + 0.5, p + 2.6, 680.5), (wx, p + 8, wz)),
+            ('depths_water_wall', (106.5, p + 2.6, 668.5), (124, p + 6, 672)),
+            ('depths_to_the_works', (wx + 0.5, p + 2.6, 680.5), (wx, p + 3, wz)),
             ('depths_works_from_the_door', (wx + 0.5, p + 2.6, wz - WORKS_R + 2.5), (wx, p + 6, wz + 4)),
-            ('depths_works_from_above', (wx - 20, p + 26, wz - 22), (wx, p + 2, wz)),
+            ('depths_works_from_above', (wx - 8, p + 14, wz - 8), (wx + 2, p + 1, wz + 3)),
             ('depths_works_axle', (wx + 8.5, p + 2.6, wz + 9.5), (wx, p + 13, wz)),
+            ('depths_works_sky', (wx + 6.5, p + 2.6, wz - 6.5), (wx - 2, p + 30, wz + 2)),
+            ('depths_works_wheel', (wx - 4.5, p + 2.6, wz + 0.5), (wx - WORKS_R - 3, p + 4, wz)),
+            ('depths_stair_behind', (wx + 0.5, p + 2.6, wz + WORKS_R + 3.5), (bx, h + 2, bz)),
             ('depths_behind_the_pendulum', (bx + 0.5, h + 2.6, bz - 4.5), (bx - 3, h + 1.5, bz + 1)),
-            ('depths_causeway_west', (bx - 8.5, h + 2.6, bz + 0.5), (30, h + 3, 744)),
-            ('depths_causeways_from_above', (bx + 22, h + 30, bz - 14), (56, h, 750)),
-            ('depths_west_islet', (38.5, h + 2.6, 742.5), (26, h + 2, 746)),
-            ('depths_way_to_the_cache', (27.5, h + 2.6, 750.5), (20, h + 1.5, 759)),
-            ('depths_spire', (40.5, h + 2.6, 754.5), (48, h + 5, 756)),
-            ('depths_long_causeway', (LAST[0] + 4.5, h + 2.6, LAST[1] + 0.5), (96, h + 3, 754)),
+            ('depths_thin_way', (bx - 5.5, h + 2.6, bz + 0.5), (56, h + 2, 739)),
+            ('depths_winding_way_west', (53.5, h + 2.6, 739.5), (36, h + 2, 742)),
+            ('depths_west_chamber', (36.5, h + 2.6, 742.5), (26, h + 2, 746)),
+            ('depths_way_to_the_cache', (27.5, h + 2.6, 748.5), (20, h - 1, 757)),
+            ('depths_spire', (41.5, h + 2.6, 756.5), (48, h + 5, 756)),
+            ('depths_long_way_east', (LAST[0] + 4.5, h + 2.6, LAST[1] + 0.5), (90, h + 2.5, 757)),
+            ('depths_side_pit', (76.5, h + 2.6, 760.5), (SIDE_PIT[0], h - 6, SIDE_PIT[1])),
+            ('depths_east_chamber', (90.5, h + 2.6, 755.5), (98, h + 4, 752)),
             ('depths_hearth_by_the_tear', (LAST[0] + 2.5, h + 2.6, LAST[1] + 2.5), (LAST[0] - 3, h + 1.5, LAST[1] - 2)),
             ('depths_before_the_tear', (tx + 0.5, h + 2.6, tz - TEAR_R - 5.5), (tx, h + 6, tz)),
             ('depths_tear_from_the_door', (tx + 0.5, h + 2.6, tz - TEAR_R + 1.5), (tx, h + 7, tz)),
-            ('depths_tear_from_above', (tx + 24, h + 28, tz - 20), (tx, h + 2, tz)),
+            ('depths_tear_from_above', (tx + 11, h + 15, tz - 11), (tx - 2, h + 2, tz + 2)),
             ('depths_tear_up', (tx + 8.5, h + 2.6, tz + 9.5), (tx - 6, h + 30, tz - 6)),
             ('depths_beyond', (END[0] + 0.5, h + 2.6, END[1] - 3.5), (END[0], h + 1, END[1] + 2)),
-            ('depths_hill_from_the_sea', (150, self.g + 18, 800), (60, self.g + 24, 740)),
-            ('depths_hill_from_the_north', (120, self.g + 60, 560), (70, self.g + 30, 660)),
         ]
 
     def probes(self):
-        return [('depths_drift', (GATE[0], SUMP_FLOOR + 1, GATE[1] + 4)), ('depths_room', (LEG_X, self.drift_floor[(LEG_X, ROOM_Z)][0] + 1, ROOM_Z + 1)),
+        return [('depths_drift', (GATE[0], SUMP_FLOOR + 1, GATE[1] + 2)), ('depths_room', (LEG_X, BRINK + 1, ROOM_Z + 1)),
                 ('depths_brink', (LEDGE[0], BRINK + 1, LEDGE[1] + 2)), ('depths_water', (64, PLATE + 1, 644)), ('depths_works', (WORKS[0] + 5, PLATE + 1, WORKS[1] + 5)),
-                ('depths_behind', (BEHIND[0], HIGH + 1, BEHIND[1])), ('depths_causeway', (44, HIGH + 1, 742)), ('depths_tear', (TEAR[0] + 6, HIGH + 1, TEAR[1] + 6))]
+                ('depths_behind', (BEHIND[0], HIGH + 1, BEHIND[1])), ('depths_way', (46, HIGH + 1, 739)), ('depths_tear', (TEAR[0] + 6, HIGH + 1, TEAR[1] + 6)),
+                ('depths_veil', (WORKS[0], ROOMS['works'] - 2, WORKS[1])), ('depths_under_the_lid', (WORKS[0], ROOMS['works'] - 1, WORKS[1]))]

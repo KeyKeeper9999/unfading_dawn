@@ -262,70 +262,67 @@ unfading_dawn:stubble -68 72 -65 219
 unfading_dawn:stubble -64 188 -61 219
 unfading_dawn:stubble -60 192 -57 219
 unfading_dawn:stubble -56 196 -53 219
-unfading_dawn:under_sky 20 184 23 195
-unfading_dawn:under_sky 24 184 27 195
-unfading_dawn:under_sky 28 184 31 195
-unfading_dawn:under_sky 32 184 35 195
-unfading_dawn:under_sky 36 184 39 195
-unfading_dawn:under_sky 40 64 43 71
-unfading_dawn:under_sky 40 80 43 95
-unfading_dawn:under_sky 40 132 43 151
-unfading_dawn:under_sky 40 184 43 195
-unfading_dawn:under_sky 44 64 47 107
-unfading_dawn:under_sky 44 116 47 215
-unfading_dawn:under_sky 48 64 51 215
-unfading_dawn:under_sky 52 64 55 215
-unfading_dawn:under_sky 56 64 59 215
-unfading_dawn:under_sky 60 64 63 215
-unfading_dawn:under_sky 64 64 67 215
-unfading_dawn:under_sky 68 64 71 211
-unfading_dawn:under_sky 72 64 75 215
-unfading_dawn:under_sky 76 64 79 215
-unfading_dawn:under_sky 80 64 83 215
-unfading_dawn:under_sky 84 64 87 215
-unfading_dawn:under_sky 88 64 91 215
-unfading_dawn:under_sky 92 64 95 215
-unfading_dawn:under_sky 96 64 99 215
-unfading_dawn:under_sky 100 64 103 215
-unfading_dawn:under_sky 104 64 107 215
-unfading_dawn:under_sky 108 64 111 215
-unfading_dawn:under_sky 112 64 115 215
-unfading_dawn:under_sky 116 64 119 215
-unfading_dawn:under_sky 120 64 123 215
-unfading_dawn:under_sky 124 64 127 215
-unfading_dawn:under_sky 128 64 131 215
-unfading_dawn:under_sky 132 64 135 215
-unfading_dawn:under_sky 136 64 139 215
-unfading_dawn:under_sky 140 64 143 215
-unfading_dawn:under_sky 144 64 147 215
-unfading_dawn:under_sky 148 64 151 211
-unfading_dawn:under_sky 152 64 155 215
-unfading_dawn:under_sky 156 64 159 215
-unfading_dawn:under_sky 160 64 163 215
-unfading_dawn:under_sky 164 64 167 215
-unfading_dawn:under_sky 168 64 171 219
-unfading_dawn:under_sky 172 64 175 219
-unfading_dawn:under_sky 176 64 179 219
-unfading_dawn:under_sky 180 64 183 219
-unfading_dawn:under_sky 184 92 187 219
-unfading_dawn:under_sky 188 92 191 219
-unfading_dawn:under_sky 192 92 195 219
-unfading_dawn:under_sky 196 92 199 219
-unfading_dawn:under_sky 200 92 203 219
-unfading_dawn:under_sky 204 92 207 219
-unfading_dawn:under_sky 208 92 211 219
-unfading_dawn:under_sky 212 96 215 215
-unfading_dawn:under_sky 216 96 219 215
-unfading_dawn:under_sky 220 96 223 215
-unfading_dawn:under_sky 224 96 227 211
-unfading_dawn:under_sky 228 96 231 211
-unfading_dawn:under_sky 232 100 235 207
-unfading_dawn:under_sky 236 104 239 207
-unfading_dawn:under_sky 240 108 243 207
-unfading_dawn:under_sky 244 112 247 207
-unfading_dawn:under_sky 248 112 251 199
-unfading_dawn:under_sky 252 112 255 199
-unfading_dawn:under_sky 256 124 259 195
-unfading_dawn:under_sky 260 128 263 191
-unfading_dawn:under_sky 264 132 267 179
-unfading_dawn:under_sky 268 132 271 171
+unfading_dawn:under_sky 16 180 19 211 -64 -8
+unfading_dawn:under_sky 20 180 23 211 -64 -8
+unfading_dawn:under_sky 24 180 27 211 -64 -8
+unfading_dawn:under_sky 28 180 31 211 -64 -8
+unfading_dawn:under_sky 32 180 35 211 -64 -8
+unfading_dawn:under_sky 36 180 39 195 -64 -8
+unfading_dawn:under_sky 40 176 43 199 -64 -8
+unfading_dawn:under_sky 44 176 47 199 -64 -8
+unfading_dawn:under_sky 48 176 51 199 -64 -8
+unfading_dawn:under_sky 52 176 55 203 -64 -8
+unfading_dawn:under_sky 56 156 59 203 -64 -8
+unfading_dawn:under_sky 60 156 63 203 -64 -8
+unfading_dawn:under_sky 64 152 67 203 -64 -8
+unfading_dawn:under_sky 68 140 71 203 -64 -8
+unfading_dawn:under_sky 72 124 75 203 -64 -8
+unfading_dawn:under_sky 76 120 79 203 -64 -8
+unfading_dawn:under_sky 80 80 83 191 -64 -8
+unfading_dawn:under_sky 84 76 87 191 -64 -8
+unfading_dawn:under_sky 88 76 91 191 -64 -8
+unfading_dawn:under_sky 92 76 95 187 -64 -8
+unfading_dawn:under_sky 96 76 99 183 -64 -8
+unfading_dawn:under_sky 100 76 103 183 -64 -8
+unfading_dawn:under_sky 104 80 107 179 -64 -8
+unfading_dawn:under_sky 108 84 111 175 -64 -8
+unfading_dawn:under_sky 112 84 115 163 -64 -8
+unfading_dawn:under_sky 116 84 119 163 -64 -8
+unfading_dawn:under_sky 120 84 123 163 -64 -8
+unfading_dawn:under_sky 124 88 127 163 -64 -8
+unfading_dawn:under_sky 128 108 131 159 -64 -8
+unfading_dawn:under_sky 132 112 135 155 -64 -8
+unfading_dawn:under_sky 136 112 139 167 -64 -8
+unfading_dawn:under_sky 140 112 143 167 -64 -8
+unfading_dawn:under_sky 144 112 147 171 -64 -8
+unfading_dawn:under_sky 148 112 151 171 -64 -8
+unfading_dawn:under_sky 152 112 155 171 -64 -8
+unfading_dawn:under_sky 156 112 159 171 -64 -8
+unfading_dawn:under_sky 160 112 163 171 -64 -8
+unfading_dawn:under_sky 164 112 167 171 -64 -8
+unfading_dawn:under_sky 168 112 171 167 -64 -8
+unfading_dawn:under_sky 172 124 175 155 -64 -8
+unfading_dawn:under_sky 176 128 179 171 -64 -8
+unfading_dawn:under_sky 176 176 179 195 -64 -8
+unfading_dawn:under_sky 180 128 183 199 -64 -8
+unfading_dawn:under_sky 184 128 187 203 -64 -8
+unfading_dawn:under_sky 188 108 191 203 -64 -8
+unfading_dawn:under_sky 192 108 195 207 -64 -8
+unfading_dawn:under_sky 196 108 199 207 -64 -8
+unfading_dawn:under_sky 200 108 203 207 -64 -8
+unfading_dawn:under_sky 204 108 207 207 -64 -8
+unfading_dawn:under_sky 208 108 211 207 -64 -8
+unfading_dawn:under_sky 212 108 215 207 -64 -8
+unfading_dawn:under_sky 216 128 219 183 -64 -8
+unfading_dawn:under_sky 220 128 223 183 -64 -8
+unfading_dawn:under_sky 224 128 227 183 -64 -8
+unfading_dawn:under_sky 228 128 231 183 -64 -8
+unfading_dawn:under_sky 232 128 235 183 -64 -8
+unfading_dawn:under_sky 236 128 239 183 -64 -8
+unfading_dawn:under_sky 240 128 243 183 -64 -8
+unfading_dawn:under_sky 244 128 247 183 -64 -8
+unfading_dawn:under_sky 248 132 251 179 -64 -8
+unfading_dawn:under_sky 252 136 255 179 -64 -8
+unfading_dawn:under_sky 256 140 259 171 -64 -8
+unfading_dawn:under_sky 260 144 263 167 -64 -8
+unfading_dawn:under_sky 264 144 267 167 -64 -8

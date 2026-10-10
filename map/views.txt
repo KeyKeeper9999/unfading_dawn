@@ -1,304 +1,310 @@
-as_player_waking 0.50 -44.38 0.50 -11.50 -44.50 0.50
-as_player_at_the_gate -10.00 -44.38 0.00 -22.50 -44.40 0.00
+as_player_waking 0.50 11.62 0.50 -11.50 11.50 0.50
+as_player_at_the_gate -10.00 11.62 0.00 -22.50 11.60 0.00
 time 18000
-yard_from_above 2.50 -33.00 -11.50 -7.50 -46.00 0.50
-yard_gate -5.50 -44.40 3.50 -13.50 -43.00 0.00
-low_street_west -16.50 -44.40 4.50 -16.50 -44.00 37.50
-low_street_east -16.50 -44.40 -4.50 -16.50 -44.00 -40.50
-west_alley -19.50 -44.40 34.50 -34.50 -43.50 34.50
-alley_turn -34.50 -44.40 31.50 -34.50 -43.50 19.50
-house_inside -25.50 -44.40 30.50 -28.50 -45.00 25.50
-high_street_gate -34.50 -44.40 0.00 -22.50 -44.00 0.00
-high_street_north -28.50 -44.40 0.00 -55.50 -43.00 0.00
-east_alley -19.50 -44.40 -31.50 -28.50 -43.50 -31.50
-shard_yard -22.50 -44.40 -43.50 -24.50 -45.50 -49.50
-market_from_the_south -57.50 -43.80 0.00 -70.50 -44.00 0.00
-market_from_above -52.50 -27.00 -28.50 -70.50 -46.00 1.50
-shambles -81.50 -44.40 0.00 -97.50 -43.50 0.00
-butchers_shop -91.50 -44.40 7.50 -100.50 -44.50 10.50
-church_lane -106.50 -44.40 22.50 -109.50 -43.50 -1.50
-lodge -104.00 -44.40 -10.50 -100.50 -45.20 -10.50
-lych_gate -105.50 -44.40 0.00 -112.50 -44.00 0.00
-churchyard -112.50 -44.00 0.00 -130.50 -44.00 0.00
-churchyard_from_above -106.50 -29.00 -25.50 -127.50 -46.00 1.50
-town_from_above_south 26.50 -1.00 -29.50 -52.50 -45.00 1.50
-town_from_above_north -156.50 -3.00 -40.50 -64.50 -45.00 1.50
-road_to_the_tunnel -144.50 -44.40 0.50 -155.50 -43.50 0.50
-tunnel_south_leg -155.50 -44.40 0.50 -179.50 -44.40 0.50
-tunnel_bend -179.50 -44.40 2.50 -179.50 -44.40 16.50
+yard_from_above 2.50 23.00 -11.50 -7.50 10.00 0.50
+yard_gate -5.50 11.60 3.50 -13.50 13.00 0.00
+low_street_west -16.50 11.60 4.50 -16.50 12.00 37.50
+low_street_east -16.50 11.60 -4.50 -16.50 12.00 -40.50
+west_alley -19.50 11.60 34.50 -34.50 12.50 34.50
+alley_turn -34.50 11.60 31.50 -34.50 12.50 19.50
+house_inside -25.50 11.60 30.50 -28.50 11.00 25.50
+high_street_gate -34.50 11.60 0.00 -22.50 12.00 0.00
+high_street_north -28.50 11.60 0.00 -55.50 13.00 0.00
+east_alley -19.50 11.60 -31.50 -28.50 12.50 -31.50
+shard_yard -22.50 11.60 -43.50 -24.50 10.50 -49.50
+market_from_the_south -57.50 12.20 0.00 -70.50 12.00 0.00
+market_from_above -52.50 29.00 -28.50 -70.50 10.00 1.50
+shambles -81.50 11.60 0.00 -97.50 12.50 0.00
+butchers_shop -91.50 11.60 7.50 -100.50 11.50 10.50
+church_lane -106.50 11.60 22.50 -109.50 12.50 -1.50
+lodge -104.00 11.60 -10.50 -100.50 10.80 -10.50
+lych_gate -105.50 11.60 0.00 -112.50 12.00 0.00
+churchyard -112.50 12.00 0.00 -130.50 12.00 0.00
+churchyard_from_above -106.50 27.00 -25.50 -127.50 10.00 1.50
+town_from_above_south 26.50 55.00 -29.50 -52.50 11.00 1.50
+town_from_above_north -156.50 53.00 -40.50 -64.50 11.00 1.50
+road_to_the_tunnel -144.50 11.60 0.50 -155.50 12.50 0.50
+tunnel_south_leg -155.50 11.60 0.50 -179.50 11.60 0.50
+tunnel_bend -179.50 11.60 2.50 -179.50 11.60 16.50
 time 12350
-tunnel_north_leg -182.50 -44.40 16.50 -205.50 -44.40 16.50
-out_of_the_tunnel -202.50 -44.40 16.50 -259.50 -33.00 16.50
-causeway -209.50 -44.40 16.50 -259.50 -35.00 16.50
-arrival_from_outside -209.50 -23.00 50.50 -277.50 -39.00 16.50
-ward_from_the_gate -266.50 -24.00 16.50 -309.50 -39.00 16.50
-keeper_room -272.00 -36.40 6.50 -267.50 -37.50 0.50
-great_bridge -326.50 -28.00 16.50 -359.50 -26.00 16.50
-bridge_from_the_side -323.50 -15.00 -23.50 -347.50 -35.00 16.50
-into_the_city -402.50 -22.40 16.50 -431.50 -9.00 16.50
-skyline_from_the_square -411.50 -22.40 39.50 -479.50 15.00 -31.50
-nave -434.50 -19.00 16.50 -475.50 -12.00 16.50
-crypt_hall -471.00 -31.40 15.50 -447.50 -32.00 16.50
-terrace -503.00 -19.40 -11.50 -549.50 -19.60 -18.50
-from_the_belfry -425.30 1.60 -21.50 -469.50 -15.00 10.50
-whole_from_south_east -189.50 35.00 -69.50 -379.50 -25.00 16.50
-upper_city_from_south_west -359.50 15.00 102.50 -449.50 -15.00 20.50
-cathedral_from_north_east -533.50 11.00 -57.50 -465.50 -10.00 16.50
-great_window_outside -535.50 -6.00 16.50 -501.50 -8.00 16.50
-lower_fortress_from_the_bridge -356.50 -28.00 16.50 -319.50 -28.00 16.50
-lower_fortress_from_the_west -259.50 -19.00 102.50 -294.50 -39.00 40.50
-gorge_under_the_bridge -341.50 -44.40 40.50 -341.50 -31.00 16.50
-fortress_from_the_gorge -219.50 -44.40 -19.50 -269.50 -25.00 16.50
-valley_from_the_terrace -505.50 -19.40 -15.50 -539.50 -28.00 -69.50
+tunnel_north_leg -182.50 11.60 16.50 -205.50 11.60 16.50
+out_of_the_tunnel -202.50 11.60 16.50 -259.50 23.00 16.50
+causeway -209.50 11.60 16.50 -259.50 21.00 16.50
+arrival_from_outside -209.50 33.00 50.50 -277.50 17.00 16.50
+ward_from_the_gate -266.50 32.00 16.50 -309.50 17.00 16.50
+keeper_room -272.00 19.60 6.50 -267.50 18.50 0.50
+great_bridge -326.50 28.00 16.50 -359.50 30.00 16.50
+bridge_from_the_side -323.50 41.00 -23.50 -347.50 21.00 16.50
+into_the_city -402.50 33.60 16.50 -431.50 47.00 16.50
+skyline_from_the_square -411.50 33.60 39.50 -479.50 71.00 -31.50
+nave -434.50 37.00 16.50 -475.50 44.00 16.50
+crypt_hall -471.00 24.60 15.50 -447.50 24.00 16.50
+terrace -503.00 36.60 -11.50 -549.50 36.40 -18.50
+from_the_belfry -425.30 57.60 -21.50 -469.50 41.00 10.50
+whole_from_south_east -189.50 91.00 -69.50 -379.50 31.00 16.50
+upper_city_from_south_west -359.50 71.00 102.50 -449.50 41.00 20.50
+cathedral_from_north_east -533.50 67.00 -57.50 -465.50 46.00 16.50
+great_window_outside -535.50 50.00 16.50 -501.50 48.00 16.50
+lower_fortress_from_the_bridge -356.50 28.00 16.50 -319.50 28.00 16.50
+lower_fortress_from_the_west -259.50 37.00 102.50 -294.50 17.00 40.50
+gorge_under_the_bridge -341.50 11.60 40.50 -341.50 25.00 16.50
+fortress_from_the_gorge -219.50 11.60 -19.50 -269.50 31.00 16.50
+valley_from_the_terrace -505.50 36.60 -15.50 -539.50 28.00 -69.50
 time 18000
-quarry_gate_from_the_street -16.00 -44.40 47.50 -16.00 -44.00 56.50
-quarry_lane -16.00 -44.40 58.50 -16.00 -47.00 78.50
-quarry_pit_from_the_lane -16.00 -50.40 79.50 -16.00 -39.00 118.50
-quarry_face -16.00 -47.00 94.50 -16.00 -38.00 118.50
-quarry_face_close -19.50 -50.40 108.50 -15.50 -41.00 118.50
-quarry_pit_from_above 13.50 -21.00 78.50 -16.50 -51.00 106.50
-quarry_hill_from_the_town -56.50 -17.00 46.50 -16.50 -37.00 118.50
-quarry_maw -11.50 -50.40 123.50 -21.50 -51.00 132.50
-quarry_out_of_the_mouth -16.00 -50.40 125.50 -16.00 -49.00 108.50
-quarry_drift -16.00 -50.40 136.50 -16.00 -50.60 158.50
-quarry_grating -16.00 -50.40 157.50 -16.00 -54.00 175.50
-quarry_field -9.50 -50.40 155.50 11.50 -50.60 138.50
-quarry_stair 15.00 -50.40 132.00 1.50 -41.00 132.00
-quarry_shop -3.50 -36.40 137.50 12.50 -36.60 154.50
-quarry_shop_row -4.50 -36.40 146.00 13.50 -36.60 146.00
-quarry_gallery -16.00 -36.40 130.50 -16.00 -36.60 158.50
-quarry_eyes -16.00 -36.40 127.50 -22.50 -36.00 120.50
-quarry_from_the_eye -22.00 -35.40 123.00 -12.50 -51.00 88.50
-quarry_hall_from_the_gallery -16.00 -35.60 162.90 -16.00 -57.00 176.50
-quarry_wheel -8.50 -36.40 163.50 -30.50 -37.00 175.50
-quarry_gallery_end -11.50 -36.40 162.00 -2.50 -37.80 162.50
-quarry_shaft_down -23.00 -36.40 156.00 -29.50 -58.00 156.00
-quarry_shaft_foot -24.00 -57.40 155.00 -27.50 -57.50 159.50
-quarry_hall_floor -27.50 -57.40 162.50 -12.50 -52.00 182.50
-quarry_hall_up -4.50 -57.40 186.50 -26.50 -35.00 172.50
-quarry_sump -19.50 -57.40 199.50 -13.50 -58.00 203.50
-quarry_workings -22.50 -57.40 201.00 -61.50 -57.60 201.00
-quarry_barred_drift -43.00 -57.40 196.50 -43.00 -57.60 184.50
-quarry_breach_door -62.00 -57.40 199.00 -63.50 -57.40 193.50
-quarry_breach_door_from_inside -64.50 -57.20 186.50 -63.00 -57.40 193.50
-quarry_breach -63.50 -57.40 187.50 -78.50 -55.00 175.50
-quarry_breach_from_the_north -86.50 -57.00 179.50 -64.50 -57.00 181.50
-quarry_crack -98.50 -57.40 176.50 -110.50 -57.60 179.50
-mire_gate_from_the_street -16.00 -44.40 -43.50 -16.00 -44.00 -55.50
+quarry_gate_from_the_street -16.00 11.60 47.50 -16.00 12.00 56.50
+quarry_lane -16.00 11.60 58.50 -16.00 9.00 78.50
+quarry_pit_from_the_lane -16.00 5.60 79.50 -16.00 17.00 118.50
+quarry_face -16.00 9.00 94.50 -16.00 18.00 118.50
+quarry_face_close -19.50 5.60 108.50 -15.50 15.00 118.50
+quarry_pit_from_above 13.50 35.00 78.50 -16.50 5.00 106.50
+quarry_hill_from_the_town -56.50 39.00 46.50 -16.50 19.00 118.50
+quarry_maw -11.50 5.60 123.50 -21.50 5.00 132.50
+quarry_out_of_the_mouth -16.00 5.60 125.50 -16.00 7.00 108.50
+quarry_drift -16.00 5.60 136.50 -16.00 5.40 158.50
+quarry_grating -16.00 5.60 157.50 -16.00 2.00 175.50
+quarry_field -9.50 5.60 155.50 11.50 5.40 138.50
+quarry_stair 15.00 5.60 132.00 1.50 15.00 132.00
+quarry_shop -3.50 19.60 137.50 12.50 19.40 154.50
+quarry_shop_row -4.50 19.60 146.00 13.50 19.40 146.00
+quarry_gallery -16.00 19.60 130.50 -16.00 19.40 158.50
+quarry_eyes -16.00 19.60 127.50 -22.50 20.00 120.50
+quarry_from_the_eye -22.00 20.60 123.00 -12.50 5.00 88.50
+quarry_hall_from_the_gallery -16.00 20.40 162.90 -16.00 -1.00 176.50
+quarry_wheel -8.50 19.60 163.50 -30.50 19.00 175.50
+quarry_gallery_end -11.50 19.60 162.00 -2.50 18.20 162.50
+quarry_shaft_down -23.00 19.60 156.00 -29.50 -2.00 156.00
+quarry_shaft_foot -24.00 -1.40 155.00 -27.50 -1.50 159.50
+quarry_hall_floor -27.50 -1.40 162.50 -12.50 4.00 182.50
+quarry_hall_up -4.50 -1.40 186.50 -26.50 21.00 172.50
+quarry_sump -19.50 -1.40 199.50 -13.50 -2.00 203.50
+quarry_workings -22.50 -1.40 201.00 -61.50 -1.60 201.00
+quarry_barred_drift -43.00 -1.40 196.50 -43.00 -1.60 184.50
+quarry_breach_door -62.00 -1.40 199.00 -63.50 -1.40 193.50
+quarry_breach_door_from_inside -64.50 -1.20 186.50 -63.00 -1.40 193.50
+quarry_breach -63.50 -1.40 187.50 -78.50 1.00 175.50
+quarry_breach_from_the_north -86.50 -1.00 179.50 -64.50 -1.00 181.50
+quarry_crack -98.50 -1.40 176.50 -110.50 -1.60 179.50
+mire_gate_from_the_street -16.00 11.60 -43.50 -16.00 12.00 -55.50
 time 6000
-mire_out_of_the_gate -26.00 -44.40 -70.50 -26.00 -44.00 -101.50
-mire_drowned_end -29.50 -43.40 -79.50 -24.50 -44.00 -111.50
-mire_drowned_end_from_above -4.50 -25.00 -71.50 -26.50 -45.00 -99.50
-mire_street_from_the_water -25.00 -45.60 -87.50 -28.50 -43.00 -111.50
-mire_houses_south -30.00 -43.40 -93.50 -14.50 -43.00 -99.50
-mire_loft -33.50 -43.40 -96.50 -37.50 -44.00 -100.50
-mire_hut -30.00 -43.40 -114.50 -26.50 -44.00 -127.50
-mire_log_road_north -28.00 -44.40 -134.50 -53.50 -43.00 -165.50
-mire_marsh_from_above 8.50 -13.00 -121.50 -17.50 -46.00 -153.50
-mire_gallows -20.50 -44.40 -147.50 -17.00 -43.00 -155.50
-mire_log_road_south -20.50 -44.40 -133.50 14.50 -44.00 -155.50
-mire_weir_door -54.00 -44.40 -165.50 -54.00 -43.00 -185.50
-mire_weir -54.00 -44.40 -175.50 -54.00 -44.00 -193.50
-mire_weir_from_above -42.50 -27.00 -171.50 -54.50 -46.00 -185.50
-mire_mill -51.50 -44.40 -205.50 -57.50 -44.60 -209.50
-mire_wood -45.50 -44.40 -207.00 -15.50 -43.00 -205.50
-mire_wood_from_above 8.50 -11.00 -191.50 -15.50 -46.00 -217.50
-mire_ridge_door 21.00 -44.40 -190.50 21.00 -44.40 -184.50
-mire_isle_door 6.50 -44.40 -222.00 26.50 -43.00 -222.00
-mire_isle 16.50 -44.40 -222.00 30.50 -42.00 -222.00
-mire_grove 50.50 -44.40 -222.00 62.50 -44.40 -222.00
+mire_out_of_the_gate -26.00 11.60 -70.50 -26.00 12.00 -101.50
+mire_drowned_end -29.50 12.60 -79.50 -24.50 12.00 -111.50
+mire_drowned_end_from_above -4.50 31.00 -71.50 -26.50 11.00 -99.50
+mire_street_from_the_water -25.00 10.40 -87.50 -28.50 13.00 -111.50
+mire_houses_south -30.00 12.60 -93.50 -14.50 13.00 -99.50
+mire_loft -33.50 12.60 -96.50 -37.50 12.00 -100.50
+mire_hut -30.00 12.60 -114.50 -26.50 12.00 -127.50
+mire_log_road_north -28.00 11.60 -134.50 -53.50 13.00 -165.50
+mire_marsh_from_above 8.50 43.00 -121.50 -17.50 10.00 -153.50
+mire_gallows -20.50 11.60 -147.50 -17.00 13.00 -155.50
+mire_log_road_south -20.50 11.60 -133.50 14.50 12.00 -155.50
+mire_weir_door -54.00 11.60 -165.50 -54.00 13.00 -185.50
+mire_weir -54.00 11.60 -175.50 -54.00 12.00 -193.50
+mire_weir_from_above -42.50 29.00 -171.50 -54.50 10.00 -185.50
+mire_mill -51.50 11.60 -205.50 -57.50 11.40 -209.50
+mire_wood -45.50 11.60 -207.00 -15.50 13.00 -205.50
+mire_wood_from_above 8.50 45.00 -191.50 -15.50 10.00 -217.50
+mire_ridge_door 21.00 11.60 -190.50 21.00 11.60 -184.50
+mire_isle_door 6.50 11.60 -222.00 26.50 13.00 -222.00
+mire_isle 16.50 11.60 -222.00 30.50 14.00 -222.00
+mire_grove 50.50 11.60 -222.00 62.50 11.60 -222.00
 time 18000
-firwood_wicket_from_the_yard -145.00 -44.40 1.50 -149.00 -44.40 -7.50
+firwood_wicket_from_the_yard -145.00 11.60 1.50 -149.00 11.60 -7.50
 time 22600
-firwood_passage -149.00 -44.40 -12.00 -149.00 -44.40 -31.50
-firwood_old_fir -163.00 -44.40 -59.50 -167.50 -42.00 -70.50
-firwood_old_fir_up -159.50 -44.40 -64.50 -167.50 -21.00 -71.50
-firwood_track -167.50 -44.40 -73.50 -177.50 -44.00 -87.50
-firwood_under_the_firs -185.50 -44.40 -93.50 -199.50 -42.00 -105.50
-firwood_stakes -195.50 -44.40 -97.50 -203.50 -44.40 -91.50
-firwood_shrine -199.00 -44.40 -125.00 -192.50 -45.00 -128.50
-firwood_from_above -155.50 -1.00 -77.50 -199.50 -45.00 -107.50
-firwood_den_door -229.50 -44.40 -146.00 -241.50 -44.00 -146.00
-firwood_den -244.50 -44.40 -143.00 -262.50 -44.50 -146.00
-firwood_den_from_above -238.50 -23.00 -129.50 -256.50 -46.00 -145.50
-skete_edge -245.00 -44.40 -184.00 -232.50 -45.00 -183.50
-skete_vigil_from_behind -209.00 -44.40 -209.00 -187.50 -45.50 -209.00
-skete_vigil_from_the_side -191.50 -44.40 -191.50 -193.50 -45.00 -216.50
-skete_vigil_faces -175.50 -44.40 -209.00 -199.50 -45.00 -209.00
-skete_west_lane -206.00 -44.40 -180.00 -163.50 -44.00 -179.00
-skete_wax_yard -180.50 -44.40 -232.50 -179.50 -45.00 -245.50
-skete_from_above -225.50 -7.00 -174.50 -179.50 -46.00 -208.50
-skete_white_tent -174.50 -44.40 -209.00 -154.50 -38.00 -209.00
-skete_white_tent_from_above -175.50 -11.00 -238.50 -141.50 -39.00 -208.50
-skete_in_the_white_tent -152.50 -44.40 -209.00 -135.50 -43.00 -209.00
-skete_white_tent_roof -146.50 -44.40 -204.50 -139.50 -29.00 -210.50
-skete_candle_store -125.50 -44.40 -209.00 -112.50 -44.40 -209.00
+firwood_passage -149.00 11.60 -12.00 -149.00 11.60 -31.50
+firwood_old_fir -163.00 11.60 -59.50 -167.50 14.00 -70.50
+firwood_old_fir_up -159.50 11.60 -64.50 -167.50 35.00 -71.50
+firwood_track -167.50 11.60 -73.50 -177.50 12.00 -87.50
+firwood_under_the_firs -185.50 11.60 -93.50 -199.50 14.00 -105.50
+firwood_stakes -195.50 11.60 -97.50 -203.50 11.60 -91.50
+firwood_shrine -199.00 11.60 -125.00 -192.50 11.00 -128.50
+firwood_from_above -155.50 55.00 -77.50 -199.50 11.00 -107.50
+firwood_den_door -229.50 11.60 -146.00 -241.50 12.00 -146.00
+firwood_den -244.50 11.60 -143.00 -262.50 11.50 -146.00
+firwood_den_from_above -238.50 33.00 -129.50 -256.50 10.00 -145.50
+skete_edge -245.00 11.60 -184.00 -232.50 11.00 -183.50
+skete_vigil_from_behind -209.00 11.60 -209.00 -187.50 10.50 -209.00
+skete_vigil_from_the_side -191.50 11.60 -191.50 -193.50 11.00 -216.50
+skete_vigil_faces -175.50 11.60 -209.00 -199.50 11.00 -209.00
+skete_west_lane -206.00 11.60 -180.00 -163.50 12.00 -179.00
+skete_wax_yard -180.50 11.60 -232.50 -179.50 11.00 -245.50
+skete_from_above -225.50 49.00 -174.50 -179.50 10.00 -208.50
+skete_white_tent -174.50 11.60 -209.00 -154.50 18.00 -209.00
+skete_white_tent_from_above -175.50 45.00 -238.50 -141.50 17.00 -208.50
+skete_in_the_white_tent -152.50 11.60 -209.00 -135.50 13.00 -209.00
+skete_white_tent_roof -146.50 11.60 -204.50 -139.50 27.00 -210.50
+skete_candle_store -125.50 11.60 -209.00 -112.50 11.60 -209.00
 time 18000
-shore_sea_gate_from_the_yard -5.50 -44.40 0.00 6.50 -44.40 0.00
+shore_sea_gate_from_the_yard -5.50 11.60 0.00 6.50 11.60 0.00
 time 23600
-shore_passage_bend 49.00 -44.40 -5.50 49.00 -44.40 -17.50
-shore_out_of_the_passage 89.50 -44.40 -18.00 140.50 -44.00 -18.00
-shore_sea_lane 103.50 -44.40 -20.00 208.50 -44.00 -20.00
-shore_back_street 115.00 -44.40 12.50 115.00 -44.00 -27.50
-shore_quay_east 138.50 -44.40 -1.50 146.50 -43.00 -57.50
-shore_quay_west 138.50 -44.40 -41.50 148.50 -43.00 22.50
-shore_port_from_above 177.50 -21.00 -61.50 119.50 -45.00 -17.50
-shore_harbour_office 125.00 -44.40 -24.50 125.00 -45.00 -31.50
-shore_long_pier 145.50 -44.40 -20.00 208.50 -43.00 -20.00
-shore_pier_looking_back 184.00 -44.40 -19.00 130.50 -41.00 -20.00
-shore_the_daybreak_from_the_pier 185.50 -44.40 -20.00 194.50 -37.00 -30.50
-shore_the_daybreak_gangway 205.00 -44.40 -21.00 198.50 -42.50 -30.50
-shore_the_daybreak_deck 204.50 -42.40 -27.00 179.50 -42.00 -30.50
-shore_the_daybreak_deck_to_the_bow 181.50 -42.40 -33.00 216.50 -40.00 -30.50
-shore_the_daybreak_from_above 224.50 -13.00 -64.50 190.50 -43.00 -30.50
-shore_roads 205.50 -44.40 -20.00 258.50 -39.00 -51.50
-shore_mole 184.00 -43.40 -43.00 184.00 -44.00 -128.50
-shore_mole_gap 184.00 -43.40 -56.00 184.00 -44.50 -74.50
-shore_karbas 176.50 -44.40 -139.50 170.50 -44.50 -147.50
-shore_spit_from_its_root 193.00 -44.40 -146.00 248.50 -45.00 -135.50
-shore_spit_wet_sand 249.00 -45.40 -134.00 284.50 -46.50 -117.50
-shore_spit_from_above 294.50 -25.00 -153.50 263.50 -47.00 -111.50
-shore_roads_from_the_spit 249.00 -44.40 -126.00 238.50 -39.00 -79.50
-shore_spit_far_arm 307.00 -45.40 -82.00 306.50 -46.00 -17.50
-shore_strand 305.00 -45.40 -10.00 282.50 -45.50 10.50
-shore_strand_to_the_arch 279.00 -45.40 11.00 273.50 -45.00 14.50
-shore_shoal 274.00 -45.40 18.00 270.50 -46.00 32.50
-shore_shoal_from_above 299.50 -17.00 6.50 273.50 -48.00 28.50
-shore_causeway 253.00 -45.40 34.00 244.50 -35.00 52.50
-shore_lighthouse_foot 248.00 -42.40 43.00 244.50 -36.00 52.50
-shore_lighthouse_inside 245.00 -42.40 50.00 243.50 -38.00 54.50
-shore_lamp_room 246.00 -18.40 51.00 243.50 -18.50 53.50
-shore_from_the_gallery 249.10 -18.40 52.00 304.50 -45.00 22.50
-shore_from_the_gallery_to_the_port 242.00 -18.40 47.90 143.50 -45.00 -17.50
-shore_lighthouse_from_the_pier 207.00 -44.40 -19.00 244.50 -33.00 52.50
+shore_passage_bend 49.00 11.60 -5.50 49.00 11.60 -17.50
+shore_out_of_the_passage 89.50 11.60 -18.00 140.50 12.00 -18.00
+shore_sea_lane 103.50 11.60 -20.00 208.50 12.00 -20.00
+shore_back_street 115.00 11.60 12.50 115.00 12.00 -27.50
+shore_quay_east 138.50 11.60 -1.50 146.50 13.00 -57.50
+shore_quay_west 138.50 11.60 -41.50 148.50 13.00 22.50
+shore_port_from_above 177.50 35.00 -61.50 119.50 11.00 -17.50
+shore_harbour_office 125.00 11.60 -24.50 125.00 11.00 -31.50
+shore_long_pier 145.50 11.60 -20.00 208.50 13.00 -20.00
+shore_pier_looking_back 184.00 11.60 -19.00 130.50 15.00 -20.00
+shore_the_daybreak_from_the_pier 185.50 11.60 -20.00 194.50 19.00 -30.50
+shore_the_daybreak_gangway 205.00 11.60 -21.00 198.50 13.50 -30.50
+shore_the_daybreak_deck 204.50 13.60 -27.00 179.50 14.00 -30.50
+shore_the_daybreak_deck_to_the_bow 181.50 13.60 -33.00 216.50 16.00 -30.50
+shore_the_daybreak_from_above 224.50 43.00 -64.50 190.50 13.00 -30.50
+shore_roads 205.50 11.60 -20.00 258.50 17.00 -51.50
+shore_mole 184.00 12.60 -43.00 184.00 12.00 -128.50
+shore_mole_gap 184.00 12.60 -56.00 184.00 11.50 -74.50
+shore_karbas 176.50 11.60 -139.50 170.50 11.50 -147.50
+shore_spit_from_its_root 193.00 11.60 -146.00 248.50 11.00 -135.50
+shore_spit_wet_sand 249.00 10.60 -134.00 284.50 9.50 -117.50
+shore_spit_from_above 294.50 31.00 -153.50 263.50 9.00 -111.50
+shore_roads_from_the_spit 249.00 11.60 -126.00 238.50 17.00 -79.50
+shore_spit_far_arm 307.00 10.60 -82.00 306.50 10.00 -17.50
+shore_strand 305.00 10.60 -10.00 282.50 10.50 10.50
+shore_strand_to_the_arch 279.00 10.60 11.00 273.50 11.00 14.50
+shore_shoal 274.00 10.60 18.00 270.50 10.00 32.50
+shore_shoal_from_above 299.50 39.00 6.50 273.50 8.00 28.50
+shore_causeway 253.00 10.60 34.00 244.50 21.00 52.50
+shore_lighthouse_foot 248.00 13.60 43.00 244.50 20.00 52.50
+shore_lighthouse_inside 245.00 13.60 50.00 243.50 18.00 54.50
+shore_lamp_room 246.00 37.60 51.00 243.50 37.50 53.50
+shore_from_the_gallery 249.10 37.60 52.00 304.50 11.00 22.50
+shore_from_the_gallery_to_the_port 242.00 37.60 47.90 143.50 11.00 -17.50
+shore_lighthouse_from_the_pier 207.00 11.60 -19.00 244.50 23.00 52.50
 time 18000
-stubble_gate_from_the_yard -147.00 -44.40 -1.50 -150.00 -44.40 7.50
+stubble_gate_from_the_yard -147.00 11.60 -1.50 -150.00 11.60 7.50
 time 8000
-stubble_passage -150.00 -44.40 12.00 -150.00 -44.40 22.50
-stubble_balk -165.00 -44.40 34.00 -167.50 -44.00 68.50
-stubble_cut_land -165.00 -44.40 48.00 -157.50 -45.00 68.50
-stubble_road_into_the_corn -165.00 -44.40 66.00 -165.50 -44.40 98.50
-stubble_in_the_corn -165.00 -44.40 90.00 -163.50 -44.40 114.50
-stubble_clearing -175.00 -44.40 103.00 -181.50 -45.00 107.50
-stubble_fields_from_above -135.50 -7.00 54.50 -167.50 -46.00 94.50
-stubble_open_country -200.00 -41.00 118.00 -301.50 -44.00 178.50
-stubble_fence_and_mill -157.00 -42.00 106.00 -113.50 -27.00 102.50
-stubble_country_from_above -81.50 23.00 68.50 -301.50 -47.00 168.50
-stubble_wardens_door -163.00 -44.40 124.00 -163.00 -44.00 139.50
-stubble_watched_field -163.00 -44.40 146.00 -165.50 -42.00 160.50
-stubble_watched_field_from_above -141.50 -17.00 140.50 -165.50 -45.00 160.50
-stubble_threshing_yard -129.00 -44.40 160.00 -105.50 -45.00 142.50
-stubble_kiln -123.00 -44.40 164.00 -123.50 -45.00 172.50
-stubble_floor -112.00 -44.40 153.00 -105.50 -45.50 142.50
-stubble_mill_from_the_floor -110.00 -44.40 138.00 -113.50 -23.00 102.50
-stubble_mill_door -113.00 -44.40 125.00 -113.50 -41.00 115.50
-stubble_yard_from_above -71.50 -3.00 172.50 -111.50 -45.00 128.50
-stubble_in_the_mill -113.00 -44.40 113.00 -111.50 -44.00 98.50
-stubble_mill_up -119.00 -44.40 108.00 -111.50 -36.00 100.50
-stubble_mill_from_above -143.50 5.00 146.50 -113.50 -25.00 102.50
-stubble_granary -113.00 -44.40 87.00 -113.50 -44.60 78.50
-stubble_north_corn -149.00 -44.40 118.00 -137.50 -44.60 92.50
+stubble_passage -150.00 11.60 12.00 -150.00 11.60 22.50
+stubble_balk -165.00 11.60 34.00 -167.50 12.00 68.50
+stubble_cut_land -165.00 11.60 48.00 -157.50 11.00 68.50
+stubble_road_into_the_corn -165.00 11.60 66.00 -165.50 11.60 98.50
+stubble_in_the_corn -165.00 11.60 90.00 -163.50 11.60 114.50
+stubble_clearing -175.00 11.60 103.00 -181.50 11.00 107.50
+stubble_fields_from_above -135.50 49.00 54.50 -167.50 10.00 94.50
+stubble_open_country -200.00 15.00 118.00 -301.50 12.00 178.50
+stubble_fence_and_mill -157.00 14.00 106.00 -113.50 29.00 102.50
+stubble_country_from_above -81.50 79.00 68.50 -301.50 9.00 168.50
+stubble_wardens_door -163.00 11.60 124.00 -163.00 12.00 139.50
+stubble_watched_field -163.00 11.60 146.00 -165.50 14.00 160.50
+stubble_watched_field_from_above -141.50 39.00 140.50 -165.50 11.00 160.50
+stubble_threshing_yard -129.00 11.60 160.00 -105.50 11.00 142.50
+stubble_kiln -123.00 11.60 164.00 -123.50 11.00 172.50
+stubble_floor -112.00 11.60 153.00 -105.50 10.50 142.50
+stubble_mill_from_the_floor -110.00 11.60 138.00 -113.50 33.00 102.50
+stubble_mill_door -113.00 11.60 125.00 -113.50 15.00 115.50
+stubble_yard_from_above -71.50 53.00 172.50 -111.50 11.00 128.50
+stubble_in_the_mill -113.00 11.60 113.00 -111.50 12.00 98.50
+stubble_mill_up -119.00 11.60 108.00 -111.50 20.00 100.50
+stubble_mill_from_above -143.50 61.00 146.50 -113.50 31.00 102.50
+stubble_granary -113.00 11.60 87.00 -113.50 11.40 78.50
+stubble_north_corn -149.00 11.60 118.00 -137.50 11.40 92.50
 time 6000
-depths_grate_from_the_sump -17.00 -57.40 201.00 -9.50 -57.40 201.00
-depths_drift -6.00 -57.40 201.00 12.50 -54.00 201.00
-depths_cross_leg 26.00 -48.40 199.00 26.00 -48.40 188.50
-depths_raw_rock 34.00 -47.80 188.00 50.50 -47.00 188.00
-depths_hearth_room 48.00 -46.40 188.00 51.50 -47.60 190.50
-depths_out_of_the_drift 56.00 -46.40 188.00 95.50 -47.00 182.50
-depths_from_the_brink 69.00 -46.40 188.00 114.50 -51.00 140.50
-depths_brink_east 66.00 -46.40 186.00 98.50 -47.00 98.50
-depths_brink_up 68.00 -46.40 188.00 91.50 -15.00 168.50
-depths_brink_down 71.00 -46.40 184.00 77.50 -61.00 176.50
-depths_steps 68.00 -50.40 169.00 65.50 -47.00 188.50
-depths_still_water 78.00 -50.40 157.00 100.50 -50.00 134.50
-depths_first_wheel 89.00 -50.40 152.00 94.50 -48.00 142.50
-depths_water_middle 103.00 -50.40 140.00 108.50 -50.00 114.50
-depths_water_from_above 138.50 -23.00 158.50 100.50 -53.00 134.50
-depths_the_jump 95.00 -50.40 102.00 94.50 -51.00 90.50
-depths_edge_of_the_plate 117.00 -50.40 112.00 138.50 -59.00 88.50
-depths_to_the_works 129.00 -50.40 140.00 154.50 -45.00 140.50
-depths_works_from_the_door 142.00 -50.40 140.00 158.50 -47.00 140.50
-depths_works_from_above 132.50 -27.00 160.50 154.50 -51.00 140.50
-depths_works_axle 164.00 -50.40 132.00 154.50 -40.00 140.50
-depths_behind_the_pendulum 184.00 -44.40 140.00 189.50 -45.50 143.50
-depths_causeway_west 189.00 -44.40 149.00 192.50 -44.00 188.50
-depths_causeways_from_above 174.50 -17.00 118.50 198.50 -47.00 162.50
-depths_west_islet 191.00 -44.40 180.00 194.50 -45.00 192.50
-depths_way_to_the_cache 199.00 -44.40 191.00 207.50 -45.50 198.50
-depths_spire 203.00 -44.40 178.00 204.50 -42.00 170.50
-depths_long_causeway 206.00 -44.40 152.00 202.50 -44.00 122.50
-depths_hearth_by_the_tear 208.00 -44.40 154.00 203.50 -45.50 159.50
-depths_before_the_tear 209.00 -44.40 156.00 232.50 -41.00 156.50
-depths_tear_from_the_door 216.00 -44.40 156.00 232.50 -40.00 156.50
-depths_tear_from_above 212.50 -19.00 132.50 232.50 -45.00 156.50
-depths_tear_up 242.00 -44.40 148.00 226.50 -17.00 162.50
-depths_beyond 253.00 -44.40 156.00 258.50 -46.00 156.50
-depths_hill_from_the_sea 248.50 -29.00 68.50 188.50 -23.00 158.50
-depths_hill_from_the_north 8.50 13.00 98.50 108.50 -17.00 148.50
+depths_grate_from_the_sump -17.00 -1.40 201.00 -9.50 -1.40 201.00
+depths_first_flight -9.00 -1.40 201.00 2.50 -12.00 201.00
+depths_flight_from_below 11.00 -17.40 201.00 -3.50 -8.00 201.00
+depths_cross_leg 26.00 -29.40 199.00 26.00 -29.40 188.50
+depths_raw_rock 37.00 -37.40 188.00 50.50 -42.00 188.00
+depths_hearth_room 48.00 -41.40 188.00 51.50 -42.60 190.50
+depths_out_of_the_drift 56.00 -41.40 188.00 95.50 -42.00 182.50
+depths_from_the_brink 69.00 -41.40 188.00 114.50 -46.00 140.50
+depths_brink_east 66.00 -41.40 186.00 98.50 -42.00 98.50
+depths_brink_up 68.00 -41.40 188.00 91.50 -10.00 168.50
+depths_steps 68.00 -45.40 169.00 65.50 -42.00 188.50
+depths_still_water 78.00 -45.40 157.00 100.50 -45.00 134.50
+depths_first_wheel 89.00 -45.40 152.00 94.50 -43.00 142.50
+depths_water_middle 103.00 -45.40 140.00 108.50 -45.00 114.50
+depths_water_sky 101.00 -45.40 138.00 104.50 -18.00 132.50
+depths_water_sky_aslant 89.00 -45.40 158.00 108.50 -24.00 118.50
+depths_water_from_above 120.50 -34.00 156.50 100.50 -48.00 134.50
+depths_pit 97.00 -45.40 154.00 100.50 -56.00 150.50
+depths_the_jump 95.00 -45.40 102.00 94.50 -46.00 90.50
+depths_water_wall 117.00 -45.40 112.00 120.50 -42.00 94.50
+depths_to_the_works 129.00 -45.40 140.00 154.50 -45.00 140.50
+depths_works_from_the_door 142.00 -45.40 140.00 158.50 -42.00 140.50
+depths_works_from_above 146.50 -34.00 148.50 157.50 -47.00 138.50
+depths_works_axle 164.00 -45.40 132.00 154.50 -35.00 140.50
+depths_works_sky 148.00 -45.40 134.00 156.50 -18.00 142.50
+depths_works_wheel 155.00 -45.40 145.00 154.50 -44.00 158.50
+depths_stair_behind 173.00 -45.40 140.00 188.50 -40.00 140.50
+depths_behind_the_pendulum 184.00 -39.40 140.00 189.50 -40.50 143.50
+depths_thin_way 189.00 -39.40 146.00 187.50 -40.00 162.50
+depths_winding_way_west 188.00 -39.40 165.00 190.50 -40.00 182.50
+depths_west_chamber 191.00 -39.40 182.00 194.50 -40.00 192.50
+depths_way_to_the_cache 197.00 -39.40 191.00 205.50 -43.00 198.50
+depths_spire 205.00 -39.40 177.00 204.50 -37.00 170.50
+depths_long_way_east 206.00 -39.40 152.00 205.50 -39.50 128.50
+depths_side_pit 209.00 -39.40 142.00 213.50 -48.00 139.50
+depths_east_chamber 204.00 -39.40 128.00 200.50 -38.00 120.50
+depths_hearth_by_the_tear 208.00 -39.40 154.00 203.50 -40.50 159.50
+depths_before_the_tear 209.00 -39.40 156.00 232.50 -36.00 156.50
+depths_tear_from_the_door 216.00 -39.40 156.00 232.50 -35.00 156.50
+depths_tear_from_above 221.50 -27.00 145.50 234.50 -40.00 158.50
+depths_tear_up 242.00 -39.40 148.00 226.50 -12.00 162.50
+depths_beyond 253.00 -39.40 156.00 258.50 -41.00 156.50
 time 18000
-hearth yard -6.50 -46.00 0.50
-hearth lodge -101.50 -46.00 -10.50
-hearth keeper -269.50 -38.00 3.50
-hearth smithy -405.50 -24.00 -15.50
-hearth sacristy -465.50 -21.00 46.50
-hearth terrace -504.50 -21.00 -16.50
-hearth maw -20.50 -52.00 128.50
-hearth sump -14.50 -59.00 202.50
-hearth ferry -27.50 -46.00 -127.50
-hearth mill -55.50 -46.00 -206.50
-hearth old_fir -162.50 -46.00 -65.50
-hearth skete -232.50 -46.00 -183.50
-hearth reliquary -111.50 -46.00 -208.50
-hearth harbour 97.50 -46.00 -23.50
-hearth karbas 170.50 -46.00 -147.50
-hearth lighthouse 244.50 -44.00 52.50
-hearth balk -171.50 -46.00 40.50
-hearth kiln -123.50 -46.00 172.50
-hearth granary -113.50 -46.00 83.50
-hearth brink 50.50 -48.00 191.50
-hearth works 188.50 -46.00 143.50
-hearth tear 203.50 -46.00 159.50
-lever -24.50 -45.00 -0.50 -23.50 -46.00 0.50
-lever -316.50 -37.00 15.50 -315.50 -38.00 16.50
-lever -433.50 -20.00 9.50 -432.50 -21.00 10.50
-lever -440.50 -20.00 38.50 -439.50 -21.00 39.50
-lever -454.50 -23.00 59.50 -453.50 -24.00 60.50
-lever -20.50 -51.00 155.50 -19.50 -52.00 156.50
-lever 19.50 -45.00 -185.50 20.50 -46.00 -184.50
-lever -152.50 -45.00 117.50 -153.50 -46.00 118.50
-near_the_gravedigger -112.50 -44.00 0.00 -133.50 -44.00 0.00
-kill unfading_dawn:gravedigger -142.50 -46.00 1.50
-near_the_overseer -363.00 -28.00 16.50 -389.50 -27.00 16.50
-kill unfading_dawn:overseer -392.50 -30.00 18.50
-near_the_chaplain -478.50 -19.00 16.50 -500.50 -12.00 16.50
-kill unfading_dawn:chaplain -495.50 -21.00 -7.50
-near_the_taskmaster -26.50 -57.00 163.50 -16.50 -57.00 175.50
-kill unfading_dawn:taskmaster -17.50 -59.00 189.50
-near_the_stone_eater -63.50 -57.00 187.50 -74.50 -57.00 179.50
-kill unfading_dawn:stone_eater -93.50 -59.00 180.50
-near_the_wallower -51.50 -43.00 -176.50 -54.50 -45.00 -185.50
-kill unfading_dawn:wallower -55.50 -46.00 -200.50
-near_the_weeping_mother 16.50 -42.00 -223.50 26.50 -43.00 -221.50
-kill unfading_dawn:weeping_mother 40.50 -46.00 -220.50
-near_the_shatun -245.50 -43.00 -142.50 -262.50 -45.00 -145.50
-kill unfading_dawn:shatun -257.50 -46.00 -166.50
-near_the_elder -150.50 -43.00 -209.50 -137.50 -44.00 -208.50
-kill unfading_dawn:elder -128.50 -46.00 -207.50
-near_the_helmsman 204.50 -42.00 -27.50 182.50 -42.00 -30.50
-kill unfading_dawn:helmsman 182.50 -44.00 -36.50
-near_the_capsized 278.50 -44.00 19.50 269.50 -46.00 28.50
-kill unfading_dawn:capsized 259.50 -47.00 29.50
-near_the_scorched_warden -159.50 -38.00 148.50 -165.50 -44.00 160.50
-kill unfading_dawn:scorched_warden -143.50 -46.00 161.50
-near_the_hollow_miller -108.50 -44.00 111.50 -113.50 -45.00 102.50
-kill unfading_dawn:hollow_miller -114.50 -46.00 89.50
-near_the_bolt 145.50 -49.00 131.50 154.50 -48.00 140.50
-kill unfading_dawn:bolt 170.50 -52.00 141.50
-near_the_coming 219.50 -44.00 149.50 232.50 -41.00 156.50
-kill unfading_dawn:coming 251.50 -46.00 157.50
-gate -17.50 -46.00 55.50
-gate -17.50 -46.00 -55.50
-gate -150.50 -46.00 -7.50
-gate 4.50 -46.00 1.50
-gate -151.50 -46.00 7.50
-gate -11.50 -59.00 202.50
+hearth yard -6.50 10.00 0.50
+hearth lodge -101.50 10.00 -10.50
+hearth keeper -269.50 18.00 3.50
+hearth smithy -405.50 32.00 -15.50
+hearth sacristy -465.50 35.00 46.50
+hearth terrace -504.50 35.00 -16.50
+hearth maw -20.50 4.00 128.50
+hearth sump -14.50 -3.00 202.50
+hearth ferry -27.50 10.00 -127.50
+hearth mill -55.50 10.00 -206.50
+hearth old_fir -162.50 10.00 -65.50
+hearth skete -232.50 10.00 -183.50
+hearth reliquary -111.50 10.00 -208.50
+hearth harbour 97.50 10.00 -23.50
+hearth karbas 170.50 10.00 -147.50
+hearth lighthouse 244.50 12.00 52.50
+hearth balk -171.50 10.00 40.50
+hearth kiln -123.50 10.00 172.50
+hearth granary -113.50 10.00 83.50
+hearth brink 50.50 -43.00 191.50
+hearth works 188.50 -41.00 143.50
+hearth tear 203.50 -41.00 159.50
+lever -24.50 11.00 -0.50 -23.50 10.00 0.50
+lever -316.50 19.00 15.50 -315.50 18.00 16.50
+lever -433.50 36.00 9.50 -432.50 35.00 10.50
+lever -440.50 36.00 38.50 -439.50 35.00 39.50
+lever -454.50 33.00 59.50 -453.50 32.00 60.50
+lever -20.50 5.00 155.50 -19.50 4.00 156.50
+lever 19.50 11.00 -185.50 20.50 10.00 -184.50
+lever -152.50 11.00 117.50 -153.50 10.00 118.50
+near_the_gravedigger -112.50 12.00 0.00 -133.50 12.00 0.00
+kill unfading_dawn:gravedigger -142.50 10.00 1.50
+near_the_overseer -363.00 28.00 16.50 -389.50 29.00 16.50
+kill unfading_dawn:overseer -392.50 26.00 18.50
+near_the_chaplain -478.50 37.00 16.50 -500.50 44.00 16.50
+kill unfading_dawn:chaplain -495.50 35.00 -7.50
+near_the_taskmaster -26.50 -1.00 163.50 -16.50 -1.00 175.50
+kill unfading_dawn:taskmaster -17.50 -3.00 189.50
+near_the_stone_eater -63.50 -1.00 187.50 -74.50 -1.00 179.50
+kill unfading_dawn:stone_eater -93.50 -3.00 180.50
+near_the_wallower -51.50 13.00 -176.50 -54.50 11.00 -185.50
+kill unfading_dawn:wallower -55.50 10.00 -200.50
+near_the_weeping_mother 16.50 14.00 -223.50 26.50 13.00 -221.50
+kill unfading_dawn:weeping_mother 40.50 10.00 -220.50
+near_the_shatun -245.50 13.00 -142.50 -262.50 11.00 -145.50
+kill unfading_dawn:shatun -257.50 10.00 -166.50
+near_the_elder -150.50 13.00 -209.50 -137.50 12.00 -208.50
+kill unfading_dawn:elder -128.50 10.00 -207.50
+near_the_helmsman 204.50 14.00 -27.50 182.50 14.00 -30.50
+kill unfading_dawn:helmsman 182.50 12.00 -36.50
+near_the_capsized 278.50 12.00 19.50 269.50 10.00 28.50
+kill unfading_dawn:capsized 259.50 9.00 29.50
+near_the_scorched_warden -159.50 18.00 148.50 -165.50 12.00 160.50
+kill unfading_dawn:scorched_warden -143.50 10.00 161.50
+near_the_hollow_miller -108.50 12.00 111.50 -113.50 11.00 102.50
+kill unfading_dawn:hollow_miller -114.50 10.00 89.50
+near_the_bolt 145.50 -44.00 131.50 154.50 -43.00 140.50
+kill unfading_dawn:bolt 170.50 -47.00 141.50
+near_the_coming 219.50 -39.00 149.50 232.50 -36.00 156.50
+kill unfading_dawn:coming 251.50 -41.00 157.50
+gate -17.50 10.00 55.50
+gate -17.50 10.00 -55.50
+gate -150.50 10.00 -7.50
+gate 4.50 10.00 1.50
+gate -151.50 10.00 7.50
+gate -11.50 -3.00 202.50
