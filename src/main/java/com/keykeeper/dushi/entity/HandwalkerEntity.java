@@ -65,7 +65,7 @@ public class HandwalkerEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 1900;
+        return 1500;
     }
 
     @Override

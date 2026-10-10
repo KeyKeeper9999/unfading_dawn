@@ -19,6 +19,7 @@ import gen_map as castle
 import gen_quarry
 import gen_shore
 import gen_skete
+import gen_depths
 import gen_stubble
 import gen_swamp
 import gen_village
@@ -124,6 +125,7 @@ class World:
         self.skete = gen_skete.Skete(self.b, GY)
         self.shore = gen_shore.Shore(self.b, GY, D, W)
         self.stubble = gen_stubble.Stubble(self.b, GY)
+        self.depths = gen_depths.Depths(self.b, GY)
         self.keep = set()                # columns of the valley where nothing may grow: roads, the feet of walls
 
     # ------------------------------------------------------------------ the shape of the gorge
@@ -435,6 +437,8 @@ class World:
         self.shore.build(self.height)
         b.zone = 'stubble'
         self.stubble.build(self.height)
+        b.zone = 'under_sky'
+        self.depths.build(self.height)
         self.woods()
         self.tiers()
         return b
@@ -539,8 +543,13 @@ def views(w):
     for hour in AFTERNOON_TRIED:                                 # the same places at other hours, to choose by
         out.append(('time', hour))
         out += [(f'{name}_at_{hour}', eye, look) for name, eye, look in corn if name in ('stubble_cut_land', 'stubble_watched_field', 'stubble_mill_from_the_floor')]
+    out.append(('time', BLUE_HOUR))
+    out += w.depths.views()
     out.append(('time', 18000))
     return out
+
+
+BLUE_HOUR = 6000                    # the hour of the Sky Beneath: see PlaceNameBlock.BLUE_HOUR (its sky is its own; the game's is not seen)
 
 
 AFTERNOON = 8000                    # the hour of the Stubble: see PlaceNameBlock.AFTERNOON
@@ -574,10 +583,13 @@ def probes(w):
     out += w.skete.probes()
     out += w.shore.probes()
     out += w.stubble.probes()
+    out += w.depths.probes()
     return out
 
 
 EXTRA_COLOURS = castle.EXTRA_COLOURS + [
+    ('polished_blackstone', (40, 36, 44)), ('under_sky', (16, 20, 52)), ('night_shallows', (46, 58, 120)), ('amethyst', (154, 104, 224)), ('black_concrete', (18, 18, 24)),
+    ('crying_obsidian', (70, 24, 130)), ('obsidian', (28, 22, 42)), ('netherite', (58, 52, 56)), ('copper', (190, 112, 82)), ('basalt', (74, 74, 80)),
     ('shard_heap', (120, 255, 255)), ('spruce_leaves', (44, 70, 46)), ('podzol', (90, 66, 36)), ('moss', (88, 110, 44)), ('water', (50, 80, 200)),
     ('white_terracotta', (210, 178, 160)), ('light_gray_terracotta', (135, 107, 98)), ('mud_bricks', (137, 104, 79)), ('froglight', (250, 220, 120)),
     ('black_stained', (30, 30, 36)), ('black_wool', (20, 20, 24)), ('dark_oak', (66, 44, 22)), ('place_name', (255, 0, 255)), ('fern', (70, 110, 60)),
@@ -597,6 +609,7 @@ if __name__ == '__main__':
     COLOURS[0:0] = EXTRA_COLOURS
     PASSABLE_MORE = ('fern', 'short_grass', 'hanging_roots', 'moss_carpet', 'tall_grass', 'dry_grass', 'sunflower', 'cornflower')
     castle.PASSABLE = castle.PASSABLE + PASSABLE_MORE
+    castle.NO_FOOTING = castle.NO_FOOTING + ('under_sky',)
     castle.CLEAR = castle.CLEAR + ('fern', 'short_grass', 'leaves', 'shard_heap', 'spruce_door', 'water', 'hanging_roots', 'waterlogged=true',
                                    'brown_mushroom', 'red_mushroom', 'tall_grass', 'dry_grass', 'sunflower', 'cornflower')
     w = World()
@@ -641,7 +654,8 @@ if __name__ == '__main__':
         json.dump(census, f, indent=1, sort_keys=True)
         f.write('\n')
     for kind, x, y, z in b.marks:
-        tall = 6 if kind in ('weeping_mother', 'scorched_warden') else 4 if kind in ('lanky', 'elder') else 3 if kind in (
+        tall = 8 if kind == 'coming' else 6 if kind in ('weeping_mother', 'scorched_warden') else 4 if kind in ('lanky', 'elder', 'usher') else 3 if kind in (
+            'gut', 'clockhand', 'bolt', 'deepling',
             'hollow_miller', 'mower', 'sackman', 'scarecrow', 'stook', 'sungazer',
             'gravedigger', 'overseer', 'chaplain', 'knight', 'gilded', 'unhewn', 'taskmaster', 'stone_eater', 'shatun', 'waxen', 'helmsman', 'capsized',
             'pilot', 'oarsman') else 2
@@ -676,16 +690,19 @@ if __name__ == '__main__':
                                 ('helmsman', (gen_shore.SHIP[0] - 3, GY + 5, gen_shore.SHIP[1] + 34), (gen_shore.SHIP[0], GY + 5, gen_shore.SHIP[1] + 12)),
                                 ('capsized', (gen_shore.SHOAL[0] + 9, GY + 3, gen_shore.SHOAL[1] + 5), (gen_shore.SHOAL[0], GY + 1, gen_shore.SHOAL[1] - 4)),
                                 ('scorched_warden', (gen_stubble.WATCH[0] + 12, GY + 9, gen_stubble.WATCH[1] + 6), (gen_stubble.WATCH[0], GY + 3, gen_stubble.WATCH[1])),
-                                ('hollow_miller', (gen_stubble.MILL[0] - 9, GY + 3, gen_stubble.MILL[1] + 5), (gen_stubble.MILL[0], GY + 2, gen_stubble.MILL[1]))):
+                                ('hollow_miller', (gen_stubble.MILL[0] - 9, GY + 3, gen_stubble.MILL[1] + 5), (gen_stubble.MILL[0], GY + 2, gen_stubble.MILL[1])),
+                                ('bolt', (gen_depths.WORKS[0] + 9, gen_depths.PLATE + 4, gen_depths.WORKS[1] - 9), (gen_depths.WORKS[0], gen_depths.PLATE + 5, gen_depths.WORKS[1])),
+                                ('coming', (gen_depths.TEAR[0] + 7, gen_depths.HIGH + 3, gen_depths.TEAR[1] - 13), (gen_depths.TEAR[0], gen_depths.HIGH + 6, gen_depths.TEAR[1]))):
             f.write(f'near_the_{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')
         # and tries the locked gate without its key and with it
-        for key in ('quarry_key', 'mire_key', 'firwood_key', 'shore_key', 'stubble_key'):
+        for key in ('quarry_key', 'mire_key', 'firwood_key', 'shore_key', 'stubble_key', 'depths_key'):
             f.write('gate ' + ' '.join(f'{v_:.2f}' for v_ in world(*sorted(b.seals[key])[0], spawn)) + '\n')
     # the columns that get a biome of their own (MapBuilder lays it): boxes of the world, four blocks wide - the game
     # keeps a biome for every four blocks each way - a line each
     with open('map/biomes.txt', 'w') as f:
-        for biome, columns in (('mire', w.swamp.biome_columns()), ('shore', w.shore.biome_columns()), ('stubble', w.stubble.biome_columns())):
+        for biome, columns in (('mire', w.swamp.biome_columns()), ('shore', w.shore.biome_columns()), ('stubble', w.stubble.biome_columns()),
+                               ('under_sky', w.depths.biome_columns())):
             quarts = {}
             for (x, z) in columns:
                 wx, _, wz = world(x, GY, z, spawn)
@@ -843,6 +860,14 @@ if __name__ == '__main__':
         sub = Map('part', W, H, D)
         sub.cells = {c: s for c, s in b.cells.items() if tx0 <= c[0] < 200 and tz0 <= c[2] < tz1 and c[1] >= GY and gen_stubble.Stubble.inside(w.stubble, c[0], c[2])}
         sub.iso(scale=5).save(f'{out}/stubble_iso.png')
+        # the Sky Beneath: its floors with a dot on every place a player can be
+        img = b.top_down(gen_depths.HIGH + 12, scale=5).crop((0, 530 * 5, 164 * 5, 830 * 5))
+        draw = ImageDraw.Draw(img)
+        for (x, y, z) in seen:
+            if x < 164 and 530 <= z < 830 and y <= gen_depths.HIGH + 12:
+                px, pz = x * 5 + 2, (z - 530) * 5 + 2
+                draw.rectangle([px, pz, px + 1, pz + 1], fill=(255, 60, 60))
+        img.save(f'{out}/depths_ground.png')
         sub = Map('part', W, H, D)
         sub.cells = {c: s for c, s in b.cells.items() if 388 <= c[0] < 474 and 326 <= c[2] < 450 and c[1] >= GY and 'spruce_leaves' not in str(s)}
         sub.iso(scale=5).save(f'{out}/skete_iso.png')

@@ -18,7 +18,7 @@ The story the map tells, the traders and items agreed for the next round, and th
 This file holds what is common to the whole mod. Read the others only for the work in hand, and write new knowledge
 into the file of its place or topic - here only what every chat needs:
 
-- `docs/places/borough.md`, `stockade.md`, `quarry.md`, `mire.md`, `firwood.md`, `wharf.md`, `stubble.md` - a place: its way through,
+- `docs/places/borough.md`, `stockade.md`, `quarry.md`, `mire.md`, `firwood.md`, `wharf.md`, `stubble.md`, `depths.md` - a place: its way through,
   its levels, what is left for later, and its own dead and lords (their classes and what is particular about each);
 - `docs/map.md` - how the map is generated, set down and checked, and the things learnt the hard way about it;
 - `docs/animation.md` - poses, held things, moves: the rules learnt;
@@ -155,6 +155,11 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   hand's depth of water over a floor, which is a floor: no fluid in it, so nobody is slowed and the roll works. `block/SludgeBlock` (`sludge`) lies some seconds where a clot burst, slows
   whoever is not of the dead (`makeStuckInBlock`: the roll too), and leaves the shallows again if it lay in them.
   A mob mark can stand in water (`waterlogged`).
+- `block/UnderSkyBlock` (`under_sky`, twelve tones) - a piece of sky: drawn at full brightness whatever the light, so
+  a wall, a roof or a floor of it has no faces to the eye; whoever stands on it is gone, as into the void. With it
+  `night_shallows`, the shallows in a film that shines a little. Maps set them (the Sky Beneath); see `docs/places/depths.md`.
+- A mob that must send one more number to its model every frame says it in `SoulsMob.renderExtra()`
+  (`BossRenderState.extra`: the Bolt's swing). `SunShaftEntity` has a hue (`dusk(...)`: the Coming's violet shafts).
 - `client/` - models, renderers, `SoulsHud`, `HearthScreen`, `ShopScreen`, the roll key.
 - `tools/` - everything generated is generated from here; run `sh tools/build_assets.sh [preview dir]` from the repo root:
   - `modelkit.py` - entity models described once in Python: texture layout, the mesh part of the Java model class (written
@@ -165,7 +170,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
     `gen_stone_eater.py`, `gen_pike.py`, `gen_lanky.py`, `gen_wisp.py`, `gen_wallower.py`, `gen_mother.py`, `gen_root.py`,
     `gen_sect.py` (the wakeful, the waker and the sleeper on one model), `gen_waxen.py`, `gen_moth.py`, `gen_shatun.py`,
     `gen_elder.py`, `gen_sailor.py` (five seamen on one mesh), `gen_crab.py`, `gen_skua.py`, `gen_capsized.py`,
-    `gen_fieldhand.py` (five fieldhands on one mesh), `gen_scarecrow.py`, `gen_stook.py` (and the millstone), `gen_sungazer.py` - the mobs; `gen_anchor.py` (the Helmsman's cast anchor) and `gen_beam.py` (a shaft of sunlight, see-through and shining) - things that fly or stand that are not mobs
+    `gen_fieldhand.py` (five fieldhands on one mesh), `gen_scarecrow.py`, `gen_stook.py` (and the millstone), `gen_sungazer.py`,
+    `gen_dusk.py` (six of the Sky Beneath), `gen_clock.py` (the clockhand and the Bolt), `gen_coming.py` (the Coming; all three paint with `duskkit.py`) - the mobs; `gen_anchor.py` (the Helmsman's cast anchor) and `gen_beam.py` (a shaft of sunlight, see-through and shining) - things that fly or stand that are not mobs
     (the withered are eleven kinds now: the Mire's drowned too). `Model.mirror` gives a mirrored part the parent of its
     source with "right" turned to "left" in the name: a part whose parent is named otherwise (`leg_r1`, `wing_r`) must be
     given its `parent=`, or the left shin hangs from the right leg - which the preview shows only if one looks, and the
@@ -179,7 +185,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   - `gen_world.py` - the map (not run by `build_assets.sh`: `PYTHONPATH=tools python3 tools/gen_world.py [preview dir]`);
     it puts together the land, `gen_village.py` (the Dead Borough), `gen_map.py` (the High Stockade),
     `gen_quarry.py` (the White Pit), `gen_swamp.py` (the Mire), `gen_skete.py` (the Black Firwood), `gen_shore.py`
-    (the Morning Wharf) and `gen_stubble.py` (the Stubble and its open country; `preview_stubble.py DIR` builds that place alone, in half a minute); without a preview directory it takes about two and a half minutes, with one about five;
+    (the Morning Wharf), `gen_stubble.py` (the Stubble and its open country; `preview_stubble.py DIR` builds that place alone, in half a minute)
+    and `gen_depths.py` (the Sky Beneath: a hollow hill with a sky inside; `preview_depths.py DIR` builds it alone and walks it); without a preview directory it takes about two and a half minutes, with one about five;
   - `balance.py` - the sums of the map's progression (`PYTHONPATH=tools python3 tools/balance.py`): it reads
     `map/census.json`, which `gen_world.py` writes (what comes into reach before each lord), so it takes a second -
     run it after `gen_world.py` when the map changed, and by itself when only numbers in the Java changed.
@@ -212,6 +219,6 @@ into it (`tools/gen_world.py`); the country outside the plan is the flat forest 
 
 The places, in the order they are played: the Dead Borough (`gen_village.py`; the hub: the yard of the first hearth) ->
 the High Stockade (`gen_map.py`) -> the White Pit (`gen_quarry.py`) -> the Mire (`gen_swamp.py`) -> the Black Firwood
-(`gen_skete.py`) -> the Morning Wharf (`gen_shore.py`) -> the Stubble (`gen_stubble.py`). Each is behind a locked gate of the hub whose key lies behind
-the second lord of the place before it. Each has a file in `docs/places/`; how the map is built and checked, and what
+(`gen_skete.py`) -> the Morning Wharf (`gen_shore.py`) -> the Stubble (`gen_stubble.py`) -> the Sky Beneath (`gen_depths.py`). Each is behind a locked gate of the hub whose key lies behind
+the second lord of the place before it (the last, the Sky Beneath, behind a grate in the quarry's sump). Each has a file in `docs/places/`; how the map is built and checked, and what
 went wrong before, is in `docs/map.md`; what each place pays is in `docs/balance.md`.

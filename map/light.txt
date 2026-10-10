@@ -65,3 +65,11 @@ stubble_road -166 -46 78
 stubble_watch -161 -46 154
 stubble_mill -112 -46 93
 stubble_granary -112 -46 85
+depths_drift -8 -59 201
+depths_room 51 -48 188
+depths_brink 67 -48 188
+depths_water 92 -52 154
+depths_works 159 -52 135
+depths_behind 188 -46 140
+depths_causeway 190 -46 174
+depths_tear 238 -46 150

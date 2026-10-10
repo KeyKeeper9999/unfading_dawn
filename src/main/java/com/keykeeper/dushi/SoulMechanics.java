@@ -359,6 +359,12 @@ public final class SoulMechanics {
      */
     private static void ground(ServerPlayer player, PlayerSoul soul) {
         ServerLevel level = player.level();
+        if (player.onGround() && plays(player) && player.isAlive()
+                && level.getBlockState(player.getOnPos()).getBlock() instanceof com.keykeeper.dushi.block.UnderSkyBlock) {
+            // the bottom of the Sky Beneath is not a floor (the block says so itself to whoever steps on it; this is for whoever came to it otherwise)
+            player.hurtServer(level, level.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+            return;
+        }
         if (player.onGround() && !player.isSpectator() && soul.undertow == 0) {
             soul.groundX = player.getX();
             soul.groundY = player.getY();

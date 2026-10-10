@@ -62,7 +62,7 @@ public class LongarmEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 1700;
+        return 1400;
     }
 
     @Override

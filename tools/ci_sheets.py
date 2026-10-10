@@ -6,13 +6,15 @@ src, dst = sys.argv[1], sys.argv[2]
 os.makedirs(dst, exist_ok=True)
 W, H, BAR, COLS, ROWS = 640, 360, 18, 3, 3
 LETTERS = {'v': 'mobs_borough', 'q': 'mobs_quarry', 's': 'mobs_mire', 'f': 'mobs_firwood', 'g': 'mobs_firwood', 'h': 'mobs_wharf', 'j': 'mobs_stubble', 'k': 'mobs_depths'}
-MAPS = [(26, 'map_borough'), (54, 'map_stockade'), (87, 'map_quarry'), (111, 'map_mire'), (137, 'map_firwood'), (175, 'map_wharf'), (201, 'map_stubble'), (10**6, 'map_lords')]
+# a view of the map goes by the place its name begins with; those of the town and the fortress, which have no such word, by their number
+PLACES = (('quarry', 'map_quarry'), ('mire', 'map_mire'), ('firwood', 'map_firwood'), ('skete', 'map_firwood'), ('shore', 'map_wharf'), ('stubble', 'map_stubble'),
+          ('depths', 'map_depths'), ('near_the', 'map_lords'), ('after_the', 'map_lords'))
 def group(n):
     m = re.match(r'm(\d+)_(.*)', n)
     if m:
         if re.search(r'screen|after_travel', m.group(2)): return 'map_screens'
         k = int(m.group(1))
-        return next(g for top, g in MAPS if k < top)
+        return next((g for word, g in PLACES if m.group(2).startswith(word)), 'map_borough' if k < 26 else 'map_stockade' if k < 190 else 'map_lords')
     m = re.match(r'(\d+)_', n)
     if m:
         k = int(m.group(1))

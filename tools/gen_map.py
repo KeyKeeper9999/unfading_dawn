@@ -1642,7 +1642,8 @@ STAGES = (('gravedigger', 'after the Gravedigger'), ('overseer', 'after the Over
           ('mire_key', 'with the key of the Mire Gate'), ('wallower', 'after the Wallower'), ('weeping_mother', 'after the Weeping Mother'),
           ('firwood_key', 'with the key of the Wood Wicket'), ('shatun', 'after the Shatun'), ('elder', 'after the Elder'),
           ('shore_key', 'with the key of the Sea Gate'), ('helmsman', 'after the Helmsman'), ('capsized', 'after the Capsized'),
-          ('stubble_key', "with the key of the Reapers' Gate"), ('scorched_warden', 'after the Scorched Warden'), ('hollow_miller', 'after the Hollow Miller'))
+          ('stubble_key', "with the key of the Reapers' Gate"), ('scorched_warden', 'after the Scorched Warden'), ('hollow_miller', 'after the Hollow Miller'),
+          ('depths_key', 'with the key of the Lower Grate'), ('bolt', 'after the Bolt'), ('coming', 'after the Coming'))
 
 
 def is_water(state):

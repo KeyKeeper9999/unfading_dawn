@@ -49,7 +49,10 @@ def mobs():
                        ('reaper', 'entity/ReaperEntity.java'), ('mower', 'entity/MowerEntity.java'), ('sackman', 'entity/SackmanEntity.java'),
                        ('scorched', 'entity/ScorchedEntity.java'), ('scarecrow', 'entity/ScarecrowEntity.java'), ('stook', 'entity/StookEntity.java'),
                        ('sungazer', 'entity/SungazerEntity.java'), ('scorched_warden', 'entity/ScorchedWardenEntity.java'),
-                       ('hollow_miller', 'entity/HollowMillerEntity.java')):
+                       ('hollow_miller', 'entity/HollowMillerEntity.java'),
+                       ('usher', 'entity/UsherEntity.java'), ('stray_shadow', 'entity/StrayShadowEntity.java'), ('longarm', 'entity/LongarmEntity.java'),
+                       ('handwalker', 'entity/HandwalkerEntity.java'), ('deepling', 'entity/DeeplingEntity.java'), ('gut', 'entity/GutEntity.java'),
+                       ('clockhand', 'entity/ClockhandEntity.java'), ('bolt', 'entity/BoltEntity.java'), ('coming', 'entity/ComingEntity.java')):
         text = read(path)
         out[name] = dict(attributes(text, 'createAttributes'), souls=int(re.search(r'soulReward\(\) \{\s+return (?:[\w.]+(?: > 0)? \? 0 : )?(\d+);', text).group(1)))
         hide = re.search(r'HIDE = ([0-9.]+)F', text)
@@ -100,7 +103,7 @@ VITALITY = float(re.search(r'HEALTH_PER_VITALITY = ([0-9.]+)', PLAYER).group(1))
 WRATH = float(re.search(r'WRATH_DAMAGE = ([0-9.]+)F', read('entity/ChaplainEntity.java')).group(1))
 DROP = 1 / 14          # a nameless soul from any of the withered
 KNIGHT_GREAT = 0.35
-BOSSES = ('gravedigger', 'overseer', 'chaplain', 'taskmaster', 'stone_eater', 'wallower', 'weeping_mother', 'shatun', 'elder', 'helmsman', 'capsized', 'scorched_warden', 'hollow_miller')
+BOSSES = ('gravedigger', 'overseer', 'chaplain', 'taskmaster', 'stone_eater', 'wallower', 'weeping_mother', 'shatun', 'elder', 'helmsman', 'capsized', 'scorched_warden', 'hollow_miller', 'bolt', 'coming')
 WITHERED = ('prisoner', 'guard', 'archer', 'acolyte', 'townsman', 'butcher', 'watchman', 'digger', 'barrowman', 'sapper', 'drowned')
 # those of the skete who kneel: nobody fights all of them (a clearing is counted with a third of them woken)
 KNEELING = 1 / 3
@@ -113,7 +116,7 @@ FARM = 0.25                                                 # and a quarter of a
 # What a player is meant to come to each lord with. The places pay for nine tenths of it played as above; the rest is a
 # little farming (FARM: a quarter of a clearing of that part), or a level short.
 TARGET = {'gravedigger': 12, 'overseer': 18, 'chaplain': 29, 'taskmaster': 35, 'stone_eater': 39, 'wallower': 46, 'weeping_mother': 50,
-          'shatun': 55, 'elder': 60, 'helmsman': 66, 'capsized': 70, 'scorched_warden': 76, 'hollow_miller': 80}
+          'shatun': 55, 'elder': 60, 'helmsman': 66, 'capsized': 70, 'scorched_warden': 76, 'hollow_miller': 80, 'bolt': 86, 'coming': 90}
 # A lord leaves about two and a half times what a level costs at the level he is met at; the dead of his place are
 # priced so that the sums above come out. A new place: ten levels, six before its first lord and four before its second.
 
@@ -157,7 +160,7 @@ if __name__ == '__main__':
         print()
         print(f'before the {boss.replace("_", "-").title()}: ' + ', '.join(f'{n} {k}' + (f' (tier {t})' if t else '') for (k, t), n in sorted(kinds.items())))
         print(f'  one clearing: {souls:.0f} for kills, about {drops:.0f} in souls dropped, {chest_souls} in chests (+{chest_great} in great souls, if not kept for the anvil)')
-        spent = (350, 1500, 2500, 2500, 1500, 2000, 1500, 2500, 2000, 3000, 2000, 3500, 2500)[i]  # arms and armour bought or forged on the way
+        spent = (350, 1500, 2500, 2500, 1500, 2000, 1500, 2500, 2000, 3000, 2000, 3500, 2500, 3500, 2500)[i]  # arms and armour bought or forged on the way
         played = total + (souls + drops) * PLAYED + chest_souls + chest_great * 0.5 - spent
         for label, have in (('one clean clearing', total + souls + drops + chest_souls + chest_great * 0.5 - spent), ('as it is played', played),
                             ('with a quarter of a clearing of farming', played + (souls + drops) * FARM)):
@@ -180,6 +183,8 @@ if __name__ == '__main__':
                 ('broadsword', 'cargo_hook', 'harpoon', 'oar', 'great_maul', 'bear_spear', 'great_candle'),
                 ('broadsword', 'cargo_hook', 'harpoon', 'oar', 'bear_spear', 'great_candle', 'ship_anchor'),
                 ('broadsword', 'reaper_sickle', 'scythe', 'thresh_flail', 'oar', 'ship_anchor', 'capsized_claw'),
+                ('broadsword', 'reaper_sickle', 'scythe', 'thresh_flail', 'ship_anchor', 'capsized_claw', 'warden_pole'),
+                ('broadsword', 'reaper_sickle', 'scythe', 'thresh_flail', 'ship_anchor', 'capsized_claw', 'warden_pole'),
                 ('broadsword', 'reaper_sickle', 'scythe', 'thresh_flail', 'ship_anchor', 'capsized_claw', 'warden_pole'))[i]
         for wname in arms:
             n, blow = hits(WPN[wname], st, 0, boss_mob)

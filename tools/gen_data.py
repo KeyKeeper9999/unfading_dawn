@@ -197,9 +197,9 @@ MAP_CHESTS = {
     'depths_brink': [(GREAT, 4), (M + 'return_ember', 3)],
     'depths_water': [(GREAT, 5), (M + 'return_ember', 2), (M + 'tar_pot', 4)],
     'depths_island': [(GREAT, 6), (M + 'powder_pot', 4)],
-    'depths_works': [(GREAT, 8), (M + 'return_ember', 3), (M + 'rust_scrap', 6)],
-    'depths_causeway': [(GREAT, 7), (M + 'return_ember', 2)],
-    'depths_ledge': [(GREAT, 6), (M + 'powder_pot', 4), (M + 'tar_pot', 4)],
+    'depths_works': [(GREAT, 5), (M + 'return_ember', 3), (M + 'rust_scrap', 6)],
+    'depths_causeway': [(GREAT, 5), (M + 'return_ember', 2)],
+    'depths_ledge': [(GREAT, 4), (M + 'powder_pot', 4), (M + 'tar_pot', 4)],
     'depths_tear': [(GREAT, 12), (M + 'return_ember', 4)],
 }
 for _name, _items in MAP_CHESTS.items():

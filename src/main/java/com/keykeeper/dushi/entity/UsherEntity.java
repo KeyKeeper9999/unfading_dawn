@@ -75,7 +75,7 @@ public class UsherEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 6000;
+        return 4200;
     }
 
     @Override

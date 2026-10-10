@@ -68,7 +68,7 @@ public class ClockhandEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 2100;
+        return 1700;
     }
 
     public boolean wound() {

@@ -1,4 +1,24 @@
 {
+ "bolt": {
+  "chests": [
+   "stubble_mill",
+   "depths_brink",
+   "depths_island",
+   "depths_water"
+  ],
+  "mobs": {
+   "bolt:0": 1,
+   "clockhand:0": 2,
+   "deepling:0": 5,
+   "gut:0": 1,
+   "handwalker:0": 4,
+   "longarm:0": 3,
+   "stray_shadow:0": 6,
+   "usher:0": 1
+  },
+  "shards": 1,
+  "tier": 0
+ },
  "capsized": {
   "chests": [
    "spit_wreck",
@@ -39,6 +59,25 @@
   },
   "shards": 2,
   "tier": 2
+ },
+ "coming": {
+  "chests": [
+   "depths_works",
+   "depths_causeway",
+   "depths_ledge"
+  ],
+  "mobs": {
+   "clockhand:0": 3,
+   "coming:0": 1,
+   "deepling:0": 3,
+   "gut:0": 1,
+   "handwalker:0": 2,
+   "longarm:0": 1,
+   "stray_shadow:0": 2,
+   "usher:0": 1
+  },
+  "shards": 1,
+  "tier": 0
  },
  "elder": {
   "chests": [

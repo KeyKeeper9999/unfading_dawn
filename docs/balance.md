@@ -14,6 +14,7 @@ the lower fortress to about 18 before the Overseer; the upper city to about 29 b
 about 35 before the Taskmaster and 39 before the Stone-Eater; the Mire to about 46 before the Wallower and 50 before
 the Weeping Mother; the Firwood to about 55 before the Shatun and 60 before the Elder; the Wharf to about 66 before
 the Helmsman and 70 before the Capsized; the Stubble to about 76 before the Scorched Warden and 80 before the Hollow
-Miller. The fortress was
+Miller; the Sky Beneath to about 86 before the Bolt and 90-91 before the Coming (its second half pays a little over
+the rule: the Coming is the last lord, and nothing of the place is sold or forged yet). The fortress was
 first tuned for a newcomer; its tiers make up for the levels a player now brings to it. When mobs, weapons, tiers or
 the map change, run it again.

@@ -63,7 +63,7 @@ public class StrayShadowEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 1500;
+        return 1200;
     }
 
     /** Up out of the floor: when a blow lands on it whole. */

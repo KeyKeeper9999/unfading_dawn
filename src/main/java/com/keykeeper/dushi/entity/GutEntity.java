@@ -76,7 +76,7 @@ public class GutEntity extends SoulsMob {
 
     @Override
     public int soulReward() {
-        return 5000;
+        return 3600;
     }
 
     /** Standing with its back open after a charge that met a wall: a blow tells for more. */
