@@ -39,6 +39,37 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 public final class MapSelfTest {
     private static final String VIEWS = System.getenv("DUSHI_MAPTEST");
     private static final String WORLD = "High_Stockade";
+    /** What to photograph: empty for everything, or words of {@code .ci/mapshots} - a place ("depths", "borough", "lords") or the beginning of a view's name. */
+    private static final String ONLY = System.getenv("DUSHI_MAPONLY") == null ? "" : System.getenv("DUSHI_MAPONLY").trim();
+    private static final String[] PLACED = {"quarry", "mire", "firwood", "skete", "shore", "stubble", "depths", "near_the", "after_the"};
+
+    /** The same sorting as the sheets' (tools/ci_sheets.py): a view without a place's word is the borough's or the stockade's by its number. */
+    private static boolean wanted(String name, int number) {
+        if (ONLY.isEmpty()) {
+            return true;
+        }
+        boolean placed = false;
+        for (String word : PLACED) {
+            placed |= name.startsWith(word);
+        }
+        for (String word : ONLY.split("[\\s,]+")) {
+            String prefixes = switch (word) {
+                case "firwood" -> "firwood skete";
+                case "wharf" -> "shore";
+                case "lords" -> "near_the after_the";
+                default -> word;
+            };
+            if (word.equals("borough") && !placed && number < 26 || word.equals("stockade") && !placed && number >= 26 && number < 190) {
+                return true;
+            }
+            for (String prefix : prefixes.split(" ")) {
+                if (!prefix.isEmpty() && name.startsWith(prefix)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     private record View(String name, double x, double y, double z, double toX, double toY, double toZ) {}
 
@@ -156,6 +187,9 @@ public final class MapSelfTest {
             case 21 -> {
                 // views named as_player_... are walked to as the newcomer is, with the screen as a player sees it
                 MinecraftServer server = minecraft.getSingleplayerServer();
+                while (next < LIST.size() && LIST.get(next).name.startsWith("as_player_") && !wanted("borough_" + LIST.get(next).name, 0)) {
+                    next++;
+                }
                 if (next < LIST.size() && LIST.get(next).name.startsWith("as_player_")) {
                     View view = LIST.get(next);
                     server.execute(() -> {
@@ -186,8 +220,13 @@ public final class MapSelfTest {
                 wait = 4;
             }
             case 3 -> {
+                // only some places asked for: the others' views, the levers and the lords are passed over, and so is the travelling after
+                while (!ONLY.isEmpty() && next < LIST.size() && !LIST.get(next).name.equals("time")
+                        && (LIST.get(next).name.equals("gate") || LIST.get(next).name.startsWith("kill ") || !wanted(LIST.get(next).name, next + 1))) {
+                    next++;
+                }
                 if (next >= LIST.size()) {
-                    stage = 5;
+                    stage = ONLY.isEmpty() ? 5 : 99;
                     return;
                 }
                 View view = LIST.get(next);

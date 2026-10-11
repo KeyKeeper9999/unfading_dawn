@@ -67,7 +67,7 @@ jobs:
             ls -la High_Stockade.zip run/High_Stockade || true
             if [ -f .ci/mapshots ]; then
               mkdir -p run/saves && rm -rf run/saves/High_Stockade && cp -r run/High_Stockade run/saves/
-              shoot mapclient.log "MAPTEST done" DUSHI_MAPTEST="$PWD/map/views.txt"
+              shoot mapclient.log "MAPTEST done" DUSHI_MAPTEST="$PWD/map/views.txt" DUSHI_MAPONLY="$(tr '\n' ' ' < .ci/mapshots)"
               stamp "map pictures taken"
             fi
             mkdir -p "$GITHUB_WORKSPACE/run/screenshots"
@@ -79,7 +79,7 @@ jobs:
             (sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1-mesa-dri mesa-vulkan-drivers libopenal1 zip) > apt.log 2>&1 || true
             if [ -f .ci/map ]; then (the_map > map_side.log 2>&1) & fi
             if [ -f .ci/client ]; then
-              shoot client.log "CLIENTTEST done" DUSHI_CLIENTTEST=1
+              shoot client.log "CLIENTTEST done" DUSHI_CLIENTTEST=1 DUSHI_CLIENTONLY="$(tr '\n' ' ' < .ci/client)"
               stamp "client pictures taken"
             fi
             wait

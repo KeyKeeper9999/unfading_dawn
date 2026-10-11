@@ -75,6 +75,64 @@ public final class ClientSelfTest {
     /** While not negative, every mob of the mod is kept at this tick of its move, so a picture of it cannot be missed. */
     private static int holdTime = -1;
     private static final List<Runnable> STEPS = new ArrayList<>();
+    /** What to photograph: empty for everything, or words of {@code .ci/client} - a place ("depths"), "base", or the beginning of a picture's name. */
+    private static final String ONLY = System.getenv("DUSHI_CLIENTONLY") == null ? "" : System.getenv("DUSHI_CLIENTONLY").trim();
+    /** Where each picture's steps end in {@link #STEPS}, in order, and the picture's name. */
+    private static final List<Integer> SHOT_END = new ArrayList<>();
+    private static final List<String> SHOT_NAME = new ArrayList<>();
+    /** The steps that make the stage itself: kept whatever is asked for. */
+    private static int stageBuilt;
+
+    /** The letter a place's pictures begin with (as in tools/ci_sheets.py); "base" is everything numbered. */
+    private static boolean wanted(String name) {
+        for (String word : ONLY.split("[\\s,]+")) {
+            String prefixes = switch (word) {
+                case "borough" -> "v";
+                case "quarry" -> "q";
+                case "mire" -> "s";
+                case "firwood" -> "f g";
+                case "wharf" -> "h";
+                case "stubble" -> "j";
+                case "depths" -> "k";
+                case "base" -> "0 1 2 3 4 5 6 7 8 9";
+                default -> word;
+            };
+            for (String prefix : prefixes.split(" ")) {
+                if (!prefix.isEmpty() && name.startsWith(prefix)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Leaves only the pictures asked for: the script is cut at its pictures, and a picture goes with every step since the one
+     * before it (what clears the floor after the last place, and what sets its own scene). What follows the last picture
+     * (the roll, the death) is run only when everything is.
+     */
+    private static void keepWanted() {
+        if (ONLY.isEmpty()) {
+            return;
+        }
+        List<Runnable> kept = new ArrayList<>(STEPS.subList(0, stageBuilt));
+        int from = stageBuilt;
+        int pictures = 0;
+        for (int i = 0; i < SHOT_END.size(); i++) {
+            int to = SHOT_END.get(i);
+            if (to <= from) {
+                continue;
+            }
+            if (wanted(SHOT_NAME.get(i))) {
+                kept.addAll(STEPS.subList(from, to));
+                pictures++;
+            }
+            from = to;
+        }
+        say("only \"" + ONLY + "\": " + pictures + " of " + SHOT_END.size() + " pictures");
+        STEPS.clear();
+        STEPS.addAll(kept);
+    }
 
     private ClientSelfTest() {}
 
@@ -140,6 +198,7 @@ public final class ClientSelfTest {
                 if (minecraft.player != null && minecraft.level != null && minecraft.getSingleplayerServer() != null && screen == null) {
                     say("in the world");
                     buildSteps(minecraft);
+                    keepWanted();
                     stage = 2;
                     wait = 60;
                 } else if (waited % 100 == 99 && screen != null) {
@@ -217,6 +276,8 @@ public final class ClientSelfTest {
             Screenshot.grab(minecraft.gameDirectory, name + ".png", minecraft.gameRenderer.mainRenderTarget(), 1, message -> say("shot " + name));
         });
         pause(3);
+        SHOT_END.add(STEPS.size());
+        SHOT_NAME.add(name);
     }
 
     private static void shot(String name) {
@@ -288,6 +349,7 @@ public final class ClientSelfTest {
         command("time set 6000", "weather clear", "fill -16 " + (GROUND - 1) + " -8 16 " + (GROUND - 1) + " 26 minecraft:stone_bricks",
                 "fill -16 " + GROUND + " 12 16 " + (GROUND + 9) + " 12 minecraft:deepslate_bricks", look(0.5, 0.5, 0, 5));
         pause(40);
+        stageBuilt = STEPS.size();
 
         // 1. the three withered: at rest, the arm raised, the blow, then shield up and bow drawn
         command(summon("withered_prisoner", -2.0, 4.5, held("broken_sword", null)), summon("withered_guard", 0.5, 4.5, held("shortsword", "guard_shield")),

@@ -85,6 +85,12 @@ works the light out again, sets the rules of the world, saves and stops; the wor
   flies to every view of `map/views.txt` and takes a picture, then throws every lever and kills the bosses and says
   what the doors and the seals did.
 
+What is written in `.ci/client` and `.ci/mapshots` is what gets photographed; empty is everything. `.ci/client`: places (`borough` `quarry`
+`mire` `firwood` `wharf` `stubble` `depths`), `base` (the stockade's dead, gear, items, buildings) or the beginning of a picture's name (`k6_`);
+the roll, the death and the buildings are then left out. `.ci/mapshots`: `borough` `stockade` `quarry` `mire` `firwood` `wharf` `stubble`
+`depths` `lords`, or the beginning of a view's name; the levers, the lords' seals and the travelling are then left out. While one place is
+worked on, name it in both (a run is then about ten minutes); empty both for the one full run at the end of a stage.
+
 `.ci/skip_server` skips the server self-test (to save minutes while only the map is worked on); delete it and restore
 `.ci/client` before finishing, so that everything is checked once together.
 
