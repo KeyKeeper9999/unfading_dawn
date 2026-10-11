@@ -1431,7 +1431,8 @@ public final class ClientSelfTest {
                 "fill -4 " + (GROUND + 5) + " 12 4 " + (GROUND + 9) + " 12 unfading_dawn:under_sky[tone=3]",
                 "fill -2 " + (GROUND + 10) + " 12 2 " + (GROUND + 11) + " 12 unfading_dawn:under_sky[tone=3]",
                 "fill -1 " + (GROUND + 12) + " 12 1 " + (GROUND + 12) + " 12 unfading_dawn:under_sky[tone=3]"};
-        command(gone, "fill -18 " + (GROUND - 1) + " -24 18 " + (GROUND - 1) + " -9 minecraft:stone_bricks", "fill -26 " + (GROUND - 1) + " -8 -17 " + (GROUND - 1) + " 26 minecraft:stone_bricks",
+        // (the floor is widened to stand back on - with slabs: nothing of the night comes up on a slab)
+        command(gone, "fill -18 " + (GROUND - 1) + " -24 18 " + (GROUND - 1) + " -9 minecraft:stone_brick_slab", "fill -26 " + (GROUND - 1) + " -8 -17 " + (GROUND - 1) + " 26 minecraft:stone_brick_slab",
                 look(0.5, -13.0, 0, -14), wall, crack[0], crack[1], crack[2], crack[3],
                 summon("coming", 0.5, 10.5, ""));
         shot("k6_coming", 24);

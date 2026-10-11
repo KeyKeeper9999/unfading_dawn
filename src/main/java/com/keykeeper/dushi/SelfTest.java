@@ -51,7 +51,7 @@ public final class SelfTest {
     /** For every mob, how many times each of its moves was started. */
     private static final Map<String, Map<Integer, Integer>> MOVES = new LinkedHashMap<>();
     private static final Map<String, Integer> LAST_MOVE = new LinkedHashMap<>();
-    private static final int DRILL_TICKS = 1100;
+    private static final int DRILL_TICKS = 1400;
     /** How low and how high the stray shadow's box was seen in the drill: it lies with it and stands with it. */
     private static float shadowLow = Float.MAX_VALUE;
     private static float shadowHigh;
@@ -475,7 +475,8 @@ public final class SelfTest {
     private static void reportDrill() {
         for (Drill d : DRILL) {
             say("drill " + d.name + ": finished moves [" + d.done.toString().trim() + "] of " + d.moves.length + ", alive=" + d.mob.isAlive()
-                    + " phase=" + d.mob.phase() + " dummy health=" + Math.round(d.dummy.getHealth()) + "/" + Math.round(d.dummy.getMaxHealth()));
+                    + " phase=" + d.mob.phase() + " dummy health=" + Math.round(d.dummy.getHealth()) + "/" + Math.round(d.dummy.getMaxHealth())
+                    + " went " + Math.round(Math.sqrt(d.mob.distanceToSqr(d.from))) + " blocks");
         }
         say("shadow box: lying " + shadowLow + " risen " + shadowHigh + (shadowLow < 0.5F && shadowHigh > 1.5F ? " ok" : " WRONG"));
         say("drill done");
@@ -487,6 +488,7 @@ public final class SelfTest {
         final Mob dummy;
         final int[] moves;
         final StringBuilder done = new StringBuilder();
+        final net.minecraft.world.phys.Vec3 from;
         int next;
 
         Drill(String name, SoulsMob mob, Mob dummy, int[] moves) {
@@ -494,6 +496,7 @@ public final class SelfTest {
             this.mob = mob;
             this.dummy = dummy;
             this.moves = moves;
+            this.from = mob.position();
         }
     }
 
