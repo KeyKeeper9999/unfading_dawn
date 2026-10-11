@@ -338,6 +338,24 @@ public final class MapSelfTest {
                     }
                 }
                 say(LIST.get(next).name + ": " + mobs + " of the dead within 48 blocks");
+                if (LIST.get(next).name.startsWith("depths_tear")) {
+                    // the Coming's hall: which way it is, and the eyes that are open in the rock round it
+                    StringBuilder seen = new StringBuilder();
+                    int eyes = 0;
+                    for (Entity entity : minecraft.level.entitiesForRendering()) {
+                        if (entity instanceof com.keykeeper.dushi.entity.WallEyeEntity eye) {
+                            eyes++;
+                            if (eye.great()) {
+                                seen.append("; the great eye at ").append(String.format("%.2f %.2f %.2f", eye.getX(), eye.getY(), eye.getZ())).append(" looking ").append(Math.round(eye.getYRot()))
+                                        .append(", ").append(eye.tickCount).append(" ticks old, open ").append(eye.lid(eye.tickCount));
+                            }
+                        } else if (entity instanceof com.keykeeper.dushi.entity.ComingEntity coming) {
+                            seen.append("; the Coming at ").append(String.format("%.2f %.2f %.2f", coming.getX(), coming.getY(), coming.getZ())).append(" looking ").append(Math.round(coming.getYRot()))
+                                    .append(", phase ").append(coming.phase()).append(", move ").append(coming.attackId()).append(", ").append(coming.getBbWidth()).append(" wide");
+                        }
+                    }
+                    say(LIST.get(next).name + ": " + eyes + " eyes in the rock" + seen);
+                }
                 shot(minecraft, "m" + String.format("%02d", next + 1) + "_" + LIST.get(next).name);
                 next++;
                 stage = 3;

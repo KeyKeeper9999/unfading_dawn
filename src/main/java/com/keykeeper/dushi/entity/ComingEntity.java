@@ -162,7 +162,9 @@ public class ComingEntity extends SoulsMob {
     private static final float AIM_MAX = 1.0F;
     /** Its box when it is out of the crack: the knot on its arms. */
     public static final EntityDimensions OUT = EntityDimensions.scalable(5.0F, 7.0F).withEyeHeight(5.0F);
-    private static final int EYES = 16;
+    /** The lesser eyes: so many spokes from the middle of the hall an eye is looked for along, and so many heights tried on each. */
+    private static final int EYES = 26;
+    private static final int EYE_TRIES = 4;
 
     private float homeYaw = Float.NaN;
     private Vec3 home;
@@ -763,23 +765,26 @@ public class ComingEntity extends SoulsMob {
         Vec3 centre = this.centre();
         Vec3 out = this.outward();
         double back = Math.atan2(-out.z, -out.x);
-        for (int i = 1; i < EYES - 1; i++) {
+        for (int i = 2; i < EYES - 2; i++) {
             double a = back + (i + 0.5) * Math.PI * 2.0 / EYES;
-            Vec3 from = centre.add(0.0, 3.0 + this.random.nextInt(7) + 0.5, 0.0);
-            Vec3 to = from.add(Math.cos(a) * (HALL + 9.0), 0.0, Math.sin(a) * (HALL + 9.0));
-            BlockHitResult hit = level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-            if (hit.getType() != HitResult.Type.BLOCK) {
-                continue;
+            for (int k = 0; k < EYE_TRIES; k++) {
+                Vec3 from = centre.add(0.0, 2.5 + (i * 5 + k * 3) % 9, 0.0);
+                Vec3 to = from.add(Math.cos(a) * (HALL + 9.0), 0.0, Math.sin(a) * (HALL + 9.0));
+                BlockHitResult hit = level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+                if (hit.getType() != HitResult.Type.BLOCK) {
+                    continue;
+                }
+                Direction side = hit.getDirection();
+                BlockPos pos = hit.getBlockPos();
+                BlockPos before = pos.relative(side);
+                if (side.getAxis().isVertical() || !rock(level, pos.above()) || !rock(level, pos.below()) || rock(level, before) || rock(level, before.above())
+                        || rock(level, before.below())) {
+                    continue;
+                }
+                Vec3 at = Vec3.atCenterOf(pos).add(side.getStepX() * 0.56, 0.0, side.getStepZ() * 0.56);
+                this.eyes.add(WallEyeEntity.open(level, this, at, side.toYRot(), false, 1.3F + this.random.nextFloat() * 0.7F, (this.random.nextFloat() - 0.5F) * 50.0F, 4 + i * 2));
+                break;
             }
-            Direction side = hit.getDirection();
-            BlockPos pos = hit.getBlockPos();
-            BlockPos before = pos.relative(side);
-            if (side.getAxis().isVertical() || !rock(level, pos.above()) || !rock(level, pos.below()) || rock(level, before) || rock(level, before.above())
-                    || rock(level, before.below())) {
-                continue;
-            }
-            Vec3 at = Vec3.atCenterOf(pos).add(side.getStepX() * 0.56, 0.0, side.getStepZ() * 0.56);
-            this.eyes.add(WallEyeEntity.open(level, this, at, side.toYRot(), false, 1.15F + this.random.nextFloat() * 0.55F, (this.random.nextFloat() - 0.5F) * 50.0F, 6 + i * 3));
         }
     }
 
