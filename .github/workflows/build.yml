@@ -46,7 +46,12 @@ jobs:
             (env "$@" LIBGL_ALWAYS_SOFTWARE=1 timeout 2700 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --no-daemon > "$log" 2>&1 || true)
           }
           the_map() {
-            rm -rf "$RUNNER_TEMP/ws2" && cp -r "$GITHUB_WORKSPACE" "$RUNNER_TEMP/ws2" && cd "$RUNNER_TEMP/ws2" && rm -rf run || return 1
+            # (a copy without build, .gradle and run: gradle's stored configuration holds the first tree's paths, and with it
+            # copied the map's server ran in the client's own run folder)
+            set +e
+            rm -rf "$RUNNER_TEMP/ws2" && mkdir -p "$RUNNER_TEMP/ws2" && cd "$RUNNER_TEMP/ws2" || return 1
+            (cd "$GITHUB_WORKSPACE" && tar cf - --exclude=./build --exclude=./.gradle --exclude=./run --exclude=./.git .) | tar xf -
+            pwd; ls
             mkdir -p run && echo eula=true > run/eula.txt
             printf '%s\n' 'level-name=High_Stockade' 'level-type=minecraft\:flat' \
               'generator-settings={"layers"\:[{"block"\:"minecraft\:bedrock","height"\:1},{"block"\:"minecraft\:stone","height"\:69},{"block"\:"minecraft\:dirt","height"\:3},{"block"\:"minecraft\:grass_block","height"\:1}],"biome"\:"minecraft\:taiga","features"\:true,"lakes"\:false,"structure_overrides"\:[]}' \
