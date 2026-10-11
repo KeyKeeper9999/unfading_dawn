@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -31,7 +31,7 @@ jobs:
       - name: client screenshots and the map (side by side)
         continue-on-error: true
         run: |
-          # The owner's machine has cores to spare: the map (built and photographed in a copy of the tree, so that the two
+          # The map (built and photographed in a copy of the tree, so that the two
           # games do not share a run folder) goes on while the client takes the mobs' pictures. times.log says what took how long.
           stamp() { echo "$(date +%T) $1" >> "$GITHUB_WORKSPACE/times.log"; }
           # .ci/gpu: draw with the video card through WSLg (a window shows on the desktop) and fall back to software if that fails.
@@ -108,7 +108,7 @@ jobs:
         run: |
           # ci-out: logs, summary.txt, the jar, the map, sheets of pictures (small: it must always arrive).
           # ci-shots: every picture in full (large; a failure to push it loses nothing else).
-          # (the owner's machine keeps /tmp between runs: the build step empties these, or yesterday's files would be published again)
+          # (the build step empties these: on a machine that keeps /tmp between runs yesterday's files would be published again)
           mkdir -p /tmp/out /tmp/shots/shots
           cp times.log map_side.log client.log.gpu mapclient.log.gpu /tmp/out/ 2>/dev/null || true
           cp build.log /tmp/out/ || true

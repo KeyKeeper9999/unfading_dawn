@@ -2,7 +2,7 @@
 
 A souls-like inside Minecraft: NeoForge mod for Minecraft 26.3. The mod is shown as "The Unfading Dawn" (in Russian «Немеркнущий
 рассвет») and its id is `unfading_dawn`: namespace of every block, item and text, the folders of assets and data, the jar.
-Its first, working name survives only where the game never shows it: the repository (`vsratie_dushi1`) and, in half, the
+Its first, working name survives only where the game never shows it: the history of the repository (once `vsratie_dushi1`, now `unfading_dawn`) and, in half, the
 Java package `com.keykeeper.dushi`, the class `Dushi` and the `DUSHI_*` switches of the tests. Never bring it back into
 anything a player can see. `tools/rename_mod.py OLD NEW` is how the id was changed (text and paths of every tracked file).
 The owner writes in Russian; texts exist in Russian and English.
@@ -30,8 +30,8 @@ A new place gets a new file in `docs/places/`.
 ## Building and checking
 
 Nothing can be built on a machine without access to the NeoForge and Mojang servers, so the build runs in GitHub Actions
-(`.github/workflows/build.yml`) on every push to `main`. The job runs on the owner's own machine (a self-hosted runner in WSL, `runs-on: self-hosted`:
-GitHub's hosted minutes ran out), so a run starts only while his runner is listening - ask him to start it if a run does not begin. A push cancels the run before it, so changes are gathered and pushed together, and nothing is
+(`.github/workflows/build.yml`) on every push to `main`. The repository is public (`KeyKeeper9999/unfading_dawn`), which is what makes the hosted minutes free:
+it must stay public, or go back to a runner of the owner's own. A push cancels the run before it, so changes are gathered and pushed together, and nothing is
 pushed while a run is awaited. The workflow publishes its results to the `ci-out` branch:
 
 - `summary.txt` - the run in a page (`tools/ci_summary.py`): `RESULT: OK` or `RESULT: LOOK` with what to look at; whether
@@ -59,7 +59,7 @@ world the server generated. The client test makes an ordinary world, works on a 
 flies to the nearest outpost and stockade and takes pictures from fixed places of their plans (`view(...)`).
 
 The pictures in full are in the branch `ci-shots` (`shots/NAME.png`), which is large: do not fetch it, take one picture:
-`gh api -H "Accept: application/vnd.github.raw" "repos/KeyKeeper9999/vsratie_dushi1/contents/shots/NAME.png?ref=ci-shots" > NAME.png`.
+`gh api -H "Accept: application/vnd.github.raw" "repos/KeyKeeper9999/unfading_dawn/contents/shots/NAME.png?ref=ci-shots" > NAME.png`.
 
 `git fetch origin +ci-out:refs/remotes/origin/ci-out` and read the files (the branch is written anew every time: without
 the `+` a fetch into an existing ref is refused and yesterday's files are read); the commit message of `ci-out` names the
