@@ -30,7 +30,8 @@ A new place gets a new file in `docs/places/`.
 ## Building and checking
 
 Nothing can be built on a machine without access to the NeoForge and Mojang servers, so the build runs in GitHub Actions
-(`.github/workflows/build.yml`) on every push to `main`. A push cancels the run before it, so changes are gathered and pushed together, and nothing is
+(`.github/workflows/build.yml`) on every push to `main`. The job runs on the owner's own machine (a self-hosted runner in WSL, `runs-on: self-hosted`:
+GitHub's hosted minutes ran out), so a run starts only while his runner is listening - ask him to start it if a run does not begin. A push cancels the run before it, so changes are gathered and pushed together, and nothing is
 pushed while a run is awaited. The workflow publishes its results to the `ci-out` branch:
 
 - `summary.txt` - the run in a page (`tools/ci_summary.py`): `RESULT: OK` or `RESULT: LOOK` with what to look at; whether
