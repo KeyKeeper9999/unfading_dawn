@@ -251,17 +251,19 @@ public final class MapSelfTest {
                         for (SoulsMob lord : server.overworld().getEntitiesOfClass(SoulsMob.class, near, SoulsMob::isBoss)) {
                             lord.setHealth(lord.getMaxHealth() * 0.4F);
                             say("roused " + lord.getType().toShortString() + " at " + lord.blockPosition().toShortString() + ", phase " + lord.phase());
-                            if (lord instanceof com.keykeeper.dushi.entity.ComingEntity coming) {
-                                // (looking for why the great eye is not seen in its crack: one in the air of the hall, one on the rock beside the crack)
-                                Vec3 out = coming.outward();
-                                Vec3 side = new Vec3(-out.z, 0.0, out.x);
-                                Vec3 air = coming.position().add(out.scale(8.0)).add(side.scale(8.0)).add(0.0, 9.0, 0.0);
-                                Vec3 rock = coming.position().add(out.scale(-1.42)).add(side.scale(-7.0)).add(0.0, 5.0, 0.0);
-                                for (Vec3 at : new Vec3[] {air, rock}) {
-                                    server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), String.format(java.util.Locale.ROOT,
-                                            "summon unfading_dawn:wall_eye %.2f %.2f %.2f {Great:1b,Rotation:[%.0ff,0f]}", at.x, at.y, at.z, coming.getYRot()));
-                                }
-                            }
+                        }
+                    });
+                    next++;
+                    wait = 5;
+                    return;
+                }
+                if (view.name.endsWith("_stray")) {
+                    // a lord is set down away from where it stands (with nobody to fight it does not go there itself), so that what is behind it can be seen
+                    net.minecraft.world.phys.AABB near = new net.minecraft.world.phys.AABB(view.x - 24.0, view.y - 12.0, view.z - 24.0, view.x + 24.0, view.y + 24.0, view.z + 24.0);
+                    server.execute(() -> {
+                        for (SoulsMob lord : server.overworld().getEntitiesOfClass(SoulsMob.class, near, SoulsMob::isBoss)) {
+                            lord.teleportTo(view.toX, view.toY, view.toZ);
+                            say("set " + lord.getType().toShortString() + " down at " + lord.blockPosition().toShortString() + ", phase " + lord.phase());
                         }
                     });
                     next++;

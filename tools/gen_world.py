@@ -706,7 +706,12 @@ if __name__ == '__main__':
                                         ('depths_tear_out', (tx + 0.5, hy + 2.6, tz - r + 2), (tx, hy + 10, tz + r)),
                                         ('depths_tear_out_aslant', (tx - 11, hy + 4, tz - 2), (tx + 2, hy + 9, tz + r)),
                                         ('depths_tear_out_eyes', (tx + 0.5, hy + 7, tz + r - 5), (tx, hy + 6, tz - r)),
-                                        ('depths_tear_out_eyes_east', (tx - 8, hy + 5, tz + 2), (tx + r, hy + 6, tz - 4))):
+                                        ('depths_tear_out_eyes_east', (tx - 8, hy + 5, tz + 2), (tx + r, hy + 6, tz - 4)),
+                                        # (with nobody to fight it stands in its crack, before the eye that has opened there: the test sets it down
+                                        # in the hall - a name that ends in _stray, to where the second place says - and looks at the crack)
+                                        ('depths_tear_stray', (tx, hy + 1, tz + r), (tx - 8, hy + 1, tz + 1)),
+                                        ('depths_tear_strayed', (tx + 5.5, hy + 3, tz - r + 3), (tx - 1, hy + 7, tz + r)),
+                                        ('depths_tear_great_eye', (tx + 2.5, hy + 3, tz + 3), (tx, hy + 7.5, tz + r + 2))):
                     f.write(name + ' ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')
         # and tries the locked gate without its key and with it

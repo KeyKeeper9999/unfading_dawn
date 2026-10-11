@@ -733,18 +733,18 @@ def make_eye():
                     return None
                 if abs(cx) > half - (1.2 if fw > 20 else 0.8):
                     return NIGHT_D
-                return mix(NIGHT, (58, 44, 96), blotch('white', px, py, 3.0))
+                return mix((34, 28, 62), (92, 74, 150), blotch('white', px, py, 3.0))
             p.fill_box(b, white)
             fx, fy, fw, fh = b.faces()['front']
             for x in range(fw):
                 for y in range(fh):
                     c = p.tex.getpixel((fx + x, fy + y))
-                    if not c[3] or c[2] < 40:
+                    if not c[3] or c[2] < 30:
                         continue
                     if blotch('vein', x, y, 1.6) > 0.7:
                         p.px(fx + x, fy + y, VIOLET_D, glow=True)       # veins in the white of it
                     else:
-                        p.glow.putpixel((fx + x, fy + y), shade(c, 0.75) + (255,))
+                        p.glow.putpixel((fx + x, fy + y), shade(c, 0.9) + (255,))
         else:
             def ring(face, px, py, fw, fh, rnd):
                 if face != 'front':
