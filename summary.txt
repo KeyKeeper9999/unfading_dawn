@@ -1,0 +1,55 @@
+commit 1bef3255f8ca0ea5267a6c70ad369e202923c12d
+switches: client map mapshots
+RESULT: LOOK (1)
+  - server: what the checks say changed (see the end)
+
+== BUILD
+ok, unfading_dawn.jar 11101 KB
+
+== SERVER
+175 test lines
+reached its end: yes
+spawned 59 of 59 mobs
+spawn eggs: 60, weapons: 39, shields: 9, spells: 12, sounds: 316
+mobs fought: 59; dead after the fight: withered_prisoner, withered_guard, withered_archer, withered_acolyte, withered_townsman, withered_butcher, withered_watchman, withered_digger, withered_barrowman, withered_sapper, withered_drowned, rust_knight, carrion_hound, gravedigger, blind_crawler, unhewn, bone_pike, lanky, wisp, wakeful, waker, sleeper, waxen, sleep_moth, dockhand, harpooner, sand_crab, skua, scorched, scarecrow, handwalker, deepling, overseer, chaplain; made no move: withered_prisoner, withered_guard, withered_archer, withered_acolyte, withered_digger, withered_sapper
+drills: 53; moves not finished: withered_sapper 1/2
+game errors: none
+
+== CLIENT
+55 test lines, 49 pictures
+reached its end: yes
+missing resources: none
+game errors: none
+
+== MAP
+saved: yes
+High_Stockade.zip: 11056 KB
+  plan 492x194x1012, box BoundingBox{minX=-552, minY=9, minZ=-273, maxX=459, maxY=130, maxZ=218}, the world's ground under the origin is Block{minecraft:grass_block}, over it Block{minecraft:air}
+  cleared 856335 blocks of forest in 37914 ms
+  blocks set in 61985 ms
+  biomes: 326 boxes, 1513710 cells changed, 0 failed
+  rules set: time 18000, regeneration false, game type ADVENTURE, spawn RespawnData[globalPos=ResourceKey[minecraft:dimension / minecraft:overworld] BlockPos{x=0, y=10, z=0}, yaw=90.0, pitch=0.0]
+  what stands in the world: {BannerBlockEntity=20, BarrelBlockEntity=268, BellBlockEntity=1, BlastFurnaceBlockEntity=1, CampfireBlockEntity=44, ChestBlockEntity=69, DecoratedPotBlockEntity=9, LecternBlockEntity=2, MobMarkBlockEntity=391, SkullBlockEntity=32, S ...
+  saved=true, done
+light probes: 79
+game errors: none
+
+== MAPCLIENT
+62 test lines, 15 pictures
+reached its end: yes
+missing resources: none
+  menu reached, 300 views, opening High_Stockade
+  the world is called "Вышний Острог"
+  after a while: at 0, 10, 0, health 20.0, on the ground true
+  on the server: game mode ADVENTURE, respawn RespawnData[globalPos=ResourceKey[minecraft:dimension / minecraft:overworld] BlockPos{x=0, y=10, z=0}, yaw=90.0, pitch=0.0]
+game errors: none
+
+== AGAINST THE RUN BEFORE (lines by topic, pictures by name, the server checks with numbers left out)
+  gone from server#checks:
+      on the floor after N ticks: {bolt=N, capsized=N, clockhand=N, coming=N, coming_face=N, elder=N, gear=N, gut=N, harpooner=N, helmsman=N, hollow_miller=N, iron_golem=N, item=N, mower=N, oarsman=N, pilot=N, sackman=N, sand_crab=N, scorched=N, scorched_warden=N, shatun=N, skua=N, soul_stain=N, stone_eat
+      world: outpost in the wild: N blocks from the origin, floor at y=N at N, N, N turned counterclockwise_N, ground outside the corners N N N N above the floor; blocks=N marks={archer=N, guard=N, prisoner=N} hearths=N fog=N chests=N/N with loot, bars joined=N/N
+      world: stockade in the wild: N blocks from the origin, floor at y=N at N, N, N turned N, ground outside the corners N N N N above the floor; blocks=N marks={archer=N, chaplain=N, guard=N, keykeeper=N, knight=N, overseer=N, prisoner=N} hearths=N fog=N chests=N/N with loot, bars joined=N/N
+  new in server#checks:
+      on the floor after N ticks: {bolt=N, capsized=N, clockhand=N, coming=N, coming_face=N, elder=N, gear=N, gut=N, helmsman=N, hollow_miller=N, iron_golem=N, item=N, keykeeper=N, longarm=N, mower=N, oarsman=N, pilot=N, reaper=N, sackman=N, sand_crab=N, scorched_warden=N, shatun=N, soul_stain=N, stone_ea
+      world: outpost in the wild: N blocks from the origin, floor at y=N at N, N, N turned none, ground outside the corners N N N N above the floor; blocks=N marks={archer=N, guard=N, prisoner=N} hearths=N fog=N chests=N/N with loot, bars joined=N/N
+      world: stockade in the wild: N blocks from the origin, floor at y=N at N, N, N turned none, ground outside the corners N N N N above the floor; blocks=N marks={archer=N, chaplain=N, guard=N, keykeeper=N, knight=N, overseer=N, prisoner=N} hearths=N fog=N chests=N/N with loot, bars joined=N/N
