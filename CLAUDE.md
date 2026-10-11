@@ -63,7 +63,9 @@ The pictures in full are in the branch `ci-shots` (`shots/NAME.png`), which is l
 
 `git fetch origin +ci-out:refs/remotes/origin/ci-out` and read the files (the branch is written anew every time: without
 the `+` a fetch into an existing ref is refused and yesterday's files are read); the commit message of `ci-out` names the
-commit of `main` it was built from. A whole run - build, server, client, map, the map's pictures - takes about forty minutes.
+commit of `main` it was built from. A whole run - build, server, then the client's pictures and, beside them in a copy of the tree, the map and its pictures - took
+about 45 minutes one after another; `times.log` in `ci-out` says what each part took now. `.ci/gpu` makes the clients draw with the
+owner's video card (a window shows on his desktop) and fall back to software if that fails (`*.log.gpu` is kept then).
 If `client.log` stops after the resources are loaded and there are no pictures, look in it for `Failed to create model`:
 a model class that asks for a part its mesh does not have (see "mirror" below) stops the client at its loading screen,
 and would stop a player's too.

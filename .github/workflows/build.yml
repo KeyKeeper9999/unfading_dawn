@@ -20,7 +20,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: build
         continue-on-error: true
-        run: chmod +x gradlew && ./gradlew build --no-daemon 2>&1 | tee build.log
+        run: rm -rf /tmp/out /tmp/shots /tmp/prev.json && echo "$(date +%T) begin" > times.log && chmod +x gradlew && ./gradlew build --no-daemon 2>&1 | tee build.log
       - name: smoke test (server start)
         continue-on-error: true
         run: |
@@ -28,23 +28,31 @@ jobs:
             mkdir -p run && echo eula=true > run/eula.txt && echo pause-when-empty-seconds=-1 > run/server.properties
             (DUSHI_SELFTEST=1 timeout 560 ./gradlew runServer --no-daemon > server.log 2>&1 || true)
           fi
-      - name: client screenshots
+      - name: client screenshots and the map (side by side)
         continue-on-error: true
         run: |
-          if [ -f build/libs/unfading_dawn.jar ] && [ -f .ci/client ]; then
-            (sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1-mesa-dri mesa-vulkan-drivers libopenal1) > apt.log 2>&1 || true
-            (DUSHI_CLIENTTEST=1 LIBGL_ALWAYS_SOFTWARE=1 timeout 2700 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --no-daemon > client.log 2>&1 || true)
-          fi
-      - name: the map
-        continue-on-error: true
-        run: |
-          if [ -f build/libs/unfading_dawn.jar ] && [ -f .ci/map ]; then
-            (sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1-mesa-dri mesa-vulkan-drivers libopenal1 zip) >> apt.log 2>&1 || true
+          # The owner's machine has cores to spare: the map (built and photographed in a copy of the tree, so that the two
+          # games do not share a run folder) goes on while the client takes the mobs' pictures. times.log says what took how long.
+          stamp() { echo "$(date +%T) $1" >> "$GITHUB_WORKSPACE/times.log"; }
+          # .ci/gpu: draw with the video card through WSLg (a window shows on the desktop) and fall back to software if that fails.
+          shoot() {  # shoot LOG DONE_MARK ENV...
+            log="$1"; mark="$2"; shift 2
+            if [ -f "$GITHUB_WORKSPACE/.ci/gpu" ] && [ -e /tmp/.X11-unix/X0 ]; then
+              (env "$@" DISPLAY=:0 GALLIUM_DRIVER=d3d12 timeout 1200 ./gradlew runClient --no-daemon > "$log" 2>&1 || true)
+              if grep -aq "$mark" "$log"; then echo "$log: video card" >> "$GITHUB_WORKSPACE/times.log"; return 0; fi
+              cp "$log" "$log.gpu" || true
+              echo "$log: video card failed, software" >> "$GITHUB_WORKSPACE/times.log"
+            fi
+            (env "$@" LIBGL_ALWAYS_SOFTWARE=1 timeout 2700 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --no-daemon > "$log" 2>&1 || true)
+          }
+          the_map() {
+            rm -rf "$RUNNER_TEMP/ws2" && cp -r "$GITHUB_WORKSPACE" "$RUNNER_TEMP/ws2" && cd "$RUNNER_TEMP/ws2" && rm -rf run || return 1
             mkdir -p run && echo eula=true > run/eula.txt
             printf '%s\n' 'level-name=High_Stockade' 'level-type=minecraft\:flat' \
               'generator-settings={"layers"\:[{"block"\:"minecraft\:bedrock","height"\:1},{"block"\:"minecraft\:stone","height"\:69},{"block"\:"minecraft\:dirt","height"\:3},{"block"\:"minecraft\:grass_block","height"\:1}],"biome"\:"minecraft\:taiga","features"\:true,"lakes"\:false,"structure_overrides"\:[]}' \
               'generate-structures=false' 'gamemode=adventure' 'difficulty=normal' 'spawn-protection=0' 'pause-when-empty-seconds=-1' > run/server.properties
             (DUSHI_BUILDMAP="$PWD/map/high_stockade.plan.txt" timeout 900 ./gradlew runServer --no-daemon > map.log 2>&1 || true)
+            stamp "map built"
             rm -rf run/High_Stockade/playerdata run/High_Stockade/stats run/High_Stockade/advancements run/High_Stockade/session.lock \
               run/High_Stockade/players run/High_Stockade/level.dat_old run/High_Stockade/syncedconfig
             python3 tools/name_world.py run/High_Stockade/level.dat "Вышний Острог" >> map.log 2>&1 || true
@@ -54,8 +62,23 @@ jobs:
             ls -la High_Stockade.zip run/High_Stockade || true
             if [ -f .ci/mapshots ]; then
               mkdir -p run/saves && rm -rf run/saves/High_Stockade && cp -r run/High_Stockade run/saves/
-              (DUSHI_MAPTEST="$PWD/map/views.txt" LIBGL_ALWAYS_SOFTWARE=1 timeout 2700 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --no-daemon > mapclient.log 2>&1 || true)
+              shoot mapclient.log "MAPTEST done" DUSHI_MAPTEST="$PWD/map/views.txt"
+              stamp "map pictures taken"
             fi
+            mkdir -p "$GITHUB_WORKSPACE/run/screenshots"
+            cp map.log mapclient.log mapclient.log.gpu High_Stockade.zip "$GITHUB_WORKSPACE/" 2>/dev/null || true
+            cp run/screenshots/*.png "$GITHUB_WORKSPACE/run/screenshots/" 2>/dev/null || true
+          }
+          stamp "tests begin"
+          if [ -f build/libs/unfading_dawn.jar ]; then
+            (sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1-mesa-dri mesa-vulkan-drivers libopenal1 zip) > apt.log 2>&1 || true
+            if [ -f .ci/map ]; then (the_map > map_side.log 2>&1) & fi
+            if [ -f .ci/client ]; then
+              shoot client.log "CLIENTTEST done" DUSHI_CLIENTTEST=1
+              stamp "client pictures taken"
+            fi
+            wait
+            stamp "all done"
           fi
       - name: api reference
         continue-on-error: true
@@ -80,13 +103,15 @@ jobs:
         run: |
           # ci-out: logs, summary.txt, the jar, the map, sheets of pictures (small: it must always arrive).
           # ci-shots: every picture in full (large; a failure to push it loses nothing else).
+          # (the owner's machine keeps /tmp between runs: the build step empties these, or yesterday's files would be published again)
           mkdir -p /tmp/out /tmp/shots/shots
+          cp times.log map_side.log client.log.gpu mapclient.log.gpu /tmp/out/ 2>/dev/null || true
           cp build.log /tmp/out/ || true
           tail -c 400000 server.log > /tmp/out/server.log 2>/dev/null || true
-          tail -c 400000 client.log > /tmp/out/client.log 2>/dev/null || true
+          grep -av "Failed to create new sound handle" client.log | tail -c 400000 > /tmp/out/client.log 2>/dev/null || true
           cp build/libs/*.jar /tmp/out/ 2>/dev/null || true
           tail -c 200000 map.log > /tmp/out/map.log 2>/dev/null || true
-          tail -c 200000 mapclient.log > /tmp/out/mapclient.log 2>/dev/null || true
+          grep -av "Failed to create new sound handle" mapclient.log | tail -c 200000 > /tmp/out/mapclient.log 2>/dev/null || true
           cp High_Stockade.zip /tmp/out/ 2>/dev/null || true
           cp run/screenshots/*.png /tmp/shots/shots/ 2>/dev/null || true
           cp run/logs/latest.log /tmp/out/latest.log 2>/dev/null || true
