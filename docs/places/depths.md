@@ -182,6 +182,14 @@ What was set (amber and brass on them: the Founder's):
   The preview draws the masked poses in a face of rock with the crack in it (`pv_wall`, not in the game).
 - Learnt: the game looks for an entity in the box it is struck by, and does not draw what is not in sight: anything
   much bigger than its box (the Coming, a ray that leans) needs `affectedByCulling` false in its renderer.
+- How the hall is looked at in the map's test (`map/views.txt`, written by `gen_world.py`; `MapSelfTest`): a view whose
+  name ends in `_rouse` is not a picture - the lords near it are hurt to under half (the Coming then comes out; left
+  alone it heals but stays out); one that ends in `_stray` sets them down at its second place. With nobody to fight
+  the Coming stands in its crack, squarely before the great eye, and hides all of it (an afternoon went on looking for
+  an eye that was there): `depths_tear_strayed` and `depths_tear_great_eye` are taken with it set down in the hall.
+  The test also says how many eyes are open and where the great one is (`... eyes in the rock`).
+- The full pictures in `ci-shots` can be a run behind (that push may fail, and a picture asked for by the branch's name
+  may come from a cache): ask for them by the commit of the branch, and trust the sheets in `ci-out` first.
 - Learnt: a thing that stands in a wall must not turn with the mob's yaw - everything of it that is in the wall
   swings out of it. Fix the yaw and turn a part.
 
