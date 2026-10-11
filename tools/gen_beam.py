@@ -18,7 +18,7 @@ LIGHT = (255, 238, 178)
 CORE = (255, 250, 222)
 
 
-DUSK = (150, 112, 232)          # the same shaft in the light of the Sky Beneath (SunShaftEntity.dusk)
+DUSK = (150, 112, 232)          # the light of the Sky Beneath (SunShaftEntity.dusk): a sheath round a beacon's beam, see make_sheath
 DUSK_CORE = (214, 204, 255)
 AMBER = (255, 170, 60)          # and in the amber of the Founder's seals (SunShaftEntity.amber): what the stopped clock strikes with
 AMBER_CORE = (255, 232, 170)
@@ -46,11 +46,33 @@ def make(light=LIGHT, core=CORE):
     return p.tex
 
 
+def make_sheath(light=DUSK, core=DUSK_CORE):
+    """The same two boxes as a sheath of light round the beam of a beacon (SunShaftRenderer draws the game's own beam in
+    the middle of it): the same from end to end, strongest at the beam and gone at its own edges - so that the beam
+    looks to shine into the air round it."""
+    p = Painter(M, 1)
+    for _, _, b in M.boxes():
+        outer = b.tag == 'outer'
+        for face, (fx, fy, fw, fh) in b.faces().items():
+            for py in range(fh):
+                for px in range(fw):
+                    if face in ('top', 'bottom'):
+                        p.clear(fx + px, fy + py)
+                        continue
+                    across = max(0.0, 1.0 - abs(2.0 * (px + 0.5) / fw - 1.0))
+                    a = int(120 * across ** 1.6) if outer else int(215 * across ** 0.8)
+                    if a < 4:
+                        p.clear(fx + px, fy + py)
+                    else:
+                        p.px(fx + px, fy + py, light if outer else core, alpha=a)
+    return p.tex
+
+
 if __name__ == '__main__':
     M.write_java(JAVA)
     tex = make()
     tex.save(f'{A}/textures/entity/sun_shaft.png')
-    make(DUSK, DUSK_CORE).save(f'{A}/textures/entity/dusk_shaft.png')
+    make_sheath().save(f'{A}/textures/entity/dusk_beam.png')
     make(AMBER, AMBER_CORE).save(f'{A}/textures/entity/amber_shaft.png')
     if len(sys.argv) > 1:
         tex.resize((512, 512), 0).save(sys.argv[1])

@@ -244,6 +244,19 @@ public final class MapSelfTest {
                     wait = 20;
                     return;
                 }
+                if (view.name.endsWith("_rouse")) {
+                    // a lord is hurt to under half, so that what it is from then on can be looked at
+                    net.minecraft.world.phys.AABB near = new net.minecraft.world.phys.AABB(view.x - 24.0, view.y - 12.0, view.z - 24.0, view.x + 24.0, view.y + 24.0, view.z + 24.0);
+                    server.execute(() -> {
+                        for (SoulsMob lord : server.overworld().getEntitiesOfClass(SoulsMob.class, near, SoulsMob::isBoss)) {
+                            lord.setHealth(lord.getMaxHealth() * 0.4F);
+                            say("roused " + lord.getType().toShortString() + " at " + lord.blockPosition().toShortString() + ", phase " + lord.phase());
+                        }
+                    });
+                    next++;
+                    wait = 5;
+                    return;
+                }
                 if (view.name.equals("gate")) {
                     // a locked gate of the map: shut to one who has not its key, open - all of it - to one who has
                     BlockPos gate = BlockPos.containing(view.x, view.y, view.z);

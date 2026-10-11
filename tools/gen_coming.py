@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
-"""The Coming - what was to arrive on the day that was not let begin: mesh for ComingModel.java, its texture and what
-shines of it; and what it reaches into the hall with (TendrilModel.java: an arm of the same night, out of a hole in
-the floor).
+"""The Coming - what was to arrive on the day that was not let begin: mesh for ComingModel.java, its poses, its texture
+and what shines of it; what it reaches into the hall with (TendrilModel.java: an arm of the same night, out of a hole
+in the floor); and the eyes that open in the rock when it is out (WallEyeModel.java).
 
 It is in the Tear - a crack in the wall of the last hollow of the Sky Beneath, from the floor up, with the sky of some
-other place behind it - and it is coming out of it. It has no head and no neck, and nothing of a beast about it: it
-is a mass of shoulders as wide as a gate, of the night itself, cracked, with light in the cracks; and set in the
-breast of that mass, as tall as the breast, a black disc with a rim of light - a sun that has not risen, and nothing in
-the middle of it - with a broken ring of light round it and a crown of arms round that, like the rays of it. Two arms
-a house long are what it drags itself by; lesser ones grow down its flanks; under the disc its belly opens. The
-Founder's rite nailed a mask of gold over the disc. Masked (its first phase) all of it but the disc and its two arms
-is still in the rock: the mask looks out of the crack. With the mask off (its second) it comes out to the waist and
-hangs over the hall; the crown opens round the disc - and behind it, in the crack, an eye opens that is as tall as
-the crack.
+other place behind it. It is not one thing but a weaving of several: three necks of the night twisted round one another
+into a rope as thick as a tree, loose at the root and tight at the end, and on the end of the rope a black disc with a
+rim of light - a sun that has not risen, and nothing in the middle of it - a broken ring of light round the disc and a
+crown of arms round that, like the rays of it. Small arms come loose from the rope all along it. The Founder's rite
+nailed a mask of gold over the disc.
 
-'body' is all of it that comes and goes: masked, the model draws it BACK_IN further back, which is in the rock. 'eye'
-stays in the crack. The face of the rock is WALL behind where it stands. (It was a neck like a tower with the disc on
-top of it, twice; the owner saw a giraffe in the second. Nothing is to stand on a stalk.)
+Masked (its first phase) it looks out of the crack: the rope comes out of the dark over the hall and the mask hangs on
+it and looks down; two arms a house long are out to the floor either side; and round the crack what else there is of
+it has crept out along the rock ('roots'). The knot the rope grows from is still in the dark.
+With the mask off (its second) all of it comes out: the knot - a tangle of the same necks, with a mouth in it - on four
+arms a house long that it walks on, the rope standing up out of the knot with the disc on top, the crown open, and a
+tail of the weaving dragging behind. It goes about the hall. What is left in the crack is an eye.
+
+'turn' is turned by ComingModel to whoever it fights while it is in the crack (its pivot is the middle of the crack's
+foot: the face of the rock is WALL behind where it stands); 'body' is all of it that comes and goes, and a pose says
+where the body is ('off': up, and back into the rock).
 Run from the repo root; pass a file name to also get a preview sheet (and a second argument to leave the Java alone)."""
 import math
 import sys
@@ -29,30 +32,128 @@ from modelkit import Box, Model, Painter, blotch, mix, rot_matrix, shade, sheet
 
 A = 'src/main/resources/assets/unfading_dawn'
 JAVA = 'src/main/java/com/keykeeper/dushi/client/ComingModel.java'
+ENTITY_JAVA = 'src/main/java/com/keykeeper/dushi/entity/ComingEntity.java'
 TENDRIL_JAVA = 'src/main/java/com/keykeeper/dushi/client/TendrilModel.java'
+EYE_JAVA = 'src/main/java/com/keykeeper/dushi/client/WallEyeModel.java'
 SCALE = 2.4                     # must match MODEL_SCALE in ComingModel.java
+BLOCK = 16.0 / SCALE            # so many of the model's units to a block
 CROWN = 12                      # the arms round the disc
 DISC_R = 20                     # the disc is so far from its middle to its rim
 HALO_R = 28                     # and the ring of light round it
 WALL = 10                       # the face of the rock, so far behind where it stands (a block and a half)
-BACK_IN = 14                    # masked, it is so far back in the crack (ComingModel.BACK_IN)
-OUT_FRONT = 8                   # bare, it is so far out before where it stands (ComingModel.OUT_FRONT)
-BACK = (26, 28, 44)
+NECK = 8                        # the lengths of the rope
+NECK_L = 12
+TAIL = 4
+TRUNK_H = 34                    # the middle of the knot is so far over the floor when it stands on its arms
+# its six arms, a pair at a time from the fore one back: the names of the three parts of one, where its shoulder is on the knot, its two lengths
+LIMBS = (('arm', 'fore', 'hand', (-13, -6, -11), (30, 50)), ('mid', 'midf', 'midh', (-14, -4, 1), (28, 46)), ('leg', 'shin', 'foot', (-12, -4, 12), (28, 48)))
+LENGTHS = {upper: lengths for upper, _, _, _, lengths in LIMBS}
+LESSER = (('lesser_r', (-9, -11, -1), 5, 11), ('lesser_l', (8, -11, 3), 4, 12))    # the two lesser necks beside the rope: where on the knot, how many lengths, how long each
+IN_ROCK = (0, -12, 36)          # masked, the body is so far up and back (the knot is in the dark behind the face of the rock)
 
-M = Model(512, 256, SCALE)
+M = Model(512, 512, SCALE)
 M.part('all', None, (0, 24, 0))
-M.part('eye', 'all', (0, -56, WALL - 0.5), boxes=[Box(-19, -34, 0, 38, 68, 1, 'eye', 'eye')])
-M.part('body', 'all', (0, 0, 0), boxes=[Box(-9, -16, 10, 18, 16, 26, 'hide', 'hind')])
-# the waist: what joins the mass to what of it is still in the crack; its belly opens (two lips of hide over the red)
-M.part('waist', 'body', (0, -6, 8), (0.2, 0, 0), boxes=[Box(-12, -24, -8, 24, 32, 16, 'hide', 'waist'), Box(-8, -21, -8.6, 16, 19, 1, 'throat', 'throat')])
-M.part('maw_r', 'waist', (-8, -21, -9), boxes=[Box(0, 0, -1, 8, 19, 1, 'lip', 'lip')])
-M.mirror('maw_r', 'maw_l', parent='waist')
-# the mass: shoulders over a breast, a hump where a head would be
-M.part('torso', 'waist', (0, -24, 0), (0.25, 0, 0), boxes=[Box(-26, -36, -11, 52, 21, 22, 'hide', 'shoulders'), Box(-18, -15, -9, 36, 17, 18, 'hide', 'chest'),
-                                                           Box(-14, -42, -7, 28, 6, 15, 'hide', 'hump'), Box(-0.5, -46, -5, 1, 4, 14, 'ridge', 'ridge0'),
-                                                           Box(-0.5, -38, 11, 1, 36, 4, 'ridge', 'ridge1')])
-# the disc in the breast of it, the ring round the disc, the mask over it
-M.part('disc', 'torso', (0, -20, -12), boxes=[Box(-DISC_R, -DISC_R, -3, 2 * DISC_R, 2 * DISC_R, 3, 'disc', 'disc')])
+
+
+def euler(R, near=None):
+    """The turns about x, y and z (in the order the game makes them: z, then y, then x) that make the matrix R; of the
+    two ways of writing them, and of whole turns, the one nearest to `near`."""
+    ry = -math.asin(max(-1.0, min(1.0, R[2, 0])))
+    rx = math.atan2(R[2, 1], R[2, 2])
+    rz = math.atan2(R[1, 0], R[0, 0])
+    ways = [(rx, ry, rz), (rx + math.pi, math.pi - ry, rz + math.pi)]
+    near = near or (0.0, 0.0, 0.0)
+    best = None
+    for way in ways:
+        fit = tuple(v - 2 * math.pi * round((v - n) / (2 * math.pi)) for v, n in zip(way, near))
+        far = sum((v - n) ** 2 for v, n in zip(fit, near))
+        if best is None or far < best[0]:
+            best = (far, fit)
+    return best[1]
+
+
+def frame_along(d, hint=None):
+    """A frame whose -y runs along `d`: for a box that runs up from its pivot."""
+    y = -np.array(d, float) / np.linalg.norm(d)
+    if hint is None:
+        hint = min(((1, 0, 0), (0, 0, 1), (0, 1, 0)), key=lambda h: abs(float(np.dot(h, y))))
+    x = np.array(hint, float) - float(np.dot(hint, y)) * y
+    x /= np.linalg.norm(x)
+    return np.column_stack([x, y, np.cross(x, y)])
+
+
+def arc(a, b):
+    """The shortest turn that takes the direction a to b."""
+    a = np.array(a, float) / np.linalg.norm(a)
+    b = np.array(b, float) / np.linalg.norm(b)
+    v = np.cross(a, b)
+    c = float(np.dot(a, b))
+    if c < -0.9999:
+        return frame_along(a) @ np.diag([1.0, -1.0, -1.0]) @ frame_along(a).T
+    k = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+    return np.eye(3) + k + k @ k * (1.0 / (1.0 + c))
+
+
+# ---------------------------------------------------------------------------------------------------- the mesh
+# what of it has crept out of the crack along the rock: only while it is in the crack (ComingModel draws them back into it)
+ROOTS = ((-22, 6, 1.95, 18, 14, 0.5), (-23, 25, 1.45, 20, 14, -0.45), (-29, 42, 1.2, 18, 16, 0.5), (-29, 58, 0.85, 20, 14, -0.55),
+         (-16, 73, 0.5, 18, 12, 0.6), (-7, 85, 0.12, 14, 10, -0.5))
+M.part('roots', 'all', (0, 0, WALL - 1.6))
+for k, (x, h, lean, long, fore, bend) in enumerate(ROOTS):
+    M.part(f'root_r{k}', 'roots', (x, -h, 0), (0, 0, -lean), boxes=[Box(-1.5, -long, -1.5, 3, long, 3, 'limb', 'root')])
+    M.part(f'rootf_r{k}', f'root_r{k}', (0, -long, 0), (0, 0, bend), boxes=[Box(-1, -fore, -1, 2, fore, 2, 'limb', 'root_fore'), Box(-2.5, -fore - 7, -0.5, 5, 8, 1, 'claw', 'root_claw')])
+    M.mirror(f'root_r{k}', f'root_l{k}', parent='roots')
+    M.mirror(f'rootf_r{k}', f'rootf_l{k}', parent=f'root_l{k}')
+# (the rock it is in, for the pictures only: the face of it, with the crack)
+PREVIEW = []
+for cx in range(-8, 9):
+    for h in range(0, 16):
+        half = 3 if h <= 4 else (4 if h <= 9 else (2 if h <= 11 else (1 if h == 12 else -1)))
+        open_ = abs(cx) <= half
+        PREVIEW.append(Box((cx - 0.5) * BLOCK, -(h + 1) * BLOCK, 4 if open_ else 0, BLOCK, BLOCK, BLOCK, 'pv_sky' if open_ else 'pv_rock', 'pv', uv=(0, 484) if open_ else (30, 484)))
+M.part('pv_wall', 'all', (0, 0, WALL), boxes=PREVIEW, emit=False)
+M.part('turn', 'all', (0, 0, WALL))
+M.part('body', 'turn', (0, 0, -WALL))
+# the knot: a core nobody sees for what is wound round it, a ridge of light along the top of it, and a mouth in the front
+M.part('trunk', 'body', (0, -TRUNK_H, 0), boxes=[Box(-12, -11, -14, 24, 22, 28, 'hide', 'core'), Box(-0.5, -16, -12, 1, 5, 24, 'ridge', 'ridge0'),
+                                                 Box(-8, -2, -15.2, 16, 12, 1, 'throat', 'throat')])
+COILS = (((0, -5, 2), (0.5, 0.3, 0.9), 38, 10, 's0'), ((0, 4, -4), (-0.4, -0.5, -0.8), 36, 9, 's1'), ((0, -9, 6), (0.2, 1.2, 0.3), 40, 9, 's2'),
+         ((0, 6, 9), (-0.9, 0.4, 0.2), 34, 10, 's0'), ((9, -1, -3), (0.1, -0.2, 1.45), 34, 9, 's1'), ((-9, 0, 3), (-0.2, 0.25, -1.4), 34, 9, 's2'),
+         ((0, 9, -1), (0.15, 0.1, 0.12), 40, 8, 's1'), ((0, -1, 13), (0.9, 1.45, 0.0), 36, 9, 's0'))
+for i, (at, rot, long, wide, mat) in enumerate(COILS):
+    M.part(f'coil{i}', 'trunk', at, rot, boxes=[Box(-long / 2, -wide / 2, -wide / 2, long, wide, wide, mat, 'coil')])
+M.part('maw_r', 'trunk', (-8, -2, -15.6), boxes=[Box(0, 0, -1, 8, 12, 1, 'lip', 'lip')])
+M.mirror('maw_r', 'maw_l', parent='trunk')
+# what hangs under the knot: ends of the weaving that found nothing to be woven into, each with a hand on it
+DANGLE = ((-7, -8, 13, 11, 0.25), (6, -3, 15, 9, -0.3), (-3, 4, 11, 12, 0.2), (8, 9, 14, 8, 0.35), (-8, 10, 10, 10, -0.25), (1, -11, 9, 9, 0.3))
+for k, (x, z, long, fore, bend) in enumerate(DANGLE):
+    M.part(f'dangle{k}', 'trunk', (x, 10, z), (math.pi + 0.12 * (k % 3 - 1), 0, 0.1 * (k % 2 * 2 - 1)), boxes=[Box(-1, -long, -1, 2, long, 2, 'limb', 'root')])
+    M.part(f'danglef{k}', f'dangle{k}', (0, -long, 0), (bend, 0, 0), boxes=[Box(-0.75, -fore, -0.75, 1.5, fore, 1.5, 'limb', 'root_fore'), Box(-2.5, -fore - 7, -0.5, 5, 8, 1, 'claw', 'root_claw')])
+# the rope: three necks wound round one another, loose where it grows out of the knot and tight under the disc
+NECK_R = (8.5, 7.6, 6.7, 5.9, 5.2, 4.6, 4.0, 3.6, 3.3)
+NECK_W = (7, 6, 6, 5, 5, 5, 4, 4)
+TWIST = 1.05
+parent, at = 'trunk', (0, -12, -8)
+for i in range(NECK):
+    M.part(f'neck{i}', parent, at)
+    for k in range(3):
+        a0 = k * 2 * math.pi / 3 + i * TWIST
+        a1 = a0 + TWIST
+        foot = np.array([NECK_R[i] * math.cos(a0), 0.0, NECK_R[i] * math.sin(a0)])
+        top = np.array([NECK_R[i + 1] * math.cos(a1), -NECK_L, NECK_R[i + 1] * math.sin(a1)])
+        long = float(np.linalg.norm(top - foot)) + 1.5
+        w = NECK_W[i]
+        M.part(f'ns{i}_{k}', f'neck{i}', tuple(round(float(v), 2) for v in foot), tuple(round(v, 4) for v in euler(frame_along(top - foot, (math.cos(a0), 0, math.sin(a0))))),
+               boxes=[Box(-w / 2, -round(long), -w / 2, w, round(long), w, f's{k}', 'strand')])
+    # an arm come loose from the rope
+    side = -1 if i % 2 == 0 else 1
+    M.part(f'fray{i}', f'neck{i}', (side * (NECK_R[i] + 2), -NECK_L * 0.5, 1 if i % 3 else -2), (-0.7 + 0.25 * (i % 3), 0, side * (1.9 - 0.12 * i)),
+           boxes=[Box(-0.75, -10, -0.75, 1.5, 10, 1.5, 'limb', 'rib')])
+    M.part(f'frayf{i}', f'fray{i}', (0, -10, 0), (-0.9, 0, 0), boxes=[Box(-0.5, -9, -0.5, 1, 9, 1, 'limb', 'rib_fore'), Box(-2, -14, -0.5, 4, 6, 1, 'claw', 'rib_claw')])
+    parent, at = f'neck{i}', (0, -NECK_L, 0)
+# the head of it: where the necks end in one, the disc on that, the ring round the disc, the mask over it
+M.part('head', parent, at, (-math.pi / 2, 0, 0), boxes=[Box(-6, -6, -3, 12, 12, 8, 'hide', 'nape')])
+M.part('disc', 'head', (0, 0, -4), boxes=[Box(-DISC_R, -DISC_R, -3, 2 * DISC_R, 2 * DISC_R, 3, 'disc', 'disc')])
 M.part('halo', 'disc', (0, 0, -0.5), boxes=[Box(-HALO_R, -HALO_R, 0, 2 * HALO_R, 2 * HALO_R, 1, 'ring', 'ring')])
 M.part('mask', 'disc', (0, 0, -3), boxes=[Box(-15, -DISC_R, -1.5, 30, 38, 1, 'mask', 'mask'), Box(-24, -39, -1, 48, 23, 1, 'horn', 'horn')])
 for i in range(CROWN):
@@ -60,163 +161,282 @@ for i in range(CROWN):
     M.part(f'crown{i}', 'disc', (round(math.sin(ang) * (DISC_R - 2), 2), round(-math.cos(ang) * (DISC_R - 2), 2), -1), (-2.5, 0, round(ang, 4)),
            boxes=[Box(-1, -16, -1, 2, 16, 2, 'limb', 'crown_upper')])
     M.part(f'crownf{i}', f'crown{i}', (0, -16, 0), (2.4, 0, 0), boxes=[Box(-0.5, -14, -0.5, 1, 14, 1, 'limb', 'crown_fore'), Box(-2.5, -21, -0.5, 5, 8, 1, 'claw', 'crown_claw')])
-# the two arms it drags itself by, from the ends of the shoulders: each a house long, a hand on it that would hold a man
-M.part('arm_r', 'torso', (-25, -27, 0), boxes=[Box(-4, -30, -4, 8, 30, 8, 'hide', 'arm')])
-M.part('fore_r', 'arm_r', (0, -30, 0), boxes=[Box(-3.5, -30, -3.5, 7, 30, 7, 'hide', 'fore')])
-M.part('hand_r', 'fore_r', (0, -30, 0), boxes=[Box(-6, -8, -2, 12, 8, 4, 'hide', 'palm'), Box(-6, -18, -1, 2, 10, 2, 'talon', 't0'), Box(-2.7, -21, -1, 2, 13, 2, 'talon', 't1'),
-                                               Box(0.7, -21, -1, 2, 13, 2, 'talon', 't2'), Box(4, -18, -1, 2, 10, 2, 'talon', 't3'), Box(-9, -6, -1, 3, 2, 2, 'talon', 'thumb')])
-for src, dst, parent in (('arm_r', 'arm_l', 'torso'), ('fore_r', 'fore_l', 'arm_l'), ('hand_r', 'hand_l', 'fore_l')):
-    M.mirror(src, dst, parent=parent)
-# the lesser arms down its flanks: they hang, and work
-RIBS = 5
-for k in range(RIBS):
-    under = 'torso' if k < 3 else 'waist'
-    y = (-12 + k * 6) if k < 3 else (-20 + (k - 3) * 9)
-    M.part(f'rib_r{k}', under, (-18 if k < 3 else -12, y, -1), (-0.7, 0, -1.9 + 0.12 * k), boxes=[Box(-0.75, -9, -0.75, 1.5, 9, 1.5, 'limb', 'rib')])
-    M.part(f'ribf_r{k}', f'rib_r{k}', (0, -9, 0), (-0.9, 0, 0), boxes=[Box(-0.5, -8, -0.5, 1, 8, 1, 'limb', 'rib_fore'), Box(-2, -13, -0.5, 4, 6, 1, 'claw', 'rib_claw')])
-    M.mirror(f'rib_r{k}', f'rib_l{k}', parent=under)
-    M.mirror(f'ribf_r{k}', f'ribf_l{k}', parent=f'rib_l{k}')
+# the four arms it walks on, each a house long, a hand on it that would hold a man
+HAND = [Box(-6, -8, -2, 12, 8, 4, 'hide', 'palm'), Box(-6, -18, -1, 2, 10, 2, 'talon', 't0'), Box(-2.7, -21, -1, 2, 13, 2, 'talon', 't1'),
+        Box(0.7, -21, -1, 2, 13, 2, 'talon', 't2'), Box(4, -18, -1, 2, 10, 2, 'talon', 't3'), Box(-9, -6, -1, 3, 2, 2, 'talon', 'thumb')]
+for upper, lower, hand, at, (l1, l2) in LIMBS:
+    M.part(f'{upper}_r', 'trunk', at, boxes=[Box(-3.5, -l1, -3.5, 7, l1, 7, 'hide', 'arm')])
+    M.part(f'{lower}_r', f'{upper}_r', (0, -l1, 0), boxes=[Box(-2.5, -l2, -2.5, 5, l2, 5, 'hide', 'fore')])
+    M.part(f'{hand}_r', f'{lower}_r', (0, -l2, 0), boxes=[Box(b.x, b.y, b.z, b.w, b.h, b.d, b.mat, b.tag) for b in HAND])
+    for src, dst, under in ((f'{upper}_r', f'{upper}_l', 'trunk'), (f'{lower}_r', f'{lower}_l', f'{upper}_l'), (f'{hand}_r', f'{hand}_l', f'{lower}_l')):
+        M.mirror(src, dst, parent=under)
+# the tail: what is left of the weaving behind the knot, two necks of it, thinning, and coming apart at the end
+TAIL_LIE = (-1.98, -2.42, -2.09, -1.62)
+TAIL_R = (4.0, 3.2, 2.4, 1.8, 1.4)
+TAIL_W = (5, 4, 3, 3)
+parent, at, was = 'trunk', (0, 3, 12), 0.0
+for i in range(TAIL):
+    M.part(f'tail{i}', parent, at, (round(TAIL_LIE[i] - was, 3), 0, 0))
+    for k in range(2):
+        a0 = k * math.pi + i * 1.3
+        a1 = a0 + 1.3
+        foot = np.array([TAIL_R[i] * math.cos(a0), 0.0, TAIL_R[i] * math.sin(a0)])
+        top = np.array([TAIL_R[i + 1] * math.cos(a1), -NECK_L, TAIL_R[i + 1] * math.sin(a1)])
+        long = float(np.linalg.norm(top - foot)) + 1.5
+        w = TAIL_W[i]
+        M.part(f'ts{i}_{k}', f'tail{i}', tuple(round(float(v), 2) for v in foot), tuple(round(v, 4) for v in euler(frame_along(top - foot, (math.cos(a0), 0, math.sin(a0))))),
+               boxes=[Box(-w / 2, -round(long), -w / 2, w, round(long), w, 's0' if k == 0 else 's2', 'strand')])
+    parent, at, was = f'tail{i}', (0, -NECK_L, 0), TAIL_LIE[i]
+for k, (rx, rz) in enumerate(((0.3, 0.5), (-0.2, -0.45), (0.5, -0.1))):
+    M.part(f'tailend{k}', parent, at, (rx, 0, rz), boxes=[Box(-0.75, -10, -0.75, 1.5, 10, 1.5, 'limb', 'rib'), Box(-2, -15, -0.5, 4, 6, 1, 'claw', 'rib_claw')])
+# the lesser necks: two more of the weaving that did not go into the rope, one either side of it, with no head but a fist of hands
+for label, at, count, long in LESSER:
+    parent = 'trunk'
+    for i in range(count):
+        w = 5 - i if i < 3 else 2
+        curl = 0.0 if i == 0 else (0.28 if label.endswith('r') else -0.22) * (1 if i % 2 else -1) + 0.3
+        M.part(f'{label}{i}', parent, at, (round(curl, 3), 0, 0), boxes=[Box(-w / 2, -long - 1, -w / 2, w, long + 1, w, 's1' if label.endswith('r') else 's2', 'strand')])
+        parent, at = f'{label}{i}', (0, -long, 0)
+    for k, (rx, rz) in enumerate(((0.5, 0.0), (-0.3, 0.6), (-0.3, -0.6))):
+        M.part(f'{label}_end{k}', parent, at, (rx, 0, rz), boxes=[Box(-0.75, -7, -0.75, 1.5, 7, 1.5, 'limb', 'rib'), Box(-2.5, -14, -0.5, 5, 8, 1, 'claw', 'crown_claw')])
 M.pack()
 
 CORONA = (236, 226, 255)
-FLAME = VIOLET                  # the ridge down its back
+FLAME = VIOLET                  # the ridge along its back
 FLAME_L = VIOLET_L
+# the parts a pose turns, in the order ComingModel keeps them
+POSED = (('trunk',) + tuple(f'neck{i}' for i in range(NECK)) + ('head',) + tuple(f'{part}_{side}' for upper, lower, hand, _, _ in LIMBS for side in 'rl' for part in (upper, lower, hand))
+         + ('lesser_r0', 'lesser_l0', 'maw_r', 'maw_l'))
 
 
-def aim(pose, part, to):
-    """Adds to `pose` the turn of `part` (a box that runs up from its pivot) that points it along `to` in the model's
-    own space - x to its left, y down, z back - with what `pose` has for its parents; a turn about x, then about z."""
-    parent = M.parts[part]['parent']
-    pm, _ = M.transform(parent, pose)
-    d = pm.T @ (np.array(to, float) / np.linalg.norm(to))
-    rx = -math.asin(max(-1.0, min(1.0, d[2])))
-    rz = math.atan2(d[0], -d[1])
+def path(part):
+    """The names from 'body' down to a part."""
+    names = []
+    while part != 'body':
+        names.append(part)
+        part = M.parts[part]['parent']
+    return names[::-1]
+
+
+# ---------------------------------------------------------------------------------------------------- the poses
+def G(x, h, z):
+    """A place in the model's space: x to its left, h over the floor, z back."""
+    return np.array([x, 24.0 - h, z], float)
+
+
+def turn_to(pose, part, R, ref):
+    """Says in `pose` how `part` is turned so that its frame in the model's space is R."""
+    pm, _ = M.transform(M.parts[part]['parent'], pose)
     rest = M.parts[part]['rot']
-    pose[part] = (round(rx - rest[0], 3), round(-rest[1], 3), round(rz - rest[2], 3))
+    near = tuple(a + b for a, b in zip(rest, ref[part])) if ref is not None and part in ref else None
+    e = euler(pm.T @ R, near)
+    pose[part] = tuple(round(a - b, 3) for a, b in zip(e, rest))
+    pose['_R'][part] = R
+
+
+def point(pose, part, d, ref):
+    """Turns `part` (a box that runs up from its pivot) to run along `d`: with as little turn about its own length
+    from how it is in `ref` as may be, so that it goes from the one to the other without rolling over."""
+    if ref is not None and part in ref['_R']:
+        was = ref['_R'][part]
+        R = arc(-was[:, 1], d) @ was
+    else:
+        R = frame_along(d)
+    turn_to(pose, part, R, ref)
+
+
+def limb(pose, names, to, pole, fingers, ref, lift=0.0):
+    """An arm of two lengths from where its shoulder is to `to` (a place over the floor), its elbow out the way of
+    `pole`; the hand on it flat on the floor, fingers the way of `fingers` (or, off the floor, hanging from the wrist)."""
+    upper, lower, hand = names
+    l1, l2 = LENGTHS[upper[:-2]]
+    _, s = M.transform(upper, pose)
+    d = np.array(to, float) - s
+    far = min(float(np.linalg.norm(d)), l1 + l2 - 0.5)
+    dn = d / np.linalg.norm(d)
+    a = (l1 * l1 - l2 * l2 + far * far) / (2 * far)
+    h = math.sqrt(max(0.0, l1 * l1 - a * a))
+    p = np.array(pole, float)
+    p = p - float(np.dot(p, dn)) * dn
+    p /= np.linalg.norm(p)
+    elbow = s + a * dn + h * p
+    point(pose, upper, elbow - s, ref)
+    point(pose, lower, s + far * dn - elbow, ref)
+    f = np.array(fingers, float)
+    f /= np.linalg.norm(f)
+    n = np.array([0.0, 1.0, 0.0])                                   # the palm down
+    n = n - float(np.dot(n, f)) * f
+    n /= np.linalg.norm(n)
+    y = -f
+    turn_to(pose, hand, np.column_stack([np.cross(y, n), y, n]), ref)
+
+
+# where its hands are when it stands (x for the right one: the left is the same across), and which way the elbows go
+FORE_AT = (-44, 2, -34)
+MID_AT = (-56, 2, 4)
+HIND_AT = (-40, 2, 42)
+POLES = {'f': (-0.55, -1, -0.1), 'm': (-0.6, -1, 0.0), 'h': (-0.55, -1, 0.25)}
+FINGERS = {'f': (-0.5, 0, -0.85), 'm': (-1, 0, -0.1), 'h': (-0.65, 0, 0.75)}
+GRIP_AT = (-20, 2, -13)                    # masked: out of the crack and down, the hands at its foot
+TUCK_MID = (-26, 30, 46)                   # and the others folded in the dark
+TUCK_HIND = (-22, 26, 64)
+NECK_UP = (-0.55, -0.15, 0.1, 0.35, 0.5, 0.6, 0.6, 0.5)     # out of the knot, back, up and over: it looks down from the top of it
+NECK_OUT = (0.5, 0.25, 0.25, 0.35, 0.4, 0.35, 0.2, -0.1)    # out of the crack, up over the hall and down again: the mask hangs and looks into it
+LIMB_NAMES = {key + side: tuple(f'{part}_{side}' for part in (upper, lower, hand)) for key, (upper, lower, hand, _, _) in zip('fmh', LIMBS) for side in 'rl'}
+LESSER_UP = ((-0.5, 0, -0.45), (-0.35, 0, 0.5))             # the lesser necks: up and out to a side of the rope
+LESSER_OUT = ((1.0, 0, -0.5), (0.8, 0, 0.55))               # masked: out of the crack either side of it
+
+
+def across(v):
+    return (-v[0], v[1], v[2])
+
+
+def make_pose(ref, off=(0, 0, 0), trunk=(0, 0, 0), neck=NECK_UP, head=0.0, fore=FORE_AT, mid=MID_AT, hind=HIND_AT, fr=None, fl=None, mr=None, ml=None, hr=None, hl=None,
+              poles=None, fingers=None, maw=0.0, sway=0.0, lesser=LESSER_UP):
+    """A pose: where the body is, how the knot is tipped, how the rope bends (a turn forward for each length of it, and
+    `sway` to a side along all of it), where each hand is (`fore`/`mid`/`hind` for both of a pair, or one by one)."""
+    pose = {'_R': {}, 'body': {'off': tuple(off)}, 'trunk': tuple(trunk)}
+    for i, a in enumerate(neck):
+        pose[f'neck{i}'] = (round(a, 3), 0, round(sway / NECK, 3))
+    pose['head'] = (round(head, 3), 0, 0)
+    pose['lesser_r0'], pose['lesser_l0'] = lesser
+    places = {'fr': fr or fore, 'fl': fl or across(fore), 'mr': mr or mid, 'ml': ml or across(mid), 'hr': hr or hind, 'hl': hl or across(hind)}
+    poles = dict(POLES, **(poles or {}))
+    fingers = dict(FINGERS, **(fingers or {}))
+    for key, names in LIMB_NAMES.items():
+        left = key.endswith('l')
+        pole, way = poles[key[0]], fingers[key[0]]
+        x, h, z = places[key]
+        limb(pose, names, G(x, h, z), across(pole) if left else pole, across(way) if left else way, ref)
+    pose['maw_r'] = (0, round(maw, 3), 0)
+    pose['maw_l'] = (0, round(-maw, 3), 0)
     return pose
 
 
-def arms(pose, upper, fore, hand=(0.0, 0, 0), sides='rl'):
-    """Both great arms (or one): where the upper arm and the forearm point, given for the right one (x is mirrored for
-    the left), and how the hand is turned on the wrist. Said after the lean of the pose: the arms hang from the mass."""
-    for side in sides:
-        m = np.array([1, 1, 1]) if side == 'r' else np.array([-1, 1, 1])
-        aim(pose, f'arm_{side}', np.array(upper) * m)
-        aim(pose, f'fore_{side}', np.array(fore) * m)
-        pose[f'hand_{side}'] = hand
-    return pose
+def masked(ref, **kw):
+    kw.setdefault('off', IN_ROCK)
+    kw.setdefault('neck', NECK_OUT)
+    kw.setdefault('fore', GRIP_AT)
+    kw.setdefault('mid', TUCK_MID)
+    kw.setdefault('hind', TUCK_HIND)
+    kw.setdefault('poles', {'f': (-0.7, -1, 0.0), 'm': (-0.4, -1, 0.0), 'h': (-0.4, -1, 0.0)})
+    kw.setdefault('fingers', {'f': (-0.35, 0, -0.95)})
+    kw.setdefault('lesser', LESSER_OUT)
+    return make_pose(ref, **kw)
 
 
-def crown_open(spread=0.0, curl=0.6):
-    pose = {}
-    for i in range(CROWN):
-        pose[f'crown{i}'] = (2.5 - 0.35 + spread, 0, 0)
-        pose[f'crownf{i}'] = (-2.4 + 0.5 - curl, 0, 0)
-    return pose
-
-
-def lean(pose, waist=0.0, torso=0.0, disc=0.0, off=None):
-    """How far forward the waist and the mass on it are bowed, and the disc turned in the breast (added to their rest)."""
-    pose.update(waist=(waist, 0, 0), torso=(torso, 0, 0), disc=(disc, 0, 0))
-    if off is not None:
-        pose['body'] = {'off': off}
-    return pose
-
-
-PLANTED = ((-0.5, 0.78, -0.38), (0.1, 0.88, -0.46), (1.1, 0, 0))      # the hands on the floor before it, elbows out
-GRIP = ((-0.3, 0.55, -0.78), (0.42, 0.85, -0.32), (1.1, 0, 0))         # masked: out of the crack and down, the hands at its foot
-
-
-def out(waist=0.0, torso=0.0, disc=0.0, hands=PLANTED, crown=None, **extra):
-    """Its second phase: the mass out of the rock and hanging over the hall, the crown open (the rest pose of the mesh
-    has the arms straight up: every pose says where they are)."""
-    pose = dict(crown or crown_open())
-    lean(pose, waist, torso, disc, (0, 0, -OUT_FRONT))
-    arms(pose, *hands)
-    pose.update(extra)
-    return pose
-
-
-def masked(waist=-0.2, torso=-0.25, disc=0.0, hands=GRIP, off=(0, 0, BACK_IN), **extra):
-    """Its first phase: back in the crack, upright, so that the mask stands in it and looks out; the two arms out and down."""
-    pose = {}
-    lean(pose, waist, torso, disc, off)
-    arms(pose, *hands)
-    pose.update(extra)
-    return pose
-
-
-def one(pose, upper, fore, hand=(0.4, 0, 0)):
-    return arms(dict(pose), upper, fore, hand, sides='r')
-
-
-SWEEP_BACK = ((-0.9, 0.1, -0.42), (-0.85, 0.35, -0.4))
-SWEEP_ROUND = ((0.55, 0.45, -0.7), (0.8, 0.4, -0.45))
-UP = ((-0.45, -0.75, -0.48), (-0.15, -0.9, -0.4), (0.3, 0, 0))
-DOWN = ((-0.25, 0.6, -0.76), (0.1, 0.92, -0.38), (1.4, 0, 0))
-SUNK = ((-0.5, 0.7, -0.5), (0.25, 0.95, -0.2), (1.5, 0, 0))
-# what ComingModel asks for by name. `python3 tools/gen_coming.py - x` prints where the middle of the disc is in each
-POSES = {
-    'masked': masked(),
-    # the mask thrust out of the crack and tipped down at whoever it looks at: the rays come out of its slits
-    'gaze': masked(-0.05, -0.05, 0.3, off=(0, 0, BACK_IN - 8)),
-    # drawn back into the dark, and then the whole mass of it out and down on its face before the crack
-    'slam_back': masked(-0.4, -0.4, -0.2, off=(0, 0, BACK_IN + 8)),
-    'slam': masked(0.75, 0.45, 0.0, hands=((-0.75, 0.2, -0.63), (-0.3, 0.6, -0.74), (0.6, 0, 0)), off=(0, 0, 0)),
+def build():
+    P = {}
+    P['masked'] = masked(None)
+    m = P['masked']
+    # the mask let down and thrust out at whoever it looks at: the rays come out of its slits
+    P['gaze'] = masked(m, neck=(0.7, 0.3, 0.3, 0.3, 0.3, 0.2, 0.1, 0.2), head=0.15)
+    # the rope thrown up against the top of the crack - and down, all its length along the floor, the mask lying at the end of it
+    P['slam_back'] = masked(m, neck=(0.45, 0.05, 0.1, 0.2, 0.3, 0.4, 0.4, 0.3), head=-0.2)
+    P['slam'] = masked(m, neck=(1.6, 0.35, 0.25, 0.1, -0.1, -0.2, -0.2, -0.15), head=-0.1)
     # an arm let go of the floor and brought round, low
-    'sweep_back': one(masked(), *SWEEP_BACK),
-    'sweep': one(masked(), *SWEEP_ROUND),
+    P['sweep_back'] = masked(m, fr=(-48, 9, 0), sway=0.5)
+    P['sweep'] = masked(m, fr=(26, 6, -40), sway=-0.4)
     # both arms up, and down on whoever is at the foot of the crack
-    'crush_up': masked(-0.3, -0.3, hands=UP),
-    'crush': masked(-0.05, 0.0, hands=DOWN),
+    P['crush_up'] = masked(m, fore=(-24, 74, -16), neck=(0.3, 0.2, 0.25, 0.35, 0.4, 0.35, 0.2, 0.0))
+    P['crush'] = masked(m, fore=(-12, 2, -28), neck=(0.6, 0.25, 0.25, 0.35, 0.4, 0.35, 0.2, 0.0))
     # its hands in the floor of the hall: what it reaches with comes up elsewhere
-    'reach': masked(0.0, 0.1, 0.2, hands=SUNK, off=(0, 0, BACK_IN - 6)),
-    'bare': out(),
-    'bare_gaze': out(-0.15, -0.15, 0.2),
-    'bare_slam_back': out(-0.3, -0.35, -0.2, hands=((-0.8, 0.45, -0.4), (-0.2, 0.75, -0.63), (0.8, 0, 0))),
-    'bare_slam': out(0.75, 0.42, 0.0, hands=((-0.8, 0.25, -0.55), (-0.35, 0.55, -0.76), (0.6, 0, 0))),
-    'bare_sweep_back': one(out(), *SWEEP_BACK),
-    'bare_sweep': one(out(), *SWEEP_ROUND),
-    'bare_crush_up': out(-0.2, -0.2, hands=UP),
-    'bare_crush': out(0.1, 0.1, hands=DOWN),
-    'bare_reach': out(0.2, 0.15, 0.1, hands=SUNK),
-    'pull': out(0.0, -0.2, 0.1, crown=crown_open(0.25), maw_r=(0, 1.35, 0), maw_l=(0, -1.35, 0)),
-    'bite': out(0.55, 0.3, 0.0, maw_r=(0, 0.2, 0), maw_l=(0, -0.2, 0)),
-    # the sky called down: both arms up, the mass thrown back, the crown wide
-    'rain': out(-0.2, -0.3, -0.35, hands=UP, crown=crown_open(0.35, 0.2)),
-    # the eye behind it looks: it bows down out of the way of it, the crown shut over the disc
-    'glare': out(0.6, 0.45, 0.1, crown=crown_open(-0.9, 1.2)),
-}
-MASK_ON = ('masked', 'gaze', 'slam_back', 'slam', 'sweep_back', 'sweep', 'crush_up', 'crush', 'reach')
-# the parts a pose turns, in the order ComingModel keeps them; and how far back in the crack a pose is (masked only)
-POSED = ('waist', 'torso', 'disc', 'arm_r', 'fore_r', 'hand_r', 'arm_l', 'fore_l', 'hand_l', 'maw_r', 'maw_l')
+    P['reach'] = masked(m, fore=(-18, -4, -16), neck=(0.6, 0.3, 0.3, 0.35, 0.4, 0.35, 0.2, -0.1), head=0.1)
+    # the mask goes: it has both hands as far out into the hall as they go, and the rope up - and drags the knot out after
+    P['emerge_grip'] = masked(m, fore=(-32, 2, -24), neck=(0.2, 0.0, 0.1, 0.2, 0.4, 0.5, 0.5, 0.4), lesser=LESSER_UP)
+    P['bare'] = make_pose(m)
+    b = P['bare']
+    P['bare_gaze'] = make_pose(b, neck=(-0.3, 0.1, 0.3, 0.45, 0.5, 0.5, 0.45, 0.4), head=0.15, trunk=(0.08, 0, 0))
+    P['bare_slam_back'] = make_pose(b, neck=(-0.9, -0.2, 0.0, 0.2, 0.4, 0.5, 0.5, 0.4), trunk=(-0.22, 0, 0), head=-0.2)
+    P['bare_slam'] = make_pose(b, neck=(-0.1, 0.6, 0.95, 0.9, 0.5, -0.3, -0.55, -0.4), trunk=(0.18, 0, 0), head=-0.1)
+    P['bare_sweep_back'] = make_pose(b, fr=(-58, 12, -4), sway=0.4)
+    P['bare_sweep'] = make_pose(b, fr=(30, 6, -56), sway=-0.4, trunk=(0.05, 0.25, 0))
+    P['bare_crush_up'] = make_pose(b, trunk=(-0.5, 0, 0), fore=(-26, 100, -26), neck=(-0.2, 0.0, 0.2, 0.35, 0.5, 0.6, 0.6, 0.5))
+    P['bare_crush'] = make_pose(b, trunk=(0.15, 0, 0), fore=(-14, 2, -54), neck=(-0.45, 0.0, 0.2, 0.35, 0.5, 0.6, 0.6, 0.5))
+    P['bare_reach'] = make_pose(b, off=(0, 5, 0), fore=(-34, -4, -30), neck=(-0.4, 0.0, 0.2, 0.4, 0.55, 0.6, 0.6, 0.5), head=0.1)
+    # reared, the mouth in the knot open to the hall; and down on whatever came to it
+    P['pull'] = make_pose(b, trunk=(-0.7, 0, 0), fore=(-48, 50, -20), neck=(0.2, 0.0, 0.1, 0.25, 0.4, 0.5, 0.5, 0.4), maw=1.35)
+    P['bite'] = make_pose(b, off=(0, 8, -8), trunk=(0.35, 0, 0), fore=(-44, 2, -36), neck=(-1.0, -0.2, 0.1, 0.35, 0.5, 0.6, 0.6, 0.5), maw=0.2)
+    # the sky called down: both arms up, the rope straight up, the disc turned to the roof, the crown wide
+    P['rain'] = make_pose(b, trunk=(-0.3, 0, 0), fore=(-34, 104, -8), neck=(0.15, 0.0, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1), head=-0.2)
+    # the eyes in the rock look: it bows down out of the way of them, the crown shut over the disc
+    P['glare'] = make_pose(b, off=(0, 10, 0), trunk=(0.25, 0, 0), neck=(0.2, 0.5, 0.5, 0.4, 0.2, 0.0, -0.2, -0.2), head=0.1, fore=(-44, 2, -22))
+    # whoever is under it: it stands up off them on all six - and lets the knot down on them, and lies so a moment
+    P['stamp_up'] = make_pose(b, off=(0, -9, 0), fore=(-38, 2, -30), mid=(-48, 2, 4), hind=(-34, 2, 38))
+    P['stamp'] = make_pose(b, off=(0, 21, 0), fore=(-54, 2, -38), mid=(-66, 2, 6), hind=(-50, 2, 46), neck=(-0.2, -0.1, 0.15, 0.4, 0.55, 0.6, 0.6, 0.5), trunk=(0.06, 0, 0))
+    # walking: three hands go together - a fore one, the middle one across from it, the hind one behind it. Set down fore
+    # and aft; and one three in the air as it passes the other
+    s, up = 11, 14
+    fa, ma, ha = FORE_AT, MID_AT, HIND_AT
+
+    def gait(a, b, lift_a=0.0, lift_b=0.0):
+        return make_pose(P['bare'], fr=(fa[0], fa[1] + lift_a, fa[2] + a), ml=(-ma[0], ma[1] + lift_a, ma[2] + a), hr=(ha[0], ha[1] + lift_a, ha[2] + a),
+                         fl=(-fa[0], fa[1] + lift_b, fa[2] + b), mr=(ma[0], ma[1] + lift_b, ma[2] + b), hl=(-ha[0], ha[1] + lift_b, ha[2] + b))
+    P['walk0'] = gait(-s, s)
+    P['walkb'] = gait(0, 0, lift_b=up)
+    P['walk1'] = gait(s, -s)
+    P['walka'] = gait(0, 0, lift_a=up)
+    return P
 
 
-def back_of(pose):
-    return float(pose.get('body', {}).get('off', (0, 0, 0))[2])
+POSES = build()
+MASK_ON = ('masked', 'gaze', 'slam_back', 'slam', 'sweep_back', 'sweep', 'crush_up', 'crush', 'reach', 'emerge_grip')
 
 
-def write_poses(path, indent='    '):
-    """The poses as ComingModel has them: a row of three turns for every part of POSED, between the markers; and for
-    the masked ones, how far back in the crack the whole of it is."""
-    lines = []
+def off_of(pose):
+    return tuple(float(v) for v in pose.get('body', {}).get('off', (0, 0, 0)))
+
+
+def disc_at(pose, turn=0.0):
+    """Where the middle of the disc is in a pose, in blocks: (out before where it stands, up)."""
+    _, t = M.transform('disc', pose)
+    return round(float(-t[2] / BLOCK), 2), round(float((24.0 - t[1]) / BLOCK), 2)
+
+
+def hand_at(pose, hand='hand_r'):
+    _, t = M.transform(hand, pose)
+    return round(float(-t[0] / BLOCK), 2), round(float(-t[2] / BLOCK), 2)
+
+
+def write_poses(path_, indent='    '):
+    """The poses as ComingModel has them: a row of three turns for every part of POSED and where the body is, between
+    the markers."""
+    lines = [f'{indent}private static final String[][] POSED = {{' + ', '.join('{' + ', '.join(f'"{n}"' for n in path(part)) + '}' for part in POSED) + '};']
     for label, pose in POSES.items():
         rows = []
         for part in POSED:
             v = pose.get(part, (0, 0, 0))
-            v = v.get('rot', (0, 0, 0)) if isinstance(v, dict) else v
             rows.append('{' + ', '.join(f'{float(x):.3f}F' for x in v) + '}')
+        oy, oz = off_of(pose)[1:]
+        rows.append(f'{{0.000F, {oy:.1f}F, {oz:.1f}F}}')
         lines.append(f'{indent}private static final float[][] {label.upper()} = {{' + ', '.join(rows) + '};')
-    for label in MASK_ON:
-        lines.append(f'{indent}private static final float BACK_{label.upper()} = {back_of(POSES[label]):.1f}F;')
-    lines.append(f'{indent}private static final float OUT_FRONT = {float(OUT_FRONT):.1f}F;')
-    src = open(path, encoding='utf-8').read()
+    src = open(path_, encoding='utf-8').read()
     a = src.index(indent + '// <generated poses>')
     b = src.index(indent + '// </generated poses>')
-    open(path, 'w', encoding='utf-8').write(src[:a] + indent + '// <generated poses>\n' + '\n'.join(lines) + '\n' + src[b:])
+    open(path_, 'w', encoding='utf-8').write(src[:a] + indent + '// <generated poses>\n' + '\n'.join(lines) + '\n' + src[b:])
 
 
-def make(wall=False):
+# what ComingEntity knows of the poses: where the disc is in those it strikes or looks from (blocks out before where it stands, and up)
+KNOWN = (('masked', 'REST'), ('gaze', 'GAZE'), ('slam', 'SLAM'), ('bare', 'BARE'), ('bare_gaze', 'BARE_GAZE'), ('bare_slam', 'BARE_SLAM'), ('glare', 'BOWED'),
+         ('rain', 'RAIN'), ('stamp', 'STAMP'))
+
+
+def write_known(path_, indent='    '):
+    lines = []
+    for label, name in KNOWN:
+        out, up = disc_at(POSES[label])
+        lines.append(f'{indent}private static final double[] DISC_{name} = {{{out}, {up}}};')
+    src = open(path_, encoding='utf-8').read()
+    a = src.index(indent + '// <generated places>')
+    b = src.index(indent + '// </generated places>')
+    open(path_, 'w', encoding='utf-8').write(src[:a] + indent + '// <generated places>\n' + '\n'.join(lines) + '\n' + src[b:])
+
+
+# ---------------------------------------------------------------------------------------------------- the texture
+STRAND = {'s0': (1.05, VIOLET_D, VIOLET), 's1': (1.45, BLUE, BLUE_L), 's2': (0.0, None, None)}
+
+
+def make():
     p = Painter(M, 899)
     for name, _, b in M.boxes():
         if b.mat == 'hide':
@@ -230,33 +450,64 @@ def make(wall=False):
                 return c
             p.fill_box(b, hide)
             starry(p, b, 'c', 0.008)
-            if b.tag in ('shoulders', 'chest', 'waist'):
-                cracks(p, b, 'c' + b.tag, 2, colour=BLUE, bright=BLUE_L)
+            if b.tag == 'core':
+                cracks(p, b, 'ccore', 2, colour=BLUE, bright=BLUE_L)
             elif b.tag in ('arm', 'fore'):
                 cracks(p, b, 'cv', 1, colour=VIOLET_D, bright=VIOLET)
-            if b.tag == 'hump':
-                # eyes along the hump where a head would be, small, and too many
-                for x in range(2, b.tw - 2, 3):
-                    p.put(b, 'front', x, 2 + (x // 3) % 2, STAR, glow=True)
-                    p.put(b, 'front', x, 3 + (x // 3) % 2, NIGHT_D)
+            if b.tag == 'nape':
+                # eyes round where the necks end, small, and too many
+                for face in ('left', 'right', 'top', 'bottom'):
+                    fx, fy, fw, fh = b.faces()[face]
+                    for x in range(1, fw - 1, 3):
+                        p.put(b, face, x, 2 + (x // 3) % 2, STAR, glow=True)
+                        p.put(b, face, x, 3 + (x // 3) % 2, NIGHT_D)
+        elif b.mat in STRAND:
+            light, seam, seam_l = STRAND[b.mat]
+            if seam is None:
+                # the third neck is not of the night: skin that has never been in any light, grey, with the night coming up it
+                pale = skin('sp', PALE_D, PALE_DD)
+                dark = night('sd', light=1.2)
+
+                def strand(face, px, py, fw, fh, rnd, coil=b.tag == 'coil'):
+                    t = blotch(f'sm{b.x}{b.y}', px, py, 4.0)
+                    c = mix(pale(face, px, py, fw, fh, rnd), dark(face, px, py, fw, fh, rnd), 0.25 + 0.5 * t)
+                    along = px if coil else py
+                    if face not in ('top', 'bottom') and along % 4 == 3:
+                        return shade(c, 0.72)                          # rings round it, like a windpipe
+                    return c
+                p.fill_box(b, strand)
+            else:
+                base = night(b.mat, light=light)
+
+                def strand(face, px, py, fw, fh, rnd):
+                    c = base(face, px, py, fw, fh, rnd)
+                    if face not in ('top', 'bottom') and (py % 3 == 2) and ((px + (py // 3) * 2) % 4 != 0):
+                        return shade(c, 1.3)
+                    return c
+                p.fill_box(b, strand)
+                starry(p, b, b.mat, 0.01)
+                # a seam of light along it, broken: what the rope is seen by in the dark
+                rnd = __import__('random').Random(f'seam:{name}:{b.mat}')
+                for face in (('front', 'back') if b.tag != 'coil' else ('front', 'top')):
+                    fx, fy, fw, fh = b.faces()[face]
+                    long, wide = (fh, fw) if b.tag != 'coil' else (fw, fh)
+                    at = wide // 2
+                    for i in range(long):
+                        if rnd.random() < 0.22:
+                            at = max(1, min(wide - 2, at + rnd.choice((-1, 1))))
+                        if rnd.random() < 0.18:
+                            continue
+                        x, y = (at, i) if b.tag != 'coil' else (i, at)
+                        p.px(fx + x, fy + y, seam_l if i % 4 == 0 else seam, glow=True)
         elif b.mat == 'ridge':
-            def ridge(face, px, py, fw, fh, rnd, lying=b.tag == 'ridge0'):
-                if lying:
-                    if face not in ('left', 'right'):
-                        return None
-                    # along the breast the plates stand up out of it
-                    reach = 1 + (2 if px % 4 in (1, 2) else 0) + (1 if px % 4 == 1 else 0)
-                    if fh - 1 - py >= reach:
-                        return None
-                    return FLAME_L if py == fh - 1 else FLAME
+            def ridge(face, px, py, fw, fh, rnd):
                 if face not in ('left', 'right'):
                     return None
-                x = px if face == 'left' else fw - 1 - px                  # 0 at the neck
-                # plates, each a tongue of light
-                reach = 1 + (2 if py % 4 in (1, 2) else 0) + (1 if py % 4 == 1 and fw > 3 else 0)
-                if x >= reach:
+                # along the top of the knot the plates stand up out of it
+                reach = 1 + (2 if px % 4 in (1, 2) else 0) + (1 if px % 4 == 1 else 0)
+                if fh - 1 - py >= reach:
                     return None
-                return FLAME_L if x == 0 else FLAME
+                return FLAME_L if py == fh - 1 else FLAME
             p.fill_box(b, ridge)
             for face in ('left', 'right'):
                 fx, fy, fw, fh = b.faces()[face]
@@ -265,39 +516,6 @@ def make(wall=False):
                         c = p.tex.getpixel((fx + x, fy + y))
                         if c[3]:
                             p.glow.putpixel((fx + x, fy + y), c[:3] + (255,))
-        elif b.mat == 'eye':
-            def eye(face, px, py, fw, fh, rnd):
-                if face != 'front':
-                    return None
-                # an eye standing on end, as tall as the crack: lids of the night, a white that is not white, a ring, a slit
-                cx, cy = px - (fw - 1) / 2, py - (fh - 1) / 2
-                lid = (1.0 - (cy / (fh / 2)) ** 2)
-                if lid <= 0.0:
-                    return None
-                half = (fw / 2 - 0.5) * lid ** 0.8
-                if abs(cx) > half:
-                    return None
-                if abs(cx) > half - 1.2:
-                    return NIGHT_D
-                r = math.hypot(cx, cy * 0.55)
-                iris = fw * 0.31
-                if abs(cx) < 1.0 + 2.0 * max(0.0, 1.0 - (cy / (fh * 0.29)) ** 2) and abs(cy) < fh * 0.29:
-                    return (2, 2, 6)                                  # the slit
-                if r < iris:
-                    spoke = blotch('iris', math.atan2(cy, cx) * 5.0, r, 0.9)
-                    return mix(VIOLET_D, VIOLET_L, min(1.0, max(0.0, (r - 3.0) / (iris - 3.0))) * (0.6 + 0.4 * spoke))
-                if r < iris + 1.2:
-                    return CORONA
-                return mix(NIGHT, (58, 44, 96), blotch('white', px, py, 3.0))
-            p.fill_box(b, eye)
-            fx, fy, fw, fh = b.faces()['front']
-            for x in range(fw):
-                for y in range(fh):
-                    c = p.tex.getpixel((fx + x, fy + y))
-                    if c[3] and (c[0] > 90 or c[2] > 110):
-                        p.px(fx + x, fy + y, c, glow=True)
-                    elif c[3] and c[2] > 60 and blotch('vein', x, y, 1.6) > 0.72:
-                        p.px(fx + x, fy + y, VIOLET_D, glow=True)       # veins in the white of it
         elif b.mat == 'disc':
             def disc(face, px, py, fw, fh, rnd):
                 if face not in ('front', 'back'):
@@ -393,9 +611,11 @@ def make(wall=False):
                     return shade(RAW_D, 0.5)
                 return shade(RAW if blotch('thr', px, py, 2.0) > 0.55 else RAW_D, 0.8)
             p.fill_box(b, throat)
-            for x, y in ((2, 2), (9, 3), (5, 5), (12, 7), (3, 9), (8, 11), (13, 13), (4, 15), (10, 16), (6, 1)):
+            for x, y in ((2, 2), (9, 3), (5, 5), (12, 7), (3, 9), (8, 10), (13, 4), (6, 1)):
                 p.put(b, 'front', x, y, STAR, glow=True)
                 p.put(b, 'front', x, y + 1, NIGHT_D)
+        elif b.mat in ('pv_rock', 'pv_sky'):
+            p.fill_box(b, lambda face, px, py, fw, fh, rnd, rock=b.mat == 'pv_rock': shade((62, 60, 70) if rock else (10, 10, 22), 0.85 + 0.3 * blotch('pv', px, py, 2.0)))
         elif b.mat == 'lip':
             base = night('cp', light=1.1)
 
@@ -480,37 +700,112 @@ def make_tendril():
     return p.tex, p.glow
 
 
-def disc_at(pose):
-    """Where the middle of the disc is in a pose, in blocks: (out before where it stands, up)."""
-    m, t = M.transform('disc', pose)
-    return round(float(-t[2] * SCALE / 16.0), 2), round(float((24.0 - t[1]) * SCALE / 16.0), 2)
+# ---------------------------------------------------------------------------------------------------- the eyes in the rock
+# When it is out of the crack, eyes open in the rock: one in the crack it came out of, as tall as the crack, and lesser
+# ones all round the walls of the hall. An eye is two plates: the white of it between its lids, and before that the
+# ring and the slit, which WallEyeModel moves to whoever the eye looks at. Standing on end, both kinds.
+EYE_GREAT = (38, 68)
+EYE_LESSER = (14, 24)
+E = Model(256, 128, 1.0)
+for label, (ew, eh) in (('great', EYE_GREAT), ('lesser', EYE_LESSER)):
+    iw, ih = int(ew * 0.31 * 2) + 4, int(ew * 0.31 * 2 / 0.55) + 4
+    E.part(label, None, (0, 24, 0), boxes=[Box(-ew / 2, -eh / 2, -0.5, ew, eh, 1, 'white', label)])
+    E.part(f'{label}_iris', label, (0, 0, -0.6), boxes=[Box(-iw / 2, -ih / 2, -0.5, iw, ih, 1, 'iris', label)])
+E.pack()
+
+
+def make_eye():
+    p = Painter(E, 923)
+    for name, _, b in E.boxes():
+        ew, eh = EYE_GREAT if b.tag == 'great' else EYE_LESSER
+        iris = ew * 0.31
+        if b.mat == 'white':
+            def white(face, px, py, fw, fh, rnd):
+                if face != 'front':
+                    return None
+                # lids of the night, and between them a white that is not white
+                cx, cy = px - (fw - 1) / 2, py - (fh - 1) / 2
+                lid = 1.0 - (cy / (fh / 2)) ** 2
+                if lid <= 0.0:
+                    return None
+                half = (fw / 2 - 0.5) * lid ** 0.8
+                if abs(cx) > half:
+                    return None
+                if abs(cx) > half - (1.2 if fw > 20 else 0.8):
+                    return NIGHT_D
+                return mix(NIGHT, (58, 44, 96), blotch('white', px, py, 3.0))
+            p.fill_box(b, white)
+            fx, fy, fw, fh = b.faces()['front']
+            for x in range(fw):
+                for y in range(fh):
+                    c = p.tex.getpixel((fx + x, fy + y))
+                    if not c[3] or c[2] < 40:
+                        continue
+                    if blotch('vein', x, y, 1.6) > 0.7:
+                        p.px(fx + x, fy + y, VIOLET_D, glow=True)       # veins in the white of it
+                    else:
+                        p.glow.putpixel((fx + x, fy + y), shade(c, 0.75) + (255,))
+        else:
+            def ring(face, px, py, fw, fh, rnd):
+                if face != 'front':
+                    return None
+                cx, cy = px - (fw - 1) / 2, py - (fh - 1) / 2
+                r = math.hypot(cx, cy * 0.55)
+                if abs(cx) < (1.0 if ew > 20 else 0.6) + (2.0 if ew > 20 else 0.9) * max(0.0, 1.0 - (cy / (eh * 0.29)) ** 2) and abs(cy) < eh * 0.29:
+                    return (2, 2, 6)                                  # the slit
+                if r < iris:
+                    spoke = blotch('iris', math.atan2(cy, cx) * 5.0, r, 0.9)
+                    return mix(VIOLET_D, VIOLET_L, min(1.0, max(0.0, (r - iris * 0.25) / (iris * 0.75))) * (0.6 + 0.4 * spoke))
+                if r < iris + (1.2 if ew > 20 else 0.8):
+                    return CORONA
+                return None
+            p.fill_box(b, ring)
+            fx, fy, fw, fh = b.faces()['front']
+            for x in range(fw):
+                for y in range(fh):
+                    c = p.tex.getpixel((fx + x, fy + y))
+                    if c[3] and (c[0] > 40 or c[2] > 60):
+                        p.px(fx + x, fy + y, c, glow=True)
+    return p.tex, p.glow
 
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
         M.write_java(JAVA)
         write_poses(JAVA)
+        write_known(ENTITY_JAVA)
         T.write_java(TENDRIL_JAVA)
+        E.write_java(EYE_JAVA)
     tex, glow = make()
     tex.save(f'{A}/textures/entity/coming.png')
     glow.save(f'{A}/textures/entity/coming_glow.png')
     ttex, tglow = make_tendril()
     ttex.save(f'{A}/textures/entity/tendril.png')
     tglow.save(f'{A}/textures/entity/tendril_glow.png')
+    etex, eglow = make_eye()
+    etex.save(f'{A}/textures/entity/wall_eye.png')
+    eglow.save(f'{A}/textures/entity/wall_eye_glow.png')
     if len(sys.argv) > 1 and sys.argv[1] == '-':
-        # where the middle of the disc is in every pose: ComingEntity takes where its rays come from and where it falls from this
+        # where the middle of the disc is in every pose (ComingEntity is given those it needs: write_known), and its right hand
         for label, pose in POSES.items():
-            print(label, 'disc (out, up):', disc_at(pose))
+            print(f'{label:16} disc (out, up): {disc_at(pose)}   right hand (to its right, out): {hand_at(pose)}')
     elif len(sys.argv) > 1:
-        cam = dict(size=(330, 400), zoom=1.3, centre=(0, -50), glow=glow, background=(40, 40, 50))
+        only = sys.argv[3].split(',') if len(sys.argv) > 3 else None
+        cam = dict(size=(430, 430), zoom=1.15, centre=(0, -100), glow=glow, background=(40, 40, 50))
         shots, labels = [], []
         for label, pose in POSES.items():
-            hidden = ('eye', 'halo') if label in MASK_ON else ('mask',)
-            for yaw in ((-0.55, 0.0, -1.45) if label in ('masked', 'bare') else (-0.55,)):
+            if only and label not in only:
+                continue
+            hidden = ('halo',) if label in MASK_ON else ('mask', 'roots', 'pv_wall')
+            for yaw in ((-0.55, 0.0, -1.45) if label in ('masked', 'bare') or only else (-0.55, -1.45)):
                 shots.append(M.render(tex, yaw=yaw, pitch=0.12, pose=pose, hidden=hidden, **cam))
                 labels.append(label)
-        tcam = dict(size=(330, 400), zoom=3.2, centre=(0, -30), glow=tglow, background=(40, 40, 50))
-        for label, pose in TENDRIL_POSES:
-            shots.append(T.render(ttex, yaw=-1.2, pitch=0.2, pose=pose, **tcam))
-            labels.append('tendril ' + label)
+        if not only:
+            tcam = dict(size=(430, 430), zoom=3.2, centre=(0, -30), glow=tglow, background=(40, 40, 50))
+            for label, pose in TENDRIL_POSES:
+                shots.append(T.render(ttex, yaw=-1.2, pitch=0.2, pose=pose, **tcam))
+                labels.append('tendril ' + label)
+            ecam = dict(size=(430, 430), zoom=5.0, centre=(0, 24), glow=eglow, background=(40, 40, 50))
+            shots.append(E.render(etex, yaw=-0.3, pitch=0.0, pose={'lesser': {'off': (40, 0, 0)}, 'great_iris': {'off': (3, -4, 0)}}, **ecam))
+            labels.append('eyes')
         sheet(shots, 6, labels=labels).save(sys.argv[1])

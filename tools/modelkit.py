@@ -106,6 +106,7 @@ class Model:
             if b.uv is not None:
                 fw, fh = b.footprint()
                 used.append((b.uv[0], b.uv[1], fw, fh))
+        used = list(dict.fromkeys(used))                    # (boxes that share a place in the picture are one place)
 
         def free(x, y, w, h):
             if x + w > self.tex_w or y + h > self.tex_h:

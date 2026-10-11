@@ -437,7 +437,7 @@ public final class SelfTest {
         plan.put(Dushi.SCORCHED_WARDEN.get(), new int[] {1, 2, 3, 4, 5, 6, 7});
         plan.put(Dushi.HOLLOW_MILLER.get(), new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9});
         // the Sky Beneath (the Bolt's fifth move is its tearing off the rod, and the rest are made on its legs; the
-        // Coming's sixth is the loss of its mask, and the coming out of the rock that goes with it)
+        // Coming's sixth is the loss of its mask and its coming out of the rock, and the rest are made out of it)
         plan.put(Dushi.USHER.get(), new int[] {1, 2});
         plan.put(Dushi.STRAY_SHADOW.get(), new int[] {1, 2});
         plan.put(Dushi.LONGARM.get(), new int[] {1, 2});
@@ -446,7 +446,7 @@ public final class SelfTest {
         plan.put(Dushi.GUT.get(), new int[] {1, 2, 3});
         plan.put(Dushi.CLOCKHAND.get(), new int[] {1, 2, 3});
         plan.put(Dushi.BOLT.get(), new int[] {1, 2, 3, 4, 5, 6, 7, 8});
-        plan.put(Dushi.COMING.get(), new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9});
+        plan.put(Dushi.COMING.get(), new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11});
         return plan;
     }
 

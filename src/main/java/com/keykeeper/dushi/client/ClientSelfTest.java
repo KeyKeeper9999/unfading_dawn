@@ -1424,20 +1424,23 @@ public final class ClientSelfTest {
         command("time set 18000");
         shot("k5_works_night", 30);
         command("time set 6000", "kill @e[type=unfading_dawn:gear]", "kill @e[type=unfading_dawn:sun_shaft]");
-        // the Coming: a wall behind it with the crack in it; under its mask, in the crack but for its disc and arms - and without it, out to the waist
-        command(gone, "fill -16 " + (GROUND - 1) + " -15 16 " + (GROUND - 1) + " -9 minecraft:stone_bricks", look(0.5, -12.0, 0, -16),
-                "fill -12 " + GROUND + " 12 12 " + (GROUND + 16) + " 12 minecraft:deepslate",
-                "fill -3 " + GROUND + " 12 3 " + (GROUND + 4) + " 12 unfading_dawn:under_sky[tone=3]",
+        // the Coming: a wall behind it with the crack in it. Under its mask it looks out of the crack - the rope with the mask on it, two arms,
+        // and what has crept out along the rock; without it all of it is out, on its six arms
+        String wall = "fill -14 " + GROUND + " 12 14 " + (GROUND + 17) + " 13 minecraft:deepslate";
+        String[] crack = {"fill -3 " + GROUND + " 12 3 " + (GROUND + 4) + " 12 unfading_dawn:under_sky[tone=3]",
                 "fill -4 " + (GROUND + 5) + " 12 4 " + (GROUND + 9) + " 12 unfading_dawn:under_sky[tone=3]",
                 "fill -2 " + (GROUND + 10) + " 12 2 " + (GROUND + 11) + " 12 unfading_dawn:under_sky[tone=3]",
-                "fill -1 " + (GROUND + 12) + " 12 1 " + (GROUND + 12) + " 12 unfading_dawn:under_sky[tone=3]", summon("coming", 0.5, 10.5, ""));
+                "fill -1 " + (GROUND + 12) + " 12 1 " + (GROUND + 12) + " 12 unfading_dawn:under_sky[tone=3]"};
+        command(gone, "fill -18 " + (GROUND - 1) + " -24 18 " + (GROUND - 1) + " -9 minecraft:stone_bricks", "fill -26 " + (GROUND - 1) + " -8 -17 " + (GROUND - 1) + " 26 minecraft:stone_bricks",
+                look(0.5, -13.0, 0, -14), wall, crack[0], crack[1], crack[2], crack[3],
+                summon("coming", 0.5, 10.5, ""));
         shot("k6_coming", 24);
         command("time set 18000");
         shot("k6_coming_night", 30);
         command("time set 6000");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.GAZE, 34);
         shot("k6_gaze");
-        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 28);
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 30);
         shot("k6_slam_back");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 44);
         shot("k6_slam");
@@ -1453,26 +1456,45 @@ public final class ClientSelfTest {
         shot("k6_reach");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.EMERGE, 40);
         shot("k6_strain");
-        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.EMERGE, 70);
-        shot("k6_emerge");
         rest();
-        command(look(-16.0, 8.0, -90, -14));
+        command(look(-20.0, 3.0, -90, -10));
         shot("k6_coming_side", 16);
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.GAZE, 34);
+        shot("k6_side_gaze");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 30);
+        shot("k6_side_slam_back");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 44);
         shot("k6_side_slam");
         rest();
-        command(look(0.5, -12.0, 0, -16));
+        command(look(6.0, -2.0, 25, -30));
+        shot("k6_coming_from_below", 16);
+        // the mask goes, and it comes out: both hands thrown out into the hall, the knot dragged out of the crack, and it stands up
+        command(look(0.5, -13.0, 0, -14));
         phase(2);
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.EMERGE, com.keykeeper.dushi.entity.ComingEntity.EMERGE_BREAK + 14);
+        shot("k6_out_grip");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.EMERGE, com.keykeeper.dushi.entity.ComingEntity.EMERGE_BREAK + 38);
+        shot("k6_out_heave");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.EMERGE, com.keykeeper.dushi.entity.ComingEntity.EMERGE_BREAK + 76);
+        shot("k6_out_roar");
+        rest();
+        command(look(0.5, -19.0, 0, -22));
         shot("k7_bare", 20);
         command("time set 18000");
         shot("k7_bare_night", 30);
         command("time set 6000");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.GAZE, 34);
         shot("k7_gaze");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 30);
+        shot("k7_slam_back");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 44);
         shot("k7_slam");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SWEEP, 24);
+        shot("k7_sweep_drawn");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SWEEP, 40);
         shot("k7_sweep");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.CRUSH, 20);
+        shot("k7_crush_up");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.CRUSH, 30);
         shot("k7_crush");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.REACH, 40);
@@ -1485,23 +1507,57 @@ public final class ClientSelfTest {
         shot("k7_rain");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.GLARE, 70);
         shot("k7_glare");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.STAMP, 16);
+        shot("k7_stamp_up");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.STAMP, 30);
+        shot("k7_stamp");
         rest();
-        command(look(0.5, 2.0, 0, -45));
+        command(look(4.0, 2.0, 20, -50));
         shot("k7_bare_from_below", 16);
-        command(look(-16.0, 8.0, -90, -14));
+        command(look(-24.0, 8.0, -90, -16));
         shot("k7_bare_side", 16);
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.GAZE, 34);
+        shot("k7_side_gaze");
         attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.SLAM, 44);
         shot("k7_side_slam");
+        attack(com.keykeeper.dushi.entity.ComingEntity.class, com.keykeeper.dushi.entity.ComingEntity.STAMP, 30);
+        shot("k7_side_stamp");
         rest();
-        // what it reaches with: the hole with its fingers, the arm up out of it; and a ray such as comes out of its head
-        command(gone, look(0.5, -3.0, 0, -12), "fill -12 " + GROUND + " 12 12 " + (GROUND + 16) + " 12 minecraft:air",
+        command(look(13.0, -8.0, 33, -22));
+        shot("k7_bare_aslant", 16);
+        // the eyes that open in the rock when it is out: the great one in the crack it left, lesser ones in the rock round about
+        command(gone, look(0.5, -9.0, 0, -18), wall, crack[0], crack[1], crack[2], crack[3],
+                "summon unfading_dawn:wall_eye 0.5 " + (GROUND + 6.7) + " 11.92 {Great:1b,Rotation:[180f,0f]}",
+                "summon unfading_dawn:wall_eye -7.5 " + (GROUND + 4.5) + " 11.94 {Size10:13,Roll:-14,Rotation:[180f,0f]}",
+                "summon unfading_dawn:wall_eye -10.5 " + (GROUND + 9.5) + " 11.94 {Size10:17,Roll:20,Rotation:[180f,0f]}",
+                "summon unfading_dawn:wall_eye 7.5 " + (GROUND + 8.5) + " 11.94 {Size10:15,Roll:8,Rotation:[180f,0f]}",
+                "summon unfading_dawn:wall_eye 10.5 " + (GROUND + 3.5) + " 11.94 {Size10:12,Roll:-25,Rotation:[180f,0f]}");
+        shot("k7_eyes", 40);
+        command("time set 18000");
+        shot("k7_eyes_night", 30);
+        command(look(-9.0, 2.0, -40, -20));
+        shot("k7_eyes_aslant_night", 16);
+        // the rays: from the great eye, from a lesser one, and one straight down out of the sky - each the beam of a beacon in its sheath of light
+        command("time set 6000", look(0.5, -9.0, 0, -12),
+                "summon unfading_dawn:sun_shaft -4.5 " + GROUND + " 2.0 {Width10:17,Rise:1,Strike:400,Life:600,Hue:1,FromX10:50,FromY10:67,FromZ10:99}",
+                "summon unfading_dawn:sun_shaft 5.5 " + GROUND + " 4.0 {Width10:17,Rise:1,Strike:400,Life:600,Hue:1,FromX10:20,FromY10:85,FromZ10:79}",
+                "summon unfading_dawn:sun_shaft 0.5 " + GROUND + " -1.0 {Width10:17,Rise:1,Strike:400,Life:600,Hue:1}",
+                "summon unfading_dawn:sun_shaft -9.5 " + GROUND + " 5.0 {Width10:6,Rise:1,Strike:400,Life:600,Hue:1,FromX10:100,FromY10:67,FromZ10:69}");
+        shot("k7_rays", 30);
+        command("time set 18000");
+        shot("k7_rays_night", 30);
+        command(look(-12.0, 1.0, -60, -14));
+        shot("k7_rays_aslant_night", 16);
+        command("time set 6000", "kill @e[type=unfading_dawn:sun_shaft]", "kill @e[type=unfading_dawn:wall_eye]");
+        // what it reaches with: the hole with its fingers, the arm up out of it
+        command(gone, look(0.5, -3.0, 0, -12), "fill -14 " + GROUND + " 12 14 " + (GROUND + 17) + " 13 minecraft:air",
                 "fill -16 " + GROUND + " 12 16 " + (GROUND + 9) + " 12 minecraft:deepslate_bricks",
-                "summon unfading_dawn:tendril -3.5 " + GROUND + " 7.0 {Warning:600}", "summon unfading_dawn:tendril 0.5 " + GROUND + " 8.0 {Warning:2,Yaw:150}",
-                "summon unfading_dawn:sun_shaft 4.5 " + GROUND + " 6.0 {Width10:17,Rise:1,Strike:400,Life:600,Hue:1,FromX10:-40,FromY10:90,FromZ10:50}");
+                "summon unfading_dawn:tendril -3.5 " + GROUND + " 7.0 {Warning:600}", "summon unfading_dawn:tendril 0.5 " + GROUND + " 8.0 {Warning:2,Yaw:150}");
         shot("k7_tendril", 40);
         command("time set 18000");
         shot("k7_tendril_night", 30);
-        command("time set 6000", "kill @e[type=unfading_dawn:tendril]", "kill @e[type=unfading_dawn:sun_shaft]");
+        command("time set 6000", "kill @e[type=unfading_dawn:tendril]", "fill -18 " + (GROUND - 1) + " -24 18 " + (GROUND - 1) + " -9 minecraft:air",
+                "fill -26 " + (GROUND - 1) + " -8 -17 " + (GROUND - 1) + " 26 minecraft:air");
         // the light it strikes with, and the sky and the water of the place: every tone of the sky in a wall, from overhead down to the horizon
         command(gone, look(0.5, -3.0, 0, -8), "fill -8 " + (GROUND - 1) + " 0 8 " + (GROUND - 1) + " 10 minecraft:black_concrete",
                 "fill -8 " + GROUND + " 0 8 " + GROUND + " 10 unfading_dawn:night_shallows");

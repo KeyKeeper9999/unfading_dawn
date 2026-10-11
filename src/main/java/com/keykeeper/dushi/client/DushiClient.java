@@ -136,8 +136,9 @@ public final class DushiClient {
                 context -> new QuarryRenderer<>(context, new ClockhandModel(context.bakeLayer(ClockhandModel.LAYER)), "clockhand", 0.4F, true, true));
         event.registerEntityRenderer(Dushi.BOLT.get(),
                 context -> new QuarryRenderer<>(context, new BoltModel(context.bakeLayer(BoltModel.LAYER)), "bolt", 1.2F, true, true));
-        event.registerEntityRenderer(Dushi.COMING.get(),
-                context -> new QuarryRenderer<>(context, new ComingModel(context.bakeLayer(ComingModel.LAYER)), "coming", 0.0F, true, true));
+        event.registerEntityRenderer(Dushi.COMING.get(), ComingRenderer::new);
+        event.registerEntityRenderer(Dushi.COMING_FACE.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
+        event.registerEntityRenderer(Dushi.WALL_EYE.get(), WallEyeRenderer::new);
         event.registerEntityRenderer(Dushi.MILLSTONE.get(),
                 context -> new QuarryRenderer<>(context, new MillstoneModel(context.bakeLayer(MillstoneModel.LAYER)), "millstone", 0.8F, false, false));
         event.registerEntityRenderer(Dushi.FLOUR_SACK_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.4F, false));
@@ -205,6 +206,7 @@ public final class DushiClient {
         event.registerLayerDefinition(ComingModel.LAYER, ComingModel::createLayer);
         event.registerLayerDefinition(GearModel.LAYER, GearModel::createLayer);
         event.registerLayerDefinition(TendrilModel.LAYER, TendrilModel::createLayer);
+        event.registerLayerDefinition(WallEyeModel.LAYER, WallEyeModel::createLayer);
         event.registerLayerDefinition(MillstoneModel.LAYER, MillstoneModel::createLayer);
         event.registerLayerDefinition(KeykeeperModel.LAYER, KeykeeperModel::createLayer);
         event.registerLayerDefinition(OverseerModel.LAYER, OverseerModel::createLayer);

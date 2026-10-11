@@ -321,6 +321,8 @@
   "entity.unfading_dawn.thrown_anchor": "Anchor of the Daybreak",
   "entity.unfading_dawn.gear": "Clock Wheel",
   "entity.unfading_dawn.tendril": "Arm of the Coming",
+  "entity.unfading_dawn.coming_face": "Face of the Coming",
+  "entity.unfading_dawn.wall_eye": "Eye in the Rock",
   "tooltip.unfading_dawn.scaling": "Strength: %s   Dexterity: %s",
   "tooltip.unfading_dawn.stamina": "Stamina cost: %s",
   "tooltip.unfading_dawn.backstab": "Backstab: ×%s",

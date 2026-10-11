@@ -321,6 +321,8 @@
   "entity.unfading_dawn.thrown_anchor": "Якорь «Зари»",
   "entity.unfading_dawn.gear": "Шестерня",
   "entity.unfading_dawn.tendril": "Рука Грядущего",
+  "entity.unfading_dawn.coming_face": "Лик Грядущего",
+  "entity.unfading_dawn.wall_eye": "Око в скале",
   "tooltip.unfading_dawn.scaling": "Сила: %s   Ловкость: %s",
   "tooltip.unfading_dawn.stamina": "Расход сил: %s",
   "tooltip.unfading_dawn.backstab": "Удар в спину: ×%s",

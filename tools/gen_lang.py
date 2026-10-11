@@ -161,6 +161,8 @@ t(f'entity.{M}.thrown_harpoon', 'Гарпун', 'Harpoon')
 t(f'entity.{M}.thrown_anchor', 'Якорь «Зари»', 'Anchor of the Daybreak')
 t(f'entity.{M}.gear', 'Шестерня', 'Clock Wheel')
 t(f'entity.{M}.tendril', 'Рука Грядущего', 'Arm of the Coming')
+t(f'entity.{M}.coming_face', 'Лик Грядущего', 'Face of the Coming')
+t(f'entity.{M}.wall_eye', 'Око в скале', 'Eye in the Rock')
 
 t(f'tooltip.{M}.scaling', 'Сила: %s   Ловкость: %s', 'Strength: %s   Dexterity: %s')
 t(f'tooltip.{M}.stamina', 'Расход сил: %s', 'Stamina cost: %s')

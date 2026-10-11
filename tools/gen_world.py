@@ -697,6 +697,17 @@ if __name__ == '__main__':
                                 ('bolt', (gen_depths.WORKS[0] + 9, gen_depths.PLATE + 4, gen_depths.WORKS[1] - 9), (gen_depths.WORKS[0], gen_depths.PLATE + 5, gen_depths.WORKS[1])),
                                 ('coming', (gen_depths.TEAR[0] + 5, gen_depths.HIGH + 3, gen_depths.TEAR[1] - 2), (gen_depths.TEAR[0], gen_depths.HIGH + 6, gen_depths.TEAR[1] + gen_depths.TEAR_R + 1))):
             f.write(f'near_the_{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
+            if boss == 'coming':
+                # hurt to under half it comes out of its crack: the test does that to it (a name that ends in _rouse, see MapSelfTest) and
+                # looks at it coming, at what is out, and at the eyes that have opened in the rock round the hall
+                tx, tz, r, hy = gen_depths.TEAR[0], gen_depths.TEAR[1], gen_depths.TEAR_R, gen_depths.HIGH
+                for name, eye, look in (('depths_tear_rouse', (tx, hy + 1, tz + r), (tx, hy + 1, tz + r)),
+                                        ('depths_tear_coming_out', (tx + 0.5, hy + 3, tz - 5), (tx, hy + 8, tz + r + 2)),
+                                        ('depths_tear_out', (tx + 0.5, hy + 2.6, tz - r + 2), (tx, hy + 10, tz + r)),
+                                        ('depths_tear_out_aslant', (tx - 11, hy + 4, tz - 2), (tx + 2, hy + 9, tz + r)),
+                                        ('depths_tear_out_eyes', (tx + 0.5, hy + 7, tz + r - 5), (tx, hy + 6, tz - r)),
+                                        ('depths_tear_out_eyes_east', (tx - 8, hy + 5, tz + 2), (tx + r, hy + 6, tz - 4))):
+                    f.write(name + ' ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
             f.write(f'kill {MOD}:{boss} ' + ' '.join(f'{v_:.2f}' for v_ in world(*b.seals[boss][0], spawn)) + '\n')
         # and tries the locked gate without its key and with it
         for key in ('quarry_key', 'mire_key', 'firwood_key', 'shore_key', 'stubble_key', 'depths_key'):

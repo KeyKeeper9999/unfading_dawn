@@ -689,6 +689,12 @@ public class Dushi {
     /** What the Coming reaches into its hall with: see {@link com.keykeeper.dushi.entity.TendrilEntity}. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.TendrilEntity>> TENDRIL = ENTITIES.registerEntityType(
             "tendril", com.keykeeper.dushi.entity.TendrilEntity::new, MobCategory.MISC, b -> b.sized(1.6F, 7.0F).clientTrackingRange(10).updateInterval(20).fireImmune());
+    /** The Coming's disc, where it can be struck: see {@link com.keykeeper.dushi.entity.FaceEntity}. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.FaceEntity>> COMING_FACE = ENTITIES.registerEntityType(
+            "coming_face", com.keykeeper.dushi.entity.FaceEntity::new, MobCategory.MISC, b -> b.sized(4.2F, 4.2F).clientTrackingRange(10).updateInterval(1).fireImmune());
+    /** The eyes that open in the rock when the Coming is out of its crack: see {@link com.keykeeper.dushi.entity.WallEyeEntity}. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.WallEyeEntity>> WALL_EYE = ENTITIES.registerEntityType(
+            "wall_eye", com.keykeeper.dushi.entity.WallEyeEntity::new, MobCategory.MISC, b -> b.sized(1.0F, 1.0F).clientTrackingRange(10).updateInterval(20).fireImmune());
 
     /** A root of the Weeping Mother, out of the ground: see {@link com.keykeeper.dushi.entity.RootEntity}. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.RootEntity>> ROOT = ENTITIES.registerEntityType(

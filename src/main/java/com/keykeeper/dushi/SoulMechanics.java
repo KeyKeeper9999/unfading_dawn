@@ -487,7 +487,7 @@ public final class SoulMechanics {
     @SubscribeEvent
     static void onAttack(AttackEntityEvent event) {
         Player player = event.getEntity();
-        if (!plays(player) || !(event.getTarget() instanceof LivingEntity)) {
+        if (!plays(player) || !(event.getTarget() instanceof LivingEntity || event.getTarget() instanceof com.keykeeper.dushi.entity.FaceEntity)) {
             return;
         }
         PlayerSoul soul = PlayerSoul.of(player);
