@@ -131,32 +131,57 @@ What was set (amber and brass on them: the Founder's):
   strikes once whoever is in its breadth; `WEIGHT`: only seen (the blow is the Bolt's `strikeLater`).
 - Learnt: the turn about x is what sends a limb of the Bolt forward. The thrust had it negative and the hand went
   behind it; the pose sheet (`stab`) is drawn from the same numbers, so look at it from the side.
-- `ComingEntity`, the second lord - in the crack of the Tear's south face, its back to the rock. No head and no neck
-  (it was a neck with the disc on top twice, and the owner saw a giraffe): a mass of shoulders with the disc set in
-  its breast, a ring of light and a crown of twelve arms round the disc, two arms a house long, lesser ones down its
-  flanks, a belly that opens. It neither walks nor turns (`homeYaw`): it turns the mass on its waist (`AIM`, synced,
-  radians from straight out; `facing()` is turned by it, `renderExtra` gives it to the model). Its mark is a cell
-  and a half before the face (`WALL` in the generator); the middle of the hall is `CENTRE` straight out, and nothing
-  is struck outside `HALL` of that (`inHall`). Masked, all of it but the disc and the two arms is back in the rock
-  (every masked pose says how far: `BACK_*` in the model): `GAZE` (a line of rays from the hole in the disc to the
-  floor, out through whoever it looks at: `SunShaftEntity.ray`), `SLAM` (the whole mass out of the crack and down on
-  its face, `SLAM_FAR` before it; it lies until `SLAM_LAIN` and takes double there), `SWEEP` (an arm low), `CRUSH`
-  (both arms at the foot of the crack), `REACH` (its hands in the floor: arms come up out of holes under and round
-  whoever it fights - `TendrilEntity`). At half health `EMERGE`: the mask goes, it comes out to the waist
-  (`OUT_FRONT`), the crown opens, the ring shows, and the eye in the crack behind it opens. Then everything from
-  further out and oftener, `GAZE` in three lines, an arm out of the floor now and again whatever else it does
-  (`armClock`), `PULL` (draws the whole hall to the mouth in its belly, then bites), `RAIN` (the sky comes down in
-  marked places) and `GLARE` - the eye looks: a fan of `GLARE_RAYS` rays from the crack, one after another across
-  the hall from one side to the other. `HIDE` 0.3 of 1000. It leaves `coming_soul`.
+- `ComingEntity`, the second lord - a weaving, not one thing: three necks twisted into a rope (`neck0..7`, three strands
+  to a length), the disc on the end of the rope with its ring of light and crown of twelve arms, and the rope growing
+  out of a knot of the same necks (`trunk`: a core under wound `coil`s, a mouth in its front) that has six arms a house
+  long, a tail, two lesser necks and ends hanging under it. (It was a neck like a tower with the disc on top, then a
+  mass of shoulders with the disc in its breast; the owner asked for the long neck and the mask back - as a chthonic
+  weaving looking out of the wall, not a giraffe - and for it to come right out and walk in its second phase.)
+  Masked, the knot is in the dark behind the face of the rock (`IN_ROCK` in the generator: every masked pose has the
+  body up and back) and the rope hangs out of the crack over the hall with the mask on it; two arms are out to the
+  floor; and `roots` - what else there is of it - has crept out along the rock round the crack. It neither walks nor
+  turns: `AIM` (synced, radians from straight out) turns the model's `turn`, whose pivot is the foot of the crack
+  (`rift()`: `FACE` behind its mark), and every blow of the phase is counted from there. `GAZE` (a line of rays from
+  the mask to the floor), `SLAM` (the rope thrown down along the floor: the mask lies at the end of it until
+  `SLAM_LAIN`, the rope itself strikes whoever is under it), `SWEEP` (an arm low), `CRUSH` (both arms at the foot of
+  the crack), `REACH` (arms out of holes in the floor: `TendrilEntity`).
+  At half health `EMERGE`: the mask goes at `EMERGE_BREAK`, both hands are thrown out into the hall, the knot is
+  dragged out of the crack after them, it stands up, and at `EMERGE_EYES` the eyes open. From then it is `loose()`:
+  its box is the knot's (`OUT`, five across), and it walks - not by the game's path-finding (a thing five blocks wide
+  that starts in a wall finds no path) but by itself, in `roam`: it sets its own speed towards whoever it fights until
+  it is `NEAR`, never further than `ROAM` from the middle of the hall, and turns `TURN` degrees a tick, so its blows,
+  which go the way it faces, can be walked round. `ComingRenderer` draws it the way it faces (the game would turn a
+  body after its head) and whether or not its box is in sight. Out of the crack it also has `STAMP` (whoever is under
+  it: the knot let down on them, and it lies until `STAMP_LAIN`), `CROSS` (it goes to the far side of the hall from
+  whoever it fights, over anybody in its way), `PULL` (draws the hall to the mouth in the knot, then bites), `RAIN`
+  (the sky comes down in marked places), and `GLARE` - the eyes look: either the great one (a fan of `GLARE_RAYS` rays
+  from the crack across the hall) or the lesser ones, one after another, each at where whoever it fights is going.
+  `HIDE` 0.3 of 1000; double while it lies (`open()`). It leaves `coming_soul`.
+- `FaceEntity` (`coming_face`) - the disc as something to strike: the disc is a dozen blocks from where the Coming
+  stands, so the Coming keeps this box where its disc is (`discNow()`: the model's poses gone through as the model
+  goes through them) and a blow on it is a blow on the Coming, for half as much again. Nothing is drawn of it. A swing
+  at it costs stamina like any other (`SoulMechanics.onAttack`).
+- `WallEyeEntity` (`wall_eye`; `client/WallEyeRenderer`, `WallEyeModel`, drawn by `tools/gen_coming.py`) - the eyes
+  that open in the rock when it is out: the great one in the crack it left, and lesser ones the Coming looks for a
+  place for along every spoke from the middle of its hall (`openEyes`: a face of rock to the hall with rock over and
+  under it and nothing before it). An eye follows whoever looks at it with its ring; it shuts when the Coming is dead
+  or back in its crack; summoned by hand it stays (`{Great:1b}`, `Size10`, `Roll`).
 - `TendrilEntity` (`tendril`; `client/TendrilRenderer`, `TendrilModel`, drawn by `tools/gen_coming.py`) - not a mob:
   a hole opens (its warning), an arm comes straight up through whoever stands on it, stands (`stands()`: synced, long
   for one summoned by hand), turns to whoever is nearest and comes down `LENGTH` along the floor through any shield.
 - `SunShaftEntity` has three lights (`SUN`, `DUSK`, `AMBER`) and may be a ray from a place (`FROM_*`): the renderer
-  turns the same column so that its top is where the ray comes from.
-- The Coming's poses are not written in the model by hand: `gen_coming.py` has them by name (`POSES`: how far the
-  waist and the mass are bowed and where the arms point - `aim` turns a direction into the turns of a part) and
-  writes them into `ComingModel` between `// <generated poses>`; the animation goes from one to another.
-  `gen_coming.py - x` prints where the middle of the disc is in each (the rays and `SLAM_FAR` are taken from that).
+  turns the same column so that its top is where the ray comes from. `DUSK` - the Coming's - is drawn as the beam of
+  a beacon (the game's own `BeaconRenderer.submitBeaconBeam`, laid along the ray and stretched to its length) in a
+  sheath of light (`dusk_beam.png`, `gen_beam.make_sheath`); the other two are the soft shafts they were.
+- The Coming's poses are not written in the model by hand: `gen_coming.py` has them by name (`build()`: where the body
+  is, how the knot is tipped, a turn forward for each length of the rope, and where each of its six hands is - `limb`
+  finds the elbow) and writes them into `ComingModel` between `// <generated poses>`, a row of three turns for every
+  part of `POSED`; the animation goes from one to another, and the walk is four of them (`walk0`, `walkb`, `walk1`,
+  `walka`) gone through by how far it has gone. Where the disc is in the poses the entity strikes or looks from is
+  written into `ComingEntity` between `// <generated places>` (`KNOWN`); `gen_coming.py - x` prints all of them.
+  The preview draws the masked poses in a face of rock with the crack in it (`pv_wall`, not in the game).
+- Learnt: the game looks for an entity in the box it is struck by, and does not draw what is not in sight: anything
+  much bigger than its box (the Coming, a ray that leans) needs `affectedByCulling` false in its renderer.
 - Learnt: a thing that stands in a wall must not turn with the mob's yaw - everything of it that is in the wall
   swings out of it. Fix the yaw and turn a part.
 
