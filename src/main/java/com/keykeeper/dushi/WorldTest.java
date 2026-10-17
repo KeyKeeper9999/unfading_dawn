@@ -77,6 +77,12 @@ final class WorldTest {
             e.printStackTrace(System.out);
         }
         try {
+            clock(level);
+        } catch (RuntimeException e) {
+            say("clock: FAILED: " + e);
+            e.printStackTrace(System.out);
+        }
+        try {
             firwood(level);
             shore(level);
             stubble(level);
@@ -99,6 +105,161 @@ final class WorldTest {
             }
         }
         say("world done");
+    }
+
+    /** The clock under the Sky Beneath, the tower it raises and the two ends of the day, driven by a stand-in player. */
+    private static void clock(ServerLevel level) {
+        ClockState clock = Clock.state(level);
+        Plan tower = Plan.get(Clock.TOWER_PLAN);
+        Plan figure = Plan.get(Clock.FIGURE_PLAN);
+        BlockPos towerSite = Clock.towerSite();
+        say("clock: plans " + tower.width + "x" + tower.height + "x" + tower.depth + " and " + figure.width + "x" + figure.height + "x" + figure.depth
+                + ", tower site " + towerSite + (towerSite != null && tower.height > 40 && figure.height > 60 ? "" : " FAILED"));
+
+        // What it remembers survives being saved.
+        ClockState probe = new ClockState();
+        probe.keys = 0b1010101;
+        probe.started = true;
+        probe.rise = 42;
+        probe.ending = ClockState.BELL;
+        probe.figure = 7;
+        probe.slain.add("coming");
+        ClockState back = ClockState.CODEC.codec().parse(com.mojang.serialization.JsonOps.INSTANCE,
+                ClockState.CODEC.codec().encodeStart(com.mojang.serialization.JsonOps.INSTANCE, probe).result().orElseThrow()).result().orElseThrow();
+        say("clock: saved and read back=" + (back.keys == probe.keys && back.started && back.rise == 42 && back.ending == ClockState.BELL
+                && back.figure == 7 && back.slain.contains("coming") ? "ok" : "FAILED"));
+
+        // The sockets: the wrong key does nothing, each right one stays in the clock, the seventh starts it.
+        FakePlayer player = FakePlayerFactory.getMinecraft(level);
+        player.getInventory().clearContent();
+        BlockPos hall = new BlockPos(60, 240, 90);
+        for (BlockPos floor : BlockPos.betweenClosed(hall.offset(-2, -1, -2), hall.offset(10, -1, 2))) {
+            level.setBlock(floor, Blocks.STONE.defaultBlockState(), 3);
+        }
+        com.keykeeper.dushi.block.ClockSocketBlock.Socket[] sockets = com.keykeeper.dushi.block.ClockSocketBlock.Socket.values();
+        for (int k = 0; k < sockets.length; k++) {
+            level.setBlock(hall.offset(k, 0, 0), Dushi.CLOCK_SOCKET.get().defaultBlockState().setValue(com.keykeeper.dushi.block.ClockSocketBlock.SOCKET, sockets[k]), 3);
+        }
+        player.getInventory().add(new ItemStack(Dushi.MIRE_KEY.get()));
+        Clock.touchSocket(level, player, hall, level.getBlockState(hall));
+        boolean refused = clock.count() == 0 && Forge.count(player, Dushi.MIRE_KEY.get()) == 1;
+        boolean stayed = true;
+        for (int k = 0; k < sockets.length; k++) {
+            player.getInventory().add(new ItemStack(sockets[k].key()));
+            BlockPos at = hall.offset(k, 0, 0);
+            Clock.touchSocket(level, player, at, level.getBlockState(at));
+            stayed &= level.getBlockState(at).getValue(com.keykeeper.dushi.block.ClockSocketBlock.FILLED) && clock.count() == k + 1
+                    && (k < sockets.length - 1) == !clock.started;
+        }
+        Clock.touchSocket(level, player, hall, level.getBlockState(hall));
+        say("clock: a wrong key refused=" + refused + ", seven keys went in and stayed=" + stayed + ", the clock runs=" + clock.started
+                + ", the keys are used up=" + (Forge.count(player, Dushi.QUARRY_KEY.get()) == 0 && Forge.count(player, Dushi.CLOCK_KEY.get()) == 0)
+                + ((refused && stayed && clock.started && clock.keys == ClockState.ALL) ? "" : " FAILED"));
+        clock.started = false;
+
+        // The tower: every layer set down from its plan, turned as the map is, and its two ends where they should be.
+        BlockPos site = new BlockPos(130, 200, 130);
+        for (int y = 0; y < tower.height; y++) {
+            Clock.layer(level, tower, site, y);
+        }
+        int cells = 0;
+        int wrong = 0;
+        int ropes = 0;
+        int seats = 0;
+        for (int y = 0; y < tower.height; y++) {
+            for (int z = 0; z < tower.depth; z++) {
+                for (int x = 0; x < tower.width; x++) {
+                    short index = tower.cell(x, y, z);
+                    if (index == Plan.SKIP) {
+                        continue;
+                    }
+                    cells++;
+                    BlockState want = tower.palette[index].rotate(Clock.ROTATION);
+                    BlockState got = level.getBlockState(PlanPiece.toWorld(tower, site, Clock.ROTATION, x, y, z));
+                    if (got != want) {
+                        wrong++;
+                    }
+                    if (got.getBlock() == Dushi.TOWER_END.get()) {
+                        if (got.getValue(com.keykeeper.dushi.block.TowerEndBlock.KIND) == com.keykeeper.dushi.block.TowerEndBlock.Kind.ROPE) {
+                            ropes++;
+                        } else {
+                            seats++;
+                        }
+                    }
+                }
+            }
+        }
+        say("clock: the tower stands: " + cells + " cells, " + wrong + " differ, " + ropes + " rope blocks and " + seats + " seat"
+                + (wrong * 100 <= cells && ropes > 0 && seats == 1 ? "" : " FAILED"));
+
+        // The rope: not before the tower stands; then the day is over, everything of the mod's lies down and nothing new gets up.
+        BlockPos stage = new BlockPos(100, 240, 100);
+        for (BlockPos floor : BlockPos.betweenClosed(stage.offset(-6, -1, -6), stage.offset(6, -1, 6))) {
+            level.setBlock(floor, Blocks.STONE.defaultBlockState(), 3);
+        }
+        level.setBlock(stage, Dushi.MOB_MARK.get().defaultBlockState().setValue(MobMarkBlock.MOB, MobMarkBlock.Kind.TOWNSMAN), 3);
+        SoulsMob risen = level.getBlockEntity(stage) instanceof MobMarkBlockEntity mark && mark.wake(level) && level.getEntity(mark.mob()) instanceof SoulsMob mob ? mob : null;
+        Clock.bossSlain(level, risen == null ? player : risen);
+        boolean remembered = risen != null && Clock.slain(level, "townsman");
+        Clock.pullRope(level, player, stage);
+        boolean tooSoon = clock.ending == ClockState.NO_ENDING;
+        clock.raised = true;
+        Clock.pullRope(level, player, stage);
+        boolean struck = Clock.ended(level) && Clock.ending(level) == ClockState.BELL;
+        Clock.lieDown(level);
+        boolean lay = risen != null && risen.isRemoved();
+        clock.endingTick = Clock.LIE_DOWN + 1;
+        BlockPos second = stage.offset(4, 0, 0);
+        level.setBlock(second, Dushi.MOB_MARK.get().defaultBlockState().setValue(MobMarkBlock.MOB, MobMarkBlock.Kind.TOWNSMAN), 3);
+        boolean rose = level.getBlockEntity(second) instanceof MobMarkBlockEntity other && other.wake(level) && level.getEntity(other.mob()) != null;
+        level.getGameRules().set(net.minecraft.world.level.gamerules.GameRules.ADVANCE_TIME, false, level.getServer());
+        SoulMechanics.hour(level, 6000);
+        boolean midnight = SoulMechanics.hourNow(level) == 18000;
+        level.getGameRules().set(net.minecraft.world.level.gamerules.GameRules.ADVANCE_TIME, true, level.getServer());
+        say("clock: a lord's fall remembered=" + remembered + ", the rope before the tower stood=" + (tooSoon ? "slack" : "pulled") + ", the bell struck=" + struck
+                + ", the dead lay down=" + lay + ", nothing rises after=" + !rose + ", the hour stands at midnight=" + midnight
+                + (remembered && tooSoon && struck && lay && !rose && midnight ? "" : " FAILED"));
+        clock.ending = ClockState.NO_ENDING;
+        clock.endingTick = 0;
+
+        // The seat: the other end, once.
+        Clock.takeSeat(level, player, stage);
+        boolean sat = clock.ending == ClockState.SEAT && !Clock.ended(level);
+        Clock.takeSeat(level, player, stage);
+        say("clock: the seat taken, and the day goes on=" + sat + (sat && clock.ending == ClockState.SEAT ? "" : " FAILED"));
+        player.removeAllEffects();
+        clock.ending = ClockState.NO_ENDING;
+        clock.endingTick = 0;
+        clock.raised = false;
+        clock.keys = 0;
+        clock.rise = -1;
+        clock.figure = 0;
+        clock.slain.clear();
+
+        // The seventh key: the keykeeper gives it, after the Coming has fallen, and only once.
+        PlayerSoul soul = PlayerSoul.of(player);
+        soul.metKeykeeper = true;
+        player.getInventory().clearContent();
+        BlockPos spot = new BlockPos(100, 240, 120);
+        for (BlockPos floor : BlockPos.betweenClosed(spot.offset(-3, -1, -3), spot.offset(3, -1, 3))) {
+            level.setBlock(floor, Blocks.STONE.defaultBlockState(), 3);
+        }
+        var keeper = Dushi.KEYKEEPER.get().spawn(level, spot, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        if (keeper == null) {
+            say("clock: the keykeeper could not be spawned FAILED");
+            return;
+        }
+        player.interactOn(keeper, net.minecraft.world.InteractionHand.MAIN_HAND);
+        boolean early = Forge.count(player, Dushi.CLOCK_KEY.get()) == 0;
+        clock.slain.add("coming");
+        player.interactOn(keeper, net.minecraft.world.InteractionHand.MAIN_HAND);
+        boolean given = Forge.count(player, Dushi.CLOCK_KEY.get()) == 1;
+        player.interactOn(keeper, net.minecraft.world.InteractionHand.MAIN_HAND);
+        boolean once = Forge.count(player, Dushi.CLOCK_KEY.get()) == 1;
+        keeper.discard();
+        clock.slain.clear();
+        say("clock: the keykeeper keeps the key until the Coming falls=" + early + ", gives it=" + given + ", gives only one=" + once
+                + (early && given && once ? "" : " FAILED"));
     }
 
     /** What a map leans on: the tier of a mark, the shard in the ash, peace at a hearth, the hour of a place. */

@@ -19,6 +19,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -221,6 +222,8 @@ public final class DushiClient {
         });
         event.register(Net.OpenShop.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new ShopScreen()));
         event.register(Net.OpenForge.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new ForgeScreen()));
+        event.register(Net.Quake.TYPE, (payload, context) -> shake(payload.ticks(), payload.strength()));
+        event.register(Net.EndScreen.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new EndingScreen(payload.ending())));
         event.register(Net.Banner.TYPE, (payload, context) -> {
             if (!payload.key().isEmpty()) {
                 SoulsHud.showBanner(payload.key(), payload.style());
@@ -231,10 +234,41 @@ public final class DushiClient {
         });
     }
 
+    // ------------------------------------------------------------------ the ground shakes (the bell tower rising, the bell tolling)
+
+    private static int shakeLeft;
+    private static float shakeStrength;
+
+    /** Rocks the screen for {@code ticks} ticks; a gentler shake does not cut a harder one short. */
+    static void shake(int ticks, float strength) {
+        float current = shakeLeft > 0 ? shakeStrength * Math.min(1.0F, shakeLeft / 8.0F) : 0.0F;
+        if (strength >= current) {
+            shakeStrength = strength;
+        }
+        shakeLeft = Math.max(shakeLeft, ticks);
+    }
+
+    /** The picture sways on three axes at once, at rates that do not meet, so that it never looks like a wave. */
+    @SubscribeEvent
+    static void onCamera(ViewportEvent.ComputeCameraAngles event) {
+        if (shakeLeft <= 0) {
+            return;
+        }
+        float time = (Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getGameTime() : 0L) + (float) event.getPartialTick();
+        float fade = Math.min(1.0F, (shakeLeft - (float) event.getPartialTick()) / 8.0F);
+        float s = shakeStrength * Math.max(0.0F, fade);
+        event.setRoll(event.getRoll() + s * (2.4F * (float) Math.sin(time * 1.9F) + 1.2F * (float) Math.sin(time * 4.7F + 1.0F)));
+        event.setPitch(event.getPitch() + s * (1.5F * (float) Math.sin(time * 2.9F + 2.0F) + 0.9F * (float) Math.sin(time * 6.1F)));
+        event.setYaw(event.getYaw() + s * (1.1F * (float) Math.sin(time * 3.3F + 0.5F)));
+    }
+
     /** The roll: the player's own client moves them, the server is only told so it can charge stamina and ignore blows. */
     @SubscribeEvent
     static void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
+        if (shakeLeft > 0 && --shakeLeft == 0) {
+            shakeStrength = 0.0F;
+        }
         LocalPlayer player = minecraft.player;
         if (player == null) {
             return;

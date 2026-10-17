@@ -46,6 +46,7 @@ python3 tools/gen_shields.py ${P:+$P/shields.png}
 python3 tools/gen_armor.py ${P:+$P/armor.png}
 python3 tools/gen_blocks.py ${P:+$P/blocks.png}
 python3 tools/gen_structures.py ${P:+$P/structures}
+python3 tools/gen_tower.py ${P:+$P/tower}
 python3 tools/gen_data.py
 # only what has no file yet is written: delete a sound's file to have it made again (or unset SOUNDS_NEW for all of them)
 SOUNDS_NEW=1 python3 tools/gen_sounds.py $P

@@ -1828,6 +1828,39 @@ for k in (0, 1):
 
 
 
+# the clock under the Sky Beneath, and the tower it raises out of the borough (Clock.java)
+d = 1.5
+S['block/clock_set'] = under(place(d, (0.0, thump(0.5, 130, 48, 0.08) * 1.5), (0.0, clang(640, 1.0, strike=0.9) * 0.7), (0.03, stone_hit(0.3, 1500, 300, 0.8) * 0.8),
+                                   (0.12, chime(1480, 1.3, 0.9) * 0.45), (0.12, chime(1976, 1.1, 0.7) * 0.25)), 1.6, 0.35, 1.0)
+d = 0.55
+S['block/clock_empty'] = under(layer(stone_hit(0.4, 340, 110, 0.7) * 1.1, thump(0.4, 110, 60, 0.05) * 0.9), 0.9, 0.3, 0.5)
+d = 11.0
+S['block/clock_start'] = under(place(d, (0.0, backwards(bell(55, 2.6, 0.7) * env(2.6, 0.01, 2.2)) * 0.9), (0.0, rattle(2.4, 90, 700, 4200, seed=171) * env(2.4, 2.0, 0.3) * 0.5),
+                                     (2.5, bell(73, 9.0, 1.0) * 1.5), (2.5, bell(110, 8.0, 0.8) * 0.9), (2.5, bell(55, 8.0, 0.6) * 0.5), (2.5, thump(2.0, 72, 20, 0.4) * 2.4),
+                                     (2.6, rattle(3.0, 70, 400, 3200, seed=172) * env(3.0, 0.1, 2.6) * 0.45),
+                                     *[(4.2 + 0.75 * i, layer(wood_knock(0.5, 260 - 8 * i, 1.4) * (1.1 - 0.05 * i), thump(0.4, 90, 40, 0.1) * 0.7)) for i in range(9)],
+                                     (3.0, drone(7.5, 55, 171, 0.3) * 1.3)), 3.2, 0.45, 2.4)
+d = 12.0
+S['block/tower_rumble'] = under(place(d, (0.0, lowpass(noise(d), 110, 3) * env(d, 2.5, 4.0) * 2.4), (0.0, drone(d, 52, 172, 0.5) * 1.5),
+                                       (0.0, bandpass(noise(d), 160, 900) * env(d, 3.5, 4.5) * 1.1 * (0.6 + 0.4 * np.sin(2 * np.pi * 3.7 * t(d)))),
+                                       (0.0, grind(d, 70, 640, 173) * env(d, 3.0, 4.0) * 2.0), (0.0, crackle(d, 16, 2600) * env(d, 4.0, 4.5) * 1.0),
+                                       *[(at, thump(1.4, 84 - 6 * (i % 3), 20, 0.32) * (2.0 + 0.15 * i)) for i, at in enumerate((0.4, 1.9, 3.3, 4.6, 6.0, 7.1, 8.4, 9.4))],
+                                       *[(at, rattle(1.2, 26, 500, 3600, seed=175 + i) * decay(1.2, 0.35) * 0.6) for i, at in enumerate((1.0, 2.6, 4.2, 5.6, 7.4))]), 3.0, 0.4, 2.0)
+d = 2.4
+S['block/tower_crack'] = under(place(d, (0.0, stone_hit(0.9, 1100, 90, 1.0) * 1.6), (0.0, thump(1.1, 74, 22, 0.2) * 2.6), (0.0, crackle(1.4, 70, 5200) * decay(1.4, 0.28) * 0.9),
+                                     (0.1, rattle(1.6, 20, 500, 3200, seed=176) * decay(1.6, 0.4) * 0.65)), 1.8, 0.4, 1.2)
+d = 8.0
+S['block/tower_settle'] = under(place(d, (0.0, thump(3.0, 64, 17, 0.55) * 3.0), (0.0, stone_hit(1.0, 600, 90, 1.0) * 2.4), (0.0, bandpass(noise(4.5), 120, 900) * decay(4.5, 1.1) * 1.6), (0.0, crackle(2.2, 40, 4200) * decay(2.2, 0.5) * 0.9),
+                                      (0.05, lowpass(noise(5.0), 420) * decay(5.0, 1.3) * 1.5), (0.1, bell(82, 6.0, 0.5) * 0.7),
+                                      (0.3, rattle(3.5, 40, 400, 3000, seed=177) * decay(3.5, 0.9) * 0.6), (1.4, thump(1.4, 58, 20, 0.3) * 1.8)), 3.4, 0.45, 2.6)
+d = 13.0
+S['block/tower_toll'] = under(place(d, (0.0, bell(92, 12.0, 1.0) * 1.5), (0.0, bell(138, 10.0, 0.8) * 0.8), (0.0, bell(184, 8.0, 0.7) * 0.5), (0.0, bell(61, 12.0, 0.6) * 0.5), (0.0, clang(230, 6.0, strike=1.0) * 0.6),
+                                    (0.0, thump(1.6, 72, 26, 0.32) * 2.0), (0.0, stone_hit(0.4, 800, 100, 0.8) * 0.8)), 3.6, 0.45, 3.0)
+d = 6.0
+S['block/tower_seat'] = under(place(d, (0.0, grind(1.6, 80, 520, 178) * env(1.6, 0.05, 0.8) * 1.1), (0.0, thump(1.0, 70, 26, 0.2) * 1.6),
+                                    (0.4, drone(5.2, 55, 179, 0.4) * 1.3), (0.4, tone(110, 5.2) * env(5.2, 1.8, 2.4) * 0.35), (0.4, tone(165, 5.2) * env(5.2, 2.2, 2.4) * 0.22)), 2.6, 0.4, 2.0)
+
+
 EVENTS = {
     'entity.withered.ambient': ['withered/ambient1', 'withered/ambient2', 'withered/ambient3'],
     'entity.withered.hurt': ['withered/hurt1', 'withered/hurt2'],
@@ -1963,6 +1996,9 @@ EVENTS = {
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],
     'ui.souls_gain': ['ui/souls_gain'], 'ui.souls_retrieve': ['ui/souls_retrieve'], 'ui.place': ['ui/place'],
     'block.hearth.rest': ['block/hearth_rest'], 'block.fog_gate.pass': ['block/fog_gate_pass'],
+    'block.clock.set': ['block/clock_set'], 'block.clock.empty': ['block/clock_empty'], 'block.clock.start': ['block/clock_start'],
+    'block.tower.rumble': ['block/tower_rumble'], 'block.tower.crack': ['block/tower_crack'], 'block.tower.settle': ['block/tower_settle'],
+    'block.tower.toll': ['block/tower_toll'], 'block.tower.seat': ['block/tower_seat'],
     'item.flask.drink': ['item/flask_drink'], 'item.flask.empty': ['item/flask_empty'],
     'item.spell.shard': ['item/spell_shard'], 'item.spell.shard_hit': ['item/spell_shard_hit'], 'item.spell.mend': ['item/spell_mend'],
     'item.spell.rebuke': ['item/spell_rebuke'], 'item.spell.fire': ['item/spell_fire'], 'item.spell.fire_burst': ['item/spell_fire_burst'],

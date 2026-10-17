@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "kind=rope": {
+      "model": "unfading_dawn:block/tower_rope"
+    },
+    "kind=seat": {
+      "model": "unfading_dawn:block/tower_seat"
+    }
+  }
+}

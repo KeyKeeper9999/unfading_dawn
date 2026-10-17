@@ -1,0 +1,46 @@
+{
+  "variants": {
+    "filled=false,socket=quarry": {
+      "model": "unfading_dawn:block/clock_socket_quarry_off"
+    },
+    "filled=false,socket=mire": {
+      "model": "unfading_dawn:block/clock_socket_mire_off"
+    },
+    "filled=false,socket=firwood": {
+      "model": "unfading_dawn:block/clock_socket_firwood_off"
+    },
+    "filled=false,socket=shore": {
+      "model": "unfading_dawn:block/clock_socket_shore_off"
+    },
+    "filled=false,socket=stubble": {
+      "model": "unfading_dawn:block/clock_socket_stubble_off"
+    },
+    "filled=false,socket=depths": {
+      "model": "unfading_dawn:block/clock_socket_depths_off"
+    },
+    "filled=false,socket=keeper": {
+      "model": "unfading_dawn:block/clock_socket_keeper_off"
+    },
+    "filled=true,socket=quarry": {
+      "model": "unfading_dawn:block/clock_socket_quarry_on"
+    },
+    "filled=true,socket=mire": {
+      "model": "unfading_dawn:block/clock_socket_mire_on"
+    },
+    "filled=true,socket=firwood": {
+      "model": "unfading_dawn:block/clock_socket_firwood_on"
+    },
+    "filled=true,socket=shore": {
+      "model": "unfading_dawn:block/clock_socket_shore_on"
+    },
+    "filled=true,socket=stubble": {
+      "model": "unfading_dawn:block/clock_socket_stubble_on"
+    },
+    "filled=true,socket=depths": {
+      "model": "unfading_dawn:block/clock_socket_depths_on"
+    },
+    "filled=true,socket=keeper": {
+      "model": "unfading_dawn:block/clock_socket_keeper_on"
+    }
+  }
+}

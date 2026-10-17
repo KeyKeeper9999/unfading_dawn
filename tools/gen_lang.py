@@ -21,6 +21,8 @@ t(f'block.{M}.fog_gate', 'Туманная завеса', 'Fog Gate')
 t(f'block.{M}.forge', 'Старая наковальня', 'Old Anvil')
 t(f'block.{M}.mob_mark', 'Метка восставшего', 'Mark of the Risen')
 t(f'block.{M}.locked_gate', 'Запертая решётка', 'Locked Grate')
+t(f'block.{M}.clock_socket', 'Гнездо часов', 'Socket of the Clock')
+t(f'block.{M}.tower_end', 'Конец дня', 'The End of the Day')
 
 for key, ru, en in (
         ('broken_sword', 'Обломок меча', 'Broken Sword'), ('shiv', 'Заточка', 'Shiv'), ('dagger', 'Кинжал', 'Dagger'),
@@ -93,6 +95,7 @@ for key, ru, en in (
         ('warden_soul', 'Душа Палёного сторожа', 'Soul of the Scorched Warden'), ('miller_soul', 'Душа Пустомола', 'Soul of the Hollow Miller'),
         ('bolt_soul', 'Душа Затвора', 'Soul of the Bolt'), ('coming_soul', 'Душа Грядущего', 'Soul of the Coming'),
         ('depths_key', 'Ключ от Нижней решётки', 'Key to the Lower Grate'),
+        ('clock_key', 'Ключ часов', 'Key of the Clock'),
         ('oilskin_souwester', 'Зюйдвестка', "Sou'wester"), ('oilskin_smock', 'Промасленная роба', 'Oilskin Smock'),
         ('oilskin_trousers', 'Промасленные порты', 'Oilskin Trousers'), ('oilskin_boots', 'Бахилы', 'Sea Boots'),
         ('tattered_cloth', 'Ветошь', 'Tattered Cloth'), ('rust_scrap', 'Ржавый лом', 'Rust Scrap')):
@@ -393,6 +396,55 @@ for i, (ru, en) in enumerate((
          'They say there are some in the quarry that have no eyes. Those listen. Go past them creeping.'))):
     t(f'dialogue.{M}.keykeeper.idle.{i}', ru, en)
 
+# ---- the clock under the Sky Beneath, the tower it raises, and the two ends of the day
+t(f'place.{M}.clock_hall', 'ЗАЛ ЧАСОВ', 'THE CLOCK HALL')
+t(f'place.{M}.clock_tower', 'ЧАСОВАЯ БАШНЯ', 'THE CLOCK TOWER')
+t(f'banner.{M}.clock_started', 'ЧАСЫ ПОШЛИ', 'THE CLOCK RUNS')
+t(f'message.{M}.clock.filled', 'В гнезде уже лежит ключ', 'A key already lies in this socket')
+t(f'message.{M}.clock.empty.quarry', 'Гнездо со знаком каменоломни. Ему нужен ключ от Ломовых ворот', "The socket bears the quarry's sign. It wants the key to the Quarrymen's Gate")
+t(f'message.{M}.clock.empty.mire', 'Гнездо со знаком топи. Ему нужен ключ от Топких ворот', 'The socket bears the sign of the mire. It wants the key to the Mire Gate')
+t(f'message.{M}.clock.empty.firwood', 'Гнездо со знаком ельника. Ему нужен ключ от Лесной калитки', 'The socket bears the sign of the firwood. It wants the key to the Wood Wicket')
+t(f'message.{M}.clock.empty.shore', 'Гнездо со знаком пристани. Ему нужен ключ от Морских ворот', 'The socket bears the sign of the wharf. It wants the key to the Sea Gate')
+t(f'message.{M}.clock.empty.stubble', 'Гнездо со знаком жнивья. Ему нужен ключ от Жнецких ворот', "The socket bears the sign of the stubble. It wants the key to the Reapers' Gate")
+t(f'message.{M}.clock.empty.depths', 'Гнездо со знаком глубин. Ему нужен ключ от Нижней решётки', 'The socket bears the sign of the depths. It wants the key to the Lower Grate')
+t(f'message.{M}.clock.empty.keeper', 'Гнездо без знака, только ключ вырезан. Такой ключ хранят в посаде', 'The socket has no sign, only the cut of a key. Such a key is kept in the borough')
+t(f'message.{M}.clock.set', 'Ключ встал в гнездо: %s из %s', 'The key sets into its socket: %s of %s')
+t(f'message.{M}.clock.started', 'Под землёй что-то сдвинулось и пошло. Наверху, на посаде, поднимается башня.', 'Something under the ground gave way and began to move. Up in the borough, a tower is rising.')
+t(f'message.{M}.clock.rope_slack', 'Верёвка висит без дела', 'The rope hangs slack')
+t(f'message.{M}.clock.rope', 'Верёвка идёт тяжело, как будто её тянут из-под земли.', 'The rope comes heavy, as if pulled up from under the ground.')
+t(f'message.{M}.clock.seat_taken', 'Кресло остыло и пусто', 'The seat has gone cold and empty')
+t(f'message.{M}.clock.seat', 'Ты садишься в кресло Основателя. Камень тёплый.', "You sit in the Founder's seat. The stone is warm.")
+t(f'message.{M}.clock.silence', 'Стало тихо. Так тихо, что слышно, как не ходят мёртвые.', 'It has gone quiet. So quiet that you can hear the dead not walking.')
+t(f'screen.{M}.ending.continue', 'Дальше', 'Go on')
+t(f'ending.{M}.1.0', 'Верёвка идёт тяжело, и колокол над головой нехотя трогается.', 'The rope comes heavy, and the bell overhead stirs unwillingly.')
+t(f'ending.{M}.1.1', 'Он не бил с того дня, как Основатель сел в своё кресло. Теперь бьёт.', 'It has not struck since the day the Founder sat in his seat. It strikes now.')
+t(f'ending.{M}.1.2', 'Раз. Закат, что стоял над Острогом, не гаснет, а осыпается, как зола.', 'Once. The sunset that stood over the Stockade does not fade; it crumbles like ash.')
+t(f'ending.{M}.1.3', 'Два. Те, кто держался на ногах одним упрямством, ложатся там, где стояли.', 'Twice. Those who held to their feet by stubbornness alone lie down where they stood.')
+t(f'ending.{M}.1.4', 'Три. Звонарь внизу поднимает голову. «Слышу, — говорит он. — Вот и всё».', 'Thrice. The Bellman below lifts his head. "I hear it," he says. "That is all, then."')
+t(f'ending.{M}.1.5', 'День кончился. Не сразу и не больно: просто больше нечему идти.', 'The day is over. Not at once and not painfully: there is simply nothing left to go on.')
+t(f'ending.{M}.1.6', 'А над морем, где ничего не было, встаёт чёрный круг с янтарным ободом и венцом рук.', 'And over the sea, where there was nothing, a black disc rises with an amber rim and a crown of hands.')
+t(f'ending.{M}.1.7', 'Руки тянутся вниз. Не к тебе. К тому, что осталось.', 'The hands reach down. Not for you. For what is left.')
+t(f'ending.{M}.1.title', 'КОНЕЦ ДНЯ', 'THE END OF THE DAY')
+t(f'ending.{M}.1.subtitle', 'Закат погас.', 'The sunset is out.')
+t(f'ending.{M}.2.0', 'Кресло каменное, а тёплое. Как будто только что встали.', 'The seat is stone, and warm. As if someone had just got up.')
+t(f'ending.{M}.2.1', 'Ты садишься. Колокол над головой не качнётся.', 'You sit. The bell overhead does not sway.')
+t(f'ending.{M}.2.2', 'Свет тот же: тот же закат за зубцами, та же тишина на лестнице.', 'The light is the same: the same sunset behind the battlements, the same hush on the stair.')
+t(f'ending.{M}.2.3', 'Внизу всё как было: мёртвые ходят, живые боятся, часы стучат под землёй.', 'Below, all is as it was: the dead walk, the living fear, the clock ticks under the ground.')
+t(f'ending.{M}.2.4', 'С лестницы Звонарь спрашивает, что там в небе. Он глух и ответа не услышит.', 'From the stair the Bellman asks what is in the sky. He is deaf and will not hear an answer.')
+t(f'ending.{M}.2.5', '«Рассвет», — говоришь ты всё равно.', '"Dawn," you say anyway.')
+t(f'ending.{M}.2.6', 'Делать больше нечего, только сидеть. Часы идут, а завтра не придёт.', 'There is nothing more to do but sit. The clock runs, and tomorrow will not come.')
+t(f'ending.{M}.2.title', 'РАССВЕТ', 'DAWN')
+t(f'ending.{M}.2.subtitle', 'Немеркнущий.', 'Unfading.')
+
+for i, (ru, en) in enumerate((
+        ('Грядущий лёг? Слышал, как земля вздохнула. Значит, и мне пора отдать, что держал.',
+         'The Coming is down? I heard the ground sigh. Then it is time for me to give up what I kept.'),
+        ('Этот ключ не от ворот. Он от часов, что идут под вашими сапогами. Седьмое гнездо — моё, остальные шесть вы сами собрали.',
+         'This key opens no gate. It is for the clock that runs beneath your boots. The seventh socket is mine; the other six you gathered yourself.'),
+        ('Вставишь — часы пойдут. Что они поднимут, не знаю. Я слеп, а башен не видел и зрячим.',
+         'Set it, and the clock will run. What it raises I cannot say. I am blind, and I never saw towers even when I could.'))):
+    t(f'dialogue.{M}.keykeeper.clock.{i}', ru, en)
+
 # ---- subtitles of the sounds (the events themselves are listed in tools/gen_sounds.py)
 SUBTITLES = {
     'entity.withered.ambient': ('Истлевший хрипит', 'Withered rasps'), 'entity.withered.hurt': ('Истлевший вскрикивает', 'Withered cries out'),
@@ -604,6 +656,11 @@ SUBTITLES = {
     'player.roll': ('Перекат', 'A roll'), 'player.backstab': ('Удар в спину', 'A stab in the back'), 'player.guard_break': ('Защита пробита', 'Guard broken'),
     'player.weapon_swing_heavy': ('Тяжёлый замах', 'A heavy swing'),
     'music.boss': ('Музыка: бой с боссом', 'Music: boss fight'),
+    'block.clock.set': ('Ключ встаёт в гнездо', 'A key sets into its socket'), 'block.clock.empty': ('Гнездо молчит', 'The socket stays silent'),
+    'block.clock.start': ('Часы трогаются', 'The clock stirs'),
+    'block.tower.rumble': ('Земля гудит', 'The ground drones'), 'block.tower.crack': ('Трескается камень', 'Stone cracks'),
+    'block.tower.settle': ('Башня садится на место', 'The tower settles'), 'block.tower.toll': ('Бьёт великий колокол', 'The great bell tolls'),
+    'block.tower.seat': ('Камень принимает тяжесть', 'Stone takes a weight'),
 }
 for event, (ru, en) in SUBTITLES.items():
     t(f'subtitles.{M}.{event}', ru, en)

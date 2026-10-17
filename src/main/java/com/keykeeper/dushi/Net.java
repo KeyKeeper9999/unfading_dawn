@@ -300,4 +300,30 @@ public final class Net {
             return TYPE;
         }
     }
+
+    /**
+     * Server to client: the ground shakes. The screen is rocked for {@code ticks} ticks, by {@code strength} (1.0 is a hard
+     * shake; the bell tower's rising is about 0.9 at its foot). A new one replaces the one running if it is stronger.
+     */
+    public record Quake(int ticks, float strength) implements CustomPacketPayload {
+        public static final Type<Quake> TYPE = new Type<>(Dushi.id("quake"));
+        public static final StreamCodec<ByteBuf, Quake> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, Quake::ticks,
+                ByteBufCodecs.FLOAT, Quake::strength, Quake::new);
+
+        @Override
+        public Type<Quake> type() {
+            return TYPE;
+        }
+    }
+
+    /** Server to client: the screen of an ending (1 the bell, 2 the seat), see {@code EndingScreen}. */
+    public record EndScreen(int ending) implements CustomPacketPayload {
+        public static final Type<EndScreen> TYPE = new Type<>(Dushi.id("end_screen"));
+        public static final StreamCodec<ByteBuf, EndScreen> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, EndScreen::ending, EndScreen::new);
+
+        @Override
+        public Type<EndScreen> type() {
+            return TYPE;
+        }
+    }
 }

@@ -27,6 +27,7 @@ from gen_map import (BARS, BELL, CY, FLOOR_LANTERN, GAL, L0, L1, L2, LANTERN, LC
 from gen_structures import AIR, COLOURS, MOD
 
 OUT = 'map/high_stockade.plan.txt'
+FIGURE = (270, 930)                # where the figure stands over the sea when the bell is struck: plan x, z (the sea's far side, off the end of the Long Spit)
 GY = 16                             # the ground block of the valley; the flat world's own top layer is put at this height. The quarry goes down
                                     # thirteen under it, and the Sky Beneath far further: the world has UNDER layers of its own stone below it
 UNDER = 72                          # (and bedrock under those: see the workflow), so the plan's lowest layer is GY - UNDER, under zero
@@ -452,6 +453,30 @@ def world(x, y, z, spawn):
     return (z - spawn[2] + 0.5, WORLD_GROUND + 1 + y - spawn[1], -(x - spawn[0]) + 0.5)
 
 
+def clock_views(w):
+    """The clock's tower rising, standing and tolling, and the figure over the sea. These are played, not only looked at
+    (client/MapSelfTest): clock_rise_a starts the clock; the clock_up_* wait until the tower stands; clock_rope pulls the
+    rope (what it looks at is the rope's block) and waits for the screen of the ending; the clock_figure_* look at the
+    figure, which rises only where a player is near. The tower's own cells are (x - 6, y, z - 6) from the market's middle."""
+    mx, mz = w.village.market_centre
+    g = GY
+    fx, fz = FIGURE
+    sea = w.shore.sea
+    return [('clock_rise_a', (mx + 6, g + 5, mz + 36), (mx, g + 10, mz)),
+            ('clock_rise_b', (mx + 34, g + 24, mz + 34), (mx, g + 26, mz)),
+            ('clock_up_south', (mx + 4, g + 8, mz + 44), (mx, g + 30, mz)),
+            ('clock_up_far', (mx - 6, g + 26, mz + 110), (mx, g + 30, mz)),
+            ('clock_up_door', (mx, g + 3.2, mz + 14), (mx, g + 4, mz + 6)),
+            ('clock_up_inside', (mx - 1, g + 3.5, mz + 3.5), (mx, g + 16, mz - 1)),
+            ('clock_up_dial', (mx + 10, g + 30, mz + 18), (mx, g + 30, mz + 6)),
+            ('clock_up_belfry', (mx + 13, g + 39, mz + 2), (mx - 1, g + 39, mz)),
+            ('clock_up_seat', (mx - 12, g + 39, mz - 4), (mx - 2, g + 38, mz)),
+            ('clock_up_roof', (mx + 18, g + 52, mz + 18), (mx, g + 46, mz)),
+            ('clock_rope', (mx + 12, g + 39, mz + 1), (mx, g + 39, mz)),
+            ('clock_figure_a', (fx - 70, sea + 40, fz - 110), (fx, sea + 60, fz)),
+            ('clock_figure_done', (fx + 90, sea + 30, fz - 90), (fx, sea + 55, fz))]
+
+
 def views(w):
     """Pictures the client test takes of the finished world: name, the eye, what it looks at; ('time', hour) sets the
     hour for the pictures that follow. The first are walked to as the newcomer is."""
@@ -548,6 +573,7 @@ def views(w):
     out.append(('time', BLUE_HOUR))
     out += w.depths.views()
     out.append(('time', 18000))
+    out += clock_views(w)
     return out
 
 
@@ -667,6 +693,13 @@ if __name__ == '__main__':
             if h and above not in (None, AIR) and not any(k in str(above) for k in castle.PASSABLE) and not castle.is_water(above):
                 problems.append(f'the {kind} at {(x, y, z)} has {above} over its head')
     states = b.save(spawn, OUT, skip_air=False)
+    # where the clock tower and the figure over the sea are set down when the clock runs and the day is ended (Clock.java):
+    # the world's coordinates of the origin cells of their plans (tools/gen_tower.py), turned as the map is
+    mx, mz = w.village.market_centre
+    tower_at = tuple(math.floor(v_) for v_ in world(mx, GY + 1, mz, spawn))
+    figure_at = tuple(math.floor(v_) for v_ in world(FIGURE[0], w.shore.sea, FIGURE[1], spawn))
+    with open('src/main/resources/data/unfading_dawn/clock_sites.txt', 'w') as f:
+        f.write('tower %d %d %d\nfigure %d %d %d\n' % (tower_at + figure_at))
     with open('map/views.txt', 'w') as f:
         for view in views(w):
             if view[0] == 'time':

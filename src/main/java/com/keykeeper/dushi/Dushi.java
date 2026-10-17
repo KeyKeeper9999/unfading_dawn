@@ -99,6 +99,10 @@ public class Dushi {
             () -> AttachmentType.builder(PlayerSoul::new).serialize(PlayerSoul.CODEC).copyOnDeath()
                     .sync((holder, to) -> holder == to, PlayerSoul.STREAM_CODEC).build());
 
+    /** What the clock under the Sky Beneath remembers, for the whole world: kept with the overworld. See {@link Clock}. */
+    public static final Supplier<AttachmentType<ClockState>> CLOCK = ATTACHMENTS.register("clock",
+            () -> AttachmentType.builder(ClockState::new).serialize(ClockState.CODEC).build());
+
     // ------------------------------------------------------------------ sounds (made by tools/gen_sounds.py)
 
     private static final Map<String, DeferredHolder<SoundEvent, SoundEvent>> SOUND_EVENTS = new LinkedHashMap<>();
@@ -170,6 +174,8 @@ public class Dushi {
             "entity.coming.burst",
             "entity.gear.wind", "entity.gear.roll", "entity.gear.catch", "entity.tendril.open", "entity.tendril.rise", "entity.tendril.slap",
             "block.hearth.rest", "block.fog_gate.pass",
+            "block.clock.set", "block.clock.empty", "block.clock.start",
+            "block.tower.rumble", "block.tower.crack", "block.tower.settle", "block.tower.toll", "block.tower.seat",
             "item.flask.drink", "item.flask.empty", "item.spell.shard", "item.spell.shard_hit", "item.spell.mend", "item.spell.rebuke",
             "item.spell.fire", "item.spell.fire_burst", "item.spell.fizzle",
             "player.roll", "player.backstab", "player.guard_break", "player.weapon_swing_heavy",
@@ -224,6 +230,13 @@ public class Dushi {
     public static final DeferredBlock<LockedGateBlock> LOCKED_GATE = BLOCKS.registerBlock("locked_gate", LockedGateBlock::new,
             props -> props.mapColor(MapColor.METAL).strength(-1.0F, 3600000.0F).noOcclusion().noLootTable()
                     .pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.METAL));
+    /** One of the seven sockets of the clock under the Sky Beneath: see {@link com.keykeeper.dushi.block.ClockSocketBlock}. No item; maps set it. */
+    public static final DeferredBlock<com.keykeeper.dushi.block.ClockSocketBlock> CLOCK_SOCKET = BLOCKS.registerBlock("clock_socket", com.keykeeper.dushi.block.ClockSocketBlock::new,
+            props -> props.mapColor(MapColor.METAL).strength(-1.0F, 3600000.0F).noLootTable().pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.METAL)
+                    .lightLevel(state -> state.getValue(com.keykeeper.dushi.block.ClockSocketBlock.FILLED) ? 9 : 0));
+    /** The rope of the great bell and the Founder's seat, at the top of the bell tower: see {@link com.keykeeper.dushi.block.TowerEndBlock}. No item; the tower's plan sets them. */
+    public static final DeferredBlock<com.keykeeper.dushi.block.TowerEndBlock> TOWER_END = BLOCKS.registerBlock("tower_end", com.keykeeper.dushi.block.TowerEndBlock::new,
+            props -> props.mapColor(MapColor.COLOR_BROWN).strength(-1.0F, 3600000.0F).noOcclusion().noLootTable().pushReaction(PushReaction.IMMOVEABLE).sound(SoundType.WOOD));
     /** A hand's depth of water over a floor, which is a floor: see {@link com.keykeeper.dushi.block.ShallowsBlock}. No item; maps set it. */
     public static final DeferredBlock<com.keykeeper.dushi.block.ShallowsBlock> SHALLOWS = BLOCKS.registerBlock("shallows", com.keykeeper.dushi.block.ShallowsBlock::new,
             props -> props.mapColor(MapColor.WATER).strength(-1.0F, 3600000.0F).noCollision().noOcclusion().noLootTable()
@@ -524,6 +537,8 @@ public class Dushi {
     public static final DeferredItem<Item> STUBBLE_KEY = ITEMS.registerItem("stubble_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     /** Opens the Lower Grate, in the south wall of the quarry's sump: the way down to the Sky Beneath. It lies in the Miller's granary. */
     public static final DeferredItem<Item> DEPTHS_KEY = ITEMS.registerItem("depths_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
+    /** The seventh key, the keykeeper's own: it fits the seventh socket of the clock. He gives it to whoever has put the Coming down. */
+    public static final DeferredItem<Item> CLOCK_KEY = ITEMS.registerItem("clock_key", props -> new Item(props.stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant()));
     public static final DeferredItem<com.keykeeper.dushi.item.PowderPotItem> POWDER_POT = ITEMS.registerItem("powder_pot",
             props -> new com.keykeeper.dushi.item.PowderPotItem(props.stacksTo(16)));
     public static final DeferredItem<ReturnEmberItem> RETURN_EMBER = ITEMS.registerItem("return_ember", props -> new ReturnEmberItem(props.stacksTo(16)));
@@ -781,6 +796,7 @@ public class Dushi {
                 output.accept(SHORE_KEY.get());
                 output.accept(STUBBLE_KEY.get());
                 output.accept(DEPTHS_KEY.get());
+                output.accept(CLOCK_KEY.get());
                 output.accept(NAMELESS_SOUL.get());
                 output.accept(GREAT_SOUL.get());
                 output.accept(OVERSEER_SOUL.get());
@@ -894,6 +910,8 @@ public class Dushi {
             registrar.playToServer(Net.Travel.TYPE, Net.Travel.CODEC, Net.Travel::handle);
             registrar.playToClient(Net.OpenHearth.TYPE, Net.OpenHearth.CODEC);
             registrar.playToClient(Net.Banner.TYPE, Net.Banner.CODEC);
+            registrar.playToClient(Net.Quake.TYPE, Net.Quake.CODEC);
+            registrar.playToClient(Net.EndScreen.TYPE, Net.EndScreen.CODEC);
             registrar.playToClient(Net.OpenShop.TYPE, Net.OpenShop.CODEC);
             registrar.playToServer(Net.Buy.TYPE, Net.Buy.CODEC, Net.Buy::handle);
             registrar.playToClient(Net.OpenForge.TYPE, Net.OpenForge.CODEC);

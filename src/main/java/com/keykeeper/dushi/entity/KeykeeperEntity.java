@@ -1,9 +1,12 @@
 package com.keykeeper.dushi.entity;
 
+import com.keykeeper.dushi.Clock;
 import com.keykeeper.dushi.Dushi;
+import com.keykeeper.dushi.Forge;
 import com.keykeeper.dushi.Net;
 import com.keykeeper.dushi.PlayerSoul;
 import com.keykeeper.dushi.SoulMechanics;
+import com.keykeeper.dushi.block.ClockSocketBlock;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import net.minecraft.ChatFormatting;
@@ -30,6 +33,7 @@ import net.minecraft.world.level.Level;
  */
 public class KeykeeperEntity extends PathfinderMob {
     private static final int FIRST_LINES = 4;
+    private static final int CLOCK_LINES = 3;
     private static final int IDLE_LINES = 10;
 
     public KeykeeperEntity(EntityType<? extends KeykeeperEntity> type, Level level) {
@@ -70,6 +74,16 @@ public class KeykeeperEntity extends PathfinderMob {
                 this.playSound(Dushi.sound("entity.keykeeper.give"), 1.0F, 1.0F);
                 level.sendParticles(ParticleTypes.FLAME, this.getX(), this.getY() + 1.0, this.getZ(), 8, 0.3, 0.2, 0.3, 0.01);
             } else {
+                if (Clock.slain(level, "coming") && !Clock.state(level).has(ClockSocketBlock.Socket.KEEPER.bit)
+                        && Forge.count(serverPlayer, Dushi.CLOCK_KEY.get()) <= 0) {
+                    // The Coming is down: the key he kept for the borough, seventh of the clock's, is given at last.
+                    for (int line = 0; line < CLOCK_LINES; line++) {
+                        this.say(serverPlayer, "dialogue.unfading_dawn.keykeeper.clock." + line);
+                    }
+                    this.give(serverPlayer, new ItemStack(Dushi.CLOCK_KEY.get()));
+                    this.playSound(Dushi.sound("entity.keykeeper.give"), 1.0F, 1.0F);
+                    return InteractionResult.SUCCESS;
+                }
                 // After the first meeting he trades: a word of advice and then his wares.
                 this.say(serverPlayer, "dialogue.unfading_dawn.keykeeper.idle." + this.random.nextInt(IDLE_LINES));
                 PacketDistributor.sendToPlayer(serverPlayer, new Net.OpenShop(this.getId()));

@@ -1902,6 +1902,54 @@
       "unfading_dawn:block/fog_gate_pass"
     ]
   },
+  "block.clock.set": {
+    "subtitle": "subtitles.unfading_dawn.block.clock.set",
+    "sounds": [
+      "unfading_dawn:block/clock_set"
+    ]
+  },
+  "block.clock.empty": {
+    "subtitle": "subtitles.unfading_dawn.block.clock.empty",
+    "sounds": [
+      "unfading_dawn:block/clock_empty"
+    ]
+  },
+  "block.clock.start": {
+    "subtitle": "subtitles.unfading_dawn.block.clock.start",
+    "sounds": [
+      "unfading_dawn:block/clock_start"
+    ]
+  },
+  "block.tower.rumble": {
+    "subtitle": "subtitles.unfading_dawn.block.tower.rumble",
+    "sounds": [
+      "unfading_dawn:block/tower_rumble"
+    ]
+  },
+  "block.tower.crack": {
+    "subtitle": "subtitles.unfading_dawn.block.tower.crack",
+    "sounds": [
+      "unfading_dawn:block/tower_crack"
+    ]
+  },
+  "block.tower.settle": {
+    "subtitle": "subtitles.unfading_dawn.block.tower.settle",
+    "sounds": [
+      "unfading_dawn:block/tower_settle"
+    ]
+  },
+  "block.tower.toll": {
+    "subtitle": "subtitles.unfading_dawn.block.tower.toll",
+    "sounds": [
+      "unfading_dawn:block/tower_toll"
+    ]
+  },
+  "block.tower.seat": {
+    "subtitle": "subtitles.unfading_dawn.block.tower.seat",
+    "sounds": [
+      "unfading_dawn:block/tower_seat"
+    ]
+  },
   "item.flask.drink": {
     "subtitle": "subtitles.unfading_dawn.item.flask.drink",
     "sounds": [

@@ -125,6 +125,7 @@ public final class SoulMechanics {
             return;
         }
         if (victim instanceof SoulsMob mob && mob.isBoss()) {
+            Clock.bossSlain(level, victim);
             for (ServerPlayer player : level.players()) {
                 if (player.isAlive() && player.distanceToSqr(victim) <= BOSS_REWARD_RANGE * BOSS_REWARD_RANGE) {
                     giveSouls(player, Math.round(souls * Charm.COFFIN_NAIL.more(player)));
@@ -339,11 +340,17 @@ public final class SoulMechanics {
      * is turned in the passages between them, where no sky is seen). In a world where time moves nothing is touched.
      */
     public static void hour(ServerLevel level, int hour) {
+        if (hour >= 0 && Clock.ended(level)) {
+            hour = MIDNIGHT;                               // the bell has struck: the day is over, in every place
+        }
         if (hour < 0 || level.getGameRules().get(GameRules.ADVANCE_TIME) || Math.floorMod(level.getDefaultClockTime(), 24000L) == hour) {
             return;
         }
         level.getServer().getCommands().performPrefixedCommand(level.getServer().createCommandSourceStack().withSuppressedOutput(), "time set " + hour);
     }
+
+    /** The hour of the night that comes when the day is ended. */
+    private static final int MIDNIGHT = 18000;
 
     /** The hour as a hearth remembers it; -1 where time moves. */
     public static int hourNow(ServerLevel level) {

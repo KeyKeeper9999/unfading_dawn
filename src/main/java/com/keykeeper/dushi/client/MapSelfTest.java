@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.keykeeper.dushi.Clock;
+import com.keykeeper.dushi.ClockState;
 import com.keykeeper.dushi.Dushi;
 import com.keykeeper.dushi.entity.SoulsMob;
 
@@ -41,7 +43,7 @@ public final class MapSelfTest {
     private static final String WORLD = "High_Stockade";
     /** What to photograph: empty for everything, or words of {@code .ci/mapshots} - a place ("depths", "borough", "lords") or the beginning of a view's name. */
     private static final String ONLY = System.getenv("DUSHI_MAPONLY") == null ? "" : System.getenv("DUSHI_MAPONLY").trim();
-    private static final String[] PLACED = {"quarry", "mire", "firwood", "skete", "shore", "stubble", "depths", "near_the", "after_the"};
+    private static final String[] PLACED = {"quarry", "mire", "firwood", "skete", "shore", "stubble", "depths", "near_the", "after_the", "clock"};
 
     /** The same sorting as the sheets' (tools/ci_sheets.py): a view without a place's word is the borough's or the stockade's by its number. */
     private static boolean wanted(String name, int number) {
@@ -77,6 +79,7 @@ public final class MapSelfTest {
     private static int wait;
     private static int waited;
     private static int next;
+    private static int clockWaited;
     private static final List<View> LIST = new ArrayList<>();
     /** The hearths of the map, by name: the test rests at two of them and travels from one to the other. */
     private static final java.util.Map<String, BlockPos> HEARTHS = new java.util.LinkedHashMap<>();
@@ -270,6 +273,20 @@ public final class MapSelfTest {
                     wait = 5;
                     return;
                 }
+                if (view.name.startsWith("clock_")) {
+                    if (minecraft.screen instanceof EndingScreen) {
+                        minecraft.setScreen(null);
+                    }
+                    if (view.name.startsWith("clock_up") || view.name.equals("clock_rope")) {
+                        // the tower stands only after the rumble and all its layers: wait for it (with a player near, which these views are)
+                        if (!server.overworld().getData(Dushi.CLOCK).raised && clockWaited++ < 80) {
+                            wait = 20;
+                            return;
+                        }
+                        say(view.name + ": the tower stands=" + server.overworld().getData(Dushi.CLOCK).raised + (server.overworld().getData(Dushi.CLOCK).raised ? "" : " FAILED"));
+                        clockWaited = 0;
+                    }
+                }
                 if (view.name.equals("gate")) {
                     // a locked gate of the map: shut to one who has not its key, open - all of it - to one who has
                     BlockPos gate = BlockPos.containing(view.x, view.y, view.z);
@@ -334,9 +351,21 @@ public final class MapSelfTest {
                     player.connection.teleport(view.x, view.y - 1.62, view.z, yaw, pitch);
                     player.getAbilities().flying = true;
                     player.onUpdateAbilities();
+                    if (view.name.equals("clock_rise_a")) {
+                        // the seventh key goes in: the clock runs and, with a player this near, the tower comes up
+                        ClockState clock = server.overworld().getData(Dushi.CLOCK);
+                        clock.keys = ClockState.ALL;
+                        clock.started = true;
+                        clock.rise = -1;
+                        say("the clock started by hand: tower site " + Clock.towerSite());
+                    } else if (view.name.equals("clock_rope")) {
+                        Clock.pullRope(server.overworld(), player, BlockPos.containing(view.toX, view.toY, view.toZ));
+                        ClockState clock = server.overworld().getData(Dushi.CLOCK);
+                        say("the rope pulled: ending " + clock.ending + (clock.ending == ClockState.BELL ? "" : " FAILED"));
+                    }
                 });
                 stage = 4;
-                wait = 110;
+                wait = view.name.equals("clock_rope") ? 440 : view.name.equals("clock_figure_done") ? 330 : 110;
             }
             case 4 -> {
                 if (!minecraft.gui.hud.isHidden()) {

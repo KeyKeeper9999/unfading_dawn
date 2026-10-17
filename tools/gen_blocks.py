@@ -386,6 +386,105 @@ def locked_gate_texture():
     return img
 
 
+BRASS = (150, 118, 56)
+BRASS_D = (104, 80, 38)
+BRASS_L = (196, 160, 82)
+AMBER = (255, 206, 96)
+AMBER_D = (214, 128, 36)
+
+# the signs cut into the seven sockets of the clock, nine by nine: what each place is known by
+SOCKET_SIGNS = {
+    'quarry': ('....#....', '...###...', '...###...', '..#####..', '..#####..', '.#######.', '.#######.', '#########', '.........'),
+    'mire': ('.........', '.##..##..', '#..##..##', '.........', '.##..##..', '#..##..##', '.........', '.##..##..', '#..##..##'),
+    'firwood': ('....#....', '...###...', '....#....', '..#####..', '...###...', '.#######.', '..#####..', '....#....', '....#....'),
+    'shore': ('....#....', '...###...', '....#....', '..#####..', '....#....', '#...#...#', '##..#..##', '.#######.', '..#####..'),
+    'stubble': ('....#....', '...#.#...', '..##.##..', '...#.#...', '..##.##..', '...#.#...', '..##.##..', '....#....', '....#....'),
+    'depths': ('....#....', '....#....', '..#.#.#..', '...###...', '#########', '...###...', '..#.#.#..', '....#....', '....#....'),
+    'keeper': ('..###....', '.#...#...', '.#...#...', '..###....', '...#.....', '...#.....', '...##....', '...#.....', '...##....'),
+}
+
+
+def socket_texture(sign, filled):
+    """A brass plate a hand's breadth across, a round socket in it, and the sign of its place cut in: dull while the socket
+    is empty, burning amber with the key in it once it is not."""
+    img = Image.new('RGBA', (16, 16), (0, 0, 0, 255))
+    for y in range(16):
+        for x in range(16):
+            c = BRASS
+            n = blotch('plate' + sign, x, y, 2.4)
+            if n > 0.66:
+                c = BRASS_L
+            elif n < 0.28:
+                c = BRASS_D
+            if x in (0, 15) or y in (0, 15):
+                c = BRASS_D
+            elif x in (1, 14) or y in (1, 14):
+                c = BRASS_L
+            if (x, y) in ((2, 2), (13, 2), (2, 13), (13, 13)):
+                c = (212, 190, 130)                          # a rivet
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            if d <= 6.2:
+                c = (26, 22, 20) if not filled else (84, 46, 16)
+            if 6.2 < d <= 7.0:
+                c = BRASS_D if not filled else AMBER_D
+            img.putpixel((x, y), tuple(c) + (255,))
+    for gy, row in enumerate(SOCKET_SIGNS[sign]):
+        for gx, ch in enumerate(row):
+            if ch == '#':
+                x, y = 3 + gx, 3 + gy
+                img.putpixel((x, y), tuple(AMBER if filled else (112, 92, 54)) + (255,))
+    return img
+
+
+def socket_top(filled):
+    img = Image.new('RGBA', (16, 16), (0, 0, 0, 255))
+    for y in range(16):
+        for x in range(16):
+            c = BRASS if blotch('top', x, y, 2.4) > 0.4 else BRASS_D
+            if x in (0, 15) or y in (0, 15):
+                c = BRASS_D
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            if d <= 3.2:
+                c = (26, 22, 20) if not filled else AMBER
+            elif d <= 4.4:
+                c = BRASS_L if not filled else AMBER_D
+            img.putpixel((x, y), tuple(c) + (255,))
+    return img
+
+
+def rope_texture():
+    """The rope of the great bell: three strands, twisted."""
+    img = Image.new('RGBA', (16, 16), (0, 0, 0, 255))
+    for y in range(16):
+        for x in range(16):
+            twist = (x + y // 2) % 5
+            c = (166, 134, 88) if twist in (0, 1) else ((126, 98, 62) if twist in (2, 3) else (84, 62, 40))
+            if blotch('rope', x, y, 1.6) > 0.8:
+                c = mix(c, (60, 48, 36), 0.4)
+            img.putpixel((x, y), tuple(c) + (255,))
+    return img
+
+
+def seat_textures():
+    """The Founder's seat: dark stone with a line of amber at its edge, and a cushion the colour of a sunset gone to brown."""
+    stone = Image.new('RGBA', (16, 16), (0, 0, 0, 255))
+    cushion = Image.new('RGBA', (16, 16), (0, 0, 0, 255))
+    for y in range(16):
+        for x in range(16):
+            c = (58, 52, 56) if blotch('seat', x, y, 2.6) > 0.35 else (44, 40, 44)
+            if y in (0, 1):
+                c = (214, 150, 52) if y == 0 else (150, 100, 36)
+            stone.putpixel((x, y), tuple(c) + (255,))
+            k = (112, 36, 34) if blotch('cush', x, y, 2.2) > 0.4 else (92, 28, 28)
+            if x in (1, 14) or y in (1, 14):
+                k = (214, 150, 52)
+            if (x + y) % 8 == 0 and 2 <= x <= 13 and 2 <= y <= 13:
+                k = (136, 50, 40)
+            cushion.putpixel((x, y), tuple(k) + (255,))
+    return stone, cushion
+
+
+
 def mob_mark_texture():
     """A broken ring of ash, see-through elsewhere."""
     size = 16
@@ -578,6 +677,47 @@ if __name__ == '__main__':
     mark.save(f'{A}/textures/item/mob_mark.png')
     write_json(f'{A}/models/item/mob_mark.json', {'parent': 'minecraft:item/generated', 'textures': {'layer0': f'{MOD}:item/mob_mark'}})
     write_json(f'{A}/items/mob_mark.json', {'model': {'type': 'minecraft:model', 'model': f'{MOD}:item/mob_mark'}})
+
+    # the seven sockets of the clock: a pedestal of brass with the sign of a place on every side, dull while empty and
+    # burning when the key is in; its top shows the same
+    for filled in (False, True):
+        tag = 'on' if filled else 'off'
+        socket_top(filled).save(f'{A}/textures/block/clock_socket_top_{tag}.png')
+        for sign in SOCKET_SIGNS:
+            socket_texture(sign, filled).save(f'{A}/textures/block/clock_socket_{sign}_{tag}.png')
+            side = {'texture': f'#s', 'cullface': None}
+            write_json(f'{A}/models/block/clock_socket_{sign}_{tag}.json', {
+                'textures': {'s': f'{MOD}:block/clock_socket_{sign}_{tag}', 't': f'{MOD}:block/clock_socket_top_{tag}',
+                             'particle': f'{MOD}:block/clock_socket_{sign}_{tag}'},
+                'elements': [{'from': [1, 0, 1], 'to': [15, 14, 15], 'shade': not filled, 'light_emission': 9 if filled else 0,
+                              'faces': {'north': {'uv': [0, 0, 16, 16], 'texture': '#s'}, 'south': {'uv': [0, 0, 16, 16], 'texture': '#s'},
+                                        'west': {'uv': [0, 0, 16, 16], 'texture': '#s'}, 'east': {'uv': [0, 0, 16, 16], 'texture': '#s'},
+                                        'up': {'uv': [0, 0, 16, 16], 'texture': '#t'}, 'down': {'uv': [0, 0, 16, 16], 'texture': '#t'}}}]})
+    write_json(f'{A}/blockstates/clock_socket.json', {'variants': {
+        f'filled={"true" if filled else "false"},socket={sign}': {'model': f'{MOD}:block/clock_socket_{sign}_{"on" if filled else "off"}'}
+        for filled in (False, True) for sign in SOCKET_SIGNS}})
+
+    # the rope of the great bell and the Founder's seat, at the top of the clock tower
+    rope_texture().save(f'{A}/textures/block/tower_rope.png')
+    seat_stone, seat_cushion = seat_textures()
+    seat_stone.save(f'{A}/textures/block/tower_seat_stone.png')
+    seat_cushion.save(f'{A}/textures/block/tower_seat_cushion.png')
+    write_json(f'{A}/models/block/tower_rope.json', {
+        'textures': {'t': f'{MOD}:block/tower_rope', 'particle': f'{MOD}:block/tower_rope'},
+        'elements': [{'from': [6, 0, 6], 'to': [10, 16, 10],
+                      'faces': {d: {'uv': [0, 0, 4, 16], 'texture': '#t'} for d in ('north', 'south', 'west', 'east')}},
+                     {'from': [5, 0, 5], 'to': [11, 4, 11],
+                      'faces': {d: {'uv': [0, 0, 6, 4], 'texture': '#t'} for d in ('north', 'south', 'west', 'east', 'down')}}]})
+    write_json(f'{A}/models/block/tower_seat.json', {
+        'textures': {'s': f'{MOD}:block/tower_seat_stone', 'c': f'{MOD}:block/tower_seat_cushion', 'particle': f'{MOD}:block/tower_seat_stone'},
+        'elements': [{'from': [0, 0, 0], 'to': [16, 5, 16],
+                      'faces': {d: {'uv': [0, 0, 16, 5], 'texture': '#s'} for d in ('north', 'south', 'west', 'east')} | {
+                          'up': {'uv': [0, 0, 16, 16], 'texture': '#s'}, 'down': {'uv': [0, 0, 16, 16], 'texture': '#s'}}},
+                     {'from': [1, 5, 1], 'to': [15, 9, 15],
+                      'faces': {d: {'uv': [0, 0, 16, 4], 'texture': '#c'} for d in ('north', 'south', 'west', 'east')} | {
+                          'up': {'uv': [0, 0, 16, 16], 'texture': '#c'}}}]})
+    write_json(f'{A}/blockstates/tower_end.json', {'variants': {
+        'kind=rope': {'model': f'{MOD}:block/tower_rope'}, 'kind=seat': {'model': f'{MOD}:block/tower_seat'}}})
 
     # the hearth drops itself; the fog gate and the mark drop nothing
     write_json(f'{DATA}/loot_table/blocks/hearth.json', {

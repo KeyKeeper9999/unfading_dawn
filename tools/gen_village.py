@@ -547,6 +547,7 @@ class Village:
         x0, z0 = self.at(13, 22, 0, 0)
         x1, z1 = self.at(28, 27, 2, 2)
         cx, cz = (x0 + x1) // 2, (z0 + z1) // 2
+        self.market_centre = (cx, cz)             # (where the clock tower comes up out of it: gen_tower.py, Clock.java)
         for x in range(x0, x1 + 1):
             for z in range(z0, z1 + 1):
                 b.set(x, gy, z, cobble(x, gy, z) if hsh(x, 0, z, 260) < 0.8 else 'minecraft:stone_bricks')

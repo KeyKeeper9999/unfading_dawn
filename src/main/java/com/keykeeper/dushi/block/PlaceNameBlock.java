@@ -117,6 +117,10 @@ public class PlaceNameBlock extends Block {
         CLOCKWORKS("clockworks", BLUE_HOUR, true),
         CAUSEWAYS("causeways", BLUE_HOUR, true),
         TEAR("tear", BLUE_HOUR, true),
+        /** The hall behind the Tear, where seven keys are put into the clock. */
+        CLOCK_HALL("clock_hall", BLUE_HOUR, true),
+        /** The tower that rises out of the borough's market when the clock runs. */
+        CLOCK_TOWER("clock_tower", NIGHT, true),
         TO_BLUE_HOUR("to_blue_hour", BLUE_HOUR, false);
 
         public final String id;

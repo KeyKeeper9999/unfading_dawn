@@ -1453,6 +1453,24 @@ ascii_icon('depths_key', [
     ".osdo.oo........",
     "..oo............",
     "................"], {'1': (255, 196, 90), '2': (214, 132, 36), 'S': (86, 88, 100), 's': (62, 64, 74), 'd': (38, 40, 48)})
+# the seventh key, the keykeeper's own: brass, its bow a little dial with one hand - it opens the clock, not a gate
+ascii_icon('clock_key', [
+    "................",
+    "........ooooo...",
+    ".......o11112o..",
+    "......o1d1.d12o.",
+    "......o1dd1d12o.",
+    "......o1d1.112o.",
+    ".......o12222o..",
+    "........ooSo....",
+    ".........oSso...",
+    ".........oSso...",
+    "........oSsdo...",
+    ".........oSso...",
+    "........oSsdoo..",
+    ".........osdo...",
+    "..........oo....",
+    "................"], {'1': (255, 226, 140), '2': (236, 156, 44), 'S': (196, 160, 82), 's': (150, 118, 56), 'd': (104, 80, 38)})
 # the Bolt's: amber, with its keyhole in it; the Coming's: the night, a rim of light round it
 ascii_icon('bolt_soul', SOUL_ROWS, {'1': (255, 226, 140), '2': (236, 156, 44), 'd': (150, 86, 22), 'M': (20, 18, 26), 'D': (62, 64, 74)}, lock='12dMD')
 ascii_icon('coming_soul', SOUL_ROWS, {'1': (236, 226, 255), '2': (126, 96, 206), 'd': (44, 40, 92), 'M': (6, 6, 14), 'D': (18, 18, 36)}, lock='12dMD')

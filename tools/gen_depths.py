@@ -63,7 +63,10 @@ BEHIND = (78, 740)                           # the hearth behind the pendulum
 TEAR = (62, 784)                             # the Tear: its middle
 TEAR_R = 18
 LAST = (62, 757)                             # the hearth by the Tear
-END = (TEAR[0] + TEAR_R + 10, TEAR[1])        # the room beyond it: east of the Tear (the Coming has the wall opposite the way in)
+END = (TEAR[0] + TEAR_R + 15, TEAR[1])        # the hall of the clock beyond it: east of the Tear (the Coming has the wall opposite the way in)
+HALL_R = 9.5                                 # how wide the hall is (it holds a ring of seven sockets)
+SOCKET_R = 5.6                               # and the ring they stand on
+SOCKETS = ('quarry', 'mire', 'firwood', 'shore', 'stubble', 'depths', 'keeper')
 BAY = 7                                      # the rock face the Tear's crack is in: so far either side of its middle
 RIFT_TOP = 13                                # and the crack is so many cells tall
 # the Still Water: round these its floor lies (x, z, how far), and here the floor is gone
@@ -707,7 +710,7 @@ class Depths:
         self.tear_floor = self.lay({(x, z) for x in range(tx - R - 3, tx + R + 4) for z in range(tz - R - 3, tz + R + 4) if math.hypot(x - tx, z - tz) <= R + 2.2},
                                    HIGH, glass_rock, wet=True, sky='tear')
         self.tear_east = self.lay(self.line((tx + R + 3, tz), (END[0] - 3, tz), 1), HIGH, black_rock, roof=5)
-        self.end = self.lay(self.blob(((END[0], END[1], 5.0),), 30, 0.6), HIGH, works_floor, roof=6)
+        self.end = self.lay(self.blob(((END[0], END[1], HALL_R),), 30, 0.5), HIGH, works_floor, roof=7)
 
     # ------------------------------------------------------------------ the Brink and the Still Water
 
@@ -1031,16 +1034,30 @@ class Depths:
             a = k * math.pi / 4 + 0.39
             self.crystal(int(round(cx + math.cos(a) * (R - 1.5))), int(round(cz + math.sin(a) * (R - 1.5))), 3, 20 + k)
         self.lamp_grid({c for c in floor if math.hypot(c[0] - cx, c[1] - cz) < R}, 15, up=6)
-        # the room beyond: the works of the clock itself, lying where they were left. (What is done with them comes later.)
+        # the hall beyond: the clock itself. Its works lie where they were left, a dial in the floor; round the dial, on a ring,
+        # seven sockets, each with the sign of a place cut into it (ClockSocketBlock): the keys of the seven places go in
+        # here, and when they are in, the clock runs (Clock.java) and a tower comes up out of the borough
         ex, ez = END
-        for dx in range(-2, 3):
-            for dz in range(-2, 3):
+        b.threshold('clock_hall', ex - int(HALL_R) - 1, HIGH + 1, ez - 1, ex - int(HALL_R), ez + 1)
+        for dx in range(-3, 4):
+            for dz in range(-3, 4):
                 far = math.hypot(dx, dz)
-                if far <= 2.4:
-                    b.set(ex + dx, HIGH, ez + 1 + dz, 'minecraft:waxed_cut_copper' if far > 1.5 else ('minecraft:ochre_froglight[axis=y]' if far < 0.5 else 'minecraft:netherite_block'))
-        b.loot(ex + 3, HIGH + 1, ez, 'depths_tear', 'west')
-        b.shard(ex - 3, HIGH + 1, ez + 1)
-        self.keep(ex - 4, ez - 3, ex + 4, ez + 4)
+                if far <= 3.4:
+                    state = 'minecraft:waxed_cut_copper' if far > 2.2 else ('minecraft:waxed_oxidized_cut_copper' if far > 1.4 else
+                                                                         ('minecraft:ochre_froglight[axis=y]' if far < 0.5 else 'minecraft:netherite_block'))
+                    b.set(ex + dx, HIGH, ez + dz, state)
+        for k, sign in enumerate(SOCKETS):
+            a = math.radians(-135 + 45 * k)
+            sx, sz = int(round(ex + math.cos(a) * SOCKET_R)), int(round(ez + math.sin(a) * SOCKET_R))
+            # a spoke of the dial to each socket, and its pedestal on the end of it
+            for step in range(4, int(SOCKET_R) + 1):
+                px, pz = int(round(ex + math.cos(a) * step)), int(round(ez + math.sin(a) * step))
+                b.set(px, HIGH, pz, 'minecraft:waxed_oxidized_cut_copper' if step < SOCKET_R - 0.5 else 'minecraft:waxed_cut_copper')
+            b.set(sx, HIGH, sz, 'minecraft:waxed_cut_copper')
+            b.set(sx, HIGH + 1, sz, f'{MOD}:clock_socket[socket={sign},filled=false]')
+        b.loot(ex - 3, HIGH + 1, ez - 3, 'depths_tear', 'east')
+        b.shard(ex - 3, HIGH + 1, ez + 3)
+        self.keep(ex - int(HALL_R) - 1, ez - int(HALL_R), ex + int(HALL_R) + 1, ez + int(HALL_R) + 1)
         self.lamp_grid(self.end, 13, every=3)
         self.lamps(self.tear_north | self.tear_east, 11, every=2)
 
@@ -1171,7 +1188,9 @@ class Depths:
             ('depths_tear_crack', self.eye(tx + 0.5, tz + 2.5), (tx, h + 6, tz + TEAR_R + 2)),
             ('depths_tear_crack_aslant', self.eye(tx - 8.5, tz + 8.5), (tx + 2, h + 5, tz + TEAR_R + 2)),
             ('depths_tear_way_out', self.eye(tx + 6.5, tz + 0.5), (tx + TEAR_R + 2, h + 2, tz)),
-            ('depths_beyond', self.eye(END[0] - 3.5, END[1] + 0.5), (END[0] + 2, h + 1, END[1] + 1)),
+            ('depths_beyond', self.eye(END[0] - 8.5, END[1] + 0.5), (END[0] + 2, h + 1, END[1] + 1)),
+            ('depths_clock_hall', self.eye(END[0] - 8.0, END[1] + 0.5), (END[0] + 6, h + 2.5, END[1] - 3)),
+            ('depths_clock_sockets', self.eye(END[0] - 2.0, END[1] + 0.5), (END[0] + 7, h + 1.5, END[1] + 4)),
         ]
 
     def probes(self):
