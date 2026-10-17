@@ -123,6 +123,12 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   No item: maps set it.
 - `block/ShardBlock` (`shard_heap`) - a flask shard glowing in a heap of ash: taken with a click, once. Flask shards
   are not put in chests: they lie in such heaps or are left by the lords, about two to a part of a map.
+- `Clock` + `ClockState` (a level attachment, `Dushi.CLOCK`) - the end of the map: seven `block/ClockSocketBlock`s (the keys of the six gates and
+  the keykeeper's `clock_key`) start the clock; a started clock raises the tower of `plan/clock_tower.txt` in the borough as soon as a
+  player is near (layer by layer, `Net.Quake` shakes the screens: `DushiClient.onCamera`); at its top `block/TowerEndBlock` is the rope of
+  the great bell (everything of the mod's lies down, a figure rises over the sea: `plan/horizon_figure.txt`, midnight everywhere) or the
+  Founder's seat (nothing ends); `client/EndingScreen` shows the end. Where the plans stand is `data/unfading_dawn/clock_sites.txt`,
+  written by `gen_world.py`; the plans by `gen_tower.py`. The lords that fell are kept in `ClockState.slain` for the folk's talk.
 - `MapBuilder` (build only) and `client/MapSelfTest` (build only) - see "The map".
 - `Gear` - what the rules know about any piece of gear, the game's own included: stamina cost, scaling and backstab of
   a weapon (by item tag for vanilla ones), stability of a shield, weight of everything worn or held, and the burden that

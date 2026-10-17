@@ -196,3 +196,15 @@ What was set (amber and brass on them: the Founder's):
 Left for later: the gear of the place (weapons, a shield, a spell, a charm, armour; the mask from the Coming's soul),
 anyone to talk to, the mechanism on the ledge beyond the Tear and the tower it raises. The souls of the two lords
 have no recipes yet.
+
+## The hall of the clock (2026-10-18)
+
+East of the Tear (`gen_depths.py`, `END`, `HALL_R`, `SOCKET_R`, the threshold `clock_hall`): a round hall with a dial of copper
+and froglight in its floor and seven `clock_socket` blocks on a ring round it (angles -135 degrees + 45 each, a copper spoke
+to each); a chest (`depths_tear`) and a flask shard beside the way in. Each socket carries the sign of its place
+(`ClockSocketBlock.Socket`: quarry, mire, firwood, shore, stubble, depths, keeper); whoever touches an empty one with the
+matching key among their things puts it in for good, and when all seven are in `Clock` starts the clock (see
+`docs/story.md`, "Часы, башня и два конца"). The seventh key, `clock_key`, is given by the keykeeper once the Coming has
+fallen (`KeykeeperEntity.mobInteract`); the six others are the keys of the six gates. Views: `depths_clock_hall`,
+`depths_clock_sockets`. Not checked in play: how the hall reads at the hour of the place, and the sockets' glow.
+
