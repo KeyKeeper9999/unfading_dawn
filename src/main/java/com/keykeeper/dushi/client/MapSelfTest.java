@@ -349,14 +349,15 @@ public final class MapSelfTest {
                     wait = 60;
                     return;
                 }
-                if (view.name.startsWith("clock_scene_") || view.name.equals("clock_end") || view.name.equals("clock_seat_b") || view.name.equals("clock_seat_c")) {
+                if (view.name.startsWith("clock_scene_") || view.name.equals("clock_end") || view.name.startsWith("clock_seat_") && !view.name.equals("clock_seat_a")) {
                     // the cutscene has the camera: nothing to fly to, only a time to wait (ticks after the one before)
                     stage = 4;
                     wait = switch (view.name) {
                         case "clock_scene_a" -> 140;
                         case "clock_scene_e" -> 100;
                         case "clock_end" -> 100;
-                        case "clock_seat_b", "clock_seat_c" -> 230;
+                        case "clock_seat_b" -> 140;
+                        case "clock_seat_c", "clock_seat_d" -> 180;
                         default -> 150;
                     };
                     return;
@@ -403,7 +404,7 @@ public final class MapSelfTest {
                     }
                 });
                 stage = 4;
-                wait = view.name.equals("clock_rope") ? 100 : 110;
+                wait = view.name.equals("clock_rope") ? 100 : view.name.equals("clock_seat_a") ? 60 : 110;
             }
             case 4 -> {
                 if (!minecraft.gui.hud.isHidden()) {

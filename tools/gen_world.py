@@ -459,7 +459,7 @@ def clock_views(w):
     rope (what it looks at is the rope's block): the cutscene of the bell takes the camera, and the clock_scene_* are
     pictures taken through it as it goes (they stay where they are and wait), clock_end the screen of the ending after it;
     the clock_figure_* look at the figure, which stands by then (it is the client's: Cinema); clock_seat_a takes the bell's ending back
-    and sits in the seat, and the cutscene of the seat goes on for the clock_seat_b and _c to photograph. The tower's own cells are
+    and sits in the seat, and the cutscene of the seat goes on for the clock_seat_b, _c and _d to photograph. The tower's own cells are
     (x - 6, y, z - 6) from the market's middle."""
     mx, mz = w.village.market_centre
     g = GY
@@ -490,7 +490,8 @@ def clock_views(w):
             # the other ending, in the same world after the first has been taken back: the seat's cutscene, which goes by itself too
             ('clock_seat_a', (mx + 0.5, g + 39, mz), (mx - 2, g + 37.5, mz)),
             ('clock_seat_b', (mx + 0.5, g + 39, mz), (mx - 2, g + 37.5, mz)),
-            ('clock_seat_c', (mx + 0.5, g + 39, mz), (mx - 2, g + 37.5, mz))]
+            ('clock_seat_c', (mx + 0.5, g + 39, mz), (mx - 2, g + 37.5, mz)),
+            ('clock_seat_d', (mx + 0.5, g + 39, mz), (mx - 2, g + 37.5, mz))]
 
 
 def views(w):

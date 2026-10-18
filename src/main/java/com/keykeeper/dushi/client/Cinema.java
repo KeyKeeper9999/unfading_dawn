@@ -42,6 +42,8 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 public final class Cinema {
     /** Ticks of the bell's cutscene before the cut, and of the black that hides it. */
     private static final int CUT = 162;
+    /** The same for the seat's: the player's own eyes turn to the horizon, and then the camera is out and high over the tower (it could not rise through the bell and the roof). */
+    private static final int SEAT_CUT = 90;
     /** Fog, in blocks, while the figure can be seen. */
     private static final float FOG_START = 1500.0F;
     private static final float FOG_END = 2400.0F;
@@ -168,6 +170,11 @@ public final class Cinema {
 
     // ------------------------------------------------------------------ the cutscene
 
+    /** The tick of a cutscene at which the camera is cut from the player's own eyes to its path outside. */
+    private static int cutAt(int ending) {
+        return ending == ClockState.SEAT ? SEAT_CUT : CUT;
+    }
+
     private static int length(int ending) {
         return ending == ClockState.SEAT ? com.keykeeper.dushi.Clock.SEAT_LENGTH : com.keykeeper.dushi.Clock.BELL_LENGTH;
     }
@@ -253,9 +260,8 @@ public final class Cinema {
         float t = minecraft.level.getGameTime() - scene.start + partial;
         int length = length(scene.ending);
         float black = Anim.ramp(t, length - 50.0F, length);
-        if (scene.ending == ClockState.BELL) {
-            black = Math.max(black, Anim.ramp(t, 150.0F, CUT) * (1.0F - Anim.ramp(t, CUT + 1.0F, 182.0F)));
-        }
+        int cut = cutAt(scene.ending);
+        black = Math.max(black, Anim.ramp(t, cut - 12.0F, cut) * (1.0F - Anim.ramp(t, cut + 1.0F, cut + 20.0F)));
         return black;
     }
 
@@ -300,13 +306,18 @@ public final class Cinema {
     }
 
     private static Look seatPath(Scene s, long t) {
-        float rise = Anim.ramp(t, 40.0F, 600.0F);
         double forward = s.sunYaw * Mth.DEG_TO_RAD;
         Vec3 back = new Vec3(Mth.sin((float) forward), 0.0, -Mth.cos((float) forward));        // (behind where it looks)
-        Vec3 pos = s.eye.add(0.0, 90.0 * rise, 0.0).add(back.scale(24.0 * rise));
-        float yaw = s.yaw0 + Mth.wrapDegrees(s.sunYaw - s.yaw0) * Anim.ramp(t, 20.0F, 400.0F);
-        float pitch = s.pitch0 + (10.0F - s.pitch0) * Anim.ramp(t, 40.0F, 300.0F) + (-6.0F - 10.0F) * Anim.ramp(t, 300.0F, 620.0F);
-        return new Look(pos, yaw, pitch);
+        if (t < SEAT_CUT) {
+            // the player's own eyes, lifted a little, turning to where the sun is, or was: out of the belfry's arch, at the horizon
+            float e = Anim.ramp(t, 10.0F, 80.0F);
+            Vec3 pos = s.eye.add(0.0, 0.6 * Anim.ramp(t, 0.0F, SEAT_CUT), 0.0);
+            return new Look(pos, s.yaw0 + Mth.wrapDegrees(s.sunYaw - s.yaw0) * e, Anim.lerp(e, s.pitch0, 6.0F));
+        }
+        // out and high over the tower, rising over the horizon of the hour, with the sky coming into the view
+        float u = Anim.ramp(t, SEAT_CUT, length(ClockState.SEAT));
+        Vec3 pos = s.eye.add(0.0, 34.0 + 70.0 * u, 0.0).add(back.scale(16.0 + 20.0 * u));
+        return new Look(pos, s.sunYaw, Anim.lerp(u, 8.0F, -8.0F));
     }
 
     private static void tickScene(Minecraft minecraft, ClientLevel level) {
@@ -319,7 +330,7 @@ public final class Cinema {
         Look look = s.ending == ClockState.SEAT ? seatPath(s, t) : bellPath(s, t);
         s.yaw = look.yaw();
         double y = look.pos().y - s.dolly.getEyeHeight();
-        if (t == CUT && s.ending == ClockState.BELL) {
+        if (t == cutAt(s.ending)) {
             s.dolly.snapTo(look.pos().x, y, look.pos().z, look.yaw(), look.pitch());         // (the cut: nothing is carried across it)
         } else {
             s.dolly.setOldPosAndRot();
