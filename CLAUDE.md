@@ -126,9 +126,22 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
 - `Clock` + `ClockState` (a level attachment, `Dushi.CLOCK`) - the end of the map: seven `block/ClockSocketBlock`s (the keys of the six gates and
   the keykeeper's `clock_key`) start the clock; a started clock raises the tower of `plan/clock_tower.txt` in the borough as soon as a
   player is near (layer by layer, `Net.Quake` shakes the screens: `DushiClient.onCamera`); at its top `block/TowerEndBlock` is the rope of
-  the great bell (everything of the mod's lies down, a figure rises over the sea: `plan/horizon_figure.txt`, midnight everywhere) or the
-  Founder's seat (nothing ends); `client/EndingScreen` shows the end. Where the plans stand is `data/unfading_dawn/clock_sites.txt`,
+  the great bell (everything of the mod's lies down, midnight everywhere, and a colossus rises out of the sea) or the
+  Founder's seat (nothing ends). Both ends are watched in a cutscene (`Net.Cutscene`, `client/Cinema`: the camera is a client-only `DollyEntity`
+  that the game is made to look through, moved along a keyed path; `client/CutsceneScreen` holds the controls and takes a key to skip; the hud
+  is hidden and, for the bell, the render distance raised); `client/EndingScreen` shows the end after it. Where the plans stand is `data/unfading_dawn/clock_sites.txt`,
   written by `gen_world.py`; the plans by `gen_tower.py`. The lords that fell are kept in `ClockState.slain` for the folk's talk.
+- The colossus over the sea (`entity/ColossusEntity`, `client/ColossusModel`, `ColossusRenderer`, `Cinema`; the model and its two textures
+  by `tools/gen_colossus.py`, the sounds `colossus/*` by `gen_sounds.py`): it stands at `Clock.figureSite()`, about 450 blocks from the tower,
+  far beyond where any entity is sent, so it exists **on the client alone** - the server never has one; `Net.Colossus` says where it stands and
+  how long ago it began to rise (sent at the rope, and again to whoever logs in, respawns or comes back into the overworld), and its age is read
+  off the level's game time. A decoration: nothing can touch or hurt it, it strikes nobody. Three things learnt about drawing something that far:
+  the game draws an entity only if the section of the world at the entity's place is built (`LevelExtractor` asks
+  `LevelRenderer.isSectionCompiledAndVisible`, never true 450 blocks off), so `Cinema.onTick` keeps the entity beside the camera and
+  `ColossusRenderer.getRenderOffset` moves its drawing to where it stands; the fog of the game's own sight is moved out of the way while
+  anyone is near enough to see it (`Cinema.onFog`); and an entity put into a client's own world needs a number first (`Entity.setId`; `Cinema`
+  gives numbers from 1 000 000 000 up). Its sounds (the sea heaving, three roars) are not positional: `Cinema.tickFigure` plays them at fixed
+  ticks of its rising to everyone, and shakes the screens (`DushiClient.shake`).
 - `MapBuilder` (build only) and `client/MapSelfTest` (build only) - see "The map".
 - `Gear` - what the rules know about any piece of gear, the game's own included: stamina cost, scaling and backstab of
   a weapon (by item tag for vanilla ones), stability of a shield, weight of everything worn or held, and the burden that
@@ -195,7 +208,8 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
     `gen_sect.py` (the wakeful, the waker and the sleeper on one model), `gen_waxen.py`, `gen_moth.py`, `gen_shatun.py`,
     `gen_elder.py`, `gen_sailor.py` (five seamen on one mesh), `gen_crab.py`, `gen_skua.py`, `gen_capsized.py`,
     `gen_fieldhand.py` (five fieldhands on one mesh), `gen_scarecrow.py`, `gen_stook.py` (and the millstone), `gen_sungazer.py`,
-    `gen_dusk.py` (six of the Sky Beneath), `gen_clock.py` (the clockhand, the Bolt, and the works of its hall: a wheel and a weight), `gen_coming.py` (the Coming - with its poses, which it writes into the model - the arm it reaches out of the floor with, and the eyes that open in the rock; all three paint with `duskkit.py`) - the mobs; `gen_anchor.py` (the Helmsman's cast anchor) and `gen_beam.py` (a shaft of sunlight, see-through and shining) - things that fly or stand that are not mobs
+    `gen_dusk.py` (six of the Sky Beneath), `gen_clock.py` (the clockhand, the Bolt, and the works of its hall: a wheel and a weight), `gen_coming.py` (the Coming - with its poses, which it writes into the model - the arm it reaches out of the floor with, and the eyes that open in the rock; all three paint with `duskkit.py`) - the mobs; `gen_anchor.py` (the Helmsman's cast anchor), `gen_beam.py` (a shaft of sunlight, see-through and shining) and `gen_colossus.py` (the figure over the sea, 1024x1024 texture,
+    with a preview: `PYTHONPATH=tools python3 tools/gen_colossus.py [preview.png [ages]]`; `NOJAVA=1` leaves the Java model alone; its `pose_at(age)` is what `ColossusModel.setupAnim` does) - things that fly or stand that are not mobs
     (the withered are eleven kinds now: the Mire's drowned too). `Model.mirror` gives a mirrored part the parent of its
     source with "right" turned to "left" in the name: a part whose parent is named otherwise (`leg_r1`, `wing_r`) must be
     given its `parent=`, or the left shin hangs from the right leg - which the preview shows only if one looks, and the

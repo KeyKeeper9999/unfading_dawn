@@ -277,7 +277,7 @@ public final class MapSelfTest {
                     if (minecraft.gui.screen() instanceof EndingScreen && !view.name.equals("clock_end")) {
                         minecraft.gui.setScreen(null);
                     }
-                    if (view.name.startsWith("clock_up") || view.name.equals("clock_rope")) {
+                    if (view.name.startsWith("clock_up") || view.name.equals("clock_rope") || view.name.equals("clock_seat_a")) {
                         // the tower stands only after the rumble and all its layers: wait for it (with a player near, which these views are);
                         // asked for alone (without clock_rise_a) they start the clock themselves
                         ClockState begun = server.overworld().getData(Dushi.CLOCK);
@@ -349,16 +349,20 @@ public final class MapSelfTest {
                     wait = 60;
                     return;
                 }
-                if (view.name.startsWith("clock_scene_") || view.name.equals("clock_end")) {
+                if (view.name.startsWith("clock_scene_") || view.name.equals("clock_end") || view.name.equals("clock_seat_b") || view.name.equals("clock_seat_c")) {
                     // the cutscene has the camera: nothing to fly to, only a time to wait (ticks after the one before)
                     stage = 4;
                     wait = switch (view.name) {
                         case "clock_scene_a" -> 140;
                         case "clock_scene_e" -> 100;
                         case "clock_end" -> 100;
+                        case "clock_seat_b", "clock_seat_c" -> 230;
                         default -> 150;
                     };
                     return;
+                }
+                if (view.name.equals("clock_seat_a")) {
+                    Cinema.clearFigure();                                        // (the figure of the bell's ending is not the seat's)
                 }
                 if (view.name.startsWith("clock_figure") && !Cinema.hasFigure()) {
                     // (asked for without the bell: the figure is put up standing, as it is for a player who comes into the world after it)
@@ -385,6 +389,13 @@ public final class MapSelfTest {
                         clock.started = true;
                         clock.rise = -1;
                         say("the clock started by hand: tower site " + Clock.towerSite());
+                    } else if (view.name.equals("clock_seat_a")) {
+                        // the day of the bell taken back, and the seat taken instead: the other ending, and its cutscene
+                        ClockState clock = server.overworld().getData(Dushi.CLOCK);
+                        clock.ending = ClockState.NO_ENDING;
+                        clock.endingTick = 0;
+                        Clock.takeSeat(server.overworld(), player, BlockPos.containing(view.toX, view.toY, view.toZ));
+                        say("the seat taken: ending " + clock.ending + (clock.ending == ClockState.SEAT ? "" : " FAILED"));
                     } else if (view.name.equals("clock_rope")) {
                         Clock.pullRope(server.overworld(), player, BlockPos.containing(view.toX, view.toY, view.toZ));
                         ClockState clock = server.overworld().getData(Dushi.CLOCK);

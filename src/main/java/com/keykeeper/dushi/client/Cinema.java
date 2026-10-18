@@ -115,6 +115,12 @@ public final class Cinema {
         return text.toString();
     }
 
+    /** The figure taken down (the test's other ending is played in the same world). */
+    static void clearFigure() {
+        dropFigure();
+        figureAt = null;
+    }
+
     /** Whether the figure is up (the test asks, to put one up if the bell has not been struck in its run). */
     static boolean hasFigure() {
         return colossus != null && !colossus.isRemoved();
@@ -276,8 +282,8 @@ public final class Cinema {
         Vec3 figure = figureAt != null ? figureAt : s.rope.add(400.0, 0.0, 0.0);
         if (t < CUT) {
             // the player's own eyes, lifted a little, drawn up to the bell that tolls over the rope
-            Vec3 pos = s.eye.add(0.0, 0.35 * Anim.ramp(t, 0.0F, 150.0F), 0.0);
-            Vec3 bell = s.rope.add(0.0, 5.5, 0.0);
+            Vec3 pos = s.eye.add(0.0, 0.6 * Anim.ramp(t, 0.0F, 150.0F), 0.0);
+            Vec3 bell = s.rope.add(0.0, 2.2, 0.0);
             float e = Anim.ramp(t, 8.0F, 70.0F);
             float yaw = s.yaw0 + Mth.wrapDegrees(yawTo(pos, bell) - s.yaw0) * e;
             return new Look(pos, yaw, Anim.lerp(e, s.pitch0, pitchTo(pos, bell)));

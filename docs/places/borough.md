@@ -23,5 +23,7 @@ when the clock under the Sky Beneath runs and a player comes within 90 blocks, t
 four dials, a belfry with the great bell, its rope and the Founder's seat, a roof of dark tiles) is set down layer by layer
 by `Clock.java` with a long rumble and a shaking screen (`Net.Quake`). The two ends of the day are at the top, see
 `docs/story.md`. Where the tower and the figure over the sea stand is in `data/unfading_dawn/clock_sites.txt`, which
-`gen_world.py` writes. The map's test plays it (`clock_*` views of `map/views.txt`, `.ci/mapshots` word `clock`).
+`gen_world.py` writes (the figure is a client-only colossus, see CLAUDE.md, in the Wharf's bay about 450 blocks east of the tower).
+The map's test plays it (`clock_*` views of `map/views.txt`, `.ci/mapshots` word `clock`): the tower rising and standing, the bell's cutscene
+(`clock_rope`, `clock_scene_a`..`e`, `clock_end`), the figure from far, middle and foot, and the seat's cutscene (`clock_seat_a`..`c`).
 
