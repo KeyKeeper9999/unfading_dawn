@@ -99,6 +99,19 @@ public final class Cinema {
         lastAge = packet.age();
     }
 
+    /** What the figure and the cutscene are doing, for the test's log: the figure's age, and the time of the scene. */
+    static String describe() {
+        Minecraft minecraft = Minecraft.getInstance();
+        StringBuilder text = new StringBuilder();
+        if (minecraft.level != null && colossus != null) {
+            text.append("figure age ").append(minecraft.level.getGameTime() - colossus.begun()).append(" at ").append(figureAt);
+        }
+        if (minecraft.level != null && scene != null) {
+            text.append(text.length() > 0 ? "; " : "").append("scene ").append(scene.ending).append(" at ").append(minecraft.level.getGameTime() - scene.start).append(" ticks");
+        }
+        return text.toString();
+    }
+
     /** Whether the figure is up (the test asks, to put one up if the bell has not been struck in its run). */
     static boolean hasFigure() {
         return colossus != null && !colossus.isRemoved();

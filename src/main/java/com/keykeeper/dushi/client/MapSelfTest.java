@@ -407,6 +407,11 @@ public final class MapSelfTest {
                     }
                 }
                 say(LIST.get(next).name + ": " + mobs + " of the dead within 48 blocks");
+                if (LIST.get(next).name.startsWith("clock_")) {
+                    Entity eye = minecraft.getCameraEntity();
+                    say(LIST.get(next).name + ": camera " + eye.getClass().getSimpleName() + String.format(" at %.1f %.1f %.1f, yaw %.0f pitch %.0f; ", eye.getX(), eye.getEyeY(), eye.getZ(), eye.getYRot(), eye.getXRot())
+                            + Cinema.describe() + "; render distance " + minecraft.options.renderDistance().get());
+                }
                 if (LIST.get(next).name.startsWith("depths_tear")) {
                     // the Coming's hall: which way it is, and the eyes that are open in the rock round it
                     StringBuilder seen = new StringBuilder();
