@@ -354,7 +354,7 @@ public final class MapSelfTest {
                     stage = 4;
                     wait = switch (view.name) {
                         case "clock_scene_a" -> 140;
-                        case "clock_scene_e" -> 130;
+                        case "clock_scene_e" -> 100;
                         case "clock_end" -> 100;
                         default -> 150;
                     };

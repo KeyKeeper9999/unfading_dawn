@@ -53,6 +53,9 @@ public final class Cinema {
     private static final String[] SOUND = {"entity.colossus.rumble", "entity.colossus.roar_short", "entity.colossus.roar", "entity.colossus.roar_short"};
     private static final float[] SOUND_PITCH = {1.0F, 1.0F, 1.0F, 0.88F};
 
+    /** The numbers the client gives its own entities (the server never heard of them), far above any the server counts up to. */
+    private static int nextId = 1_000_000_000;
+
     private static ColossusEntity colossus;
     private static Vec3 figureAt;
     private static long lastAge;
@@ -91,7 +94,7 @@ public final class Cinema {
         ColossusEntity entity = new ColossusEntity(Dushi.COLOSSUS.get(), level);
         entity.snapTo(figureAt.x, figureAt.y, figureAt.z, packet.yaw(), 0.0F);
         entity.begin(level.getGameTime() - packet.age());
-        level.addEntity(entity);
+        add(level, entity);
         colossus = entity;
         lastAge = packet.age();
     }
@@ -99,6 +102,12 @@ public final class Cinema {
     /** Whether the figure is up (the test asks, to put one up if the bell has not been struck in its run). */
     static boolean hasFigure() {
         return colossus != null && !colossus.isRemoved();
+    }
+
+    /** Puts an entity of the client's own into its world: the game wants it numbered first. */
+    private static void add(ClientLevel level, net.minecraft.world.entity.Entity entity) {
+        entity.setId(nextId++);
+        level.addEntity(entity);
     }
 
     private static void dropFigure() {
@@ -160,7 +169,7 @@ public final class Cinema {
         s.sunYaw = hour >= 3000L && hour < 15000L ? 90.0F : -90.0F;
         s.dolly = new DollyEntity(Dushi.DOLLY.get(), level);
         s.dolly.snapTo(s.eye.x, s.eye.y - s.dolly.getEyeHeight(), s.eye.z, s.yaw0, s.pitch0);
-        level.addEntity(s.dolly);
+        add(level, s.dolly);
         minecraft.setCameraEntity(s.dolly);
         s.hudWasHidden = minecraft.gui.hud.isHidden();
         if (!s.hudWasHidden) {
