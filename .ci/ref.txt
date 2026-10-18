@@ -1,6 +1,2 @@
-net/minecraft/client/renderer/LevelRenderer.class
-net/minecraft/client/renderer/entity/EntityRenderDispatcher.class
-net/minecraft/client/renderer/entity/EntityRenderer.class
-net/minecraft/client/renderer/GameRenderer.class
-net/minecraft/client/renderer/SectionOcclusionGraph.class
-net/minecraft/client/renderer/culling/Frustum.class
+net/minecraft/client/renderer/extract/LevelExtractor.class
+net/minecraft/client/Camera.class

@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Draws what stands up out of the sea ({@link ColossusEntity}): always, wherever it is (it is farther than the game draws anything,
@@ -47,6 +48,13 @@ public class ColossusRenderer extends EntityRenderer<ColossusEntity, ColossusRen
         super.extractRenderState(entity, state, partialTicks);
         state.age = entity.age(partialTicks);
         state.yRot = entity.getYRot();
+        state.offset = entity.anchor().subtract(state.x, state.y, state.z);
+    }
+
+    /** The entity itself is kept beside the camera, where the game finds it worth drawing (it draws nothing that stands in a section it has not built); this puts it where it really stands. */
+    @Override
+    public Vec3 getRenderOffset(ColossusRenderState state) {
+        return state.offset;
     }
 
     @Override

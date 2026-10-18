@@ -8,6 +8,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * What stands up out of the sea when the bell is struck: about three hundred blocks high, farther from the tower than the game
@@ -21,11 +22,24 @@ public class ColossusEntity extends Entity {
     public static final int RISE = 560;
 
     private long begun;
+    private Vec3 anchor = Vec3.ZERO;
 
     public ColossusEntity(EntityType<? extends ColossusEntity> type, Level level) {
         super(type, level);
         this.noPhysics = true;
         this.setNoGravity(true);
+    }
+
+    /**
+     * Where it really stands. The entity's own place is kept beside the camera ({@code Cinema}): the game draws what is in a section of
+     * the world it has built, and nothing four hundred blocks off is, but what is beside the camera always is.
+     */
+    public void anchorAt(Vec3 place) {
+        this.anchor = place;
+    }
+
+    public Vec3 anchor() {
+        return this.anchor;
     }
 
     /** The game time at which it began to rise (or will: in the future). */

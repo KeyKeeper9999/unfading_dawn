@@ -11,6 +11,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
@@ -92,7 +93,9 @@ public final class Cinema {
         dropFigure();
         figureAt = new Vec3(packet.x() + 0.5, packet.y() + 1.0, packet.z() + 0.5);
         ColossusEntity entity = new ColossusEntity(Dushi.COLOSSUS.get(), level);
-        entity.snapTo(figureAt.x, figureAt.y, figureAt.z, packet.yaw(), 0.0F);
+        Vec3 beside = minecraft.getCameraEntity() != null ? minecraft.getCameraEntity().position() : figureAt;
+        entity.snapTo(beside.x, beside.y, beside.z, packet.yaw(), 0.0F);
+        entity.anchorAt(figureAt);
         entity.begin(level.getGameTime() - packet.age());
         add(level, entity);
         colossus = entity;
@@ -118,7 +121,7 @@ public final class Cinema {
     }
 
     /** Puts an entity of the client's own into its world: the game wants it numbered first. */
-    private static void add(ClientLevel level, net.minecraft.world.entity.Entity entity) {
+    private static void add(ClientLevel level, Entity entity) {
         entity.setId(nextId++);
         level.addEntity(entity);
     }
@@ -333,6 +336,11 @@ public final class Cinema {
             colossus = null;
         }
         if (colossus != null) {
+            Entity eye = minecraft.getCameraEntity();
+            if (eye != null) {
+                colossus.setOldPosAndRot();
+                colossus.setPos(eye.getX(), eye.getY(), eye.getZ());                          // (beside the camera: see ColossusEntity.anchorAt)
+            }
             tickFigure(minecraft, level);
         }
         if (scene != null) {
