@@ -1,0 +1,224 @@
+commit 148dc5f1e6db09e5ea72f045ccd344f92c8f5941
+switches: client map mapshots
+RESULT: LOOK (2)
+  - server: 1 suspicious test lines
+  - server: what the checks say changed (see the end)
+
+== BUILD
+ok, unfading_dawn.jar 12339 KB
+
+== SERVER
+182 test lines
+reached its end: yes
+spawned 59 of 59 mobs
+spawn eggs: 60, weapons: 39, shields: 9, spells: 12, sounds: 327
+mobs fought: 59; dead after the fight: withered_prisoner, withered_guard, withered_archer, withered_acolyte, withered_townsman, withered_butcher, withered_watchman, withered_digger, withered_barrowman, withered_sapper, withered_drowned, rust_knight, carrion_hound, gravedigger, blind_crawler, unhewn, bone_pike, lanky, wisp, wakeful, waker, sleeper, sleep_moth, dockhand, sand_crab, skua, reaper, scarecrow, longarm, handwalker, deepling, keykeeper, overseer, chaplain; made no move: withered_prisoner, withered_archer, withered_acolyte, withered_townsman, carrion_hound
+drills: 53; moves not finished: withered_sapper 1/2
+suspicious lines:
+  clock: a wrong key refused=true, seven keys went in and stayed=true, the clock runs=true, the keys are used up=true
+game errors: none
+
+== CLIENT
+25 test lines, 20 pictures
+reached its end: yes
+missing resources: none
+game errors: none
+
+== MAP
+saved: yes
+High_Stockade.zip: 13119 KB
+  plan 492x194x1012, box BoundingBox{minX=-552, minY=9, minZ=-273, maxX=459, maxY=130, maxZ=218}, the world's ground under the origin is Block{minecraft:grass_block}, over it Block{minecraft:air}
+  cleared 851380 blocks of forest in 39176 ms
+  blocks set in 56215 ms
+  biomes: 326 boxes, 1514040 cells changed, 0 failed
+  rules set: time 18000, regeneration false, game type ADVENTURE, spawn RespawnData[globalPos=ResourceKey[minecraft:dimension / minecraft:overworld] BlockPos{x=0, y=10, z=0}, yaw=90.0, pitch=0.0]
+  what stands in the world: {BannerBlockEntity=20, BarrelBlockEntity=268, BellBlockEntity=1, BlastFurnaceBlockEntity=1, CampfireBlockEntity=44, ChestBlockEntity=69, DecoratedPotBlockEntity=9, LecternBlockEntity=2, MobMarkBlockEntity=391, SkullBlockEntity=32, S ...
+  saved=true, done
+light probes: 79
+game errors: none
+
+== MAPCLIENT
+68 test lines, 25 pictures
+reached its end: yes
+missing resources: none
+  menu reached, 327 views, opening High_Stockade
+  the world is called "Вышний Острог"
+  after a while: at 0, 10, 0, health 20.0, on the ground true
+  on the server: game mode ADVENTURE, respawn RespawnData[globalPos=ResourceKey[minecraft:dimension / minecraft:overworld] BlockPos{x=0, y=10, z=0}, yaw=90.0, pitch=0.0]
+game errors: none
+
+== AGAINST THE RUN BEFORE (lines by topic, pictures by name, the server checks with numbers left out)
+  new in client#shots: v1_village v2_village_cleave_cut v2_village_cleave_draw v3_village_thrust v3_village_thrust_ready v4_village_alarm_pounce v5_village_side_cleave_cut v5_village_side_cleave_draw v5_village_side_thrust v5_village_side_thrust_ready v6_village_back v7_gravedigger v7_gravedigger_night v8_gravedigger_slam_raise v8_gravedigger_slam_strike v8_gravedigger_sweep v9_gravedigger_back v9_gravedigger_dirt v9_gravedigger_raise_side v9_gravedigger_rush_side
+  client:done: 0 -> 1 lines
+  client:in: 0 -> 1 lines
+  client:menu: 0 -> 1 lines
+  client:only: 0 -> 1 lines
+  client:shot: 0 -> 20 lines
+  client:waiting: 0 -> 1 lines
+  gone from mapclient#shots: m250_clock_rise_a m251_clock_rise_b m252_clock_up_south m253_clock_up_far m254_clock_up_door m255_clock_up_inside m256_clock_up_dial m257_clock_up_belfry m258_clock_up_seat m259_clock_up_roof m268_near_the_gravedigger m270_near_the_overseer m272_near_the_chaplain m274_near_the_taskmaster m276_near_the_stone_eater m278_near_the_wallower m280_near_the_weeping_mother m282_near_the_shatun m284_near_the_elder m286_near_the_helmsman m288_near_the_capsized m290_near_the_scorched_warden m292_near_the_hollow_miller m294_near_the_bolt m296_near_the_coming m313_clock_rope m314_clock_scene_a m315_clock_scene_b m316_clock_scene_c m317_clock_scene_d m318_clock_scene_e m319_clock_end m320_clock_figure_far m321_clock_figure_mid m322_clock_figure_foot m323_clock_seat_a m324_clock_seat_b m325_clock_seat_c m326_clock_seat_d
+  new in mapclient#shots: m00_as_player_at_the_gate m00_as_player_waking m04_yard_from_above m05_yard_gate m06_low_street_west m07_low_street_east m08_west_alley m09_alley_turn m10_house_inside m11_high_street_gate m12_high_street_north m13_east_alley m14_shard_yard m15_market_from_the_south m16_market_from_above m17_shambles m18_butchers_shop m19_church_lane m20_lodge m21_lych_gate m22_churchyard m23_churchyard_from_above m24_town_from_above_south m25_town_from_above_north
+  mapclient:alley_turn: 0 -> 1 lines
+  mapclient:as_player_at_the_gate: 0 -> 1 lines
+  mapclient:as_player_waking: 0 -> 1 lines
+  mapclient:butchers_shop: 0 -> 1 lines
+  mapclient:church_lane: 0 -> 1 lines
+  mapclient:churchyard: 0 -> 1 lines
+  mapclient:churchyard_from_above: 0 -> 1 lines
+  mapclient:clock_end: 2 -> 0 lines
+  mapclient:clock_figure_far: 2 -> 0 lines
+  mapclient:clock_figure_foot: 2 -> 0 lines
+  mapclient:clock_figure_mid: 2 -> 0 lines
+  mapclient:clock_rise_a: 2 -> 0 lines
+  mapclient:clock_rise_b: 2 -> 0 lines
+  mapclient:clock_rope: 3 -> 0 lines
+  mapclient:clock_scene_a: 2 -> 0 lines
+  mapclient:clock_scene_b: 2 -> 0 lines
+  mapclient:clock_scene_c: 2 -> 0 lines
+  mapclient:clock_scene_d: 2 -> 0 lines
+  mapclient:clock_scene_e: 2 -> 0 lines
+  mapclient:clock_seat_a: 3 -> 0 lines
+  mapclient:clock_seat_b: 2 -> 0 lines
+  mapclient:clock_seat_c: 2 -> 0 lines
+  mapclient:clock_seat_d: 2 -> 0 lines
+  mapclient:clock_up_belfry: 3 -> 0 lines
+  mapclient:clock_up_dial: 3 -> 0 lines
+  mapclient:clock_up_door: 3 -> 0 lines
+  mapclient:clock_up_far: 3 -> 0 lines
+  mapclient:clock_up_inside: 3 -> 0 lines
+  mapclient:clock_up_roof: 3 -> 0 lines
+  mapclient:clock_up_seat: 3 -> 0 lines
+  mapclient:clock_up_south: 3 -> 0 lines
+  mapclient:east_alley: 0 -> 1 lines
+  mapclient:high_street_gate: 0 -> 1 lines
+  mapclient:high_street_north: 0 -> 1 lines
+  mapclient:house_inside: 0 -> 1 lines
+  mapclient:lodge: 0 -> 1 lines
+  mapclient:low_street_east: 0 -> 1 lines
+  mapclient:low_street_west: 0 -> 1 lines
+  mapclient:lych_gate: 0 -> 1 lines
+  mapclient:market_from_above: 0 -> 1 lines
+  mapclient:market_from_the_south: 0 -> 1 lines
+  mapclient:near_the_bolt: 1 -> 0 lines
+  mapclient:near_the_capsized: 1 -> 0 lines
+  mapclient:near_the_chaplain: 1 -> 0 lines
+  mapclient:near_the_coming: 1 -> 0 lines
+  mapclient:near_the_elder: 1 -> 0 lines
+  mapclient:near_the_gravedigger: 1 -> 0 lines
+  mapclient:near_the_helmsman: 1 -> 0 lines
+  mapclient:near_the_hollow_miller: 1 -> 0 lines
+  mapclient:near_the_overseer: 1 -> 0 lines
+  mapclient:near_the_scorched_warden: 1 -> 0 lines
+  mapclient:near_the_shatun: 1 -> 0 lines
+  mapclient:near_the_stone_eater: 1 -> 0 lines
+  mapclient:near_the_taskmaster: 1 -> 0 lines
+  mapclient:near_the_wallower: 1 -> 0 lines
+  mapclient:near_the_weeping_mother: 1 -> 0 lines
+  mapclient:shambles: 0 -> 1 lines
+  mapclient:shard_yard: 0 -> 1 lines
+  mapclient:shot: 40 -> 25 lines
+  mapclient:the: 4 -> 1 lines
+  mapclient:time: 12 -> 13 lines
+  mapclient:town_from_above_north: 0 -> 1 lines
+  mapclient:town_from_above_south: 0 -> 1 lines
+  mapclient:west_alley: 0 -> 1 lines
+  mapclient:yard_from_above: 0 -> 1 lines
+  mapclient:yard_gate: 0 -> 1 lines
+  new in server#checks:
+      chaplain was already dead
+      charms: N of them; put on by using it=true, the next takes its place and the first comes back=true, taken off and given back=true
+      charms: candle_stub=spells xN wedge_cord=block xN pike_tooth=backstab xN weeping_herb=regen xN vigil_wax=roll N sea_knot=swing N coffin_nail=souls xN ash_knot=flask xN
+      clock: a lord's fall remembered=true (withered_townsman), the rope before the tower stood=slack, the bell struck=true, the dead lay down=true (not in view), nothing rises after=true, the hour stands at midnight=true
+      clock: a wrong key refused=true, seven keys went in and stayed=true, the clock runs=true, the keys are used up=true
+      clock: plan NxNxN, tower site BlockPos{x=N, y=N, z=N}, figure site BlockPos{x=N, y=N, z=N}
+      clock: saved and read back=ok
+      clock: the keykeeper keeps the key until the Coming falls=true, gives it=true, gives only one=true
+      clock: the seat taken, and the day goes on=true
+      clock: the tower stands: N cells, N differ, N rope blocks and N seat
+      data: loot blocks/hearth xN: {hearth=N}
+      data: loot chests/outpost xN: {arrow=N, bread=N, nameless_soul=N, rust_scrap=N, tar_pot=N, tattered_c ...
+  new in server#drills not finished:
+      withered_sapper 1/2
+  server:blind_crawler: 0 -> 1 lines
+  server:bolt: 0 -> 1 lines
+  server:bone_pike: 0 -> 1 lines
+  server:capsized: 0 -> 1 lines
+  server:carrion_hound: 0 -> 1 lines
+  server:chaplain: 0 -> 2 lines
+  server:charms: 0 -> 2 lines
+  server:clock: 0 -> 7 lines
+  server:clockhand: 0 -> 1 lines
+  server:coming: 0 -> 1 lines
+  server:data: 0 -> 8 lines
+  server:death: 0 -> 1 lines
+  server:deepling: 0 -> 1 lines
+  server:dockhand: 0 -> 1 lines
+  server:done: 0 -> 1 lines
+  server:drill: 0 -> 54 lines
+  server:elder: 0 -> 1 lines
+  server:firwood: 0 -> 5 lines
+  server:fresh: 0 -> 1 lines
+  server:gear: 0 -> 4 lines
+  server:gravedigger: 0 -> 1 lines
+  server:gut: 0 -> 1 lines
+  server:handwalker: 0 -> 1 lines
+  server:harpooner: 0 -> 1 lines
+  server:hearth: 0 -> 2 lines
+  server:helmsman: 0 -> 1 lines
+  server:hollow_miller: 0 -> 1 lines
+  server:keykeeper: 0 -> 1 lines
+  server:lanky: 0 -> 1 lines
+  server:level: 0 -> 1 lines
+  server:longarm: 0 -> 1 lines
+  server:magic: 0 -> 4 lines
+  server:marks: 0 -> 2 lines
+  server:mower: 0 -> 1 lines
+  server:oarsman: 0 -> 1 lines
+  server:on: 0 -> 1 lines
+  server:overseer: 0 -> 2 lines
+  server:pilot: 0 -> 1 lines
+  server:reaper: 0 -> 1 lines
+  server:rules: 0 -> 13 lines
+  server:rust_knight: 0 -> 1 lines
+  server:sackman: 0 -> 1 lines
+  server:sand_crab: 0 -> 1 lines
+  server:scarecrow: 0 -> 1 lines
+  server:scorched: 0 -> 1 lines
+  server:scorched_warden: 0 -> 1 lines
+  server:shadow: 0 -> 1 lines
+  server:shatun: 0 -> 1 lines
+  server:shop: 0 -> 1 lines
+  server:shore: 0 -> 2 lines
+  server:skua: 0 -> 1 lines
+  server:sleep_moth: 0 -> 1 lines
+  server:sleeper: 0 -> 1 lines
+  server:spawn: 0 -> 1 lines
+  server:spawned: 0 -> 1 lines
+  server:spell: 0 -> 1 lines
+  server:spells: 0 -> 1 lines
+  server:stamina: 0 -> 1 lines
+  server:stone_eater: 0 -> 1 lines
+  server:stook: 0 -> 1 lines
+  server:stray_shadow: 0 -> 1 lines
+  server:stubble: 0 -> 1 lines
+  server:sungazer: 0 -> 1 lines
+  server:taskmaster: 0 -> 1 lines
+  server:unhewn: 0 -> 1 lines
+  server:usher: 0 -> 1 lines
+  server:wakeful: 0 -> 1 lines
+  server:waker: 0 -> 1 lines
+  server:wallower: 0 -> 1 lines
+  server:waxen: 0 -> 1 lines
+  server:weeping_mother: 0 -> 1 lines
+  server:wisp: 0 -> 1 lines
+  server:withered_acolyte: 0 -> 1 lines
+  server:withered_archer: 0 -> 1 lines
+  server:withered_barrowman: 0 -> 1 lines
+  server:withered_butcher: 0 -> 1 lines
+  server:withered_digger: 0 -> 1 lines
+  server:withered_drowned: 0 -> 1 lines
+  server:withered_guard: 0 -> 1 lines
+  server:withered_prisoner: 0 -> 1 lines
+  server:withered_sapper: 0 -> 1 lines
+  server:withered_townsman: 0 -> 1 lines
+  server:withered_watchman: 0 -> 1 lines
+  server:world: 0 -> 5 lines
