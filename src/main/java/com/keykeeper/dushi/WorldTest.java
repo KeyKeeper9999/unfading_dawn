@@ -197,26 +197,35 @@ final class WorldTest {
         for (BlockPos floor : BlockPos.betweenClosed(stage.offset(-6, -1, -6), stage.offset(6, -1, 6))) {
             level.setBlock(floor, Blocks.STONE.defaultBlockState(), 3);
         }
-        level.setBlock(stage, Dushi.MOB_MARK.get().defaultBlockState().setValue(MobMarkBlock.MOB, MobMarkBlock.Kind.TOWNSMAN), 3);
-        SoulsMob risen = level.getBlockEntity(stage) instanceof MobMarkBlockEntity mark && mark.wake(level) && level.getEntity(mark.mob()) instanceof SoulsMob mob ? mob : null;
-        Clock.bossSlain(level, risen == null ? player : risen);
-        boolean remembered = risen != null && Clock.slain(level, "townsman");
+        net.minecraft.world.entity.Mob risen = MobMarkBlock.Kind.TOWNSMAN.type().create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        boolean alive = false;
+        String kind = "";
+        if (risen != null) {
+            risen.snapTo(stage.getX() + 0.5, stage.getY(), stage.getZ() + 0.5, 0.0F, 0.0F);
+            alive = level.addFreshEntity(risen);
+            kind = BuiltInRegistries.ENTITY_TYPE.getKey(risen.getType()).getPath();
+            Clock.bossSlain(level, risen);
+        }
+        boolean remembered = alive && Clock.slain(level, kind);
         Clock.pullRope(level, player, stage);
         boolean tooSoon = clock.ending == ClockState.NO_ENDING;
         clock.raised = true;
         Clock.pullRope(level, player, stage);
         boolean struck = Clock.ended(level) && Clock.ending(level) == ClockState.BELL;
         Clock.lieDown(level);
-        boolean lay = risen != null && risen.isRemoved();
+        boolean lay = alive && risen.isRemoved();
         clock.endingTick = Clock.LIE_DOWN + 1;
-        BlockPos second = stage.offset(4, 0, 0);
-        level.setBlock(second, Dushi.MOB_MARK.get().defaultBlockState().setValue(MobMarkBlock.MOB, MobMarkBlock.Kind.TOWNSMAN), 3);
-        boolean rose = level.getBlockEntity(second) instanceof MobMarkBlockEntity other && other.wake(level) && level.getEntity(other.mob()) != null;
+        net.minecraft.world.entity.Mob late = MobMarkBlock.Kind.TOWNSMAN.type().create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        boolean rose = false;
+        if (late != null) {
+            late.snapTo(stage.getX() + 3.5, stage.getY(), stage.getZ() + 0.5, 0.0F, 0.0F);
+            rose = level.addFreshEntity(late) && level.getEntity(late.getUUID()) != null;
+        }
         level.getGameRules().set(net.minecraft.world.level.gamerules.GameRules.ADVANCE_TIME, false, level.getServer());
         SoulMechanics.hour(level, 6000);
         boolean midnight = SoulMechanics.hourNow(level) == 18000;
         level.getGameRules().set(net.minecraft.world.level.gamerules.GameRules.ADVANCE_TIME, true, level.getServer());
-        say("clock: a lord's fall remembered=" + remembered + ", the rope before the tower stood=" + (tooSoon ? "slack" : "pulled") + ", the bell struck=" + struck
+        say("clock: a lord's fall remembered=" + remembered + " (" + kind + "), the rope before the tower stood=" + (tooSoon ? "slack" : "pulled") + ", the bell struck=" + struck
                 + ", the dead lay down=" + lay + ", nothing rises after=" + !rose + ", the hour stands at midnight=" + midnight
                 + (remembered && tooSoon && struck && lay && !rose && midnight ? "" : " FAILED"));
         clock.ending = ClockState.NO_ENDING;

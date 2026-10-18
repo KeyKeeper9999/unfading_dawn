@@ -462,9 +462,9 @@ def clock_views(w):
     g = GY
     fx, fz = FIGURE
     sea = w.shore.sea
-    return [('clock_rise_a', (mx + 6, g + 5, mz + 36), (mx, g + 10, mz)),
+    return [('clock_rise_a', (mx + 16, g + 26, mz + 26), (mx, g + 4, mz)),
             ('clock_rise_b', (mx + 34, g + 24, mz + 34), (mx, g + 26, mz)),
-            ('clock_up_south', (mx + 4, g + 8, mz + 44), (mx, g + 30, mz)),
+            ('clock_up_south', (mx + 4, g + 24, mz + 46), (mx, g + 30, mz)),
             ('clock_up_far', (mx - 6, g + 26, mz + 110), (mx, g + 30, mz)),
             ('clock_up_door', (mx, g + 3.2, mz + 14), (mx, g + 4, mz + 6)),
             ('clock_up_inside', (mx - 1, g + 3.5, mz + 3.5), (mx, g + 16, mz - 1)),
@@ -473,8 +473,8 @@ def clock_views(w):
             ('clock_up_seat', (mx - 12, g + 39, mz - 4), (mx - 2, g + 38, mz)),
             ('clock_up_roof', (mx + 18, g + 52, mz + 18), (mx, g + 46, mz)),
             ('clock_rope', (mx + 12, g + 39, mz + 1), (mx, g + 39, mz)),
-            ('clock_figure_a', (fx - 70, sea + 40, fz - 110), (fx, sea + 60, fz)),
-            ('clock_figure_done', (fx + 90, sea + 30, fz - 90), (fx, sea + 55, fz))]
+            ('clock_figure_a', (fx - 40, sea + 30, fz - 70), (fx, sea + 70, fz)),
+            ('clock_figure_done', (fx + 60, sea + 20, fz - 60), (fx, sea + 65, fz))]
 
 
 def views(w):
