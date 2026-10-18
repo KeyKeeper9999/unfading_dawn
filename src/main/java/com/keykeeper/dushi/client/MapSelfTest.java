@@ -278,7 +278,15 @@ public final class MapSelfTest {
                         minecraft.gui.setScreen(null);
                     }
                     if (view.name.startsWith("clock_up") || view.name.equals("clock_rope")) {
-                        // the tower stands only after the rumble and all its layers: wait for it (with a player near, which these views are)
+                        // the tower stands only after the rumble and all its layers: wait for it (with a player near, which these views are);
+                        // asked for alone (without clock_rise_a) they start the clock themselves
+                        ClockState begun = server.overworld().getData(Dushi.CLOCK);
+                        if (!begun.started) {
+                            begun.keys = ClockState.ALL;
+                            begun.started = true;
+                            begun.rise = -1;
+                            say(view.name + ": the clock started by hand");
+                        }
                         if (!server.overworld().getData(Dushi.CLOCK).raised && clockWaited++ < 80) {
                             wait = 20;
                             return;
