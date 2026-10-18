@@ -778,6 +778,7 @@ if __name__ == '__main__':
         for key in ('quarry_key', 'mire_key', 'firwood_key', 'shore_key', 'stubble_key', 'depths_key'):
             f.write('gate ' + ' '.join(f'{v_:.2f}' for v_ in world(*sorted(b.seals[key])[0], spawn)) + '\n')
         # and last the endings of the clock, in the same world: the bell lays down everything that lived, which the lords' pictures must not see
+        f.write('time 18000\n')                                # (the borough's night, where the tower stands: the lords' places have left the clock at their own hours)
         for name, eye, look in ending_views(w):
             f.write(name + ' ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
     # the columns that get a biome of their own (MapBuilder lays it): boxes of the world, four blocks wide - the game
