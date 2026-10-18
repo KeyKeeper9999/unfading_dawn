@@ -249,12 +249,12 @@ final class WorldTest {
             say("clock: the keykeeper could not be spawned FAILED");
             return;
         }
-        player.interactOn(keeper, net.minecraft.world.InteractionHand.MAIN_HAND);
+        player.interactOn(keeper, net.minecraft.world.InteractionHand.MAIN_HAND, keeper.position());
         boolean early = Forge.count(player, Dushi.CLOCK_KEY.get()) == 0;
         clock.slain.add("coming");
-        player.interactOn(keeper, net.minecraft.world.InteractionHand.MAIN_HAND);
+        player.interactOn(keeper, net.minecraft.world.InteractionHand.MAIN_HAND, keeper.position());
         boolean given = Forge.count(player, Dushi.CLOCK_KEY.get()) == 1;
-        player.interactOn(keeper, net.minecraft.world.InteractionHand.MAIN_HAND);
+        player.interactOn(keeper, net.minecraft.world.InteractionHand.MAIN_HAND, keeper.position());
         boolean once = Forge.count(player, Dushi.CLOCK_KEY.get()) == 1;
         keeper.discard();
         clock.slain.clear();

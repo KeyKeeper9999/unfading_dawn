@@ -274,8 +274,8 @@ public final class MapSelfTest {
                     return;
                 }
                 if (view.name.startsWith("clock_")) {
-                    if (minecraft.screen instanceof EndingScreen) {
-                        minecraft.setScreen(null);
+                    if (minecraft.gui.screen() instanceof EndingScreen) {
+                        minecraft.gui.setScreen(null);
                     }
                     if (view.name.startsWith("clock_up") || view.name.equals("clock_rope")) {
                         // the tower stands only after the rumble and all its layers: wait for it (with a player near, which these views are)
