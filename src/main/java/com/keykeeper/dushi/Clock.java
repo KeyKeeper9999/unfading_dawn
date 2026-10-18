@@ -192,6 +192,10 @@ public final class Clock {
         } else if (clock.ending == ClockState.SEAT) {
             tickSeat(level, clock);
         }
+        if (clock.ending == ClockState.BELL && clock.endingTick > LIE_DOWN && level.getGameTime() % 100 == 0) {
+            // what slept in chunks at the edge of the loaded country when the bell struck does not wake to walk
+            lieDown(level);
+        }
     }
 
     private static boolean playerNear(ServerLevel level, BlockPos pos, double range) {
