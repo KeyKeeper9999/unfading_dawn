@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.keykeeper.dushi.block.ClockSocketBlock;
+import com.keykeeper.dushi.entity.ColossusEntity;
 import com.keykeeper.dushi.world.Plan;
 import com.keykeeper.dushi.world.PlanPiece;
 
@@ -36,6 +37,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -54,7 +56,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public final class Clock {
     public static final Rotation ROTATION = MapBuilder.ROTATION;
     public static final String TOWER_PLAN = "clock_tower";
-    public static final String FIGURE_PLAN = "horizon_figure";
 
     /** Ticks of rumbling before the first layer of the tower comes up. */
     static final int INTRO = 80;
@@ -72,11 +73,19 @@ public final class Clock {
     static final int TOLL_GAP = 70;
     /** Everything that lived lies down at this tick. */
     static final int LIE_DOWN = 150;
-    /** The figure begins to rise at this tick, if the place it stands at is loaded. */
-    static final int FIGURE_AT = 190;
-    /** The screen of the ending comes this many ticks after the bell is struck. */
-    static final int SCREEN_AT = 360;
-    static final int SEAT_SCREEN_AT = 100;
+    /** The figure begins to rise out of the sea this many ticks after the rope is pulled (and the bell has tolled three times). */
+    public static final int FIGURE_AT = 190;
+    /** How long the bell's cutscene is: the tolling, the figure's rising ({@link ColossusEntity#RISE}), and a while to look at it. */
+    public static final int BELL_LENGTH = FIGURE_AT + ColossusEntity.RISE + 100;
+    /** How long the seat's cutscene is. */
+    public static final int SEAT_LENGTH = 640;
+    /** The screens of the endings come for those who watched no cutscene (the cutscenes bring them themselves, a little sooner). */
+    static final int SCREEN_AT = BELL_LENGTH + 30;
+    static final int SEAT_SCREEN_AT = SEAT_LENGTH + 30;
+    /** The bell's count stops here: the figure stands and nothing more comes of it. */
+    static final int END_TICK = SCREEN_AT + 20;
+    /** Whoever is this near the tower when the rope is pulled or the seat taken watches the ending through the camera of a cutscene (which holds the controls itself), and nothing can harm them while it lasts. */
+    static final double WATCH = 100.0;
 
     private static Map<String, BlockPos> sites;
 
@@ -123,6 +132,11 @@ public final class Clock {
             }
         }
         return sites.get(name);
+    }
+
+    /** The middle of the patch of sea the figure stands up in (the water's top layer), or null in a world whose map has no sea for it. */
+    public static BlockPos figureSite() {
+        return site("figure");
     }
 
     /** Where the tower stands (the plan's origin cell), or null in a world whose map has no tower. */
@@ -350,9 +364,57 @@ public final class Clock {
         }
         clock.ending = ClockState.BELL;
         clock.endingTick = 0;
-        clock.figure = 0;
         player.sendSystemMessage(Component.translatable("message.unfading_dawn.clock.rope"));
+        for (ServerPlayer everyone : level.players()) {
+            sendFigure(level, everyone);
+        }
+        watch(level, pos, ClockState.BELL, BELL_LENGTH);
     }
+
+    /** The cutscene of an ending for everyone near the place it is done at: the camera is taken from them, and nothing can harm them while it lasts. */
+    private static void watch(ServerLevel level, BlockPos at, int ending, int length) {
+        for (ServerPlayer player : level.players()) {
+            if (player.distanceToSqr(at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5) <= WATCH * WATCH) {
+                player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, length + 200, 4, false, false, false));
+                PacketDistributor.sendToPlayer(player, new Net.Cutscene(ending, at.getX(), at.getY(), at.getZ()));
+            }
+        }
+    }
+
+    /** Tells a client of the figure over the sea, if the bell has been struck: where it stands, which way it faces, and how long it has been rising. */
+    static void sendFigure(ServerLevel level, ServerPlayer player) {
+        ClockState clock = state(level);
+        BlockPos figure = site("figure");
+        BlockPos tower = site("tower");
+        if (figure == null || clock.ending != ClockState.BELL) {
+            return;
+        }
+        float yaw = tower == null ? 90.0F : (float) (Math.toDegrees(Math.atan2(tower.getZ() - figure.getZ(), tower.getX() - figure.getX())) - 90.0);
+        PacketDistributor.sendToPlayer(player, new Net.Colossus(figure.getX(), figure.getY(), figure.getZ(), yaw, clock.endingTick - FIGURE_AT));
+    }
+
+    /** What stands over the sea is in the world of whoever comes into it later, too: at a login, at a death, from another dimension. */
+    @SubscribeEvent
+    static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player && player.level() instanceof ServerLevel level && level.dimension() == net.minecraft.world.level.Level.OVERWORLD) {
+            sendFigure(level.getServer().overworld(), player);
+        }
+    }
+
+    @SubscribeEvent
+    static void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player && player.level() instanceof ServerLevel level && level.dimension() == net.minecraft.world.level.Level.OVERWORLD) {
+            sendFigure(level.getServer().overworld(), player);
+        }
+    }
+
+    @SubscribeEvent
+    static void onDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player && event.getTo() == net.minecraft.world.level.Level.OVERWORLD) {
+            sendFigure(player.level().getServer().overworld(), player);
+        }
+    }
+
 
     /** The Founder's seat: sit in it and the day goes on. */
     public static void takeSeat(ServerLevel level, ServerPlayer player, BlockPos pos) {
@@ -364,9 +426,9 @@ public final class Clock {
         clock.ending = ClockState.SEAT;
         clock.endingTick = 0;
         level.playSound(null, pos, Dushi.sound("block.tower.seat"), SoundSource.BLOCKS, 8.0F, 0.7F);
-        player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 500, 3, false, false, true));
         player.sendSystemMessage(Component.translatable("message.unfading_dawn.clock.seat"));
         quake(level, pos.getX(), pos.getZ(), 30, 0.5F);
+        watch(level, pos, ClockState.SEAT, SEAT_LENGTH);
     }
 
     private static void tickBell(ServerLevel level, ClockState clock) {
@@ -374,7 +436,7 @@ public final class Clock {
         if (site == null) {
             return;
         }
-        if (clock.endingTick > SCREEN_AT + 20 && clock.figure >= figureHeight()) {
+        if (clock.endingTick >= END_TICK) {
             return;
         }
         int t = clock.endingTick++;
@@ -394,38 +456,10 @@ public final class Clock {
                 player.sendSystemMessage(Component.translatable("message.unfading_dawn.clock.silence"));
             }
         }
-        if (t >= FIGURE_AT && clock.figure < figureHeight()) {
-            raiseFigure(level, clock);
-        }
         if (t == SCREEN_AT) {
             for (ServerPlayer player : level.players()) {
                 PacketDistributor.sendToPlayer(player, new Net.EndScreen(ClockState.BELL));
             }
-        }
-    }
-
-    private static int figureHeight() {
-        return site("figure") == null ? 0 : Plan.get(FIGURE_PLAN).height;
-    }
-
-    /** One more layer of the figure on the horizon, each time the whole of its foot is loaded; the ground shakes where it stands. */
-    private static void raiseFigure(ServerLevel level, ClockState clock) {
-        BlockPos site = site("figure");
-        Plan plan = Plan.get(FIGURE_PLAN);
-        if (clock.endingTick % 2 != 0) {
-            return;
-        }
-        BlockPos a = PlanPiece.toWorld(plan, site, ROTATION, 0, 0, 0);
-        BlockPos b = PlanPiece.toWorld(plan, site, ROTATION, plan.width - 1, 0, plan.depth - 1);
-        if (!level.isLoaded(a) || !level.isLoaded(b) || !level.isLoaded(BlockPos.containing((a.getX() + b.getX()) * 0.5, a.getY(), (a.getZ() + b.getZ()) * 0.5))) {
-            return;
-        }
-        if (clock.figure == 0) {
-            level.playSound(null, site, Dushi.sound("block.tower.rumble"), SoundSource.BLOCKS, 24.0F, 0.6F);
-        }
-        layer(level, plan, site, clock.figure++);
-        if (clock.figure % 4 == 0) {
-            quake(level, site.getX(), site.getZ(), 12, 0.5F);
         }
     }
 

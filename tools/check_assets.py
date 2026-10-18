@@ -26,7 +26,7 @@ armour = re.findall(r'"((?:prisoner|guard|rust|chaplain|vigil|mason|scale|oilski
 items |= set(armour)
 items |= set(charms) | set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn_egg' for m in mobs} | {'hearth', 'fog_gate', 'mob_mark', 'forge'}
 blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name', 'shard_heap', 'locked_gate', 'shallows', 'sludge', 'sea_shallows', 'night_shallows', 'under_sky', 'sky_veil', 'sky_lid', 'clock_socket', 'tower_end'}
-entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot', 'powder_pot', 'thrown_wedge', 'mud_glob', 'root', 'thrown_harpoon', 'thrown_anchor', 'gear', 'tendril', 'coming_face', 'wall_eye'}
+entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot', 'powder_pot', 'thrown_wedge', 'mud_glob', 'root', 'thrown_harpoon', 'thrown_anchor', 'gear', 'tendril', 'coming_face', 'wall_eye', 'colossus', 'dolly'}
 lang = {l: json.load(open(f'{A}/lang/{l}.json', encoding='utf-8')) for l in ('ru_ru', 'en_us')}
 
 
@@ -86,7 +86,7 @@ for kind in kinds + ['blind_crawler', 'unhewn', 'unhewn_glow', 'taskmaster', 'ta
                      'waxen', 'waxen_glow', 'sleep_moth', 'sleep_moth_glow', 'shatun', 'shatun_glow', 'elder', 'elder_glow', 'elder_asleep_glow',
                      'dockhand', 'harpooner', 'oarsman', 'pilot', 'pilot_glow', 'helmsman', 'helmsman_glow', 'sand_crab', 'skua', 'capsized', 'capsized_glow',
                      'reaper', 'mower', 'sackman', 'scorched', 'scorched_glow', 'hollow_miller', 'hollow_miller_glow', 'scarecrow', 'scorched_warden',
-                     'scorched_warden_glow', 'stook', 'sungazer', 'sungazer_glow', 'millstone', 'dusk_beam', 'amber_shaft', 'wall_eye', 'wall_eye_glow', 'gear', 'gear_glow', 'tendril', 'tendril_glow',
+                     'scorched_warden_glow', 'stook', 'sungazer', 'sungazer_glow', 'millstone', 'dusk_beam', 'amber_shaft', 'wall_eye', 'wall_eye_glow', 'gear', 'gear_glow', 'tendril', 'tendril_glow', 'colossus', 'colossus_glow',
                      'usher', 'usher_glow', 'stray_shadow', 'stray_shadow_glow', 'longarm', 'longarm_glow', 'handwalker', 'handwalker_glow', 'deepling',
                      'deepling_glow', 'gut', 'gut_glow', 'clockhand', 'clockhand_glow', 'bolt', 'bolt_glow', 'coming', 'coming_glow']:
     need(f'{A}/textures/entity/{kind}.png', 'entity texture')

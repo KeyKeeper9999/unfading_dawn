@@ -173,6 +173,7 @@ public class Dushi {
             "entity.coming.sweep", "entity.coming.strain", "entity.coming.unmask", "entity.coming.pull", "entity.coming.bite", "entity.coming.star",
             "entity.coming.burst",
             "entity.gear.wind", "entity.gear.roll", "entity.gear.catch", "entity.tendril.open", "entity.tendril.rise", "entity.tendril.slap",
+            "entity.colossus.rumble", "entity.colossus.roar", "entity.colossus.roar_short",
             "block.hearth.rest", "block.fog_gate.pass",
             "block.clock.set", "block.clock.empty", "block.clock.start",
             "block.tower.rumble", "block.tower.crack", "block.tower.settle", "block.tower.toll", "block.tower.seat",
@@ -704,6 +705,12 @@ public class Dushi {
     /** What the Coming reaches into its hall with: see {@link com.keykeeper.dushi.entity.TendrilEntity}. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.TendrilEntity>> TENDRIL = ENTITIES.registerEntityType(
             "tendril", com.keykeeper.dushi.entity.TendrilEntity::new, MobCategory.MISC, b -> b.sized(1.6F, 7.0F).clientTrackingRange(10).updateInterval(20).fireImmune());
+    /** What stands up out of the sea when the bell is struck: the client's alone, see {@link com.keykeeper.dushi.entity.ColossusEntity}. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.ColossusEntity>> COLOSSUS = ENTITIES.registerEntityType(
+            "colossus", com.keykeeper.dushi.entity.ColossusEntity::new, MobCategory.MISC, b -> b.sized(8.0F, 8.0F).clientTrackingRange(10).updateInterval(20).fireImmune());
+    /** The eye of a cutscene, the client's alone: see {@link com.keykeeper.dushi.entity.DollyEntity}. */
+    public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.DollyEntity>> DOLLY = ENTITIES.registerEntityType(
+            "dolly", com.keykeeper.dushi.entity.DollyEntity::new, MobCategory.MISC, b -> b.sized(0.2F, 0.2F).eyeHeight(0.1F).clientTrackingRange(1).updateInterval(20).fireImmune());
     /** The Coming's disc, where it can be struck: see {@link com.keykeeper.dushi.entity.FaceEntity}. */
     public static final DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.FaceEntity>> COMING_FACE = ENTITIES.registerEntityType(
             "coming_face", com.keykeeper.dushi.entity.FaceEntity::new, MobCategory.MISC, b -> b.sized(4.2F, 4.2F).clientTrackingRange(10).updateInterval(1).fireImmune());
@@ -912,6 +919,8 @@ public class Dushi {
             registrar.playToClient(Net.Banner.TYPE, Net.Banner.CODEC);
             registrar.playToClient(Net.Quake.TYPE, Net.Quake.CODEC);
             registrar.playToClient(Net.EndScreen.TYPE, Net.EndScreen.CODEC);
+            registrar.playToClient(Net.Colossus.TYPE, Net.Colossus.CODEC);
+            registrar.playToClient(Net.Cutscene.TYPE, Net.Cutscene.CODEC);
             registrar.playToClient(Net.OpenShop.TYPE, Net.OpenShop.CODEC);
             registrar.playToServer(Net.Buy.TYPE, Net.Buy.CODEC, Net.Buy::handle);
             registrar.playToClient(Net.OpenForge.TYPE, Net.OpenForge.CODEC);

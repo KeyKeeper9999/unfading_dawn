@@ -317,6 +317,34 @@ public final class Net {
     }
 
     /** Server to client: the screen of an ending (1 the bell, 2 the seat), see {@code EndingScreen}. */
+    /**
+     * The figure that stands up out of the sea when the bell is struck: where (the middle of the patch of sea it stands in; x, y, z in
+     * the world), which way it faces, and how many ticks ago it began to rise - less than nothing while it has not begun, more than the
+     * rising takes for a client that comes late. The client makes it ({@code client/Cinema}); the server has no such entity.
+     */
+    public record Colossus(int x, int y, int z, float yaw, int age) implements CustomPacketPayload {
+        public static final Type<Colossus> TYPE = new Type<>(Dushi.id("colossus"));
+        public static final StreamCodec<ByteBuf, Colossus> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, Colossus::x, ByteBufCodecs.VAR_INT, Colossus::y,
+                ByteBufCodecs.VAR_INT, Colossus::z, ByteBufCodecs.FLOAT, Colossus::yaw, ByteBufCodecs.VAR_INT, Colossus::age, Colossus::new);
+
+        @Override
+        public Type<Colossus> type() {
+            return TYPE;
+        }
+    }
+
+    /** The camera is taken from the player for the ending ({@link ClockState#BELL} or {@link ClockState#SEAT}); x, y, z is the rope or the seat. */
+    public record Cutscene(int ending, int x, int y, int z) implements CustomPacketPayload {
+        public static final Type<Cutscene> TYPE = new Type<>(Dushi.id("cutscene"));
+        public static final StreamCodec<ByteBuf, Cutscene> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, Cutscene::ending, ByteBufCodecs.VAR_INT, Cutscene::x,
+                ByteBufCodecs.VAR_INT, Cutscene::y, ByteBufCodecs.VAR_INT, Cutscene::z, Cutscene::new);
+
+        @Override
+        public Type<Cutscene> type() {
+            return TYPE;
+        }
+    }
+
     public record EndScreen(int ending) implements CustomPacketPayload {
         public static final Type<EndScreen> TYPE = new Type<>(Dushi.id("end_screen"));
         public static final StreamCodec<ByteBuf, EndScreen> CODEC = StreamCodec.composite(ByteBufCodecs.VAR_INT, EndScreen::ending, EndScreen::new);

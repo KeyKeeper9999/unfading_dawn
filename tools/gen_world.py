@@ -456,8 +456,10 @@ def world(x, y, z, spawn):
 def clock_views(w):
     """The clock's tower rising, standing and tolling, and the figure over the sea. These are played, not only looked at
     (client/MapSelfTest): clock_rise_a starts the clock; the clock_up_* wait until the tower stands; clock_rope pulls the
-    rope (what it looks at is the rope's block) and waits for the screen of the ending; the clock_figure_* look at the
-    figure, which rises only where a player is near. The tower's own cells are (x - 6, y, z - 6) from the market's middle."""
+    rope (what it looks at is the rope's block): the cutscene of the bell takes the camera, and the clock_scene_* are
+    pictures taken through it as it goes (they stay where they are and wait), clock_end the screen of the ending after it;
+    the clock_figure_* look at the figure, which stands by then (it is the client's: Cinema). The tower's own cells are
+    (x - 6, y, z - 6) from the market's middle."""
     mx, mz = w.village.market_centre
     g = GY
     fx, fz = FIGURE
@@ -473,8 +475,17 @@ def clock_views(w):
             ('clock_up_seat', (mx - 12, g + 39, mz - 4), (mx - 2, g + 38, mz)),
             ('clock_up_roof', (mx + 18, g + 52, mz + 18), (mx, g + 46, mz)),
             ('clock_rope', (mx + 12, g + 39, mz + 1), (mx, g + 39, mz)),
-            ('clock_figure_a', (fx - 40, sea + 30, fz - 70), (fx, sea + 70, fz)),
-            ('clock_figure_done', (fx + 60, sea + 20, fz - 60), (fx, sea + 65, fz))]
+            # the cutscene of the bell goes on by itself from the rope: these only wait, and photograph through the camera the cutscene has taken
+            ('clock_scene_a', (mx, g + 39, mz), (mx, g + 39, mz)),
+            ('clock_scene_b', (mx, g + 39, mz), (mx, g + 39, mz)),
+            ('clock_scene_c', (mx, g + 39, mz), (mx, g + 39, mz)),
+            ('clock_scene_d', (mx, g + 39, mz), (mx, g + 39, mz)),
+            ('clock_scene_e', (mx, g + 39, mz), (mx, g + 39, mz)),
+            ('clock_end', (mx, g + 39, mz), (mx, g + 39, mz)),
+            # the figure standing, from where a player would see it (the tower's roof, three hundred blocks off) and nearer
+            ('clock_figure_far', (mx + 3, g + 52, mz + 30), (fx, sea + 150, fz)),
+            ('clock_figure_mid', (fx, sea + 70, fz - 260), (fx, sea + 130, fz)),
+            ('clock_figure_foot', (fx - 30, sea + 14, fz - 130), (fx, sea + 40, fz))]
 
 
 def views(w):

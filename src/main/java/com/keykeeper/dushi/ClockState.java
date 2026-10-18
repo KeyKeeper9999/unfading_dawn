@@ -31,9 +31,8 @@ public final class ClockState {
             Codec.BOOL.optionalFieldOf("raised", false).forGetter(state -> state.raised),
             Codec.INT.optionalFieldOf("ending", NO_ENDING).forGetter(state -> state.ending),
             Codec.INT.optionalFieldOf("ending_tick", 0).forGetter(state -> state.endingTick),
-            Codec.INT.optionalFieldOf("figure", 0).forGetter(state -> state.figure),
             Codec.STRING.listOf().optionalFieldOf("slain", List.of()).forGetter(state -> List.copyOf(state.slain)))
-            .apply(instance, (keys, started, rise, raised, ending, endingTick, figure, slain) -> {
+            .apply(instance, (keys, started, rise, raised, ending, endingTick, slain) -> {
                 ClockState state = new ClockState();
                 state.keys = keys;
                 state.started = started;
@@ -41,7 +40,6 @@ public final class ClockState {
                 state.raised = raised;
                 state.ending = ending;
                 state.endingTick = endingTick;
-                state.figure = figure;
                 state.slain.addAll(slain);
                 return state;
             }));
@@ -55,10 +53,8 @@ public final class ClockState {
     /** The tower stands. */
     public boolean raised;
     public int ending = NO_ENDING;
-    /** Ticks since the bell was struck, while the figure on the horizon is still rising. */
+    /** Ticks since the bell was struck (the figure over the sea has been rising for this many less {@link Clock#FIGURE_AT}); the count stops when it stands. */
     public int endingTick;
-    /** How many layers of the figure on the horizon stand. */
-    public int figure;
     /** The lords that have fallen, by the id of their kind: what the folk of the borough talk about. */
     public final Set<String> slain = new HashSet<>();
 

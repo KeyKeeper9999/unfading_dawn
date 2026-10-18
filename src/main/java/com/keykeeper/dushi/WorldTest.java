@@ -111,10 +111,9 @@ final class WorldTest {
     private static void clock(ServerLevel level) {
         ClockState clock = Clock.state(level);
         Plan tower = Plan.get(Clock.TOWER_PLAN);
-        Plan figure = Plan.get(Clock.FIGURE_PLAN);
         BlockPos towerSite = Clock.towerSite();
-        say("clock: plans " + tower.width + "x" + tower.height + "x" + tower.depth + " and " + figure.width + "x" + figure.height + "x" + figure.depth
-                + ", tower site " + towerSite + (towerSite != null && tower.height > 40 && figure.height > 60 ? "" : " FAILED"));
+        say("clock: plan " + tower.width + "x" + tower.height + "x" + tower.depth + ", tower site " + towerSite + ", figure site " + Clock.figureSite()
+                + (towerSite != null && Clock.figureSite() != null && tower.height > 40 ? "" : " FAILED"));
 
         // What it remembers survives being saved.
         ClockState probe = new ClockState();
@@ -122,12 +121,11 @@ final class WorldTest {
         probe.started = true;
         probe.rise = 42;
         probe.ending = ClockState.BELL;
-        probe.figure = 7;
         probe.slain.add("coming");
         ClockState back = ClockState.CODEC.codec().parse(com.mojang.serialization.JsonOps.INSTANCE,
                 ClockState.CODEC.codec().encodeStart(com.mojang.serialization.JsonOps.INSTANCE, probe).result().orElseThrow()).result().orElseThrow();
         say("clock: saved and read back=" + (back.keys == probe.keys && back.started && back.rise == 42 && back.ending == ClockState.BELL
-                && back.figure == 7 && back.slain.contains("coming") ? "ok" : "FAILED"));
+                && back.slain.contains("coming") ? "ok" : "FAILED"));
 
         // The sockets: the wrong key does nothing, each right one stays in the clock, the seventh starts it.
         FakePlayer player = FakePlayerFactory.getMinecraft(level);
@@ -247,7 +245,6 @@ final class WorldTest {
         clock.raised = false;
         clock.keys = 0;
         clock.rise = -1;
-        clock.figure = 0;
         clock.slain.clear();
 
         // The seventh key: the keykeeper gives it, after the Coming has fallen, and only once.

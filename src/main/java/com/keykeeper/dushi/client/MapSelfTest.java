@@ -274,7 +274,7 @@ public final class MapSelfTest {
                     return;
                 }
                 if (view.name.startsWith("clock_")) {
-                    if (minecraft.gui.screen() instanceof EndingScreen) {
+                    if (minecraft.gui.screen() instanceof EndingScreen && !view.name.equals("clock_end")) {
                         minecraft.gui.setScreen(null);
                     }
                     if (view.name.startsWith("clock_up") || view.name.equals("clock_rope")) {
@@ -349,6 +349,25 @@ public final class MapSelfTest {
                     wait = 60;
                     return;
                 }
+                if (view.name.startsWith("clock_scene_") || view.name.equals("clock_end")) {
+                    // the cutscene has the camera: nothing to fly to, only a time to wait (ticks after the one before)
+                    stage = 4;
+                    wait = switch (view.name) {
+                        case "clock_scene_a" -> 140;
+                        case "clock_scene_e" -> 130;
+                        case "clock_end" -> 100;
+                        default -> 150;
+                    };
+                    return;
+                }
+                if (view.name.startsWith("clock_figure") && !Cinema.hasFigure()) {
+                    // (asked for without the bell: the figure is put up standing, as it is for a player who comes into the world after it)
+                    var at = Clock.figureSite();
+                    if (at != null) {
+                        Cinema.colossus(new com.keykeeper.dushi.Net.Colossus(at.getX(), at.getY(), at.getZ(), 90.0F, 800));
+                        say("the figure put up by hand at " + at.toShortString());
+                    }
+                }
                 server.execute(() -> {
                     ServerPlayer player = server.getPlayerList().getPlayers().get(0);
                     double dx = view.toX - view.x;
@@ -373,7 +392,7 @@ public final class MapSelfTest {
                     }
                 });
                 stage = 4;
-                wait = view.name.equals("clock_rope") ? 440 : view.name.equals("clock_figure_done") ? 330 : 110;
+                wait = view.name.equals("clock_rope") ? 100 : 110;
             }
             case 4 -> {
                 if (!minecraft.gui.hud.isHidden()) {

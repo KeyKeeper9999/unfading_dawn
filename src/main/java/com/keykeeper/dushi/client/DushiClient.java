@@ -148,6 +148,8 @@ public final class DushiClient {
         event.registerEntityRenderer(Dushi.SUN_SHAFT.get(), SunShaftRenderer::new);
         event.registerEntityRenderer(Dushi.GEAR.get(), GearRenderer::new);
         event.registerEntityRenderer(Dushi.TENDRIL.get(), TendrilRenderer::new);
+        event.registerEntityRenderer(Dushi.COLOSSUS.get(), ColossusRenderer::new);
+        event.registerEntityRenderer(Dushi.DOLLY.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
         event.registerEntityRenderer(Dushi.HARPOON_ENTITY.get(), context -> new ThrownItemRenderer<>(context, 1.6F, false));
         event.registerEntityRenderer(Dushi.ANCHOR_ENTITY.get(), AnchorRenderer::new);
         Dushi.WITHERED.forEach((kind, type) -> event.registerEntityRenderer(type.get(), context -> new WitheredRenderer(context, kind)));
@@ -207,6 +209,7 @@ public final class DushiClient {
         event.registerLayerDefinition(ComingModel.LAYER, ComingModel::createLayer);
         event.registerLayerDefinition(GearModel.LAYER, GearModel::createLayer);
         event.registerLayerDefinition(TendrilModel.LAYER, TendrilModel::createLayer);
+        event.registerLayerDefinition(ColossusModel.LAYER, ColossusModel::createLayer);
         event.registerLayerDefinition(WallEyeModel.LAYER, WallEyeModel::createLayer);
         event.registerLayerDefinition(MillstoneModel.LAYER, MillstoneModel::createLayer);
         event.registerLayerDefinition(KeykeeperModel.LAYER, KeykeeperModel::createLayer);
@@ -223,7 +226,9 @@ public final class DushiClient {
         event.register(Net.OpenShop.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new ShopScreen()));
         event.register(Net.OpenForge.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new ForgeScreen()));
         event.register(Net.Quake.TYPE, (payload, context) -> shake(payload.ticks(), payload.strength()));
-        event.register(Net.EndScreen.TYPE, (payload, context) -> Minecraft.getInstance().gui.setScreen(new EndingScreen(payload.ending())));
+        event.register(Net.EndScreen.TYPE, (payload, context) -> Cinema.endScreen(payload.ending()));
+        event.register(Net.Colossus.TYPE, (payload, context) -> Cinema.colossus(payload));
+        event.register(Net.Cutscene.TYPE, (payload, context) -> Cinema.cutscene(payload));
         event.register(Net.Banner.TYPE, (payload, context) -> {
             if (!payload.key().isEmpty()) {
                 SoulsHud.showBanner(payload.key(), payload.style());

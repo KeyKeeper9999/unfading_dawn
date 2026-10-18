@@ -124,6 +124,7 @@ t(f'message.{M}.charm_off', 'Оберег снят: %s', 'Charm taken off: %s')
 t(f'screen.{M}.hearth.charm.none', 'Оберег не надет', 'No charm is worn')
 t(f'screen.{M}.hearth.charm.hint', 'Возьми оберег в руку и нажми правую кнопку', 'Take a charm in your hand and right click')
 t(f'screen.{M}.hearth.charm.off', 'Снять', 'Take off')
+t(f'screen.{M}.cutscene.skip', 'Пробел - пропустить', 'Space - skip')
 
 MOBS = (('withered_prisoner', 'Истлевший узник', 'Withered Prisoner'), ('withered_guard', 'Истлевший стражник', 'Withered Guard'),
         ('withered_archer', 'Истлевший лучник', 'Withered Archer'), ('withered_acolyte', 'Истлевший послушник', 'Withered Acolyte'),
@@ -165,6 +166,8 @@ t(f'entity.{M}.thrown_anchor', 'Якорь «Зари»', 'Anchor of the Daybrea
 t(f'entity.{M}.gear', 'Шестерня', 'Clock Wheel')
 t(f'entity.{M}.tendril', 'Рука Грядущего', 'Arm of the Coming')
 t(f'entity.{M}.coming_face', 'Лик Грядущего', 'Face of the Coming')
+t(f'entity.{M}.colossus', 'Явившееся над морем', 'What Stood Up Out of the Sea')
+t(f'entity.{M}.dolly', 'Глаз', 'Eye')
 t(f'entity.{M}.wall_eye', 'Око в скале', 'Eye in the Rock')
 
 t(f'tooltip.{M}.scaling', 'Сила: %s   Ловкость: %s', 'Strength: %s   Dexterity: %s')
@@ -606,6 +609,9 @@ SUBTITLES = {
     'entity.tendril.open': ('В полу раскрывается дыра', 'A hole opens in the floor'),
     'entity.tendril.rise': ('Из дыры встаёт рука', 'An arm comes up out of a hole'),
     'entity.tendril.slap': ('Рука рушится оземь', 'An arm comes down'),
+    'entity.colossus.rumble': ('Море вздымается, земля гудит', 'The sea heaves and the ground groans'),
+    'entity.colossus.roar': ('Рык над морем', 'A roar over the sea'),
+    'entity.colossus.roar_short': ('Рык над морем', 'A roar over the sea'),
     'entity.miller.ambient': ('Сипит Пустомол', 'Miller wheezes'), 'entity.miller.hurt': ('Пустомол кряхтит', 'Miller grunts'),
     'entity.miller.death': ('Пустомол оседает', 'Miller sinks down'), 'entity.miller.swing': ('Идёт вага', 'A bar comes round'),
     'entity.miller.slam': ('Вага бьёт в пол', 'A bar strikes the floor'), 'entity.miller.shout': ('Пустомол ухает', 'Miller heaves'),

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""The clock tower of the Dead Borough and the figure that rises over the sea when the day is ended: two plans, written
-into data/unfading_dawn/plan/ (read by world/Plan.java, set down layer by layer by Clock.java, not by world generation).
+"""The clock tower of the Dead Borough: a plan, written into data/unfading_dawn/plan/ (read by world/Plan.java, set down layer
+by layer by Clock.java, not by world generation). (What rises over the sea when the day is ended is not built of blocks: it is
+an entity, tools/gen_colossus.py.)
 
 The tower comes up out of the borough's market when the seven keys are in the clock under the Sky Beneath. It is drawn
 the way the borough's plan is (south down the page; the door in the south wall), and Clock sets it down turned as the
@@ -15,9 +16,6 @@ blocks square (gen_village.py leaves it free of stalls and says where it is: `ma
         of the mod's own, hangs in the bell's mouth) and, on the west, the Founder's seat; the stair comes out at the
         north-east corner;
     the roof: a pyramid of dark tiles with a lantern at its point.
-
-The figure is the Coming's other half: a black rope of three twisted necks standing in the sea, a black disc with a rim of
-amber light, and a crown of twelve hands round it. It is drawn facing north (the way the land is).
 
 Run from the repo root: PYTHONPATH=tools python3 tools/gen_tower.py [preview dir]"""
 import math
@@ -226,93 +224,16 @@ def tower():
     return b
 
 
-# ---------------------------------------------------------------------------------------------------- the figure
-
-FW, FD, FH = 55, 21, 100
-FC, FZ = 27, 10
-DISC_Y = 76
-
-
-def figure():
-    b = Build('horizon_figure', FW, FH, FD)
-    b.low = -3                                   # three layers of it stand in the water under its surface
-
-    def rock(x, y, z):
-        n = noise(x, y, z, 91)
-        return 'minecraft:blackstone' if n < 0.55 else ('minecraft:basalt[axis=y]' if n < 0.85 else ('minecraft:crying_obsidian' if n < 0.93 else 'minecraft:black_concrete'))
-
-    def put(x, y, z, state=None):
-        if 0 <= x < FW and 0 <= z < FD and -3 <= y < FH:
-            b.set(x, y, z, state or rock(x, y, z))
-
-    # a foot spread over the sea floor, and three necks twisted into one rope, thinning as they rise
-    neck_top = DISC_Y - 8
-    for y in range(-3, neck_top):
-        t = max(0, y) / neck_top
-        foot = 9.5 * (1 - t * 5) if t < 0.2 else 0.0
-        for k in range(3):
-            a = k * 2 * math.pi / 3 + y * 0.09
-            axis = 3.4 - 0.8 * t
-            px, pz = FC + math.cos(a) * axis, FZ + math.sin(a) * axis
-            thick = 3.2 - 0.9 * t
-            for x in range(int(px - 5), int(px + 6)):
-                for z in range(int(pz - 5), int(pz + 6)):
-                    if math.hypot(x - px, z - pz) <= thick:
-                        put(x, y, z)
-        if foot > 0:
-            for x in range(FW):
-                for z in range(FD):
-                    if math.hypot(x - FC, z - FZ) <= foot:
-                        put(x, y, z)
-    # the knot the necks grow from, under the disc: a heavy mass, wider than the rope
-    for y in range(neck_top - 6, DISC_Y - 3):
-        r = 6.5 - abs(y - (DISC_Y - 9)) * 0.55
-        for x in range(FW):
-            for z in range(FD):
-                if math.hypot(x - FC, z - FZ) <= r:
-                    put(x, y, z)
-    # the disc: black, three blocks thick, its rim a ring of amber light; a broken ring of it further out
-    for x in range(FW):
-        for y in range(DISC_Y - 15, min(FH, DISC_Y + 16)):
-            d = math.hypot(x - FC, y - DISC_Y)
-            for z in range(FZ - 1, FZ + 2):
-                if d <= 10.2:
-                    put(x, y, z, 'minecraft:black_concrete')
-                elif d <= 11.8:
-                    put(x, y, z, 'minecraft:ochre_froglight[axis=z]')
-                elif 13.4 <= d <= 14.8 and int(math.degrees(math.atan2(y - DISC_Y, x - FC)) + 360) % 90 < 62:
-                    put(x, y, z, 'minecraft:shroomlight')
-    # the crown: twelve hands on arms, spread round the disc; an arm three blocks across, a hand a fist of fingers
-    for k in range(12):
-        a = math.radians(15 + 30 * k)
-        for r in range(15, 22):
-            x, y = round(FC + math.cos(a) * r), round(DISC_Y + math.sin(a) * r)
-            for dx in range(-1, 2):
-                for dy in range(-1, 2):
-                    for z in range(FZ - 1, FZ + 2):
-                        put(x + dx, y + dy, z)
-        hx, hy = round(FC + math.cos(a) * 24), round(DISC_Y + math.sin(a) * 24)
-        for dx in range(-2, 3):
-            for dy in range(-2, 3):
-                if abs(dx) + abs(dy) < 4 or noise(dx, dy, k, 4) < 0.55:
-                    for z in range(FZ - 2, FZ + 3):
-                        put(hx + dx, hy + dy, z)
-    return b
-
-
 def main():
     out = sys.argv[1] if len(sys.argv) > 1 else None
     t = tower()
-    f = figure()
     n1 = t.save((CENTRE, FEET, CENTRE))
-    n2 = f.save((FC, 0, FZ))
-    print(f'clock_tower: {len(t.cells)} blocks, {n1} states; horizon_figure: {len(f.cells)} blocks, {n2} states')
+    print(f'clock_tower: {len(t.cells)} blocks, {n1} states')
     if out:
         import os
         os.makedirs(out, exist_ok=True)
         t.iso(scale=9).save(f'{out}/clock_tower_iso.png')
         t.top_down(FLOOR + 2).save(f'{out}/clock_tower_top.png')
-        f.iso(scale=5).save(f'{out}/horizon_figure_iso.png')
 
 
 if __name__ == '__main__':

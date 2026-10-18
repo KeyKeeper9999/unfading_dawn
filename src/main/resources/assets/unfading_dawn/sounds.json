@@ -1950,6 +1950,24 @@
       "unfading_dawn:block/tower_seat"
     ]
   },
+  "entity.colossus.rumble": {
+    "subtitle": "subtitles.unfading_dawn.entity.colossus.rumble",
+    "sounds": [
+      "unfading_dawn:colossus/rumble"
+    ]
+  },
+  "entity.colossus.roar": {
+    "subtitle": "subtitles.unfading_dawn.entity.colossus.roar",
+    "sounds": [
+      "unfading_dawn:colossus/roar"
+    ]
+  },
+  "entity.colossus.roar_short": {
+    "subtitle": "subtitles.unfading_dawn.entity.colossus.roar_short",
+    "sounds": [
+      "unfading_dawn:colossus/roar_short"
+    ]
+  },
   "item.flask.drink": {
     "subtitle": "subtitles.unfading_dawn.item.flask.drink",
     "sounds": [

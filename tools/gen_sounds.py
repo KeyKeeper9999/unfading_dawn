@@ -1861,6 +1861,54 @@ S['block/tower_seat'] = under(place(d, (0.0, grind(1.6, 80, 520, 178) * env(1.6,
                                     (0.4, drone(5.2, 55, 179, 0.4) * 1.3), (0.4, tone(110, 5.2) * env(5.2, 1.8, 2.4) * 0.35), (0.4, tone(165, 5.2) * env(5.2, 2.2, 2.4) * 0.22)), 2.6, 0.4, 2.0)
 
 
+# what stands up out of the sea when the bell is struck (ColossusEntity, client/Cinema): the water heaving and the ground under it
+# groaning for as long as it takes to rise, and the roars it gives as it turns its face to the land. Heard everywhere, not from a
+# place (the game plays them without a position), so they are made to be loud: little of the quiet and a great deal of the body
+def roar(d, base, peak, shriek, seed, rough=0.9):
+    """A throat the size of a hill. A growl a bell tower deep, its sound chopped at half its pitch, pushed up and let sag; over it a
+    shriek that climbs and comes down with two voices beating; breath under both; and a blow of the chest at the start."""
+    n = int(SR * d)
+    r = np.random.default_rng(3100 + seed)
+    wob = lowpass(r.standard_normal(n), 9)
+    wob /= np.max(np.abs(wob)) + 1e-9
+    f = contour(d, (0, base * 0.8), (0.1, base), (0.3, peak), (0.62, peak * 0.92), (1, base * 0.55)) * (1 + 0.05 * wob)
+    growl = voice(f, d, ((260, 90, 1.0), (640, 170, 1.0), (1150, 260, 0.7), (2300, 420, 0.3)), breath=0.5, jitter=0.05, rough=rough)
+    growl = growl + 0.6 * voice(f * 0.5, d, ((180, 70, 1.0), (420, 120, 0.7)), breath=0.2, jitter=0.04, rough=rough)
+    vib = 1 + 0.03 * np.sin(2 * np.pi * 6.5 * t(d) + 3 * wob)
+    sf = contour(d, (0, 300), (0.28, 420), (0.5, 1150), (0.72, 760), (1, 330)) * vib
+    cry = voice(sf, d, ((900, 200, 1.0), (1750, 300, 0.9), (3100, 450, 0.5)), breath=0.35, jitter=0.04, rough=0.55)
+    cry = cry + 0.7 * voice(sf * 1.51, d, ((1200, 250, 0.8), (2600, 400, 0.6)), breath=0.3, jitter=0.05, rough=0.5)
+    gate = np.exp(-((t(d) / d - 0.55) ** 2) / 0.05)
+    air = bandpass(r.standard_normal(n), 300, 3200) * env(d, d * 0.2, d * 0.4) * 0.5
+    body = (growl * 1.0 + cry * 0.55 * gate * shriek + air) * env(d, d * 0.07, d * 0.35)
+    body = np.tanh(2.4 * body / (np.max(np.abs(body)) + 1e-9)) * 1.1
+    return layer(body, thump(1.4, 78, 22, 0.35) * 1.6)
+
+
+def loud(x, drive=2.6, squeeze=0.55):
+    """Makes it as loud as a sound can be made (the game plays no sound above its full scale): the quiet parts, the tails of the room
+    too, are lifted towards the loud, then the peaks are rounded off."""
+    x = np.asarray(x, float)
+    x = x / (np.max(np.abs(x)) + 1e-9)
+    level = lowpass(np.abs(x), 5) + 0.03
+    x = x * level ** -squeeze
+    x = x / (np.max(np.abs(x)) + 1e-9)
+    return np.tanh(drive * x)
+
+
+d = 8.5
+S['colossus/roar'] = loud(under(roar(d, 66, 104, 1.0, 1), 3.4, 0.4, 2.8))
+d = 6.0
+S['colossus/roar_short'] = loud(under(roar(d, 74, 118, 0.8, 2), 2.6, 0.38, 2.2), 2.4, 0.5)
+d = 15.0
+S['colossus/rumble'] = under(place(d, (0.0, lowpass(noise(d), 90, 3) * env(d, 5.0, 5.0) * 3.4), (0.0, drone(d, 38, 311, 0.35) * 2.0),
+                                    (0.0, bandpass(noise(d), 120, 800) * env(d, 6.0, 5.5) * 1.2 * (0.55 + 0.45 * np.sin(2 * np.pi * 0.9 * t(d)))),
+                                    (0.0, grind(d, 60, 500, 312) * env(d, 6.0, 5.0) * 1.7), (0.0, crackle(d, 10, 2200) * env(d, 7.0, 5.0) * 0.7),
+                                    *[(at, thump(1.8, 58 - 4 * (i % 3), 17, 0.4) * (2.0 + 0.12 * i)) for i, at in enumerate((1.5, 3.2, 4.7, 6.1, 7.4, 8.6, 9.7, 10.6, 11.4))],
+                                    (4.0, splash(6.0, 2.6, 2400) * 1.5), (8.0, splash(5.0, 2.2, 2000) * 1.2)), 3.6, 0.45, 2.6)
+S['colossus/rumble'] = loud(S['colossus/rumble'], 2.0, 0.15)
+
+
 EVENTS = {
     'entity.withered.ambient': ['withered/ambient1', 'withered/ambient2', 'withered/ambient3'],
     'entity.withered.hurt': ['withered/hurt1', 'withered/hurt2'],
@@ -1999,6 +2047,7 @@ EVENTS = {
     'block.clock.set': ['block/clock_set'], 'block.clock.empty': ['block/clock_empty'], 'block.clock.start': ['block/clock_start'],
     'block.tower.rumble': ['block/tower_rumble'], 'block.tower.crack': ['block/tower_crack'], 'block.tower.settle': ['block/tower_settle'],
     'block.tower.toll': ['block/tower_toll'], 'block.tower.seat': ['block/tower_seat'],
+    'entity.colossus.rumble': ['colossus/rumble'], 'entity.colossus.roar': ['colossus/roar'], 'entity.colossus.roar_short': ['colossus/roar_short'],
     'item.flask.drink': ['item/flask_drink'], 'item.flask.empty': ['item/flask_empty'],
     'item.spell.shard': ['item/spell_shard'], 'item.spell.shard_hit': ['item/spell_shard_hit'], 'item.spell.mend': ['item/spell_mend'],
     'item.spell.rebuke': ['item/spell_rebuke'], 'item.spell.fire': ['item/spell_fire'], 'item.spell.fire_burst': ['item/spell_fire_burst'],
