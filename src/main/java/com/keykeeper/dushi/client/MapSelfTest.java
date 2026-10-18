@@ -273,10 +273,10 @@ public final class MapSelfTest {
                     wait = 5;
                     return;
                 }
+                if (minecraft.gui.screen() instanceof EndingScreen && !view.name.equals("clock_end")) {
+                    minecraft.gui.setScreen(null);
+                }
                 if (view.name.startsWith("clock_")) {
-                    if (minecraft.gui.screen() instanceof EndingScreen && !view.name.equals("clock_end")) {
-                        minecraft.gui.setScreen(null);
-                    }
                     if (view.name.startsWith("clock_up") || view.name.equals("clock_rope") || view.name.equals("clock_seat_a")) {
                         // the tower stands only after the rumble and all its layers: wait for it (with a player near, which these views are);
                         // asked for alone (without clock_rise_a) they start the clock themselves
@@ -449,6 +449,11 @@ public final class MapSelfTest {
             }
             case 5 -> {
                 // from hearth to hearth: a rest in the yard by night, a rest in the gatehouse by evening, and back
+                // (the endings of the clock were the last views: whatever of their cutscenes and screens is left is put away)
+                Cinema.skip();
+                if (minecraft.gui.screen() instanceof EndingScreen) {
+                    minecraft.gui.setScreen(null);
+                }
                 if (minecraft.gui.hud.isHidden()) {
                     minecraft.gui.hud.toggle();
                 }

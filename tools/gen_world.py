@@ -590,8 +590,18 @@ def views(w):
     out.append(('time', BLUE_HOUR))
     out += w.depths.views()
     out.append(('time', 18000))
-    out += clock_views(w)
+    out += [v for v in clock_views(w) if not clock_ending(v[0])]
     return out
+
+
+def clock_ending(name):
+    """The views that play the endings (the rope, the cutscenes, the figure, the seat). The bell lays down everything of the mod's that lived,
+    so they come last of all, after the lords have been photographed and felled: see ending_views and the end of the views file."""
+    return name in ('clock_rope', 'clock_end') or name.startswith(('clock_scene_', 'clock_figure_', 'clock_seat_'))
+
+
+def ending_views(w):
+    return [v for v in clock_views(w) if clock_ending(v[0])]
 
 
 BLUE_HOUR = 6000                    # the hour of the Sky Beneath: see PlaceNameBlock.BLUE_HOUR (its sky is its own; the game's is not seen)
@@ -767,6 +777,9 @@ if __name__ == '__main__':
         # and tries the locked gate without its key and with it
         for key in ('quarry_key', 'mire_key', 'firwood_key', 'shore_key', 'stubble_key', 'depths_key'):
             f.write('gate ' + ' '.join(f'{v_:.2f}' for v_ in world(*sorted(b.seals[key])[0], spawn)) + '\n')
+        # and last the endings of the clock, in the same world: the bell lays down everything that lived, which the lords' pictures must not see
+        for name, eye, look in ending_views(w):
+            f.write(name + ' ' + ' '.join(f'{v_:.2f}' for v_ in world(*eye, spawn) + world(*look, spawn)) + '\n')
     # the columns that get a biome of their own (MapBuilder lays it): boxes of the world, four blocks wide - the game
     # keeps a biome for every four blocks each way - a line each
     # (the Sky Beneath lies under other places: its boxes are between two heights, the bottom of the world and a little under the sump's floor)

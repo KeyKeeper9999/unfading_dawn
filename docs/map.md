@@ -101,3 +101,7 @@ Things learnt the hard way:
 - The picture numbers of a run (`m137_...`) are the line numbers of `map/views.txt`: a new place's views shift every
   number after them, and `MAPS` in `tools/ci_sheets.py` is cut by those numbers.
 - Boulders strewn by chance make pits: `Shore.no_pits` fills whatever on the strand is not come to from its way.
+- The views that play the endings of the clock (`clock_rope`, `clock_scene_*`, `clock_end`, `clock_figure_*`, `clock_seat_*`) are the very last of
+  `map/views.txt` (`gen_world.ending_views`): the bell lays down everything of the mod's that lived (and lets nothing join the world after
+  it), and the screen of an ending stays open over every picture after it - put before the lords they photographed an empty world and black
+  screens. `MapSelfTest` closes the screen of an ending before any view but `clock_end`, and before the travelling.
