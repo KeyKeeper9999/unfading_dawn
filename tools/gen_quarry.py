@@ -817,6 +817,7 @@ class Quarry:
             ('quarry_field', (63, mid + 2.6, zc + 7), (80, mid + 2.4, zc + 28)),
             ('quarry_stair', (86.5, mid + 2.6, zc + 31.5), (86.5, mid + 12, zc + 18)),
             ('quarry_shop', (81, top + 2.6, zc + 13), (64, top + 2.4, zc + 29)),
+            ('quarry_carver', (68.5, top + 2.6, zc + 26.5), (63.5, top + 1.8, zc + 28.5)),
             ('quarry_shop_row', (72.5, top + 2.6, zc + 12), (72.5, top + 2.4, zc + 30)),
             ('quarry_gallery', (88, top + 2.6, zc + 0.5), (60, top + 2.4, zc + 0.5)),
             ('quarry_eyes', (91, top + 2.6, zc + 0.5), (98, top + 3, zc - 6)),

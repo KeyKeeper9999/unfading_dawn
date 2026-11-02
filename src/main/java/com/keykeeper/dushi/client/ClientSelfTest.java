@@ -379,8 +379,8 @@ public final class ClientSelfTest {
         command(gone, look(0.5, -0.5, 0, 8), summon("candlewife", -4.0, 6.5, ""), summon("debtor", -2.5, 6.5, ""), summon("carver", -1.0, 6.5, ""),
                 summon("ferryman", 0.5, 6.5, ""), summon("hangman", 2.0, 6.5, ""), summon("cellarer", 3.5, 6.5, ""), summon("bellman", 5.0, 6.5, ""));
         shot("n1_folk", 30);
-        command(look(0.5, 13.5, 180, 8));
-        shot("n2_folk_back");
+        command(look(-5.5, 2.5, -40, 12));
+        shot("n2_folk_side");
         rest();
 
         // 2. the rust knight and the keykeeper

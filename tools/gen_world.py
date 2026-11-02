@@ -474,6 +474,7 @@ def clock_views(w):
             ('clock_up_dial', (mx + 10, g + 30, mz + 18), (mx, g + 30, mz + 6)),
             ('clock_up_belfry', (mx + 13, g + 39, mz + 2), (mx - 1, g + 39, mz)),
             ('clock_up_seat', (mx - 12, g + 39, mz - 4), (mx - 2, g + 38, mz)),
+            ('clock_up_bellman', (mx - 1.5, g + 39, mz + 1.5), (mx + 3.5, g + 38, mz + 0.5)),
             ('clock_up_roof', (mx + 18, g + 52, mz + 18), (mx, g + 46, mz)),
             ('clock_rope', (mx + 2.5, g + 39, mz), (mx, g + 39, mz)),             # (in the belfry, where a player stands to pull it)
             # the cutscene of the bell goes on by itself from the rope: these only wait, and photograph through the camera the cutscene has taken

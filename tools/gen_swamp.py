@@ -842,6 +842,7 @@ class Swamp:
             ('mire_houses_south', (312, g + 3.6, STREET - 3.5), (318, g + 4, STREET + 12)),
             ('mire_loft', (315, g + 3.6, 518), (319, g + 3, 514)),
             ('mire_hut', (333, g + 3.6, STREET - 3.5), (346, g + 3, STREET)),
+            ('mire_ferryman', (346.5, g + 2.6, 526.5), (343.5, g + 1.6, 523.5)),
             ('mire_log_road_north', (353, g + 2.6, 523.5), (384, g + 4, 498)),
             ('mire_marsh_from_above', (340, g + 34, 560), (372, g + 1, 534)),
             ('mire_gallows', (366, g + 2.6, 531), (374, g + 4, 534.5)),

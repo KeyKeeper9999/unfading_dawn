@@ -36,6 +36,8 @@ public class FolkEntity extends PathfinderMob {
 
     private final Folk who;
     private int leaving;
+    /** Whether he has looked, on his first tick, if he is one who has gone. (Not tickCount: the level counts it, not tick().) */
+    private boolean checked;
 
     public FolkEntity(EntityType<? extends FolkEntity> type, Level level, Folk who) {
         super(type, level);
@@ -100,9 +102,12 @@ public class FolkEntity extends PathfinderMob {
             return;
         }
         // One who has gone does not come back with the rest of the borough.
-        if (this.tickCount == 1 && Clock.slain(level, this.who.id)) {
-            this.discard();
-            return;
+        if (!this.checked) {
+            this.checked = true;
+            if (Clock.slain(level, this.who.id)) {
+                this.discard();
+                return;
+            }
         }
         if (this.leaving > 0 && --this.leaving == 0) {
             this.go(level);
