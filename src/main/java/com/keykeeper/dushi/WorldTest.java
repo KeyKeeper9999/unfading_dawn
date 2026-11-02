@@ -83,6 +83,12 @@ final class WorldTest {
             e.printStackTrace(System.out);
         }
         try {
+            folk(level);
+        } catch (RuntimeException e) {
+            say("folk: FAILED: " + e);
+            e.printStackTrace(System.out);
+        }
+        try {
             firwood(level);
             shore(level);
             stubble(level);
@@ -271,6 +277,72 @@ final class WorldTest {
         clock.slain.clear();
         say("clock: the keykeeper keeps the key until the Coming falls=" + early + ", gives it=" + given + ", gives only one=" + once
                 + (early && given && once ? "" : " FAILED"));
+    }
+
+    /**
+     * The folk: every one says his first topic once, then idle talk; the topics of a fallen lord come when it has fallen,
+     * one click each, and are not said twice; the hangman goes when the Weeping Mother has, and does not rise again.
+     */
+    private static void folk(ServerLevel level) {
+        FakePlayer player = FakePlayerFactory.getMinecraft(level);
+        PlayerSoul soul = PlayerSoul.of(player);
+        ClockState clock = Clock.state(level);
+        clock.slain.clear();
+        soul.heard.clear();
+        BlockPos spot = new BlockPos(130, 240, 120);
+        for (BlockPos floor : BlockPos.betweenClosed(spot.offset(-6, -1, -3), spot.offset(8, -1, 3))) {
+            level.setBlock(floor, Blocks.STONE.defaultBlockState(), 3);
+        }
+        int x = 0;
+        boolean all = true;
+        StringBuilder report = new StringBuilder();
+        for (Folk who : Folk.values()) {
+            var folk = Dushi.FOLK.get(who).get().spawn(level, spot.offset(x - 6, 0, 0), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            x += 2;
+            if (folk == null) {
+                report.append(' ').append(who.id).append("=not spawned");
+                all = false;
+                continue;
+            }
+            Folk.Topic first = folk.talk(level, player);
+            Folk.Topic second = folk.talk(level, player);
+            // every lord of the world falls: each topic that wants one comes, one a click, and then idle talk again
+            clock.slain.addAll(List.of("gravedigger", "overseer", "chaplain", "taskmaster", "stone_eater", "wallower", "weeping_mother", "shatun",
+                    "elder", "helmsman", "capsized", "scorched_warden", "hollow_miller", "bolt", "coming"));
+            int said = 0;
+            while (folk.talk(level, player) != null && said < 20) {
+                said++;
+            }
+            int wanted = 0;
+            for (Folk.Topic topic : who.topics) {
+                wanted += topic.when().test(clock) && !topic.id().equals("first") ? 1 : 0;
+            }
+            boolean ok = first != null && first.id().equals("first") && second == null && said == wanted;
+            report.append(' ').append(who.id).append('=').append(said).append('/').append(wanted);
+            if (who == Folk.HANGMAN) {
+                for (int i = 0; i < 100 && folk.isAlive(); i++) {
+                    folk.tick();
+                }
+                boolean gone = !folk.isAlive() && Clock.slain(level, "hangman");
+                var again = Dushi.FOLK.get(who).get().spawn(level, spot.offset(x - 6, 0, 2), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+                if (again != null) {
+                    again.tick();
+                }
+                boolean stays = again == null || !again.isAlive();
+                report.append(" (goes=").append(gone).append(", does not come back=").append(stays).append(')');
+                ok &= gone && stays;
+            }
+            all &= ok;
+            folk.discard();
+            clock.slain.clear();
+        }
+        // a later place's topics: the seat taken, and the bellman says so
+        clock.ending = ClockState.SEAT;
+        Folk.Topic late = Folk.BELLMAN.next(clock, soul.heard);
+        clock.ending = ClockState.NO_ENDING;
+        all &= late != null && late.id().equals("seat");
+        soul.heard.clear();
+        say("folk: topics heard of all lords fallen:" + report + ", the seat's topic comes after=" + (late != null) + (all ? "" : " FAILED"));
     }
 
     /** What a map leans on: the tier of a mark, the shard in the ash, peace at a hearth, the hour of a place. */

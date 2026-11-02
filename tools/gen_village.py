@@ -732,6 +732,9 @@ class Village:
         b.set(x0 + 2, gy + 4, z0 + 2, LANTERN)
         b.set(x0 + 4, gy + 3, z0 - 1, 'minecraft:spruce_fence')
         b.set(x0 + 4, gy + 2, z0 - 1, AIR)
+        # the candlewife, by the hearth of the lodge, and the candles she keeps lit on the barrel
+        b.mob('candlewife', x0 + 6, gy + 1, z0 + 2, 'west')
+        b.set(x0 + 1, gy + 2, z1 - 1, 'minecraft:candle[candles=4,lit=true]')
 
     def homes(self):
         b, gy = self.b, self.gy

@@ -142,7 +142,7 @@ if __name__ == '__main__':
         for key, n in part['mobs'].items():
             kind, t = key.split(':')
             t = int(t)
-            if kind in BOSSES or kind == 'keykeeper':
+            if kind in BOSSES or kind in ('keykeeper', 'candlewife', 'debtor', 'carver', 'ferryman', 'hangman', 'cellarer', 'bellman'):                 # (the folk give nothing)
                 continue
             kinds[(kind, t)] = n
             souls += n * M[kind]['souls'] * TS[t] * (KNEELING if kind == 'wakeful' else 1.0)

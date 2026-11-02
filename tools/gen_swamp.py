@@ -422,6 +422,7 @@ class Swamp:
         b.hearth(x0 + 3, g + 1, z0 + 2, 'ferry')
         b.set(x1 - 1, g + 1, z1 - 1, f'{MOD}:forge')
         b.set(x1 - 1, g + 1, z0 + 1, 'minecraft:barrel[facing=up]')
+        b.mob('ferryman', x0 + 1, g + 1, z0 + 1, 'east')
         b.threshold('log_roads', x1 + 2, g + 1, z0 - 1, x1 + 3, z1 + 1)
 
     def marsh(self):
@@ -442,6 +443,7 @@ class Swamp:
         b.fill(372, g + 6, 534, 376, g + 6, 534, BARK % 'x')
         b.set(374, g + 5, 534, 'minecraft:iron_chain[axis=y]')
         b.loot(374, g + 1, 536, 'mire_gallows', 'north')
+        b.mob('hangman', 374, g + 1, 531, 'west')            # he waits for the hanging to be over
         self.road([(366, 534), (369, 534)], 0, 3, gaps=0.0)
         self.road([(364, 522), (366, 534)], 0, 3, gaps=0.3)
         # the fishers' stage in the south: racks, barrels, a net of cobweb gone grey

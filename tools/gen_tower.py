@@ -204,6 +204,8 @@ def tower():
     b.set(4, FLOOR + 1, c - 1, 'minecraft:polished_blackstone_slab[type=bottom]')
     b.set(4, FLOOR + 1, c + 1, 'minecraft:polished_blackstone_slab[type=bottom]')
     b.set(4, FLOOR + 1, c, f'{MOD}:tower_end[kind=seat]')
+    # the bellman, on the belfry's floor by the head of the stair, his face to the bell
+    b.mark('bellman', 9, FLOOR + 1, c, 'west')
     # lanterns hung from the roof at the four corners
     for x, z in ((4, 4), (8, 4), (4, 8), (8, 8)):
         b.set(x, top - 1, z, LANTERN_DOWN)

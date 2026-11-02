@@ -96,12 +96,12 @@ public class MobMarkBlockEntity extends BlockEntity {
 
     /**
      * A rest: an ordinary mob is taken away and rises again at its mark; a living boss goes back to its place and heals,
-     * a slain one stays slain. The keykeeper is left alone unless somebody killed him.
+     * a slain one stays slain. The keykeeper and the folk are left alone unless somebody killed them.
      */
     private void reset(ServerLevel level) {
         MobMarkBlock.Kind kind = this.getBlockState().getValue(MobMarkBlock.MOB);
         Entity current = this.mob != null ? level.getEntity(this.mob) : null;
-        if (kind.boss || (kind == MobMarkBlock.Kind.KEYKEEPER && !this.dead)) {
+        if (kind.boss || (kind.folk && !this.dead)) {
             if (!this.dead && current instanceof SoulsMob boss) {
                 BlockPos pos = this.getBlockPos();
                 boss.returnHome(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.getBlockState().getValue(MobMarkBlock.FACING).toYRot());

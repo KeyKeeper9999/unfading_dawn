@@ -24,3 +24,7 @@ Part of the map "Вышний Острог". What is common to the whole map is 
   nothing of it moves) until somebody comes within 4.5 blocks or strikes it; `TaskmasterEntity` and `StoneEaterEntity` are the lords (the second digs itself
   under the floor: its model's root part `all` goes down, nothing reaches it there); `PowderPotEntity` (its `blast`
   hurts the dead too) and `WedgeEntity` are what is thrown. These four mobs share `client/QuarryRenderer`.
+
+## The folk
+
+The folk (2026-11-02): the Carver works in the south-west corner of the Carvers' Shop (63, top + 1, z1 - 3), at a block of polished diorite with a chiselled quartz top. See `docs/story.md`, «Народ».

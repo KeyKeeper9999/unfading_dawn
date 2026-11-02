@@ -27,3 +27,6 @@ by `Clock.java` with a long rumble and a shaking screen (`Net.Quake`). The two e
 The map's test plays it (`clock_*` views of `map/views.txt`, `.ci/mapshots` word `clock`): the tower rising and standing, the bell's cutscene
 (`clock_rope`, `clock_scene_a`..`e`, `clock_end`), the figure from far, middle and foot, and the seat's cutscene (`clock_seat_a`..`c`).
 
+## The folk
+
+The folk (2026-11-02): the Candlewife in the sexton's lodge by its hearth (candles lit on the barrel); the Bellman on the belfry's floor of the clock tower, by the head of the stair (his mark is in `plan/clock_tower.txt`), so he is there only once the tower stands. See `docs/story.md`, «Народ».

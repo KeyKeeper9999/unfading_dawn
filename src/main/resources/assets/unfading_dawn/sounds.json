@@ -1848,6 +1848,48 @@
       "unfading_dawn:keykeeper/give"
     ]
   },
+  "entity.folk.candlewife": {
+    "subtitle": "subtitles.unfading_dawn.entity.folk.candlewife",
+    "sounds": [
+      "unfading_dawn:folk/candlewife"
+    ]
+  },
+  "entity.folk.debtor": {
+    "subtitle": "subtitles.unfading_dawn.entity.folk.debtor",
+    "sounds": [
+      "unfading_dawn:folk/debtor"
+    ]
+  },
+  "entity.folk.carver": {
+    "subtitle": "subtitles.unfading_dawn.entity.folk.carver",
+    "sounds": [
+      "unfading_dawn:folk/carver"
+    ]
+  },
+  "entity.folk.ferryman": {
+    "subtitle": "subtitles.unfading_dawn.entity.folk.ferryman",
+    "sounds": [
+      "unfading_dawn:folk/ferryman"
+    ]
+  },
+  "entity.folk.hangman": {
+    "subtitle": "subtitles.unfading_dawn.entity.folk.hangman",
+    "sounds": [
+      "unfading_dawn:folk/hangman"
+    ]
+  },
+  "entity.folk.cellarer": {
+    "subtitle": "subtitles.unfading_dawn.entity.folk.cellarer",
+    "sounds": [
+      "unfading_dawn:folk/cellarer"
+    ]
+  },
+  "entity.folk.bellman": {
+    "subtitle": "subtitles.unfading_dawn.entity.folk.bellman",
+    "sounds": [
+      "unfading_dawn:folk/bellman"
+    ]
+  },
   "ui.death": {
     "subtitle": "subtitles.unfading_dawn.ui.death",
     "sounds": [

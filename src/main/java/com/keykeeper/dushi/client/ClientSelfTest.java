@@ -94,6 +94,7 @@ public final class ClientSelfTest {
                 case "wharf" -> "h";
                 case "stubble" -> "j";
                 case "depths" -> "k";
+                case "folk" -> "n";
                 case "base" -> "0 1 2 3 4 5 6 7 8 9";
                 default -> word;
             };
@@ -372,6 +373,14 @@ public final class ClientSelfTest {
         shot("03_withered_guard_and_bow", 30);
         command(look(-4.0, 6.5, -110, 5));
         shot("03_withered_side");
+        rest();
+
+        // the folk, in a row: the candlewife, the debtor, the carver, the ferryman, the hangman, the cellarer, the bellman
+        command(gone, look(0.5, -0.5, 0, 8), summon("candlewife", -4.0, 6.5, ""), summon("debtor", -2.5, 6.5, ""), summon("carver", -1.0, 6.5, ""),
+                summon("ferryman", 0.5, 6.5, ""), summon("hangman", 2.0, 6.5, ""), summon("cellarer", 3.5, 6.5, ""), summon("bellman", 5.0, 6.5, ""));
+        shot("n1_folk", 30);
+        command(look(0.5, 13.5, 180, 8));
+        shot("n2_folk_back");
         rest();
 
         // 2. the rust knight and the keykeeper

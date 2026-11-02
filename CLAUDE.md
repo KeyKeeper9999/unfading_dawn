@@ -143,6 +143,13 @@ moving to a new Minecraft version: names change a lot between versions); `.ci/re
   anyone is near enough to see it (`Cinema.onFog`); and an entity put into a client's own world needs a number first (`Entity.setId`; `Cinema`
   gives numbers from 1 000 000 000 up). Its sounds (the sea heaving, three roars) are not positional: `Cinema.tickFigure` plays them at fixed
   ticks of its rising to everyone, and shakes the screens (`DushiClient.shake`).
+- `Folk` + `entity/FolkEntity` - the folk of the map (seven people who talk; `client/FolkModel`, `FolkRenderer`, one mesh and
+  seven textures by `tools/gen_folk.py`). A click says the next topic the world allows (a lord fallen, the clock started, the
+  tower raised, the seat taken: read off `ClockState`) that this player has not heard (`PlayerSoul.heard`), then idle talk.
+  A topic is an entry in the enum with its count of lines; its texts are `dialogue.unfading_dawn.<who>.<topic>.<n>` in
+  `gen_lang.py` (FOLK), and `check_assets.py` checks that the counts and the texts agree. Their marks are left alone at a
+  rest unless they were killed (`MobMarkBlock.Kind.folk`, like the keykeeper's). The hangman goes for good once the
+  Weeping Mother has fallen. No trade yet.
 - `MapBuilder` (build only) and `client/MapSelfTest` (build only) - see "The map".
 - `Gear` - what the rules know about any piece of gear, the game's own included: stamina cost, scaling and backstab of
   a weapon (by item tag for vanilla ones), stability of a shield, weight of everything worn or held, and the burden that

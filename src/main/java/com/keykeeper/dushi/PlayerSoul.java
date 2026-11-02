@@ -62,8 +62,9 @@ public final class PlayerSoul {
             Codec.INT.optionalFieldOf("hour", -1).forGetter(soul -> soul.hearthHour),
             Codec.STRING.listOf().optionalFieldOf("places_seen", List.of()).forGetter(soul -> List.copyOf(soul.placesSeen)),
             Rest.CODEC.listOf().optionalFieldOf("hearths", List.of()).forGetter(soul -> soul.rests),
-            Codec.STRING.optionalFieldOf("charm", "").forGetter(soul -> soul.charm))
-            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost, flask, keykeeper, hour, places, rests, charm) -> {
+            Codec.STRING.optionalFieldOf("charm", "").forGetter(soul -> soul.charm),
+            Codec.STRING.listOf().optionalFieldOf("heard", List.of()).forGetter(soul -> List.copyOf(soul.heard)))
+            .apply(instance, (souls, vit, end, str, dex, intel, faith, stain, lost, flask, keykeeper, hour, places, rests, charm, heard) -> {
                 PlayerSoul soul = new PlayerSoul();
                 soul.souls = souls;
                 soul.stats[VITALITY] = vit;
@@ -80,6 +81,7 @@ public final class PlayerSoul {
                 soul.placesSeen.addAll(places);
                 soul.rests.addAll(rests);
                 soul.charm = charm;
+                soul.heard.addAll(heard);
                 soul.stamina = soul.maxStamina();
                 return soul;
             }));
@@ -140,6 +142,8 @@ public final class PlayerSoul {
 
     /** The places whose names the player has been shown (see PlaceNameBlock): a name is shown once, on finding the place. */
     public final Set<String> placesSeen = new LinkedHashSet<>();
+    /** What the folk have already told this player, as {@code <who>.<topic>} (see {@link Folk}). Saved with the player. */
+    public final Set<String> heard = new LinkedHashSet<>();
 
     /** Marks the place as found; true if it was not known before. */
     public boolean discover(String place) {

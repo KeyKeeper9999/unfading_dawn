@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw
 src, dst = sys.argv[1], sys.argv[2]
 os.makedirs(dst, exist_ok=True)
 W, H, BAR, COLS, ROWS = 640, 360, 18, 3, 3
-LETTERS = {'v': 'mobs_borough', 'q': 'mobs_quarry', 's': 'mobs_mire', 'f': 'mobs_firwood', 'g': 'mobs_firwood', 'h': 'mobs_wharf', 'j': 'mobs_stubble', 'k': 'mobs_depths'}
+LETTERS = {'v': 'mobs_borough', 'q': 'mobs_quarry', 's': 'mobs_mire', 'f': 'mobs_firwood', 'g': 'mobs_firwood', 'h': 'mobs_wharf', 'j': 'mobs_stubble', 'k': 'mobs_depths', 'n': 'mobs_folk'}
 # a view of the map goes by the place its name begins with; those of the town and the fortress, which have no such word, by their number
 PLACES = (('quarry', 'map_quarry'), ('mire', 'map_mire'), ('firwood', 'map_firwood'), ('skete', 'map_firwood'), ('shore', 'map_wharf'), ('stubble', 'map_stubble'),
           ('depths', 'map_depths'), ('near_the', 'map_lords'), ('after_the', 'map_lords'))

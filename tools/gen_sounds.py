@@ -1908,6 +1908,31 @@ S['colossus/rumble'] = under(place(d, (0.0, lowpass(noise(d), 90, 3) * env(d, 5.
                                     (4.0, splash(6.0, 2.6, 2400) * 1.5), (8.0, splash(5.0, 2.2, 2000) * 1.2)), 3.6, 0.45, 2.6)
 S['colossus/rumble'] = loud(S['colossus/rumble'], 2.0, 0.15)
 
+# ============================================================== the folk: a voice under the breath, and the thing each lives by
+OLD = ((560, 120, 1.0), (1100, 170, 0.6), (2400, 300, 0.25))
+d = 2.4
+S['folk/candlewife'] = reverb(place(d, (0.0, mutter(1.9, 205, WOMAN, 9, breath=0.4) * 0.8),
+                                    (1.8, chime(1568, 0.6, 0.4) * 0.15)), 1.2, 0.35, 0.8)
+d = 2.0
+S['folk/debtor'] = reverb(place(d, (0.0, mutter(1.2, 98, RASP, 5, breath=0.8) * 0.8), (1.25, chain(0.6, 5, seed=7) * 0.5)), 0.7, 0.3, 0.4)
+d = 1.8
+chips = place(d, *[(0.12 + 0.42 * i, stone_hit(0.35, 1100 + 60 * i, 170) * 0.8) for i in range(4)])
+S['folk/carver'] = reverb(chips + place(d, (1.2, mutter(0.6, 112, OLD, 3, breath=0.6) * 0.4)), 0.6, 0.3, 0.4)
+d = 2.2
+S['folk/ferryman'] = reverb(place(d, (0.0, creak(1.0, 70, 40) * env(1.0, 0.1, 0.4) * 0.35), (0.6, mutter(1.3, 92, LOG, 6, breath=0.7) * 0.8),
+                                  (1.6, splash(0.5, 0.3, 2400) * 0.25)), 0.8, 0.3, 0.5)
+d = 1.8
+S['folk/hangman'] = reverb(place(d, (0.0, creak(1.4, 52, 30, (300, 700, 1300)) * env(1.4, 0.2, 0.5) * 0.5),
+                                 (0.4, voice(contour(0.9, (0, 82), (1, 70)), 0.9, DEEP, breath=1.2, jitter=0.05) * env(0.9, 0.2, 0.5) * 0.5)), 0.8, 0.3, 0.5)
+d = 2.2
+S['folk/cellarer'] = reverb(place(d, (0.0, mutter(1.8, 118, HOARSE, 10, drift=0.02, breath=0.5) * 0.8),
+                                  (1.9, bandpass(noise(0.15), 1500, 6000) * decay(0.15, 0.03) * 0.4)), 1.0, 0.3, 0.6)
+d = 2.0
+S['folk/bellman'] = reverb(place(d, (0.0, voice(contour(0.7, (0, 130), (0.4, 165), (1, 150)), 0.7, OLD, breath=0.6, jitter=0.06, rough=0.4)
+                                       * env(0.7, 0.03, 0.4) * 0.8),
+                                 (0.9, voice(contour(0.6, (0, 140), (1, 190)), 0.6, OLD, breath=0.6, jitter=0.06, rough=0.4) * env(0.6, 0.03, 0.3) * 0.7)),
+                           1.0, 0.3, 0.6)
+
 
 EVENTS = {
     'entity.withered.ambient': ['withered/ambient1', 'withered/ambient2', 'withered/ambient3'],
@@ -2041,6 +2066,9 @@ EVENTS = {
     'entity.tendril.open': ['tendril/open'], 'entity.tendril.rise': ['tendril/rise'], 'entity.tendril.slap': ['tendril/slap'],
     'entity.keykeeper.ambient': ['keykeeper/ambient1', 'keykeeper/ambient2'],
     'entity.keykeeper.give': ['keykeeper/give'],
+    'entity.folk.candlewife': ['folk/candlewife'], 'entity.folk.debtor': ['folk/debtor'], 'entity.folk.carver': ['folk/carver'],
+    'entity.folk.ferryman': ['folk/ferryman'], 'entity.folk.hangman': ['folk/hangman'], 'entity.folk.cellarer': ['folk/cellarer'],
+    'entity.folk.bellman': ['folk/bellman'],
     'ui.death': ['ui/death'], 'ui.boss_defeated': ['ui/boss_defeated'], 'ui.hearth_lit': ['ui/hearth_lit'], 'ui.level_up': ['ui/level_up'],
     'ui.souls_gain': ['ui/souls_gain'], 'ui.souls_retrieve': ['ui/souls_retrieve'], 'ui.place': ['ui/place'],
     'block.hearth.rest': ['block/hearth_rest'], 'block.fog_gate.pass': ['block/fog_gate_pass'],

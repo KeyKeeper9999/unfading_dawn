@@ -21,6 +21,14 @@ mobs = kinds + ['rust_knight', 'gilded_knight', 'keykeeper', 'overseer', 'chapla
                'dockhand', 'harpooner', 'oarsman', 'pilot', 'sand_crab', 'skua', 'helmsman', 'capsized',
                'reaper', 'mower', 'sackman', 'scorched', 'scarecrow', 'stook', 'sungazer', 'scorched_warden', 'hollow_miller',
                'usher', 'stray_shadow', 'longarm', 'handwalker', 'deepling', 'gut', 'clockhand', 'bolt', 'coming']
+# the folk (Folk.java): one entity each; the lines they say are checked below, once the texts are read
+folk_src = open(f'{J}/Folk.java').read()
+folk = {}
+for block in re.split(r'\n    (?=[A-Z]+\(")', folk_src)[1:]:
+    head = re.match(r'[A-Z]+\("(\w+)", Pose\.\w+, (\d+),', block)
+    if head:
+        folk[head.group(1)] = [('idle', int(head.group(2)))] + [(tp, int(n)) for tp, n in re.findall(r'topic\("(\w+)", (\d+)', block.split(';')[0])]
+mobs += list(folk)
 charms = re.findall(r'^\s+[A-Z_]+\("(\w+)", \d+\)', open(f'{J}/Charm.java').read(), re.M)
 armour = re.findall(r'"((?:prisoner|guard|rust|chaplain|vigil|mason|scale|oilskin|reaper)_\w+)"', open(f'{J}/ArmorSet.java').read())
 items |= set(armour)
@@ -28,6 +36,13 @@ items |= set(charms) | set(spells) | {b + '_bolt' for b in bolts} | {m + '_spawn
 blocks = {'hearth', 'fog_gate', 'mob_mark', 'forge', 'place_name', 'shard_heap', 'locked_gate', 'shallows', 'sludge', 'sea_shallows', 'night_shallows', 'under_sky', 'sky_veil', 'sky_lid', 'clock_socket', 'tower_end'}
 entities = set(mobs) | {'soul_stain', 'spell_bolt', 'tar_pot', 'powder_pot', 'thrown_wedge', 'mud_glob', 'root', 'thrown_harpoon', 'thrown_anchor', 'gear', 'tendril', 'coming_face', 'wall_eye', 'colossus', 'dolly'}
 lang = {l: json.load(open(f'{A}/lang/{l}.json', encoding='utf-8')) for l in ('ru_ru', 'en_us')}
+for who, topics in folk.items():
+    for tp, n in topics:
+        for i in range(n + 1):
+            key = f'dialogue.{M}.{who}.{tp}.{i}'
+            for l, d in lang.items():
+                if (key in d) != (i < n):
+                    problems.append(f'{l}: {key} ' + ('is missing' if i < n else 'is there, but Folk.java does not count it'))
 
 
 def need(path, what):

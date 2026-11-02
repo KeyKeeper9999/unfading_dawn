@@ -11,3 +11,7 @@ Part of the map "Вышний Острог". What is common to the whole map is 
   cathedral's east gallery -> nave (postern and west door open shortcuts; sacristy hearth) -> crypt under the nave
   (optional, comes out in the alley behind the chapter room) -> choir (the Chaplain) -> treasury and terrace.
   Whoever falls from its walls lands on the floor of the gorge and walks back round to the causeway.
+
+## The folk
+
+The folk (2026-11-02): the Debtor sits in the middle cell of the cell block (25, L0 + 1, 210), where a withered prisoner was; the view `cells_debtor` looks in. See `docs/story.md`, «Народ».

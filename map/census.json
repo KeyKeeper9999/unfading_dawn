@@ -111,6 +111,7 @@
   ],
   "mobs": {
    "butcher:0": 8,
+   "candlewife:0": 1,
    "gravedigger:0": 1,
    "hound:0": 11,
    "keykeeper:0": 1,
@@ -129,6 +130,7 @@
    "ship_hold"
   ],
   "mobs": {
+   "cellarer:0": 1,
    "dockhand:0": 14,
    "harpooner:0": 5,
    "helmsman:0": 1,
@@ -166,10 +168,11 @@
   ],
   "mobs": {
    "archer:1": 7,
+   "debtor:0": 1,
    "guard:1": 11,
    "knight:1": 1,
    "overseer:1": 1,
-   "prisoner:1": 12
+   "prisoner:1": 11
   },
   "shards": 1,
   "tier": 1
@@ -237,6 +240,7 @@
   ],
   "mobs": {
    "barrowman:0": 3,
+   "carver:0": 1,
    "digger:0": 11,
    "sapper:0": 4,
    "taskmaster:0": 1,
@@ -256,6 +260,8 @@
   ],
   "mobs": {
    "drowned:0": 11,
+   "ferryman:0": 1,
+   "hangman:0": 1,
    "lanky:0": 3,
    "pike:0": 9,
    "wallower:0": 1,

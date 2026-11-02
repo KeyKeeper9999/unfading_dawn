@@ -732,6 +732,7 @@ class Skete:
         b.set(cx - 2, g + 1, cz + 2, f'{MOD}:forge')
         b.loot(cx + 1, g + 1, cz + 3, 'skete_store', 'north')
         b.set(cx - 1, g + 3, cz, LANTERN)
+        self.mob('cellarer', cx - 2, cz, 'east')               # the one who keeps the count, under the lantern
         self.keep(cx - 5, cz - 3, cx + 4, cz + 5)
         # racks either side of the way, heaps, a shard in the ash of somebody's fire
         for side in (-1, 1):

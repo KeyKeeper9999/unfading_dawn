@@ -29,3 +29,7 @@ Part of the map "Вышний Острог". What is common to the whole map is 
   down for a floor: nothing comes up in the air or over nothing), shows its tips through broken earth for the length of
   the warning, comes up, strikes once whoever is in its ring and no higher than it reaches, and sinks. She sends them one
   after another (`ROOTS_EVERY`) and whoever one has thrown is let alone by the next for `ROOT_GRACE` ticks.
+
+## The folk
+
+The folk (2026-11-02): the Ferryman in his hut, in its north-west corner; the Hangman on the gallows island (374, g + 1, 531), who goes for good once the Weeping Mother has fallen and he has said so. See `docs/story.md`, «Народ».

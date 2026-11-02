@@ -562,7 +562,7 @@ def cell_block(b):
     for z in (207, 213, 220):
         b.fill(23, L0 + 1, z, 28, L0 + 4, z, grey)
     b.mob('prisoner', 25, L0 + 1, 203, 'east')
-    b.mob('prisoner', 25, L0 + 1, 210, 'east')
+    b.mob('debtor', 25, L0 + 1, 210, 'east')                 # the middle cell: its door is open, and he will not go out
     b.mob('prisoner', 26, L0 + 1, 217, 'east')
     b.mob('guard', 31, L0 + 1, 206, 'south')
     b.set(24, L0 + 1, 209, 'minecraft:skeleton_skull[rotation=6]')
@@ -2016,6 +2016,7 @@ VIEWS = (
     ('ward_from_the_cells_roof', (30, L1 + 3, 204), (72, L0, 228)),
     ('keeper_room', (74, L0 + 2.6, 237.5), (80, L0 + 1.5, 242)),
     ('cells', (31, L0 + 2.6, 229), (29, L0 + 2, 204)),
+    ('cells_debtor', (31.5, L0 + 2.6, 210.5), (25.5, L0 + 1.4, 210.5)),
     ('west_wall_walk', (20, L1 + 2.6, 236), (24, L1 + 1, 196)),
     ('north_walk', (28, L1 + 2.6, 190), (56, L1 + 2, 190)),
     ('great_bridge', (64, L1 + 3, 183), (64, L1 + 5, 150)),

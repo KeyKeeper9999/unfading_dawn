@@ -34,3 +34,7 @@ Part of the map "Вышний Острог". What is common to the whole map is 
   `DREAM`, which is rolled through like a blow). `SoulsMob.struck` is what a blow does besides hurting (setting alight,
   slowing); `strikeLands`/`strikeComing` are how a marked place is struck and shown, for a kind that drops something
   other than rock.
+
+## The folk
+
+The folk (2026-11-02): the Cellarer sits in the candle store behind the White Tent, under its lantern (cx - 2, cz). See `docs/story.md`, «Народ».

@@ -144,6 +144,7 @@ public final class SelfTest {
         types.add(Dushi.BOLT.get());
         types.add(Dushi.COMING.get());
         types.add(Dushi.KEYKEEPER.get());
+        Dushi.FOLK.values().forEach(type -> types.add(type.get()));
         types.add(Dushi.OVERSEER.get());
         types.add(Dushi.CHAPLAIN.get());
         int index = 0;

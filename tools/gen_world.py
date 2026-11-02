@@ -413,7 +413,7 @@ class World:
         b = self.b
         line = OZ + 151                                           # the north end of the great bridge
         for kind, x, y, z in b.marks:
-            if kind == 'keykeeper' or z >= OZ + 272 or not OX - 20 <= x <= OX + 150:
+            if kind in ('keykeeper', 'candlewife', 'debtor', 'carver', 'ferryman', 'hangman', 'cellarer', 'bellman') or z >= OZ + 272 or not OX - 20 <= x <= OX + 150:
                 continue                                         # (only the fortress has tiers: what lies east of its gorge is the Firwood)
             tier = 1 if z >= line or kind == 'overseer' else 2
             state = b.cells[(x, y, z)]
@@ -622,7 +622,7 @@ MURK_TRIED = ()
 # the pictures of the fortress that are still taken (it was looked at room by room when it was built)
 KEPT_VIEWS = ('arrival_from_outside', 'ward_from_the_gate', 'keeper_room', 'great_bridge', 'bridge_from_the_side', 'into_the_city', 'skyline_from_the_square',
               'nave', 'crypt_hall', 'terrace', 'from_the_belfry', 'whole_from_south_east', 'upper_city_from_south_west', 'cathedral_from_north_east',
-              'great_window_outside', 'lower_fortress_from_the_bridge', 'lower_fortress_from_the_west')
+              'great_window_outside', 'lower_fortress_from_the_bridge', 'lower_fortress_from_the_west', 'cells_debtor')
 
 
 def probes(w):

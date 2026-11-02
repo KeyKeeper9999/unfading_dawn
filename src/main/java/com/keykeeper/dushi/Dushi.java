@@ -114,6 +114,8 @@ public class Dushi {
             "entity.chaplain.ambient", "entity.chaplain.hurt", "entity.chaplain.death", "entity.chaplain.cast", "entity.chaplain.bell",
             "entity.chaplain.blink",
             "entity.keykeeper.ambient", "entity.keykeeper.give",
+            "entity.folk.candlewife", "entity.folk.debtor", "entity.folk.carver", "entity.folk.ferryman", "entity.folk.hangman",
+            "entity.folk.cellarer", "entity.folk.bellman",
             "ui.death", "ui.boss_defeated", "ui.hearth_lit", "ui.level_up", "ui.souls_gain", "ui.souls_retrieve", "ui.place",
             "entity.hound.ambient", "entity.hound.hurt", "entity.hound.death", "entity.hound.bite", "entity.watchman.alarm",
             "entity.gravedigger.ambient", "entity.gravedigger.hurt", "entity.gravedigger.death", "entity.gravedigger.dig", "entity.gravedigger.raise",
@@ -577,6 +579,15 @@ public class Dushi {
             "gilded_knight", RustKnightEntity::new, MobCategory.MONSTER, b -> b.sized(0.85F, 2.6F).eyeHeight(2.3F).clientTrackingRange(10));
     public static final DeferredHolder<EntityType<?>, EntityType<KeykeeperEntity>> KEYKEEPER = ENTITIES.registerEntityType(
             "keykeeper", KeykeeperEntity::new, MobCategory.MISC, b -> b.sized(0.7F, 1.3F).eyeHeight(1.0F).clientTrackingRange(8));
+    /** The folk of the map, one type each: see {@link Folk}. Those who sit are as low as the keykeeper. */
+    public static final Map<Folk, DeferredHolder<EntityType<?>, EntityType<com.keykeeper.dushi.entity.FolkEntity>>> FOLK = new LinkedHashMap<>();
+
+    static {
+        for (Folk who : Folk.values()) {
+            FOLK.put(who, ENTITIES.registerEntityType(who.id, (type, level) -> new com.keykeeper.dushi.entity.FolkEntity(type, level, who), MobCategory.MISC,
+                    b -> (who.pose == Folk.Pose.SIT ? b.sized(0.7F, 1.3F).eyeHeight(1.0F) : b.sized(0.6F, 1.9F).eyeHeight(1.7F)).clientTrackingRange(8)));
+        }
+    }
     public static final DeferredHolder<EntityType<?>, EntityType<OverseerEntity>> OVERSEER = ENTITIES.registerEntityType(
             "overseer", OverseerEntity::new, MobCategory.MONSTER, b -> b.sized(2.0F, 4.2F).eyeHeight(3.6F).clientTrackingRange(12).fireImmune());
     public static final DeferredHolder<EntityType<?>, EntityType<ChaplainEntity>> CHAPLAIN = ENTITIES.registerEntityType(
@@ -777,6 +788,7 @@ public class Dushi {
         egg("bolt", BOLT);
         egg("coming", COMING);
         egg("keykeeper", KEYKEEPER);
+        FOLK.forEach((who, type) -> egg(who.id, type));
         egg("overseer", OVERSEER);
         egg("chaplain", CHAPLAIN);
     }
@@ -907,6 +919,7 @@ public class Dushi {
             event.put(BOLT.get(), com.keykeeper.dushi.entity.BoltEntity.createAttributes().build());
             event.put(COMING.get(), com.keykeeper.dushi.entity.ComingEntity.createAttributes().build());
             event.put(KEYKEEPER.get(), KeykeeperEntity.createAttributes().build());
+            FOLK.values().forEach(type -> event.put(type.get(), com.keykeeper.dushi.entity.FolkEntity.createAttributes().build()));
             event.put(OVERSEER.get(), OverseerEntity.createAttributes().build());
             event.put(CHAPLAIN.get(), ChaplainEntity.createAttributes().build());
         });

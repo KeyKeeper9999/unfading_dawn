@@ -158,6 +158,7 @@ public final class DushiClient {
         event.registerEntityRenderer(Dushi.CARRION_HOUND.get(), CarrionHoundRenderer::new);
         event.registerEntityRenderer(Dushi.GRAVEDIGGER.get(), GravediggerRenderer::new);
         event.registerEntityRenderer(Dushi.KEYKEEPER.get(), KeykeeperRenderer::new);
+        Dushi.FOLK.forEach((who, type) -> event.registerEntityRenderer(type.get(), context -> new FolkRenderer(context, who)));
         event.registerEntityRenderer(Dushi.OVERSEER.get(), OverseerRenderer::new);
         event.registerEntityRenderer(Dushi.CHAPLAIN.get(), ChaplainRenderer::new);
     }
@@ -213,6 +214,7 @@ public final class DushiClient {
         event.registerLayerDefinition(WallEyeModel.LAYER, WallEyeModel::createLayer);
         event.registerLayerDefinition(MillstoneModel.LAYER, MillstoneModel::createLayer);
         event.registerLayerDefinition(KeykeeperModel.LAYER, KeykeeperModel::createLayer);
+        event.registerLayerDefinition(FolkModel.LAYER, FolkModel::createLayer);
         event.registerLayerDefinition(OverseerModel.LAYER, OverseerModel::createLayer);
         event.registerLayerDefinition(ChaplainModel.LAYER, ChaplainModel::createLayer);
     }

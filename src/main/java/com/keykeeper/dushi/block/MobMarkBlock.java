@@ -101,17 +101,35 @@ public class MobMarkBlock extends Block implements EntityBlock {
         GUT("gut", () -> Dushi.GUT.get(), false),
         CLOCKHAND("clockhand", () -> Dushi.CLOCKHAND.get(), false),
         BOLT("bolt", () -> Dushi.BOLT.get(), true),
-        COMING("coming", () -> Dushi.COMING.get(), true);
+        COMING("coming", () -> Dushi.COMING.get(), true),
+        CANDLEWIFE(com.keykeeper.dushi.Folk.CANDLEWIFE),
+        DEBTOR(com.keykeeper.dushi.Folk.DEBTOR),
+        CARVER(com.keykeeper.dushi.Folk.CARVER),
+        FERRYMAN(com.keykeeper.dushi.Folk.FERRYMAN),
+        HANGMAN(com.keykeeper.dushi.Folk.HANGMAN),
+        CELLARER(com.keykeeper.dushi.Folk.CELLARER),
+        BELLMAN(com.keykeeper.dushi.Folk.BELLMAN);
 
         public final String id;
         private final Supplier<EntityType<? extends Mob>> type;
         /** A boss does not come back once slain. */
         public final boolean boss;
 
+        /** One who talks and is left where he is at a rest (the keykeeper and the folk): see MobMarkBlockEntity.reset. */
+        public final boolean folk;
+
         Kind(String id, Supplier<EntityType<? extends Mob>> type, boolean boss) {
             this.id = id;
             this.type = type;
             this.boss = boss;
+            this.folk = "keykeeper".equals(id);
+        }
+
+        Kind(com.keykeeper.dushi.Folk who) {
+            this.id = who.id;
+            this.type = () -> Dushi.FOLK.get(who).get();
+            this.boss = false;
+            this.folk = true;
         }
 
         public EntityType<? extends Mob> type() {

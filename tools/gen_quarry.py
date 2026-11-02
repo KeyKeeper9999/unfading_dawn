@@ -492,6 +492,10 @@ class Quarry:
         b.ambient((64, 68, 72, 76, 80), top + 4, (z0 + 3, z0 + 8, z0 + 13, z0 + 18), 10)
         b.loot(72, top + 1, z1, 'quarry_shop', 'north')
         b.mob('digger', 72, top + 1, z1 - 3, 'north')
+        # the carver, in the south-west corner, at the block he cuts the Founder's face in: a nose, and the rest not yet
+        b.set(64, top + 1, z1 - 3, 'minecraft:polished_diorite')
+        b.set(64, top + 2, z1 - 3, 'minecraft:chiseled_quartz_block')
+        b.mob('carver', 63, top + 1, z1 - 3, 'east')
         # out by the north door, to the upper gallery
         self.floor(71, zc + 3, 73, z0 - 1, top, shop_floor)
         self.dig(71, top + 1, zc + 3, 73, top + 3, z0 - 1)
