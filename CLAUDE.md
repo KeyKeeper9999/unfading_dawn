@@ -24,6 +24,7 @@ into the file of its place or topic - here only what every chat needs:
 - `docs/animation.md` - poses, held things, moves: the rules learnt;
 - `docs/balance.md` - souls, levels, what each place pays;
 - `docs/story.md` - the story, what is built, what is agreed and what comes next (in Russian).
+- `docs/workflow.md` - the owner's standing rules: limits, how to wait for runs, pictures, checks, what to hand over and how to report. Read it at the start of a chat.
 
 A new place gets a new file in `docs/places/`.
 
