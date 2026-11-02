@@ -422,8 +422,8 @@ class Swamp:
         b.hearth(x0 + 3, g + 1, z0 + 2, 'ferry')
         b.set(x1 - 1, g + 1, z1 - 1, f'{MOD}:forge')
         b.set(x1 - 1, g + 1, z0 + 1, 'minecraft:barrel[facing=up]')
-        b.mob('ferryman', x0 + 1, g + 1, z0 + 1, 'east')
         b.threshold('log_roads', x1 + 2, g + 1, z0 - 1, x1 + 3, z1 + 1)
+        self.wade('ferryman', x0 - 2, z0 + 1, 'west')           # outside his door, looking over water he cannot cross
 
     def marsh(self):
         """The Log Roads: open water and mud, two roads of logs across it - north-east to the Weir, south-east to the
@@ -842,7 +842,7 @@ class Swamp:
             ('mire_houses_south', (312, g + 3.6, STREET - 3.5), (318, g + 4, STREET + 12)),
             ('mire_loft', (315, g + 3.6, 518), (319, g + 3, 514)),
             ('mire_hut', (333, g + 3.6, STREET - 3.5), (346, g + 3, STREET)),
-            ('mire_ferryman', (346.5, g + 2.6, 526.5), (343.5, g + 1.6, 523.5)),
+            ('mire_ferryman', (336.5, g + 2.6, 522.5), (341.5, g + 1.8, 523.5)),
             ('mire_log_road_north', (353, g + 2.6, 523.5), (384, g + 4, 498)),
             ('mire_marsh_from_above', (340, g + 34, 560), (372, g + 1, 534)),
             ('mire_gallows', (366, g + 2.6, 531), (374, g + 4, 534.5)),

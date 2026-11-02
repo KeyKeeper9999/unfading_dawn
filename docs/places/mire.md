@@ -32,4 +32,4 @@ Part of the map "Вышний Острог". What is common to the whole map is 
 
 ## The folk
 
-The folk (2026-11-02): the Ferryman in his hut, in its north-west corner; the Hangman on the gallows island (374, g + 1, 531), who goes for good once the Weeping Mother has fallen and he has said so. See `docs/story.md`, «Народ».
+The folk (2026-11-02): the Ferryman outside the west door of his hut (x0 - 2, z0 + 1), looking over the water; the Hangman on the gallows island (374, g + 1, 531), who goes for good once the Weeping Mother has fallen and he has said so. See `docs/story.md`, «Народ».
