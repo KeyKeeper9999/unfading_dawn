@@ -1,0 +1,386 @@
+commit 58c34a896082a4169c5201f900ca93bbde7af68a
+switches: client map mapshots
+RESULT: LOOK (2)
+  - server: 1 suspicious test lines
+  - server: what the checks say changed (see the end)
+
+== BUILD
+ok, unfading_dawn.jar 12580 KB
+
+== SERVER
+190 test lines
+reached its end: yes
+spawned 66 of 66 mobs
+spawn eggs: 67, weapons: 39, shields: 9, spells: 12, sounds: 334
+mobs fought: 66; dead after the fight: withered_prisoner, withered_guard, withered_archer, withered_acolyte, withered_townsman, withered_butcher, withered_watchman, withered_digger, withered_barrowman, withered_sapper, withered_drowned, rust_knight, carrion_hound, gravedigger, blind_crawler, unhewn, bone_pike, lanky, wisp, waker, sleeper, dockhand, harpooner, sand_crab, reaper, scarecrow, stray_shadow, longarm, deepling, clockhand, keykeeper, bellman; made no move: withered_prisoner, withered_archer, withered_acolyte, withered_townsman, withered_digger, withered_sapper, handwalker
+drills: 53; moves not finished: withered_sapper 1/2
+suspicious lines:
+  clock: a wrong key refused=true, seven keys went in and stayed=true, the clock runs=true, the keys are used up=true
+game errors: none
+
+== CLIENT
+617 test lines, 592 pictures
+reached its end: yes
+missing resources: none
+  sludge: 21 pools
+  burden in chaplain: 9.0/70.0 light
+  burden in netherite with the great key and the tower shield: 75.4/70.0 over
+  roll, 4 ticks in: pose=SWIMMING rollTicks=7
+  roll: moved 5.99 blocks, pose=STANDING forced=null rollTicks=0 stamina 100.0 -> 100.0
+  roll, server side: pose=STANDING forced=null rollTicks=0
+  after death: souls=0 lost=777 main hand=unfading_dawn:longsword off hand=unfading_dawn:guard_shield flask=unfading_dawn:warmth_flask
+  after walking into the stain: souls=777 lost=0
+  outpost: found at 40, 66, -168 turned 180
+  stockade: found at -168, 68, 40 turned 180
+  rest near the stockade: 14 marks reset
+game errors: none
+
+== MAP
+saved: yes
+High_Stockade.zip: 13632 KB
+  plan 492x194x1012, box BoundingBox{minX=-552, minY=9, minZ=-273, maxX=459, maxY=130, maxZ=218}, the world's ground under the origin is Block{minecraft:grass_block}, over it Block{minecraft:air}
+  cleared 859449 blocks of forest in 53939 ms
+  blocks set in 71084 ms
+  biomes: 326 boxes, 1514040 cells changed, 0 failed
+  rules set: time 18000, regeneration false, game type ADVENTURE, spawn RespawnData[globalPos=ResourceKey[minecraft:dimension / minecraft:overworld] BlockPos{x=0, y=10, z=0}, yaw=90.0, pitch=0.0]
+  what stands in the world: {BannerBlockEntity=20, BarrelBlockEntity=268, BellBlockEntity=1, BlastFurnaceBlockEntity=1, CampfireBlockEntity=44, ChestBlockEntity=69, DecoratedPotBlockEntity=9, LecternBlockEntity=2, MobMarkBlockEntity=396, SkullBlockEntity=32, S ...
+  saved=true, done
+light probes: 79
+game errors: none
+
+== MAPCLIENT
+685 test lines, 291 pictures
+reached its end: yes
+missing resources: none
+  menu reached, 331 views, opening High_Stockade
+  the world is called "Вышний Острог"
+  after a while: at 0, 10, 0, health 20.0, on the ground true
+  on the server: game mode ADVENTURE, respawn RespawnData[globalPos=ResourceKey[minecraft:dimension / minecraft:overworld] BlockPos{x=0, y=10, z=0}, yaw=90.0, pitch=0.0]
+  lever at -25, 11, -1 is Block{minecraft:lever}, thrown: Success; the door at -24, 10, 0 was Block{minecraft:iron_door}[facing=west,half=lower,hinge=left,open=false,powered=false], is Block{minecraft:iron_door}[facing=west,half=lower,hinge=left,open=true,powered=true]
+  lever at -317, 19, 15 is Block{minecraft:lever}, thrown: Success; the door at -316, 18, 16 was Block{minecraft:iron_door}[facing=east,half=lower,hinge=left,open=false,powered=false], is Block{minecraft:iron_door}[facing=east,half=lower,hinge=left,open=true,powered=true]
+  lever at -434, 36, 9 is Block{minecraft:lever}, thrown: Success; the door at -433, 35, 10 was Block{minecraft:iron_door}[facing=east,half=lower,hinge=left,open=false,powered=false], is Block{minecraft:iron_door}[facing=east,half=lower,hinge=left,open=true,powered=true]
+  lever at -441, 36, 38 is Block{minecraft:lever}, thrown: Success; the door at -440, 35, 39 was Block{minecraft:iron_door}[facing=south,half=lower,hinge=left,open=false,powered=false], is Block{minecraft:iron_door}[facing=south,half=lower,hinge=left,open=true,powered=true]
+  lever at -455, 33, 59 is Block{minecraft:lever}, thrown: Success; the door at -454, 32, 60 was Block{minecraft:iron_door}[facing=west,half=lower,hinge=left,open=false,powered=false], is Block{minecraft:iron_door}[facing=west,half=lower,hinge=left,open=true,powered=true]
+  lever at -21, 5, 155 is Block{minecraft:lever}, thrown: Success; the door at -20, 4, 156 was Block{minecraft:iron_door}[facing=west,half=lower,hinge=left,open=false,powered=false], is Block{minecraft:iron_door}[facing=west,half=lower,hinge=left,open=true,powered=true]
+  lever at 19, 11, -186 is Block{minecraft:lever}, thrown: Success; the door at 20, 10, -185 was Block{minecraft:iron_door}[facing=south,half=lower,hinge=left,open=false,powered=false], is Block{minecraft:iron_door}[facing=south,half=lower,hinge=left,open=true,powered=true]
+  lever at -153, 11, 117 is Block{minecraft:lever}, thrown: Success; the door at -154, 10, 118 was Block{minecraft:iron_door}[facing=west,half=lower,hinge=left,open=false,powered=false], is Block{minecraft:iron_door}[facing=west,half=lower,hinge=left,open=true,powered=true]
+  killed unfading_dawn:gravedigger: the seal at -143, 10, 1 was Block{unfading_dawn:fog_gate}[axis=z,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:overseer: the seal at -393, 26, 18 was Block{unfading_dawn:fog_gate}[axis=z,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:chaplain: the seal at -496, 35, -8 was Block{unfading_dawn:fog_gate}[axis=x,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:taskmaster: the seal at -18, -3, 189 was Block{unfading_dawn:fog_gate}[axis=x,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:stone_eater: the seal at -94, -3, 180 was Block{unfading_dawn:fog_gate}[axis=z,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:wallower: the seal at -56, 10, -201 was Block{unfading_dawn:fog_gate}[axis=x,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:weeping_mother: the seal at 40, 10, -221 was Block{unfading_dawn:fog_gate}[axis=z,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:shatun: the seal at -258, 10, -167 was Block{unfading_dawn:fog_gate}[axis=x,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:elder: the seal at -129, 10, -208 was Block{unfading_dawn:fog_gate}[axis=z,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:helmsman: the seal at 182, 12, -37 was Block{unfading_dawn:fog_gate}[axis=x,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:capsized: the seal at 259, 9, 29 was Block{unfading_dawn:fog_gate}[axis=z,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:scorched_warden: the seal at -144, 10, 161 was Block{unfading_dawn:fog_gate}[axis=z,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:hollow_miller: the seal at -115, 10, 89 was Block{unfading_dawn:fog_gate}[axis=x,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:bolt: the seal at 170, -47, 141 was Block{unfading_dawn:fog_gate}[axis=z,sealed=true], is Block{minecraft:air}
+  killed unfading_dawn:coming: the seal at 231, -41, 137 was Block{unfading_dawn:fog_gate}[axis=x,sealed=true], is Block{minecraft:air}
+  gate at -18, 10, 55: holds without its key=true, opens with it=true
+  gate at -18, 10, -56: holds without its key=true, opens with it=true
+  gate at -151, 10, -8: holds without its key=true, opens with it=true
+  gate at 4, 10, 1: holds without its key=true, opens with it=true
+  gate at -152, 10, 7: holds without its key=true, opens with it=true
+  gate at -12, -3, 202: holds without its key=true, opens with it=true
+  travel: rested at yard -7, 10, 0 (Block{unfading_dawn:hearth}), seat -7, 10, -1: Success
+  travel: rested at keeper -270, 18, 3 (Block{unfading_dawn:hearth}), seat -270, 18, 2: Success
+  travel: the client knows of 2 hearths, screen is HearthScreen
+  travel: from -270, 18, 2, went=true, now at -7, 10, -1, 1 from the yard's hearth, time 18000
+game errors: none
+
+== AGAINST THE RUN BEFORE (lines by topic, pictures by name, the server checks with numbers left out)
+  new in client#shots: 01_withered 02_withered_raise 02_withered_strike 03_withered_guard_and_bow 03_withered_side 04_knight_keykeeper 05_knight_chop_raise 05_knight_chop_strike 05_knight_lunge 06_knight_guard_front 06_knight_guard_side 06_knight_sweep_side 07_knight_back 08_overseer 09_overseer_raise 10_overseer_strike 11_overseer_sweep 12_overseer_strike_side 13_overseer_back 14_overseer_roar_night 15_overseer_chain_night 16_chaplain 17_chaplain_spears 18_chaplain_wrath 19_chaplain_censer 20_chaplain_litany_side 21_chaplain_call_night 21_chaplain_flames_gather_night 21_chaplain_flames_throw_night 22_items 23_blocks 24_blocks_night 25_first_person_hud 26_player_front 27_player_back 28_blocking_back 29_blocking_front 30_blocking_first_person 31_armour_chaplain_back 31_armour_chaplain_front 31_armour_guard_back 31_armour_guard_front 31_armour_mason_back 31_armour_mason_front 31_armour_oilskin_back 31_armour_oilskin_front 31_armour_prisoner_back 31_armour_prisoner_front 31_armour_reaper_back 31_armour_reaper_front 31_armour_rust_back 31_armour_rust_front 31_armour_scale_back 31_armour_scale_front 31_armour_vigil_back 31_armour_vigil_front 31_held_battle_axe_front 31_held_bear_spear_front 31_held_capsized_c ...
+  client:after: 0 -> 2 lines
+  client:burden: 0 -> 2 lines
+  client:only: 1 -> 0 lines
+  client:outpost: 0 -> 1 lines
+  client:rest: 0 -> 1 lines
+  client:roll: 0 -> 3 lines
+  client:shot: 2 -> 592 lines
+  client:sludge: 0 -> 1 lines
+  client:stockade: 0 -> 1 lines
+  client:tooltip: 0 -> 9 lines
+  new in mapclient#shots: m00_as_player_at_the_gate m00_as_player_waking m04_yard_from_above m05_yard_gate m06_low_street_west m07_low_street_east m08_west_alley m09_alley_turn m100_mire_marsh_from_above m101_mire_gallows m102_mire_log_road_south m103_mire_weir_door m104_mire_weir m105_mire_weir_from_above m106_mire_mill m107_mire_wood m108_mire_wood_from_above m109_mire_ridge_door m10_house_inside m110_mire_isle_door m111_mire_isle m112_mire_grove m114_firwood_wicket_from_the_yard m116_firwood_passage m117_firwood_old_fir m118_firwood_old_fir_up m119_firwood_track m11_high_street_gate m120_firwood_under_the_firs m121_firwood_stakes m122_firwood_shrine m123_firwood_from_above m124_firwood_den_door m125_firwood_den m126_firwood_den_from_above m127_skete_edge m128_skete_vigil_from_behind m129_skete_vigil_from_the_side m12_high_street_north m130_skete_vigil_faces m131_skete_west_lane m132_skete_wax_yard m133_skete_from_above m134_skete_white_tent m135_skete_white_tent_from_above m136_skete_in_the_white_tent m137_skete_white_tent_roof m138_skete_candle_store m13_east_alley m140_shore_sea_gate_from_the_yard m142_shore_passage_bend m143_shore_out_of_the_passage m144_shore_sea_lane m145_shore_back_street m146_shor ...
+  mapclient:alley_turn: 0 -> 1 lines
+  mapclient:arrival_from_outside: 0 -> 1 lines
+  mapclient:as_player_at_the_gate: 0 -> 1 lines
+  mapclient:as_player_waking: 0 -> 1 lines
+  mapclient:bridge_from_the_side: 0 -> 1 lines
+  mapclient:butchers_shop: 0 -> 1 lines
+  mapclient:cathedral_from_north_east: 0 -> 1 lines
+  mapclient:causeway: 0 -> 1 lines
+  mapclient:cells_debtor: 0 -> 1 lines
+  mapclient:church_lane: 0 -> 1 lines
+  mapclient:churchyard: 0 -> 1 lines
+  mapclient:churchyard_from_above: 0 -> 1 lines
+  mapclient:crypt_hall: 0 -> 1 lines
+  mapclient:depths_before_the_tear: 0 -> 1 lines
+  mapclient:depths_behind_the_pendulum: 0 -> 1 lines
+  mapclient:depths_beyond: 0 -> 1 lines
+  mapclient:depths_brink_east: 0 -> 1 lines
+  mapclient:depths_brink_up: 0 -> 1 lines
+  mapclient:depths_clock_hall: 0 -> 1 lines
+  mapclient:depths_clock_sockets: 0 -> 1 lines
+  mapclient:depths_cross_leg: 0 -> 1 lines
+  mapclient:depths_east_chamber: 0 -> 1 lines
+  mapclient:depths_first_flight: 0 -> 1 lines
+  mapclient:depths_first_wheel: 0 -> 1 lines
+  mapclient:depths_flight_from_below: 0 -> 1 lines
+  mapclient:depths_from_the_brink: 0 -> 1 lines
+  mapclient:depths_grate_from_the_sump: 0 -> 1 lines
+  mapclient:depths_hearth_by_the_tear: 0 -> 1 lines
+  mapclient:depths_hearth_room: 0 -> 1 lines
+  mapclient:depths_long_way_east: 0 -> 1 lines
+  mapclient:depths_out_of_the_drift: 0 -> 1 lines
+  mapclient:depths_pit: 0 -> 1 lines
+  mapclient:depths_raw_rock: 0 -> 1 lines
+  mapclient:depths_side_pit: 0 -> 1 lines
+  mapclient:depths_spire: 0 -> 1 lines
+  mapclient:depths_stair_behind: 0 -> 1 lines
+  mapclient:depths_steps: 0 -> 1 lines
+  mapclient:depths_still_water: 0 -> 1 lines
+  mapclient:depths_tear_coming_out: 0 -> 2 lines
+  mapclient:depths_tear_crack: 0 -> 2 lines
+  mapclient:depths_tear_crack_aslant: 0 -> 2 lines
+  mapclient:depths_tear_from_above: 0 -> 2 lines
+  mapclient:depths_tear_from_the_door: 0 -> 2 lines
+  mapclient:depths_tear_great_eye: 0 -> 2 lines
+  mapclient:depths_tear_out: 0 -> 2 lines
+  mapclient:depths_tear_out_aslant: 0 -> 2 lines
+  mapclient:depths_tear_out_eyes: 0 -> 2 lines
+  mapclient:depths_tear_out_eyes_east: 0 -> 2 lines
+  mapclient:depths_tear_strayed: 0 -> 2 lines
+  mapclient:depths_tear_up: 0 -> 2 lines
+  mapclient:depths_tear_way_out: 0 -> 2 lines
+  mapclient:depths_the_jump: 0 -> 1 lines
+  mapclient:depths_thin_way: 0 -> 1 lines
+  mapclient:depths_to_the_works: 0 -> 1 lines
+  mapclient:depths_water_from_above: 0 -> 1 lines
+  mapclient:depths_water_middle: 0 -> 1 lines
+  mapclient:depths_water_sky: 0 -> 1 lines
+  mapclient:depths_water_sky_aslant: 0 -> 1 lines
+  mapclient:depths_water_wall: 0 -> 1 lines
+  mapclient:depths_way_to_the_cache: 0 -> 1 lines
+  mapclient:depths_west_chamber: 0 -> 1 lines
+  mapclient:depths_winding_way_west: 0 -> 1 lines
+  mapclient:depths_works_axle: 0 -> 1 lines
+  mapclient:depths_works_from_above: 0 -> 1 lines
+  mapclient:depths_works_from_the_door: 0 -> 1 lines
+  mapclient:depths_works_sky: 0 -> 1 lines
+  mapclient:depths_works_wheel: 0 -> 1 lines
+  mapclient:east_alley: 0 -> 1 lines
+  mapclient:firwood_den: 0 -> 1 lines
+  mapclient:firwood_den_door: 0 -> 1 lines
+  mapclient:firwood_den_from_above: 0 -> 1 lines
+  mapclient:firwood_from_above: 0 -> 1 lines
+  mapclient:firwood_old_fir: 0 -> 1 lines
+  mapclient:firwood_old_fir_up: 0 -> 1 lines
+  mapclient:firwood_passage: 0 -> 1 lines
+  mapclient:firwood_shrine: 0 -> 1 lines
+  mapclient:firwood_stakes: 0 -> 1 lines
+  mapclient:firwood_track: 0 -> 1 lines
+  mapclient:firwood_under_the_firs: 0 -> 1 lines
+  mapclient:firwood_wicket_from_the_yard: 0 -> 1 lines
+  mapclient:fortress_from_the_gorge: 0 -> 1 lines
+  mapclient:from_the_belfry: 0 -> 1 lines
+  mapclient:gate: 0 -> 6 lines
+  mapclient:gorge_under_the_bridge: 0 -> 1 lines
+  mapclient:great_bridge: 0 -> 1 lines
+  mapclient:great_window_outside: 0 -> 1 lines
+  mapclient:high_street_gate: 0 -> 1 lines
+  mapclient:high_street_north: 0 -> 1 lines
+  mapclient:house_inside: 0 -> 1 lines
+  mapclient:into_the_city: 0 -> 1 lines
+  mapclient:keeper_room: 0 -> 1 lines
+  mapclient:killed: 0 -> 15 lines
+  mapclient:lever: 0 -> 8 lines
+  mapclient:lodge: 0 -> 1 lines
+  mapclient:low_street_east: 0 -> 1 lines
+  mapclient:low_street_west: 0 -> 1 lines
+  mapclient:lower_fortress_from_the_bridge: 0 -> 1 lines
+  mapclient:lower_fortress_from_the_west: 0 -> 1 lines
+  mapclient:lych_gate: 0 -> 1 lines
+  mapclient:market_from_above: 0 -> 1 lines
+  mapclient:market_from_the_south: 0 -> 1 lines
+  mapclient:mire_drowned_end: 0 -> 1 lines
+  mapclient:mire_drowned_end_from_above: 0 -> 1 lines
+  mapclient:mire_gallows: 0 -> 1 lines
+  mapclient:mire_gate_from_the_street: 0 -> 1 lines
+  mapclient:mire_grove: 0 -> 1 lines
+  mapclient:mire_houses_south: 0 -> 1 lines
+  mapclient:mire_hut: 0 -> 1 lines
+  mapclient:mire_isle: 0 -> 1 lines
+  mapclient:mire_isle_door: 0 -> 1 lines
+  mapclient:mire_loft: 0 -> 1 lines
+  mapclient:mire_log_road_north: 0 -> 1 lines
+  mapclient:mire_log_road_south: 0 -> 1 lines
+  mapclient:mire_marsh_from_above: 0 -> 1 lines
+  mapclient:mire_mill: 0 -> 1 lines
+  mapclient:mire_out_of_the_gate: 0 -> 1 lines
+  mapclient:mire_ridge_door: 0 -> 1 lines
+  mapclient:mire_street_from_the_water: 0 -> 1 lines
+  mapclient:mire_weir: 0 -> 1 lines
+  mapclient:mire_weir_door: 0 -> 1 lines
+  mapclient:mire_weir_from_above: 0 -> 1 lines
+  mapclient:mire_wood: 0 -> 1 lines
+  mapclient:mire_wood_from_above: 0 -> 1 lines
+  mapclient:nave: 0 -> 1 lines
+  mapclient:near_the_bolt: 0 -> 1 lines
+  mapclient:near_the_capsized: 0 -> 1 lines
+  mapclient:near_the_chaplain: 0 -> 1 lines
+  mapclient:near_the_coming: 0 -> 1 lines
+  mapclient:near_the_elder: 0 -> 1 lines
+  mapclient:near_the_gravedigger: 0 -> 1 lines
+  mapclient:near_the_helmsman: 0 -> 1 lines
+  mapclient:near_the_hollow_miller: 0 -> 1 lines
+  mapclient:near_the_overseer: 0 -> 1 lines
+  mapclient:near_the_scorched_warden: 0 -> 1 lines
+  mapclient:near_the_shatun: 0 -> 1 lines
+  mapclient:near_the_stone_eater: 0 -> 1 lines
+  mapclient:near_the_taskmaster: 0 -> 1 lines
+  mapclient:near_the_wallower: 0 -> 1 lines
+  mapclient:near_the_weeping_mother: 0 -> 1 lines
+  mapclient:out_of_the_tunnel: 0 -> 1 lines
+  mapclient:quarry_barred_drift: 0 -> 1 lines
+  mapclient:quarry_breach: 0 -> 1 lines
+  mapclient:quarry_breach_door: 0 -> 1 lines
+  mapclient:quarry_breach_door_from_inside: 0 -> 1 lines
+  mapclient:quarry_breach_from_the_north: 0 -> 1 lines
+  mapclient:quarry_crack: 0 -> 1 lines
+  mapclient:quarry_drift: 0 -> 1 lines
+  mapclient:quarry_eyes: 0 -> 1 lines
+  mapclient:quarry_face: 0 -> 1 lines
+  mapclient:quarry_face_close: 0 -> 1 lines
+  mapclient:quarry_field: 0 -> 1 lines
+  mapclient:quarry_from_the_eye: 0 -> 1 lines
+  mapclient:quarry_gallery: 0 -> 1 lines
+  mapclient:quarry_gallery_end: 0 -> 1 lines
+  mapclient:quarry_gate_from_the_street: 0 -> 1 lines
+  mapclient:quarry_grating: 0 -> 1 lines
+  mapclient:quarry_hall_floor: 0 -> 1 lines
+  mapclient:quarry_hall_from_the_gallery: 0 -> 1 lines
+  mapclient:quarry_hall_up: 0 -> 1 lines
+  mapclient:quarry_hill_from_the_town: 0 -> 1 lines
+  mapclient:quarry_lane: 0 -> 1 lines
+  mapclient:quarry_maw: 0 -> 1 lines
+  mapclient:quarry_out_of_the_mouth: 0 -> 1 lines
+  mapclient:quarry_pit_from_above: 0 -> 1 lines
+  mapclient:quarry_pit_from_the_lane: 0 -> 1 lines
+  mapclient:quarry_shaft_down: 0 -> 1 lines
+  mapclient:quarry_shaft_foot: 0 -> 1 lines
+  mapclient:quarry_shop: 0 -> 1 lines
+  mapclient:quarry_shop_row: 0 -> 1 lines
+  mapclient:quarry_stair: 0 -> 1 lines
+  mapclient:quarry_sump: 0 -> 1 lines
+  mapclient:quarry_wheel: 0 -> 1 lines
+  mapclient:quarry_workings: 0 -> 1 lines
+  mapclient:road_to_the_tunnel: 0 -> 1 lines
+  mapclient:roused: 0 -> 1 lines
+  mapclient:set: 0 -> 1 lines
+  mapclient:shambles: 0 -> 1 lines
+  mapclient:shard_yard: 0 -> 1 lines
+  mapclient:shore_back_street: 0 -> 1 lines
+  mapclient:shore_causeway: 0 -> 1 lines
+  mapclient:shore_from_the_gallery: 0 -> 1 lines
+  mapclient:shore_from_the_gallery_to_the_port: 0 -> 1 lines
+  mapclient:shore_harbour_office: 0 -> 1 lines
+  mapclient:shore_karbas: 0 -> 1 lines
+  mapclient:shore_lamp_room: 0 -> 1 lines
+  mapclient:shore_lighthouse_foot: 0 -> 1 lines
+  mapclient:shore_lighthouse_from_the_pier: 0 -> 1 lines
+  mapclient:shore_lighthouse_inside: 0 -> 1 lines
+  mapclient:shore_long_pier: 0 -> 1 lines
+  mapclient:shore_mole: 0 -> 1 lines
+  mapclient:shore_mole_gap: 0 -> 1 lines
+  mapclient:shore_out_of_the_passage: 0 -> 1 lines
+  mapclient:shore_passage_bend: 0 -> 1 lines
+  mapclient:shore_pier_looking_back: 0 -> 1 lines
+  mapclient:shore_port_from_above: 0 -> 1 lines
+  mapclient:shore_quay_east: 0 -> 1 lines
+  mapclient:shore_quay_west: 0 -> 1 lines
+  mapclient:shore_roads: 0 -> 1 lines
+  mapclient:shore_roads_from_the_spit: 0 -> 1 lines
+  mapclient:shore_sea_gate_from_the_yard: 0 -> 1 lines
+  mapclient:shore_sea_lane: 0 -> 1 lines
+  mapclient:shore_shoal: 0 -> 1 lines
+  mapclient:shore_shoal_from_above: 0 -> 1 lines
+  mapclient:shore_spit_far_arm: 0 -> 1 lines
+  mapclient:shore_spit_from_above: 0 -> 1 lines
+  mapclient:shore_spit_from_its_root: 0 -> 1 lines
+  mapclient:shore_spit_wet_sand: 0 -> 1 lines
+  mapclient:shore_strand: 0 -> 1 lines
+  mapclient:shore_strand_to_the_arch: 0 -> 1 lines
+  mapclient:shore_the_daybreak_deck: 0 -> 1 lines
+  mapclient:shore_the_daybreak_deck_to_the_bow: 0 -> 1 lines
+  mapclient:shore_the_daybreak_from_above: 0 -> 1 lines
+  mapclient:shore_the_daybreak_from_the_pier: 0 -> 1 lines
+  mapclient:shore_the_daybreak_gangway: 0 -> 1 lines
+  mapclient:shot: 28 -> 291 lines
+  mapclient:skete_candle_store: 0 -> 1 lines
+  mapclient:skete_edge: 0 -> 1 lines
+  mapclient:skete_from_above: 0 -> 1 lines
+  mapclient:skete_in_the_white_tent: 0 -> 1 lines
+  mapclient:skete_vigil_faces: 0 -> 1 lines
+  mapclient:skete_vigil_from_behind: 0 -> 1 lines
+  mapclient:skete_vigil_from_the_side: 0 -> 1 lines
+  mapclient:skete_wax_yard: 0 -> 1 lines
+  mapclient:skete_west_lane: 0 -> 1 lines
+  mapclient:skete_white_tent: 0 -> 1 lines
+  mapclient:skete_white_tent_from_above: 0 -> 1 lines
+  mapclient:skete_white_tent_roof: 0 -> 1 lines
+  mapclient:skyline_from_the_square: 0 -> 1 lines
+  mapclient:stubble_balk: 0 -> 1 lines
+  mapclient:stubble_clearing: 0 -> 1 lines
+  mapclient:stubble_country_from_above: 0 -> 1 lines
+  mapclient:stubble_cut_land: 0 -> 1 lines
+  mapclient:stubble_fence_and_mill: 0 -> 1 lines
+  mapclient:stubble_fields_from_above: 0 -> 1 lines
+  mapclient:stubble_floor: 0 -> 1 lines
+  mapclient:stubble_gate_from_the_yard: 0 -> 1 lines
+  mapclient:stubble_granary: 0 -> 1 lines
+  mapclient:stubble_in_the_corn: 0 -> 1 lines
+  mapclient:stubble_in_the_mill: 0 -> 1 lines
+  mapclient:stubble_kiln: 0 -> 1 lines
+  mapclient:stubble_mill_door: 0 -> 1 lines
+  mapclient:stubble_mill_from_above: 0 -> 1 lines
+  mapclient:stubble_mill_from_the_floor: 0 -> 1 lines
+  mapclient:stubble_mill_up: 0 -> 1 lines
+  mapclient:stubble_north_corn: 0 -> 1 lines
+  mapclient:stubble_open_country: 0 -> 1 lines
+  mapclient:stubble_passage: 0 -> 1 lines
+  mapclient:stubble_road_into_the_corn: 0 -> 1 lines
+  mapclient:stubble_threshing_yard: 0 -> 1 lines
+  mapclient:stubble_wardens_door: 0 -> 1 lines
+  mapclient:stubble_watched_field: 0 -> 1 lines
+  mapclient:stubble_watched_field_from_above: 0 -> 1 lines
+  mapclient:stubble_yard_from_above: 0 -> 1 lines
+  mapclient:terrace: 0 -> 1 lines
+  mapclient:town_from_above_north: 0 -> 1 lines
+  mapclient:town_from_above_south: 0 -> 1 lines
+  mapclient:travel: 0 -> 4 lines
+  mapclient:tunnel_bend: 0 -> 1 lines
+  mapclient:tunnel_north_leg: 0 -> 1 lines
+  mapclient:tunnel_south_leg: 0 -> 1 lines
+  mapclient:upper_city_from_south_west: 0 -> 1 lines
+  mapclient:valley_from_the_terrace: 0 -> 1 lines
+  mapclient:waiting: 0 -> 1 lines
+  mapclient:ward_from_the_gate: 0 -> 1 lines
+  mapclient:west_alley: 0 -> 1 lines
+  mapclient:whole_from_south_east: 0 -> 1 lines
+  mapclient:yard_from_above: 0 -> 1 lines
+  mapclient:yard_gate: 0 -> 1 lines
+  gone from server#checks:
+      chaplain killed: alive=false drops=[minecraft:poppy, minecraft:iron_ingot, minecraft:poppy, minecraft:iron_ingot, minecraft:poppy, minecraft:iron_ingot, minecraft:poppy, minecraft:iron_ingot, minecraft:iron_ingot, minecraft:poppy, minecraft:iron_ingot, unfading_dawn:chaplain_soul, unfading_dawn:pray
+      on the floor after N ticks: {bellman=N, bolt=N, candlewife=N, capsized=N, carver=N, cellarer=N, chaplain=N, coming=N, coming_face=N, debtor=N, elder=N, ferryman=N, gear=N, gut=N, hangman=N, harpooner=N, helmsman=N, hollow_miller=N, iron_golem=N, item=N, keykeeper=N, mower=N, oarsman=N, pilot=N, sack
+      overseer was already dead
+      world: outpost in the wild: N blocks from the origin, floor at y=N at N, N, N turned none, ground outside the corners N N N N above the floor; blocks=N marks={archer=N, guard=N, prisoner=N} hearths=N fog=N chests=N/N with loot, bars joined=N/N
+      world: stockade in the wild: N blocks from the origin, floor at y=N at N, N, N turned N, ground outside the corners N N N N above the floor; blocks=N marks={archer=N, chaplain=N, guard=N, keykeeper=N, knight=N, overseer=N, prisoner=N} hearths=N fog=N chests=N/N with loot, bars joined=N/N
+  new in server#checks:
+      chaplain killed: alive=false drops=[minecraft:poppy, minecraft:iron_ingot, unfading_dawn:chaplain_soul, unfading_dawn:prayer_beads, unfading_dawn:mend, unfading_dawn:flask_shard, unfading_dawn:chaplain_mitre, unfading_dawn:chaplain_cassock, minecraft:poppy, minecraft:iron_ingot, minecraft:poppy, min
+      on the floor after N ticks: {bolt=N, candlewife=N, capsized=N, carver=N, cellarer=N, chaplain=N, coming=N, coming_face=N, debtor=N, elder=N, ferryman=N, gear=N, gut=N, handwalker=N, hangman=N, helmsman=N, hollow_miller=N, iron_golem=N, item=N, mower=N, oarsman=N, overseer=N, pilot=N, sackman=N, sand
+      overseer killed: alive=false drops=[minecraft:poppy, minecraft:iron_ingot, minecraft:iron_ingot, minecraft:iron_ingot, minecraft:poppy, minecraft:iron_ingot, minecraft:iron_ingot, minecraft:iron_ingot, minecraft:poppy, minecraft:iron_ingot, unfading_dawn:overseer_soul, unfading_dawn:flask_shard, unf
+      world: outpost in the wild: N blocks from the origin, floor at y=N at N, N, N turned counterclockwise_N, ground outside the corners N N N N above the floor; blocks=N marks={archer=N, guard=N, prisoner=N} hearths=N fog=N chests=N/N with loot, bars joined=N/N
+      world: stockade ...

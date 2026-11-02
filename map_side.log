@@ -1,0 +1,30 @@
+/home/runner/work/_temp/ws2
+CLAUDE.md
+apt.log
+build.gradle
+build.log
+client.log
+docs
+gradle
+gradle.properties
+gradlew
+gradlew.bat
+map
+map_side.log
+server.log
+settings.gradle
+src
+times.log
+tools
+-rw-r--r-- 1 runner runner 13959761 Nov  2 16:04 High_Stockade.zip
+
+run/High_Stockade:
+total 40
+drwxr-xr-x 5 runner runner 4096 Nov  2 16:04 .
+drwxr-xr-x 8 runner runner 4096 Nov  2 16:02 ..
+drwxr-xr-x 3 runner runner 4096 Nov  2 16:02 data
+drwxr-xr-x 2 runner runner 4096 Nov  2 16:02 datapacks
+drwxr-xr-x 3 runner runner 4096 Nov  2 16:02 dimensions
+-rw-r--r-- 1 runner runner 5986 Nov  2 16:04 icon.png
+-rw------- 1 runner runner  560 Nov  2 16:04 level.dat
+-rw-r--r-- 1 runner runner 5739 Nov  2 16:04 readme.txt
